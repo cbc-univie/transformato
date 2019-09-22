@@ -100,3 +100,5 @@ ENV/
 
 # mypy
 .mypy_cache/
+transformato-vs.code-workspace
+.vscode/settings.json
