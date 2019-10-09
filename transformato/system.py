@@ -21,7 +21,7 @@ class SystemStructure(object):
         conf: dict
             the configuration dictionary obtained with utils.load_config_yaml
         structure: str
-            the name of the system as writtent in the config yaml
+            either 'structure1' or 'structure2'
         """
 
 
@@ -137,7 +137,9 @@ class SystemStructure(object):
         for atom in psf.view[f":{self.tlc}"].atoms:
             idx = int(atom.idx)
             idx_list.append(idx)
-
+            atom.real_charge = atom.charge
+            atom.real_epsilon = atom.epsilon
+            atom.real_sigma = atom.sigma
 
         return min(idx_list)
     
@@ -161,7 +163,7 @@ class SystemStructure(object):
         sdf_file = f"{charmm_gui_env}/{tlc_lower}/{tlc}.sdf"        
 
         
-        mol = Chem.MolFromMolFile(sdf_file)
+        mol = Chem.MolFromMolFile(sdf_file, removeHs=False)
         atom_idx_to_atom_name, _, atom_name_to_atom_type, atom_idx_to_atom_partial_charge = self.generate_atom_tables_from_psf(psf)
 
         for atom in mol.GetAtoms():
@@ -202,7 +204,6 @@ class SystemStructure(object):
             list_idx.append(atom.idx)
             atom_index = atom.idx# - min(list_idx)
             atom_type = atom.type
-            atom.dummy_type = atom.type
             atom_charge = atom.charge
 
             atom_idx_to_atom_name[atom_index] = atom_name
