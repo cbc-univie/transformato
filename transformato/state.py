@@ -148,6 +148,17 @@ class IntermediateStateFactory(object):
         toppar_target = f"{intermediate_state_file_path}/toppar" 
         shutil.copytree(toppar_source, toppar_target)
 
+
+        # copy ligand rtf file
+        ligand_rtf = f"{basedir}/complex/{self.system.tlc}/{self.system.tlc}_g.rtf"
+        toppar_target = f"{intermediate_state_file_path}/toppar" 
+        shutil.copyfile(ligand_rtf, toppar_target)
+
+        # copy ligand prm file
+        ligand_prm = f"{basedir}/complex/{self.system.tlc}/{self.system.tlc}.prm"
+        toppar_target = f"{intermediate_state_file_path}/toppar" 
+        shutil.copyfile(ligand_prm, toppar_target)
+
         omm_simulation_submit_script_source = f"{self.conf['bin_dir']}/simulation.sh"
         omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
         shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)  
