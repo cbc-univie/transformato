@@ -164,98 +164,128 @@ class ProposeMutationRoute(object):
         return(svg)
 
 
-    def generate_mutations_to_commen_core_for_mol1(self):
+    def generate_mutations_to_commen_core_for_mol1(self)->list:
         """
         Generates the mutation route to the commen fore for mol1.
         """
         return self._mutate_to_commen_core(self.mols['m1'], self.get_commen_core_idx_mol1())
 
 
-    def generate_mutations_to_commen_core_for_mol2(self):
+    def generate_mutations_to_commen_core_for_mol2(self)->list:
         """
         Generates the mutation route to the commen fore for mol2.
         """
 
         return self._mutate_to_commen_core(self.mols['m2'], self.get_commen_core_idx_mol2())
 
-    def _mutate_to_commen_core(self, mol:Chem.Mol, cc_idx:list):
+    def _mutate_to_commen_core(self, mol:Chem.Mol, cc_idx:list)->list:
         """
         Helper function - do not call directly.
         Generates the mutation route to the commen fore for mol2.
         """
 
+        mutations = []
+
         atoms_to_be_mutated = []
+        hydrogens = []
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             if idx not in cc_idx:
                 atoms_to_be_mutated.append(idx)
+                print(atom.GetSymbol())
+                if atom.GetSymbol() == 'H':
+                    hydrogens.append(idx)
                 print('Needs to be mutated: ', idx)
         
-        return ELMutation(atoms_to_be_mutated, 10), VdWMutation(atoms_to_be_mutated, 2)
+        # scale all EL of all atoms to zero
+        mutations.append(ELtoZeroMutation(atoms_to_be_mutated, 10))
+        # start with mutation of VdW of hydrogens
+        for h in hydrogens:
+            mutations.append(VdWtoZeroMutation([h], 1))
+        # continue with heavy atoms
+        for a in atoms_to_be_mutated:
+            if a not in hydrogens:
+                mutations.append(VdWtoZeroMutation([a], 1))
+ 
+        return mutations
 
 
     def _mutate_cc(self, mol, cc_idx):
         pass
-
-        
-
+   
 
 
-class BaseNonBondedMutation(object):
+
+class BaseMutation(object):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
+        assert(type(atom_idx) == list)
         self.atom_idx = atom_idx
-        self.nr_of_steps = 1
         self.nr_of_steps = nr_of_steps
 
-
-class ELMutation(BaseNonBondedMutation):
+class ELMutation(BaseMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
         super().__init__(atom_idx, nr_of_steps)
 
-    def mutate(self, psf, offset:int, current_step:int):
-        
-        for i in self.atom_idx:
-            atom = psf[i + offset]
-            charge_multiplicator = 1 - (current_step / (self.nr_of_steps -1))
-            self._scale_charge(atom, charge_multiplicator)
-
-    def _scale_charge(self, atom, charge_multiplicator):
+    def _scale_charge(self, atom, charge):
     
-        print('Old charge: {}'.format(atom.charge))
-        print('Mult with: {}'.format(charge_multiplicator))
-        new_charge = round(atom.charge * charge_multiplicator , 5)
-        atom.mod_charge = new_charge
-        print('New charge: {}'.format(new_charge))
+        #print('Old charge: {}'.format(old_charge))
+        atom.charge = charge
+        #print('New charge: {}'.format(new_charge))
 
 
-
-class VdWMutation(BaseNonBondedMutation):
+class ELtoZeroMutation(ELMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
         super().__init__(atom_idx, nr_of_steps)
 
-
     def mutate(self, psf, offset:int, current_step:int):
-        
+        print('EL to Zero Mutation')
         for i in self.atom_idx:
             atom = psf[i + offset]
-            self._modify_type(atom, psf)
+            multiplicator = 1 - (current_step / (self.nr_of_steps -1))
+            charge = round(atom.real_charge * multiplicator , 5)
+            self._scale_charge(atom, charge)
+
+
+class VdWMutation(BaseMutation):
+
+    def __init__(self, atom_idx:list, nr_of_steps:int):
+        super().__init__(atom_idx, nr_of_steps)
+
+    def _scale_epsilon(self, atom, epsilon):
+        atom.epsilon = epsilon
+
+    def _scale_sigma(self, atom, sigma):
+        atom.sigma = sigma
+
 
     def _modify_type(self, atom, psf):
 
-        if (hasattr(atom, 'dummy_type')):
+        if (hasattr(atom, 'real_type')):
             # only change parameters
             pass
         else:
-            atom.dummy_type = f"DDD{psf.number_of_dummys}"
-            atom.is_mutated = True
+            atom.real_type = atom.type
+            atom.type = f"DDD{psf.number_of_dummys}"
             psf.number_of_dummys += 1
 
+class VdWtoZeroMutation(VdWMutation):
 
+    def __init__(self, atom_idx:list, nr_of_steps:int):
+        super().__init__(atom_idx, nr_of_steps)
+    
+    def mutate(self, psf, offset:int, current_step:int):
+        print('VdW to Zero Mutation')
 
-
+        for i in self.atom_idx:
+            atom = psf[i + offset]
+            self._modify_type(atom, psf)
+            epsilon = atom.real_epsilon * 0.0
+            sigma = atom.real_sigma *  0.0
+            self._scale_epsilon(atom, epsilon)
+            self._scale_sigma(atom, sigma)
 
 
 

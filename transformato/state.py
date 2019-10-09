@@ -10,7 +10,7 @@ class IntermediateStateFactory(object):
         self.mutation_list = mutation_list
         self.path = f"{output_path}/{self.system.name}"
         self._init_base_dir()
-
+        self.conf = conf
 
     def generate_intermediate_states(self, strategy='seperate'):
 
@@ -25,8 +25,135 @@ class IntermediateStateFactory(object):
                     self._write_rtf_file(psf, output_file_base, self.system.tlc)
                     self._write_prm_file(psf, output_file_base, self.system.tlc)
                     self._write_toppar_str(output_file_base, self.system.tlc)
+                    self._copy_files(output_file_base)
                     intst_nr += 1
 
+
+    def _copy_files(self, intermediate_state_file_path):
+
+        # copy crd files
+        basedir = self.system.charmm_gui_base
+        # for complex
+        crd_file_source = f"{basedir}/complex/openmm/{self.conf['system'][self.system.structure]['complex']['crd_file_name']}.crd"
+        crd_file_target = f"{intermediate_state_file_path}/lig_in_complex.crd"
+        shutil.copyfile(crd_file_source , crd_file_target)
+        # for lig in water
+        crd_file_source = f"{basedir}/waterbox/openmm/{self.conf['system'][self.system.structure]['complex']['crd_file_name']}.crd"
+        crd_file_target = f"{intermediate_state_file_path}/lig_in_waterbox.crd"
+        shutil.copyfile(crd_file_source , crd_file_target)
+
+        # copy crd files
+        # for complex
+        rst_file_source = f"{basedir}/complex/openmm/{self.conf['system'][self.system.structure]['complex']['rst_file_name']}.rst"
+        rst_file_target = f"{intermediate_state_file_path}/lig_in_complex.rst"
+        shutil.copyfile(rst_file_source , rst_file_target)
+        # for lig in water
+        rst_file_source = f"{basedir}/waterbox/openmm/{self.conf['system'][self.system.structure]['waterbox']['rst_file_name']}.rst"
+        rst_file_target = f"{intermediate_state_file_path}/lig_in_waterbox.rst"
+        shutil.copyfile(rst_file_source , rst_file_target)
+
+
+
+        omm_barostat_source = f"{basedir}/complex/openmm/omm_barostat.py"
+        omm_barostat_target = f"{intermediate_state_file_path}/omm_barostat.py"
+        shutil.copyfile(omm_barostat_source, omm_barostat_target)
+
+        omm_readinputs_source = f"{basedir}/complex/openmm//omm_readinputs.py"
+        omm_readinputs_target = f"{intermediate_state_file_path}/omm_readinputs.py"
+        shutil.copyfile(omm_readinputs_source, omm_readinputs_target)
+
+        omm_readparams_source = f"{basedir}/complex/openmm/omm_readparams.py"
+        omm_readparams_target = f"{intermediate_state_file_path}/omm_readparams.py"
+        shutil.copyfile(omm_readparams_source, omm_readparams_target)
+
+        omm_restraints_source = f"{basedir}/complex/openmm/omm_restraints.py"
+        omm_restraints_target = f"{intermediate_state_file_path}/omm_restraints.py"
+        shutil.copyfile(omm_restraints_source, omm_restraints_target)
+
+        omm_rewrap_source = f"{basedir}/complex/openmm/omm_rewrap.py"
+        omm_rewrap_target = f"{intermediate_state_file_path}/omm_rewrap.py"
+        shutil.copyfile(omm_rewrap_source, omm_rewrap_target)
+
+        omm_vfswitch_source = f"{basedir}/complex/openmm/omm_vfswitch.py"
+        omm_vfswitch_target = f"{intermediate_state_file_path}/omm_vfswitch.py"
+        shutil.copyfile(omm_vfswitch_source, omm_vfswitch_target)
+
+
+        # parse omm simulation paramter
+        # for complex
+        omm_simulation_parameter_source = f"{basedir}/complex/openmm/{self.conf['system'][self.system.structure]['complex']['simulation_parameter']}" 
+        omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.conf['system'][self.system.structure]['complex']['intermediate-filename']}"
+        input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
+        output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
+        
+        for l in input_simulation_parameter.readlines():
+            if l.strip():
+                t1, t2 = l.split('=')
+                t1 = t1.strip()
+                t2, comment = t2.split('#')
+                t2 = t2.strip()
+                comment = comment.strip()
+                if t1 == 'nstep':
+                    t2 = self.conf['simulation']['nsteps']
+                output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
+            else:
+                output_simulation_parameter.write('\n')
+        
+        # for lig in water
+        omm_simulation_parameter_source = f"{basedir}/waterbox/openmm/{self.conf['system'][self.system.structure]['waterbox']['simulation_parameter']}" 
+        omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.conf['system'][self.system.structure]['waterbox']['intermediate-filename']}"
+        input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
+        output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
+        
+        for l in input_simulation_parameter.readlines():
+            if l.strip():
+                t1, t2 = l.split('=')
+                t1 = t1.strip()
+                t2, comment = t2.split('#')
+                t2 = t2.strip()
+                comment = comment.strip()
+                if t1 == 'nstep':
+                    t2 = self.conf['simulation']['nsteps']
+                output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
+            else:
+                output_simulation_parameter.write('\n')
+
+
+        # copy omm simulation script
+        omm_simulation_script_source = f"{basedir}/complex/openmm/openmm_run.py"
+        omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
+        shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
+
+
+        f = open(omm_simulation_script_target, 'a')
+        f.write(
+    '''
+    # mw: adding xml serializer to the simulation script
+    file_name = str(args.psffile).replace('.psf', '')
+    print(file_name)
+    serialized_integrator = XmlSerializer.serialize(integrator)
+    outfile = open(file_name + '_integrator.xml','w')
+    outfile.write(serialized_integrator)
+    outfile.close()
+    serialized_system = XmlSerializer.serialize(system)
+    outfile = open(file_name + '_system.xml','w')
+    outfile.write(serialized_system)
+    outfile.close()
+    '''
+        )
+        f.close()
+
+        # copy toppar folder
+        toppar_source = f"{basedir}/complex/toppar/"
+        toppar_target = f"{intermediate_state_file_path}/toppar" 
+        shutil.copytree(toppar_source, toppar_target)
+
+        omm_simulation_submit_script_source = f"{self.conf['bin_dir']}/simulation.sh"
+        omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
+        shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)  
+    
+    
+    
     def _write_rtf_file(self, psf, output_file_base, tlc):
 
         header_rtf = '''* Dummy atom parameters 
@@ -37,13 +164,13 @@ class IntermediateStateFactory(object):
         rtf_file_handler = open(output_file_base +'/dummy_atom_definitions.rtf', 'w')
         rtf_file_handler.write(header_rtf)
         for atom in psf.view[':' + tlc].atoms:            
-            if hasattr(atom, 'dummy_type'):
+            if hasattr(atom, 'real_type'):
                 print('- Setting dummy parameters ...')
                 print('  + Atom-Name: ', atom.name)
-                print('  + Atom-Type: ', atom.type)
-                print('  + Atom Dummy Type: ', atom.dummy_type)
+                print('  + Atom-Type: ', atom.real_type)
+                print('  + Atom Dummy Type: ', atom.type)
 
-                rtf_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', atom.dummy_counter, atom.dummy_type, atom.mass))
+                rtf_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', '-1', atom.type, atom.mass))
             
         rtf_file_handler.close()    
 
@@ -223,18 +350,18 @@ class IntermediateStateFactory(object):
             # this is true if either: 
             #  - sigma or epsilon have changed in relation to the normal atom type parameters (which needs a dummy atom type)
             #  - or a pure dummy atom with sigma and epsilon 0 was introduced
-            if hasattr(atom, 'is_mutated'):
-                if atom.dummy_type in atom_set:
+            if hasattr(atom, 'real_type'):
+                if atom.type in atom_set:
                     continue
 
-                atom_set.add(atom.dummy_type)
+                atom_set.add(atom.type)
 
                 print('- Setting dummy parameters ...')
                 print('  + Atom-Name: ', atom.name)
-                print('  + Atom-Type: ', atom.type)
-                print('  + Atom Dummy Type: ', atom.dummy_type)
+                print('  + Atom-Type: ', atom.real_type)
+                print('  + Atom Dummy Type: ', atom.type)
 
-                prm_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', atom.dummy_counter, atom.dummy_type, atom.mass))
+                prm_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', '-1', atom.type, atom.mass))
             
         prm_file_handler.write('\n\n')
 
@@ -247,8 +374,8 @@ class IntermediateStateFactory(object):
         prm_file_handler.write('BONDS\n')
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
-            if hasattr(atom1, 'is_mutated') or hasattr(atom2, 'is_mutated'):
-                s = set(atom1.dummy_type, atom2.dummy_type)
+            if hasattr(atom1, 'real_type') or hasattr(atom2, 'real_type'):
+                s = frozenset([atom1.type, atom2.type])
             else:
                 continue
 
@@ -256,8 +383,8 @@ class IntermediateStateFactory(object):
                 continue
                 
             bond_set.add(s)
-            print(' >> Setting dummy bond parameters for: ' + str(atom1) + ' - ' + str(atom2))
-            prm_file_handler.write('{:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1), str(atom2), bond.typ.k ,bond.type.req))
+            print(' >> Setting dummy bond parameters for: ' + str(atom1.type) + ' - ' + str(atom2.type))
+            prm_file_handler.write('{:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
 
 
         #################################################################
@@ -265,8 +392,8 @@ class IntermediateStateFactory(object):
         prm_file_handler.write('ANGLES\n')
         for angle in view.angles:
             atom1, atom2, atom3 = angle.atom1, angle.atom2, angle.atom3
-            if hasattr(atom1, 'is_mutated') or hasattr(atom2, 'is_mutated') or hasattr(atom3, 'is_mutated'):
-                s = set(atom1.dummy_type, atom2.dummy_type, atom3.dummy_type)
+            if hasattr(atom1, 'real_type') or hasattr(atom2, 'real_type') or hasattr(atom3, 'real_type'):
+                s = frozenset([atom1.type, atom2.type, atom3.type])
             else:
                 continue
             
@@ -275,8 +402,8 @@ class IntermediateStateFactory(object):
             
             angle_set.add(s)
 
-            print(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.dummy_type),str(atom2.dummy_type),str(atom3.dummy_type)))
-            prm_file_handler.write('{:7} {:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.dummy_type), str(atom2.dummy_type), str(atom3.dummy_type), b.type.k , b.type.theteq))
+            print(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
+            prm_file_handler.write('{:7} {:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
 
 
         #################################################################
@@ -284,8 +411,8 @@ class IntermediateStateFactory(object):
         prm_file_handler.write('DIHEDRALS\n')
         for dihedral in view.dihedrals:
             atom1, atom2, atom3, atom4 = dihedral.atom1, dihedral.atom2, dihedral.atom3, dihedral.atom4
-            if hasattr(atom1, 'is_mutated') or hasattr(atom2, 'is_mutated') or hasattr(atom3, 'is_mutated') or hasattr(atom4, 'is_mutated'):
-                s = set(atom1.dummy_type, atom2.dummy_type, atom3.dummy_type, atom4.dummy_type)
+            if hasattr(atom1, 'real_type') or hasattr(atom2, 'real_type') or hasattr(atom3, 'real_type') or hasattr(atom4, 'real_type'):
+                s = frozenset([atom1.type, atom2.type, atom3.type, atom4.type])
             else:
                 continue
 
@@ -294,9 +421,9 @@ class IntermediateStateFactory(object):
             
             dihedral_set.add(s)
 
-            print(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.dummy_type),str(atom2.dummy_type),str(atom3.dummy_type),str(atom4.dummy_type)))
+            print(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
             for i in range(len(dihedral.type)):
-                prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:6.5f} {:6.5f} \n'.format(str(atom1.dummy_type), str(atom2.dummy_type), str(atom3.dummy_type), str(atom4.dummy_type), b[i].type.phi_k ,b[i].type.per, b[i].type.phase))
+                prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral.type[i].phi_k ,dihedral.type[i].per, dihedral.type[i].phase))
 
         #################################################################
         # get all unique improper and parameters
@@ -304,8 +431,8 @@ class IntermediateStateFactory(object):
         prm_file_handler.write('IMPROPERS\n')
         for impr in view.impropers:
             atom1, atom2, atom3, atom4 = impr.atom1, impr.atom2, impr.atom3, impr.atom4
-            if hasattr(atom1, 'is_mutated') or hasattr(atom2, 'is_mutated') or hasattr(atom3, 'is_mutated') or hasattr(atom4, 'is_mutated'):
-                s = set(atom1.dummy_type, atom2.dummy_type, atom3.dummy_type, atom4.dummy_type)
+            if hasattr(atom1, 'real_type') or hasattr(atom2, 'real_type') or hasattr(atom3, 'real_type') or hasattr(atom4, 'real_type'):
+                s = frozenset([atom1.type, atom2.type, atom3.type, atom4.type])
             else:
                 continue
 
@@ -314,9 +441,9 @@ class IntermediateStateFactory(object):
 
             improper_set.add(s)
             
-            print('>> Setting dummy improper parameters for: {}-{}-{}-{}'.format(str(atom1.dummy_type),str(atom2.dummy_type),str(atom3.dummy_type),str(atom4.dummy_type)))
+            print('>> Setting dummy improper parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
             # carefull with this solution - > central atom has to be set in the beginning
-            prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:6.5f} {:6.5f} \n'.format(str(atom1.dummy_type), str(atom2.dummy_type), str(atom3.dummy_type), str(atom4.dummy_type), b.phi_k ,int(impr.type.per), impr.type.phase))
+            prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), impr.type.psi_k , impr.type.psi_eq))
 
         #################################################################
         prm_file_handler.write('\n\n')
@@ -326,15 +453,15 @@ class IntermediateStateFactory(object):
         prm_file_handler.write('\n\n')
 
         for atom in view.atoms:
-            if not hasattr(atom, 'is_mutated'):
+            if not hasattr(atom, 'real_type'):
                 continue
 
-            if atom.dummy_type in nb_set:
+            if atom.type in nb_set:
                 continue
 
-            nb_set.add(atom.dummy_type)
+            nb_set.add(atom.type)
 
-            prm_file_handler.write('{:7} {:6} {:6} {:6} {:6} {:6} {:6}\n'.format(atom.dummy_type, 0.0, 0.000, 0.000, 0.0, 0.000, 0.000))
+            prm_file_handler.write('{:7} {:6} {:6} {:6} {:6} {:6} {:6}\n'.format(atom.type, 0.0, atom.epsilon, atom.rmin, 0.0, atom.epsilon, atom.rmin))
 
         prm_file_handler.write('\n')
         prm_file_handler.write('END')
@@ -404,28 +531,10 @@ dummy_parameters.prm
 
 
     def _write_psf(self, psf, output_file_base, env):
-            
-            print(self.system.tlc)
-            for atom in psf.atoms:
-                if (hasattr(atom, 'mod_charge')):
-                    atom.save_charge = atom.charge
-                    atom.charge = atom.mod_charge        
-
-                if (hasattr(atom, 'dummy_type')):
-                    print('There are dummies here.')
-                    atom.save_type = atom.type
-                    atom.type = atom.dummy_type
-                
-            
+           
             psf.write_psf(f"{output_file_base}/lig_in_{env}.psf")
             psf.write_pdb(f"{output_file_base}/lig_in_{env}.pdb")
                     
-            # revert the changes
-            for atom in psf.atoms:
-                if (hasattr(atom, 'mod_charge')):
-                    atom.charge = atom.save_charge
-                if (hasattr(atom, 'dummy_type')):
-                    atom.type = atom.save_type
 
 
 
@@ -439,6 +548,11 @@ dummy_parameters.prm
         os.makedirs(output_file_base)
         print(' - Writing in - ' + str(output_file_base))
         return output_file_base
+
+
+
+
+
 
 
 
