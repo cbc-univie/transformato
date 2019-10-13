@@ -21,7 +21,7 @@ class ProposeMutationRoute(object):
         
         """
         A class that proposes the mutation route between two molecules with a 
-        commen core (same atom types) based on two mols and generates the mutation 
+        common core (same atom types) based on two mols and generates the mutation 
         objects to perform the mutation on the psf objects.
         Parameters
         ----------
@@ -34,26 +34,36 @@ class ProposeMutationRoute(object):
 
         self.mols:dict = {mol1_name : mol1, mol2_name : mol2}
         self._substructure_match:dict = { mol1_name : [], mol2_name : []}
-        self._calculate_commen_core(mol1_name, mol2_name)
+        self._calculate_common_core(mol1_name, mol2_name)
         self.removed_indeces:dict = { mol1_name : [], mol2_name : []}
         self.added_indeces:dict = { mol1_name : [], mol2_name : []}
 
-    def get_commen_core_idx_mol1(self)->list:
-        """
-        Returns the commen core of mol1.
-        """
-        return self._get_commen_core('m1')
-    
-    def get_commen_core_idx_mol2(self)->list:
-        """
-        Returns the commen core of mol2.
-        """
-        return self._get_commen_core('m2')
 
-    def _get_commen_core(self, name:str)->list:
+    def add_common_core_atom_to_mol1(self, idx:int):
+        self._add_common_core_atom('m1', idx)
+
+    def add_common_core_atom_to_mol2(self, idx:int):
+        self._add_common_core_atom('m2', idx)
+
+    def _add_common_core_atom(self, name, idx):
+        self.added_indeces[name].append(idx)
+        
+    def get_common_core_idx_mol1(self)->list:
+        """
+        Returns the common core of mol1.
+        """
+        return self._get_common_core('m1')
+    
+    def get_common_core_idx_mol2(self)->list:
+        """
+        Returns the common core of mol2.
+        """
+        return self._get_common_core('m2')
+
+    def _get_common_core(self, name:str)->list:
         """
         Helper Function - should not be called directly.
-        Returns the commen core of mol2.
+        Returns the common core.
         """
         keep_idx = []
         for idx in set(list(self._substructure_match[name]) + self.added_indeces[name]):
@@ -61,10 +71,10 @@ class ProposeMutationRoute(object):
                 keep_idx.append(idx)
         return keep_idx
                    
-    def _calculate_commen_core(self, mol1_name:str, mol2_name:str):
+    def _calculate_common_core(self, mol1_name:str, mol2_name:str):
         """
         A class that proposes the mutation route between two molecules with a 
-        commen core (same atom types) based on two mols and generates the mutation 
+        common core (same atom types) based on two mols and generates the mutation 
         objects to perform the mutation on the psf objects.
         Parameters
         ----------
@@ -127,22 +137,22 @@ class ProposeMutationRoute(object):
         display(mol)
 
 
-    def show_commen_core_on_mol1(self):
+    def show_common_core_on_mol1(self):
         """
-        Shows commen core on mol1        
+        Shows common core on mol1        
         """
-        return self._show_commen_core(self.mols['m1'], self.get_commen_core_idx_mol1())
+        return self._show_common_core(self.mols['m1'], self.get_common_core_idx_mol1())
 
-    def show_commen_core_on_mol2(self):
+    def show_common_core_on_mol2(self):
         """
-        Shows commen core on mol2        
+        Shows common core on mol2        
         """
-        return self._show_commen_core(self.mols['m2'], self.get_commen_core_idx_mol2())
+        return self._show_common_core(self.mols['m2'], self.get_common_core_idx_mol2())
 
-    def _show_commen_core(self, mol, highlight):
+    def _show_common_core(self, mol, highlight):
         """
         Helper function - do not call directly.
-        Show commen core.
+        Show common core.
         """
         #https://rdkit.blogspot.com/2015/02/new-drawing-code.html
         
@@ -164,49 +174,46 @@ class ProposeMutationRoute(object):
         return(svg)
 
 
-    def generate_mutations_to_commen_core_for_mol1(self)->list:
+    def generate_mutations_to_common_core_for_mol1(self)->list:
         """
-        Generates the mutation route to the commen fore for mol1.
+        Generates the mutation route to the common fore for mol1.
         """
-        return self._mutate_to_commen_core(self.mols['m1'], self.get_commen_core_idx_mol1())
+        return self._mutate_to_common_core(self.mols['m1'], self.get_common_core_idx_mol1())
 
 
-    def generate_mutations_to_commen_core_for_mol2(self)->list:
+    def generate_mutations_to_common_core_for_mol2(self)->list:
         """
-        Generates the mutation route to the commen fore for mol2.
+        Generates the mutation route to the common fore for mol2.
         """
 
-        return self._mutate_to_commen_core(self.mols['m2'], self.get_commen_core_idx_mol2())
+        return self._mutate_to_common_core(self.mols['m2'], self.get_common_core_idx_mol2())
 
-    def _mutate_to_commen_core(self, mol:Chem.Mol, cc_idx:list)->list:
+    def _mutate_to_common_core(self, mol:Chem.Mol, cc_idx:list)->list:
         """
         Helper function - do not call directly.
-        Generates the mutation route to the commen fore for mol2.
+        Generates the mutation route to the common fore for mol2.
         """
 
+        # first LJ and electrostatic is scaled
         mutations = []
-
         atoms_to_be_mutated = []
-        hydrogens = []
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             if idx not in cc_idx:
                 atoms_to_be_mutated.append(idx)
                 print(atom.GetSymbol())
-                if atom.GetSymbol() == 'H':
-                    hydrogens.append(idx)
-                print('Needs to be mutated: ', idx)
+                print('Will be decoupled: ', idx)
         
         # scale all EL of all atoms to zero
         mutations.append(ELtoZeroMutation(atoms_to_be_mutated, 10))
         # start with mutation of VdW of hydrogens
-        for h in hydrogens:
-            mutations.append(VdWtoZeroMutation([h], 1))
-        # continue with heavy atoms
-        for a in atoms_to_be_mutated:
-            if a not in hydrogens:
-                mutations.append(VdWtoZeroMutation([a], 1))
+        mutations.append(LJtoZeroMutation(atoms_to_be_mutated, 10))
  
+        # second we determine which atoms changed atom type
+
+        
+
+
         return mutations
 
 
@@ -249,7 +256,7 @@ class ELtoZeroMutation(ELMutation):
             self._scale_charge(atom, charge)
 
 
-class VdWMutation(BaseMutation):
+class LJMutation(BaseMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
         super().__init__(atom_idx, nr_of_steps)
@@ -271,7 +278,7 @@ class VdWMutation(BaseMutation):
             atom.type = f"DDD{psf.number_of_dummys}"
             psf.number_of_dummys += 1
 
-class VdWtoZeroMutation(VdWMutation):
+class LJtoZeroMutation(LJMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
         super().__init__(atom_idx, nr_of_steps)
@@ -282,8 +289,10 @@ class VdWtoZeroMutation(VdWMutation):
         for i in self.atom_idx:
             atom = psf[i + offset]
             self._modify_type(atom, psf)
-            epsilon = atom.real_epsilon * 0.0
-            sigma = atom.real_sigma *  0.0
+            multiplicator = 1 - (current_step / (self.nr_of_steps -1))
+
+            epsilon = atom.real_epsilon * multiplicator
+            sigma = atom.real_sigma *  multiplicator
             self._scale_epsilon(atom, epsilon)
             self._scale_sigma(atom, sigma)
 
