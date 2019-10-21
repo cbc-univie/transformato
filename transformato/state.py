@@ -227,7 +227,7 @@ class IntermediateStateFactory(object):
                 print('  + Atom-Type: ', atom.real_type)
                 print('  + Atom Dummy Type: ', atom.type)
 
-                prm_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', '-1', atom.type, atom.mass))
+                prm_file_handler.write('{:7} {:6} {:6} {:9.5f}\n'.format('MASS', '-1', atom.type, atom.mass))
             
         prm_file_handler.write('\n\n')
 
@@ -249,7 +249,7 @@ class IntermediateStateFactory(object):
                 
             bond_set.add(s)
             #logger.info(' >> Setting dummy bond parameters for: {} - {}'.format(str(atom1.type),str(atom2.type)))
-            prm_file_handler.write('{:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
+            prm_file_handler.write('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
 
 
         #################################################################
@@ -268,7 +268,7 @@ class IntermediateStateFactory(object):
             angle_set.add(s)
 
             #print(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
-            prm_file_handler.write('{:7} {:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
+            prm_file_handler.write('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
 
 
         #################################################################
@@ -288,7 +288,7 @@ class IntermediateStateFactory(object):
 
             #print(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
             for i in range(len(dihedral.type)):
-                prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral.type[i].phi_k ,dihedral.type[i].per, dihedral.type[i].phase))
+                prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral.type[i].phi_k ,dihedral.type[i].per, dihedral.type[i].phase))
 
         #################################################################
         # get all unique improper and parameters
@@ -308,27 +308,25 @@ class IntermediateStateFactory(object):
             
             #print('>> Setting dummy improper parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
             # carefull with this solution - > central atom has to be set in the beginning
-            prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), impr.type.psi_k , impr.type.psi_eq))
+            prm_file_handler.write('{:7} {:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), impr.type.psi_k , impr.type.psi_eq))
 
         #################################################################
-        # NOTE: I think I don't have to write this as long as I don't change anything here?
-#         prm_file_handler.write('\n\n')
-#         prm_file_handler.write('''NONBONDED nbxmod  5 atom cdiel fshift vatom vdistance vfswitch -
-# cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5''')
-#         prm_file_handler.write('\n\n')
+        prm_file_handler.write('\n\n')
+        prm_file_handler.write('''NONBONDED nbxmod  5 atom cdiel fshift vatom vdistance vfswitch -
+cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5''')
+        prm_file_handler.write('\n\n')
 
-#         for atom in view.atoms:
-#             if not hasattr(atom, 'real_type'):
-#                 continue
+        for atom in view.atoms:
+            if not hasattr(atom, 'real_type'):
+                continue
 
-#             if atom.type in nb_set:
-#                 continue
+            if atom.type in nb_set:
+                continue
 
-#             nb_set.add(atom.type)
+            nb_set.add(atom.type)
+            prm_file_handler.write('{:7} {:6} {:9.5f} {:9.5f}\n'.format(atom.type, 0.0, atom.epsilon, atom.rmin))
 
-#             prm_file_handler.write('{:7} {:6} {:6} {:6} {:6} {:6} {:6}\n'.format(atom.type, 0.0, atom.epsilon, atom.rmin, 0.0, atom.epsilon, atom.rmin))
-
-#         prm_file_handler.write('\n')
+        prm_file_handler.write('\n')
         prm_file_handler.write('END')
 
         prm_file_handler.close()

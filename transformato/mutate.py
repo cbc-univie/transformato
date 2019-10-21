@@ -381,10 +381,10 @@ class BondedMutation(object):
             old_angle.type.k      = (1.0 - scale) * old_angle.type.k      + scale * new_angle.type.k
             old_angle.type.theteq = (1.0 - scale) * old_angle.type.theteq + scale * new_angle.type.theteq
 
-        # # scale torsions
-        # for old_torsion, new_torsion in zip(self.old_torsions, self.new_torsions):
-        #     if current_step < (self.nr_of_step/2):
-        #         for t in old_torsion:
+        # scale torsions
+        # for old_torsion, new_torsion in zip(psf.cc_torsions, self.new_torsions):
+        #      if current_step < (self.nr_of_step/2):
+        #          for t in old_torsion:
 
 
             

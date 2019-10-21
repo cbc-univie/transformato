@@ -1,8 +1,8 @@
 transformato
 ==============================
 [//]: # (Badges)
-[![Travis Build Status](https://travis-ci.org/REPLACE_WITH_OWNER_ACCOUNT/transformato.png)](https://travis-ci.org/REPLACE_WITH_OWNER_ACCOUNT/transformato)
-[![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/transformato/branch/master/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/transformato/branch/master)
+[![Travis Build Status](https://travis-ci.org/wiederm/transformato.png)](https://travis-ci.org/wiederm/transformato)
+[![codecov](https://codecov.io/gh/wiederm/transformato/branch/master/graph/badge.svg)](https://codecov.io/gh/wiederm/transformato/branch/master)
 
 Workflow to set up a relative free energy calculation of ligands with a common core scaffold
 
