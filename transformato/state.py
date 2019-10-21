@@ -409,5 +409,3 @@ dummy_parameters.prm
         os.makedirs(output_file_base)
         print(' - Writing in - ' + str(output_file_base))
         return output_file_base
-
-
