@@ -16,9 +16,13 @@ class IntermediateStateFactory(object):
 
         intst_nr = 1
         if strategy == 'seperate':
+            
             for m in self.mutation_list:
-                for current_step in range(m.nr_of_steps):
+                for current_step in range(0, m.nr_of_steps):
                     output_file_base = self._init_intermediate_state_dir(intst_nr)
+                    print('#########################################')
+                    print('#########################################')
+                    print('#########################################')
                     for psf, offset, env in zip([self.system.complex_psf, self.system.waterbox_psf], [self.system.complex_offset, self.system.waterbox_offset], ['complex', 'waterbox']):
                         m.mutate(psf, offset, current_step)
                         self._write_psf(psf, output_file_base, env)
@@ -174,7 +178,7 @@ class IntermediateStateFactory(object):
 '''
         rtf_file_handler = open(output_file_base +'/dummy_atom_definitions.rtf', 'w')
         rtf_file_handler.write(header_rtf)
-        for atom in psf.view[':' + tlc].atoms:            
+        for atom in psf.view[f":{tlc}"].atoms:            
             if hasattr(atom, 'real_type'):
                 print('- Setting dummy parameters ...')
                 print('  + Atom-Name: ', atom.name)
@@ -209,13 +213,9 @@ class IntermediateStateFactory(object):
         nb_set = set()
 
 
-        view = psf.view[':' + tlc]
+        view = psf.view[f":{tlc}"]
         # writing atom parameters
         for atom in view.atoms:
-            # if dummy type is set the atom dummy type has changed
-            # this is true if either: 
-            #  - sigma or epsilon have changed in relation to the normal atom type parameters (which needs a dummy atom type)
-            #  - or a pure dummy atom with sigma and epsilon 0 was introduced
             if hasattr(atom, 'real_type'):
                 if atom.type in atom_set:
                     continue
@@ -230,7 +230,6 @@ class IntermediateStateFactory(object):
                 prm_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', '-1', atom.type, atom.mass))
             
         prm_file_handler.write('\n\n')
-
 
         ##############################################################################
         # write bond parameters - again there are two ways to use this:
@@ -249,7 +248,7 @@ class IntermediateStateFactory(object):
                 continue
                 
             bond_set.add(s)
-            print(' >> Setting dummy bond parameters for: ' + str(atom1.type) + ' - ' + str(atom2.type))
+            #logger.info(' >> Setting dummy bond parameters for: {} - {}'.format(str(atom1.type),str(atom2.type)))
             prm_file_handler.write('{:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
 
 
@@ -268,7 +267,7 @@ class IntermediateStateFactory(object):
             
             angle_set.add(s)
 
-            print(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
+            #print(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
             prm_file_handler.write('{:7} {:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
 
 
@@ -287,7 +286,7 @@ class IntermediateStateFactory(object):
             
             dihedral_set.add(s)
 
-            print(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
+            #print(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
             for i in range(len(dihedral.type)):
                 prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral.type[i].phi_k ,dihedral.type[i].per, dihedral.type[i].phase))
 
@@ -307,29 +306,29 @@ class IntermediateStateFactory(object):
 
             improper_set.add(s)
             
-            print('>> Setting dummy improper parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
+            #print('>> Setting dummy improper parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
             # carefull with this solution - > central atom has to be set in the beginning
             prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:6.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), impr.type.psi_k , impr.type.psi_eq))
 
         #################################################################
-        prm_file_handler.write('\n\n')
-        prm_file_handler.write('''NONBONDED nbxmod  5 atom cdiel fshift vatom vdistance vfswitch -
-        cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5
-        ''')
-        prm_file_handler.write('\n\n')
+        # NOTE: I think I don't have to write this as long as I don't change anything here?
+#         prm_file_handler.write('\n\n')
+#         prm_file_handler.write('''NONBONDED nbxmod  5 atom cdiel fshift vatom vdistance vfswitch -
+# cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5''')
+#         prm_file_handler.write('\n\n')
 
-        for atom in view.atoms:
-            if not hasattr(atom, 'real_type'):
-                continue
+#         for atom in view.atoms:
+#             if not hasattr(atom, 'real_type'):
+#                 continue
 
-            if atom.type in nb_set:
-                continue
+#             if atom.type in nb_set:
+#                 continue
 
-            nb_set.add(atom.type)
+#             nb_set.add(atom.type)
 
-            prm_file_handler.write('{:7} {:6} {:6} {:6} {:6} {:6} {:6}\n'.format(atom.type, 0.0, atom.epsilon, atom.rmin, 0.0, atom.epsilon, atom.rmin))
+#             prm_file_handler.write('{:7} {:6} {:6} {:6} {:6} {:6} {:6}\n'.format(atom.type, 0.0, atom.epsilon, atom.rmin, 0.0, atom.epsilon, atom.rmin))
 
-        prm_file_handler.write('\n')
+#         prm_file_handler.write('\n')
         prm_file_handler.write('END')
 
         prm_file_handler.close()
@@ -405,8 +404,8 @@ dummy_parameters.prm
 
     def _init_intermediate_state_dir(self, nr):
         output_file_base = f"{self.path}/intst{nr}/" 
-        if os.path.isdir(output_file_base):
-            shutil.rmtree(output_file_base)
+        #if os.path.isdir(output_file_base):
+        #    shutil.rmtree(output_file_base)
 
         print(' - Created directory: - ' + str(output_file_base))
         os.makedirs(output_file_base)
