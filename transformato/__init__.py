@@ -7,6 +7,7 @@ Workflow to set up a relative free energy calculation of ligands with a common c
 from .utils import load_config_yaml
 from .system import SystemStructure
 from .state import IntermediateStateFactory
+from .mutate import ProposeMutationRoute
 
 # Handle versioneer
 from ._version import get_versions
