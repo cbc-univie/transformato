@@ -1,6 +1,7 @@
 import transformato
 import os
 import shutil
+from .utils import get_toppar_dir
 
 class IntermediateStateFactory(object):
 
@@ -148,7 +149,8 @@ class IntermediateStateFactory(object):
         f.close()
 
         # copy toppar folder
-        toppar_source = f"{basedir}/complex/toppar/"
+        toppar_dir = get_toppar_dir()
+        toppar_source = f"{toppar_dir}"
         toppar_target = f"{intermediate_state_file_path}/toppar" 
         shutil.copytree(toppar_source, toppar_target)
 
