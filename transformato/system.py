@@ -132,6 +132,13 @@ class SystemStructure(object):
         """
         assert(type(psf) == pm.charmm.CharmmPsfFile)
         psf.number_of_dummys = 0
+        psf.already_done_once = False
+
+        psf.cc_atoms = []
+        psf.cc_bonds = []
+        psf.cc_angles = []
+        psf.cc_torsions = []
+        psf.cc_improper = []
 
         idx_list = []
         for atom in psf.view[f":{self.tlc}"].atoms:
@@ -174,7 +181,7 @@ class SystemStructure(object):
             
         # check if psf and sdf have same indeces
         for a in mol.GetAtoms():
-            if str(psf[a.GetIdx()].name) == str(a.GetProp('atom_name')):
+            if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
                 pass
             else:
                 raise RuntimeError('PSF to mol conversion did not work! Aborting.')
@@ -198,11 +205,9 @@ class SystemStructure(object):
         atom_name_to_atom_type = dict()
         atom_idx_to_atom_partial_charge = dict()
 
-        list_idx = []
         for atom in psf.view[':' + str(self.tlc)].atoms:
             atom_name = atom.name
-            list_idx.append(atom.idx)
-            atom_index = atom.idx# - min(list_idx)
+            atom_index = atom.idx
             atom_type = atom.type
             atom_charge = atom.charge
 
