@@ -4,7 +4,7 @@ Transformato
 [![Travis Build Status](https://travis-ci.org/wiederm/transformato.png)](https://travis-ci.org/wiederm/transformato)
 [![codecov](https://codecov.io/gh/wiederm/transformato/branch/master/graph/badge.svg)](https://codecov.io/gh/wiederm/transformato/branch/master)
 
-Workflow to set up a staged equilibrium sampling for a relative free energy calculation of ligands with a common core scaffold. The package needs to be used with output from CHARMM-GUI (www.charmm-gui.org).
+Workflow to set up a staged equilibrium sampling protocol for relative free energy calculations of ligands with a common core scaffold. The package needs to be used with output from CHARMM-GUI (www.charmm-gui.org).
 
 ### How to use transformato for binding free energy calculations
 
