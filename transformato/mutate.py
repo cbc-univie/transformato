@@ -240,6 +240,9 @@ class BondedMutation(object):
         self.new_improper = []
 
         for cc1, cc2 in zip(self.cc1_idx, self.cc2_idx):
+            # did atom type change? if not continue
+            if psf[cc1+offset].type == self.cc2_psf[cc2].type:
+                continue
             atom_map_cc1_to_cc2[psf[cc1+offset].name] = self.cc2_psf[cc2].name
             psf.cc_atoms.append(psf[cc1+offset])
             self.new_atoms.append(self.cc2_psf[cc2])
@@ -256,7 +259,6 @@ class BondedMutation(object):
             cc1_a2 = cc1_bond.atom2.name
             if not all(elem in atom_map_cc1_to_cc2.keys() for elem in [cc1_a1, cc1_a2]):
                     continue
-
             # set real parameter
             cc1_bond.real_k = cc1_bond.type.k
             cc1_bond.real_req = cc1_bond.type.req
