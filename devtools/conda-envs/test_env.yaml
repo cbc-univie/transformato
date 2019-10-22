@@ -13,6 +13,7 @@ dependencies:
   - pymbar
   - rdkit
   - parmed
+  - pyyaml
 
     # Testing
   - pytest
