@@ -222,9 +222,6 @@ class BondedMutation(object):
         self.new_atoms = []
         self.new_bonds = []
         self.new_angles = []
-        self.new_torsions = []
-        self.new_improper = []
-
 
     def _initialize(self, psf, offset):
         """
@@ -278,6 +275,10 @@ class BondedMutation(object):
             print('Old bonds: {}'.format(len(psf.cc_bonds)))
             print('New bonds: {}'.format(len(self.new_bonds)))
             raise RuntimeError('Nr of bonds is different in the common cores.')
+        else:
+            print('Old bonds: {}'.format(len(psf.cc_bonds)))
+            print('New bonds: {}'.format(len(self.new_bonds)))
+
         
         ##########################################
         for cc1_angle in psf.angles:
@@ -290,6 +291,9 @@ class BondedMutation(object):
             # only angles in cc
             if not all(elem in atom_map_cc1_to_cc2.keys() for elem in [cc1_a1, cc1_a2, cc1_a3]):
                     continue
+            # set real parameter
+            cc1_angle.real_k = cc1_angle.type.k
+            cc1_angle.real_theteq = cc1_angle.type.theteq
 
             psf.cc_angles.append(cc1_angle)
 
@@ -305,8 +309,20 @@ class BondedMutation(object):
     
         if(len(psf.cc_angles) != len(self.new_angles)):
             raise RuntimeError('Nr of angles is different in the common cores.')
+        else:
+            print('Old angles: {}'.format(len(psf.cc_angles)))
+            print('New angles: {}'.format(len(self.new_angles)))
 
+        
         ##########################################
+        # torsions are treated differently
+        # here we add torsions from the 
+        # target topology to the starting topology and 
+        # turn the starting dihedrals off and the target 
+        # dihedrals on
+        new_torsions = []
+        new_torsions_type = []
+
         for cc1_torsion in psf.dihedrals:
             cc1_a1 = cc1_torsion.atom1.name
             cc1_a2 = cc1_torsion.atom2.name
@@ -318,8 +334,10 @@ class BondedMutation(object):
             # only torsions in cc
             if not all(elem in atom_map_cc1_to_cc2.keys() for elem in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]):
                 continue
-
-            psf.cc_torsions.append(cc1_torsion)
+            # set real parameter
+            for torsion_t in cc1_torsion.type:
+                torsion_t.real_phi_k = torsion_t.phi_k
+            cc1_torsion.dihedral_present_in = 'cc1'
 
             for cc2_torsion in self.cc2_psf.dihedrals:
                 cc2_a1 = cc2_torsion.atom1.name
@@ -328,26 +346,46 @@ class BondedMutation(object):
                 cc2_a4 = cc2_torsion.atom4.name
                 if not all(elem in atom_map_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
                     continue
+                
                 if sorted([atom_map_cc1_to_cc2[cc1_a1], atom_map_cc1_to_cc2[cc1_a2], atom_map_cc1_to_cc2[cc1_a3], atom_map_cc1_to_cc2[cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
-                    self.new_torsions.append(cc2_torsion)
+                    new_torsions.append(cc2_torsion)
+                    new_torsions_type.append(cc2_torsion.type)
 
-        if(len(psf.cc_torsions) != len(self.new_torsions)):
-            raise RuntimeError('Nr of torsions is different in the common cores: {} = {}.'.format(len(torsion_list_cc1), len(torsion_list_cc2)))
+        # append torstion and torsion type to psf
+        for tor, tor_type in zip(new_torsions, new_torsions_type):
+            new_tor = deepcopy(tor)
+            for torsion_t in new_tor.type:
+                # save the initial phi_k
+                torsion_t.real_phi_k = torsion_t.phi_k
+                # set the new torsions to zero
+                torsion_t.phi_k = 0.0
+
+            psf.dihedrals.append(new_tor)
+            psf.dihedrals[-1].dihedral_present_in = 'cc2'
+            psf.dihedral_types.append(deepcopy(tor_type))
 
         ##########################################
+        # impropers
+        new_improper = []
+        new_improper_type = []
+
         for cc1_torsion in psf.impropers:
             cc1_a1 = cc1_torsion.atom1.name
             cc1_a2 = cc1_torsion.atom2.name
             cc1_a3 = cc1_torsion.atom3.name
             cc1_a4 = cc1_torsion.atom4.name
-                # only torsions in ligand
+            # only torsions in ligand
             if not all(elem.residue.name == self.tlc.upper() for elem in [cc1_torsion.atom1, cc1_torsion.atom2, cc1_torsion.atom3, cc1_torsion.atom4]):
                 continue
             # only torsions in cc
             if not all(elem in atom_map_cc1_to_cc2.keys() for elem in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]):
                 continue
 
-            psf.cc_improper.append(cc1_torsion)
+            # set real parameter
+            for torsion_t in cc1_torsion.type:
+                torsion_t.real_phi_k = torsion_t.phi_k
+            cc1_torsion.improper_present_in = 'cc1'
+
 
             for cc2_torsion in self.cc2_psf.impropers:
                 cc2_a1 = cc2_torsion.atom1.name
@@ -356,7 +394,23 @@ class BondedMutation(object):
                 cc2_a4 = cc2_torsion.atom4.name
                 if not all(elem in atom_map_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
                     continue
-                psf.cc_improper.append(cc2_torsion)
+                
+                if sorted([atom_map_cc1_to_cc2[cc1_a1], atom_map_cc1_to_cc2[cc1_a2], atom_map_cc1_to_cc2[cc1_a3], atom_map_cc1_to_cc2[cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                    new_improper.append(cc2_torsion)
+                    new_improper_type.append(cc2_torsion.type)
+
+        # append torstion and torsion type to psf
+        for tor, tor_type in zip(new_improper, new_improper_type):
+            new_tor = deepcopy(tor)
+            for torsion_t in new_tor.type:
+                # save the initial psi_k
+                torsion_t.real_psi_k = torsion_t.psi_k
+                # set the new torsions to zero
+                torsion_t.psi_k = 0.0
+
+            psf.impropers.append(new_tor)
+            psf.impropers[-1].improper_present_in = 'cc2'
+            psf.improper_types.append(deepcopy(tor_type))
 
         
     def mutate(self, psf, offset, current_step:int):
@@ -365,7 +419,7 @@ class BondedMutation(object):
             self._initialize(psf, offset)
             psf.already_done_once = True
 
-        scale = current_step/(self.nr_of_steps - 1)
+        scale = current_step/(self.nr_of_steps -1)
         print('Bonded parameters scaled.')
         # scale atoms
         for old_atom, new_atom in zip(psf.cc_atoms, self.new_atoms):
@@ -380,19 +434,47 @@ class BondedMutation(object):
 
         # scale angles
         for old_angle, new_angle in zip(psf.cc_angles, self.new_angles):
-            old_angle.type.k      = (1.0 - scale) * old_angle.type.k      + scale * new_angle.type.k
-            old_angle.type.theteq = (1.0 - scale) * old_angle.type.theteq + scale * new_angle.type.theteq
+            old_angle.type.k      = (1.0 - scale) * old_angle.real_k      + scale * new_angle.type.k
+            old_angle.type.theteq = (1.0 - scale) * old_angle.real_theteq + scale * new_angle.type.theteq
 
         # scale torsions
-        # for old_torsion, new_torsion in zip(psf.cc_torsions, self.new_torsions):
-        #      if current_step < (self.nr_of_step/2):
-        #          for t in old_torsion:
-
-
+        for torsion in psf.dihedrals:
+            # test if one of the torsions that needs to change
+            if not hasattr(torsion, 'dihedral_present_in'):
+                continue
             
-        #     old_torsion.type.k      = (1.0 - scale) * old_torsion.type.k    + scale * new_torsion.type.k
-        #     old_torsion.type.theteq = (1.0 - scale) * old_angle.type.theteq + scale * new_torsion.type.theteq
+            # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+            if torsion.dihedral_present_in == 'cc1':
+                # scale the initial torsions down
+                for torsion_t in torsion.type:
+                    print(max(((1.0 - scale * 2)), 0.0))
+                    torsion_t.phi_k = torsion_t.real_phi_k * max(((1.0 - scale * 2)), 0.0)
+            # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+            elif torsion.dihedral_present_in == 'cc2':
+                # scale the new torsinos up
+                for torsion_t in torsion.type:
+                    print(max((scale -0.5) * 2, 0.0))
+                    torsion_t.phi_k = torsion_t.real_phi_k * max((scale -0.5) * 2, 0.0)
 
+
+        # scale torsions
+        for torsion in psf.impropers:
+            # test if one of the torsions that needs to change
+            if not hasattr(torsion, 'improper_present_in'):
+                continue
+            
+            # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+            if torsion.improper_present_in == 'cc1':
+                # scale the initial torsions down
+                for torsion_t in torsion.type:
+                    print(max(((1.0 - scale * 2)), 0.0))
+                    torsion_t.psi_k = torsion_t.real_psi_k * max(((1.0 - scale * 2)), 0.0)
+            # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+            elif torsion.improper_present_in == 'cc2':
+                # scale the new torsinos up
+                for torsion_t in torsion.type:
+                    print(max((scale -0.5) * 2, 0.0))
+                    torsion_t.psi_k = torsion_t.real_psi_k * max((scale -0.5) * 2, 0.0)
 
 
 
@@ -406,9 +488,6 @@ class BondedMutation(object):
             atom.real_type = atom.type
             atom.type = f"RRR{psf.number_of_dummys}"
             psf.number_of_dummys += 1
-
-
-
 
 
 class BaseMutation(object):

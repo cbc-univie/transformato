@@ -20,6 +20,7 @@ class IntermediateStateFactory(object):
             
             for m in self.mutation_list:
                 for current_step in range(0, m.nr_of_steps):
+                    print(current_step)
                     output_file_base = self._init_intermediate_state_dir(intst_nr)
                     print('#########################################')
                     print('#########################################')
