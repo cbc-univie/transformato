@@ -5,11 +5,11 @@ from .utils import get_toppar_dir
 
 class IntermediateStateFactory(object):
 
-    def __init__(self, system:transformato.system, mutation_list:list, conf:dict, output_path:str):
+    def __init__(self, system:transformato.system, mutation_list:list, conf:dict):
 
         self.system = system
         self.mutation_list = mutation_list
-        self.path = f"{output_path}/{self.system.name}"
+        self.path = f"{conf['analysis_dir_base']}/{self.system.name}"
         self._init_base_dir()
         self.conf = conf
 
