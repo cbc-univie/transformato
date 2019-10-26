@@ -204,9 +204,9 @@ class ProposeMutationRoute(object):
                 print('Will be decoupled: Idx:{} Elemeng:{}'.format(idx, atom.GetSymbol()))
         
         # scale all EL of all atoms to zero
-        mutations.append(ELtoZeroMutation(atoms_to_be_mutated, 10))
+        mutations.append(ELtoZeroMutation(atoms_to_be_mutated, 15))
         # start with mutation of VdW of hydrogens
-        mutations.append(LJtoZeroMutation(atoms_to_be_mutated, 10))
+        mutations.append(LJtoZeroMutation(atoms_to_be_mutated, 15))
  
         return mutations
 
@@ -337,8 +337,6 @@ class BondedMutation(object):
         # target topology to the starting topology and 
         # turn the starting dihedrals off and the target 
         # dihedrals on
-        new_torsions = []
-        new_torsions_type = []
 
         # get all torsions present in initial topology
         for cc1_torsion in psf.dihedrals:
@@ -352,43 +350,36 @@ class BondedMutation(object):
             # all atoms must be in the cc
             if not all(elem in atom_map_cc1_to_cc2.keys() for elem in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]):
                 continue
-            # set real parameter
+            # set identifier
+            cc1_torsion.gets_modified = True
+            cc1_torsion.type_cc2 = []
             for torsion_t in cc1_torsion.type:
                 torsion_t.real_phi_k = torsion_t.phi_k
-            cc1_torsion.dihedral_present_in = 'cc1'
 
-        # get all torsions in the new topology
-        for cc2_torsion in self.cc2_psf.dihedrals:
-            cc2_a1 = cc2_torsion.atom1.name
-            cc2_a2 = cc2_torsion.atom2.name
-            cc2_a3 = cc2_torsion.atom3.name
-            cc2_a4 = cc2_torsion.atom4.name
-            # only torsions in ligand
-            if not all(elem.residue.name == self.tlc_cc2.upper() for elem in [cc2_torsion.atom1, cc2_torsion.atom2, cc2_torsion.atom3, cc2_torsion.atom4]):
-                continue
-            if not all(elem in atom_map_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
-                continue
-            
-            new_torsions.append(cc2_torsion)
-            new_torsions_type.append(cc2_torsion.type)
+            # get corresponding torsion types in the new topology
+            found = False
+            for cc2_torsion in self.cc2_psf.dihedrals:
+                cc2_a1 = cc2_torsion.atom1.name
+                cc2_a2 = cc2_torsion.atom2.name
+                cc2_a3 = cc2_torsion.atom3.name
+                cc2_a4 = cc2_torsion.atom4.name
+                # only torsions in ligand
+                if not all(elem.residue.name == self.tlc_cc2.upper() for elem in [cc2_torsion.atom1, cc2_torsion.atom2, cc2_torsion.atom3, cc2_torsion.atom4]):
+                    continue
+                # only torsion in cc
+                if not all(elem in atom_map_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                    continue
 
-        # append torstion and torsion type to psf
-        for tor, tor_type in zip(new_torsions, new_torsions_type):
-            new_tor = deepcopy(tor)
-            for torsion_t in new_tor.type:
-                # save the initial phi_k
-                torsion_t.real_phi_k = torsion_t.phi_k
-                # set the new torsions to zero
-                torsion_t.phi_k = 0.0
-
-            psf.dihedrals.append(new_tor)
-            psf.dihedrals[-1].dihedral_present_in = 'cc2'
-            psf.dihedral_types.append(deepcopy(tor_type))
+                if sorted([atom_map_cc1_to_cc2[cc1_a1], atom_map_cc1_to_cc2[cc1_a2], atom_map_cc1_to_cc2[cc1_a3], atom_map_cc1_to_cc2[cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                    found = True
+                    for torsion_t in cc2_torsion.type:
+                        torsion_t.real_phi_k = torsion_t.phi_k
+                        cc1_torsion.type_cc2.append(torsion_t)
+            if found == False:
+                raise RuntimeError('Be careful - there is an unmatched torsion present.')
 
         ##########################################
         # impropers
-        new_improper = []
-        new_improper_type = []
 
         for cc1_torsion in psf.impropers:
             cc1_a1 = cc1_torsion.atom1.name
@@ -423,20 +414,20 @@ class BondedMutation(object):
             print('Found improper in cc2')
             print(cc2_torsion)
             
-            new_improper.append(cc2_torsion)
-            new_improper_type.append(cc2_torsion.type)
+        #     new_improper.append(cc2_torsion)
+        #     new_improper_type.append(cc2_torsion.type)
 
-        # append torstion and torsion type to psf
-        for tor, tor_type in zip(new_improper, new_improper_type):
-            new_tor = deepcopy(tor)
-            # save the initial psi_k
-            new_tor.real_psi_k = tor.type.psi_k
-            # set the new torsions to zero
-            new_tor.type.psi_k = 0.0
+        # # append torstion and torsion type to psf
+        # for tor, tor_type in zip(new_improper, new_improper_type):
+        #     new_tor = deepcopy(tor)
+        #     # save the initial psi_k
+        #     new_tor.real_psi_k = tor.type.psi_k
+        #     # set the new torsions to zero
+        #     new_tor.type.psi_k = 0.0
 
-            psf.impropers.append(new_tor)
-            psf.impropers[-1].improper_present_in = 'cc2'
-            psf.improper_types.append(deepcopy(tor_type))
+        #     psf.impropers.append(new_tor)
+        #     psf.impropers[-1].improper_present_in = 'cc2'
+        #     psf.improper_types.append(deepcopy(tor_type))
 
         
     def mutate(self, psf, offset, current_step:int):
@@ -464,37 +455,36 @@ class BondedMutation(object):
             old_angle.type.theteq = (1.0 - scale) * old_angle.real_theteq + scale * new_angle.type.theteq
 
         # scale torsions
+        print('#####################')
         for torsion in psf.dihedrals:
             # test if one of the torsions that needs to change
-            if not hasattr(torsion, 'dihedral_present_in'):
+            if not hasattr(torsion, 'gets_modified'):
                 continue
             
             # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-            if torsion.dihedral_present_in == 'cc1':
-                # scale the initial torsions down
+            if scale <= 0.5:
                 for torsion_t in torsion.type:
                     torsion_t.phi_k = torsion_t.real_phi_k * max(((1.0 - scale * 2)), 0.0)
+            else:
             # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-            elif torsion.dihedral_present_in == 'cc2':
-                # scale the new torsinos up
+                torsion.type = deepcopy(torsion.type_cc2)
                 for torsion_t in torsion.type:
                     torsion_t.phi_k = torsion_t.real_phi_k * max((scale -0.5) * 2, 0.0)
 
-
-        # scale torsions
-        for torsion in psf.impropers:
-            # test if one of the torsions that needs to change
-            if not hasattr(torsion, 'improper_present_in'):
-                continue
+        # # scale improper
+        # for torsion in psf.impropers:
+        #     # test if one of the torsions that needs to change
+        #     if not hasattr(torsion, 'improper_present_in'):
+        #         continue
             
-            # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-            if torsion.improper_present_in == 'cc1':
-                # scale the initial torsions down
-                torsion.type.psi_k = torsion.real_psi_k * max(((1.0 - scale * 2)), 0.0)
-            # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-            elif torsion.improper_present_in == 'cc2':
-                # scale the new torsinos up
-                torsion.type.psi_k = torsion.real_psi_k * max((scale -0.5) * 2, 0.0)
+        #     # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+        #     if torsion.improper_present_in == 'cc1':
+        #         # scale the initial torsions down
+        #         torsion.type.psi_k = torsion.real_psi_k * max(((1.0 - scale * 2)), 0.0)
+        #     # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+        #     elif torsion.improper_present_in == 'cc2':
+        #         # scale the new torsinos up
+        #         torsion.type.psi_k = torsion.real_psi_k * max((scale -0.5) * 2, 0.0)
 
 
 
