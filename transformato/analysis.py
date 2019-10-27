@@ -7,7 +7,8 @@ import mdtraj
 import numpy as np
 from pymbar import mbar
 from simtk.openmm.vec3 import Vec3
-
+import json
+from collections import defaultdict, namedtuple
 
 logger = logging.getLogger(__name__)
 
@@ -48,14 +49,14 @@ def return_reduced_potential(potential_energy:unit.Quantity, volume:unit.Quantit
 
 
 
-def calculate_energies(env, state, structure_name, current_state=0, conf=None):
+def calculate_energies(env:str, state:int, structure_name:str, current_state:int, conf:dict)->list:
     # with modifications taken from:
     # https://github.com/pandegroup/openmm/blob/master/docs-source/usersguide/application.rst#computing-energies
     
     def _energy_over_trajectory(simulation, pos, bxl):
-        a = Vec3(bxl.value_in_units_of(unit.nanometer), 0.0, 0.0)
-        b = Vec3(0.0, bxl.value_in_units_of(unit.nanometer), 0.0)
-        c = Vec3(0.0, 0.0, bxl.value_in_units_of(unit.nanometer))
+        a = Vec3(bxl.value_in_unit(unit.nanometer), 0.0, 0.0)
+        b = Vec3(0.0, bxl.value_in_unit(unit.nanometer), 0.0)
+        c = Vec3(0.0, 0.0, bxl.value_in_unit(unit.nanometer))
         simulation.context.setPeriodicBoxVectors(a,b,c)
         simulation.context.setPositions((pos))
         state = simulation.context.getState(getEnergy=True)
@@ -82,24 +83,71 @@ def calculate_energies(env, state, structure_name, current_state=0, conf=None):
 
 
     conf_sub = conf['system'][structure][env]
-    base = f"{conf['analysis_dir_base']}/{structure_name}/intst{current_state}/"
+    base = f"{conf['analysis_dir_base']}/{structure_name}/"
 
-    file_name = f"{base}/{conf_sub['intermediate-filename']}_system.xml"
+    file_name = f"{base}/intst{current_state}/{conf_sub['intermediate-filename']}_system.xml"
     system  = XmlSerializer.deserialize(open(file_name).read())
 
-    file_name = f"{base}/{conf_sub['intermediate-filename']}_integrator.xml"
+    file_name = f"{base}/intst{current_state}/{conf_sub['intermediate-filename']}_integrator.xml"
     integrator  = XmlSerializer.deserialize(open(file_name).read())
 
-    psf_file_path = f"{base}/{conf_sub['intermediate-filename']}.psf"
+    psf_file_path = f"{base}/intst{current_state}/{conf_sub['intermediate-filename']}.psf"
     psf = pm.charmm.CharmmPsfFile(psf_file_path)
 
     simulation = Simulation(psf.topology, system, integrator)
-    simulation.context.setState(XmlSerializer.deserialize(open(f"{base}/{conf_sub['intermediate-filename']}/.rst", 'r').read()))
+    simulation.context.setState(XmlSerializer.deserialize(open(f"{base}/{conf_sub['intermediate-filename']}.rst", 'r').read()))
     logger.info('#############')
     logger.info('- Energy evaluation with potential from lambda: {}'.format(str(current_state)))
 
-    traj_file_path = f"{base}/{conf_sub['intermediate-filename']}.dcd"
 
     logger.info('  - Looking at conformations from lambda: {}'.format(str(state)))
+    traj_file_path = f"{base}/intst{state}/{conf_sub['intermediate-filename']}.dcd"
+
     energy = _setup_calculation(psf_file_path, traj_file_path, simulation)
+
     return energy
+
+def _parse_files(conf:dict, structure:str, nr_of_states:int)->(dict,dict):
+
+    r_waterbox_state = defaultdict(dict)
+    r_complex_state = defaultdict(dict)
+    for i in range(1, nr_of_states+1):
+        for j in range(1, nr_of_states+1):
+            file_path = f"{conf['system_dir']}/results/energy_{structure}_{i}_{j}.json"
+            f = open(file_path, 'r')
+            r = json.load(f)
+            r_waterbox_state[i][j] = r['waterbox']
+            r_complex_state[i][j] = r['complex']
+            f.close()
+    return r_waterbox_state, r_complex_state, 
+
+def calculate_dG_to_common_core(conf:dict, structure:str, nr_of_states:int):
+
+    Results = namedtuple('Results', 'env, Deltaf_ij, dDeltaf_ij, Theta_ij')
+    r_waterbox_state, r_complex_state = _parse_files(conf, structure, nr_of_states)
+    Deltaf_ij, dDeltaf_ij, Theta_ij = _analyse_results_using_mbar(r_waterbox_state, nr_of_states)
+    r1 = Results(env='solv', Deltaf_ij=Deltaf_ij, dDeltaf_ij=dDeltaf_ij, Theta_ij=Theta_ij)
+    Deltaf_ij, dDeltaf_ij, Theta_ij = _analyse_results_using_mbar(r_complex_state, nr_of_states)
+    r2 = Results(env='complex', Deltaf_ij=Deltaf_ij, dDeltaf_ij=dDeltaf_ij, Theta_ij=Theta_ij)
+
+    return r1, r2
+
+def _analyse_results_using_mbar(results_dict:dict, nr_of_states:int):
+
+    nr_of_conformations_per_state = int(len(results_dict[1][1])) # => there is always a [0][0] entry
+    test = np.full(shape=nr_of_states, fill_value=nr_of_conformations_per_state)
+    u_kln = []
+    for u_for_traj in sorted(results_dict):
+        u_kn = []
+        for u_x in results_dict[u_for_traj]:
+            u_kn.extend((results_dict[u_for_traj][u_x]))
+        u_kln.append(u_kn)       
+
+    u_kln = np.asanyarray(u_kln)
+    print(u_kln.shape)
+    m = mbar.MBAR(u_kln, test)
+    Deltaf_ij, dDeltaf_ij, Theta_ij = m.getFreeEnergyDifferences()
+    return Deltaf_ij, dDeltaf_ij, Theta_ij
+
+
+
