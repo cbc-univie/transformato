@@ -7,7 +7,7 @@
 #$ -l gpu=1
 
 . /data/shared/software/python_env/anaconda3/etc/profile.d/conda.sh
-conda activate sai-binding
+conda activate transformato
 
 system=$1
 structure=$2
@@ -22,7 +22,7 @@ echo ${current_state}
 
 python  - ${system} ${structure} ${eval_state} ${current_state} <<END
 
-import sai
+import transformato
 from simtk.openmm import XmlSerializer
 from simtk.openmm.app import *
 import mdtraj
@@ -30,16 +30,17 @@ import json
 import sys
 import logging
 
-system = str(sys.argv[1])
-structure = str(sys.argv[2])
-eval_state = int(sys.argv[3])
-current_state = int(sys.argv[4])
+config_file = str(sys.argv[1])
+working_dir = str(sys.argv[2])
+structure = str(sys.argv[3])
+eval_state = int(sys.argv[4])
+current_state = int(sys.argv[5])
 print(system)
 print(structure)
 print(eval_state)
 print(current_state)
 
-conf = transformato.load_config_yaml(system)
+conf = transformato.load_config_yaml(config=config_file, input_dir='.', output_dir=working_dir)
 logging.info('State considered for energy calculations: {}'.format(eval_state))
 
 results_for_each_env = {}
