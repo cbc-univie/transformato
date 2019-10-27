@@ -8,6 +8,7 @@ from .utils import load_config_yaml
 from .system import SystemStructure
 from .state import IntermediateStateFactory
 from .mutate import ProposeMutationRoute
+from .analysis import calculate_energies
 
 # Handle versioneer
 from ._version import get_versions

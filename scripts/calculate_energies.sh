@@ -39,16 +39,16 @@ print(structure)
 print(eval_state)
 print(current_state)
 
-conf = sai.load_config_yaml(system)
+conf = transformato.load_config_yaml(system)
 logging.info('State considered for energy calculations: {}'.format(eval_state))
 
 results_for_each_env = {}
 for env in ['complex', 'waterbox']:
     print(env)
-    results_for_each_env[env] = sai.distribute_and_calculate_and_return_energies(env, eval_state, structure, current_state=current_state, conf=conf)
+    results_for_each_env[env] = transformato.calculate_energies(env, eval_state, structure, current_state=current_state, conf=conf)
 
 json_string = json.dumps(results_for_each_env)
-f = open(conf['system_dir'] + '/results/energy_' + str(structure) + '_' + str(current_state) + '_' + str(eval_state) + '.json', 'w+')
+f = open(f"{conf['system_dir']}/results/energy_{structure}_{current_state}_{eval_state}.json", 'w+')
 f.write(json_string)
 
 END

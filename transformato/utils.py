@@ -22,13 +22,12 @@ def load_config_yaml(config, data_dir, output_dir):
     settingsMap['bin_dir'] = get_bin_dir()
     settingsMap['analysis_dir_base'] = f"{output_dir}"
     settingsMap['data_dir_base'] = f"{data_dir}"
-    system_name = settingsMap['system']['structure1']['name'] + '-' + settingsMap['system']['structure2']['name']
-    #system_path = settingsMap['analysis_dir_base'] + '/' + system_name
-    #settingsMap['system_dir'] = system_path
-    settingsMap['cluster_dir'] = '/data/local/' + system_name
+    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}"
+    settingsMap['system_dir'] = f"{settingsMap['analysis_dir_base']}/{system_name}"
+    settingsMap['cluster_dir'] = f"/data/local/{system_name}"
 
-    settingsMap['system']['structure1']['charmm_gui_dir'] =  settingsMap['data_dir_base'] + '/' + settingsMap['system']['structure1']['name'] + '/'
-    settingsMap['system']['structure2']['charmm_gui_dir'] =  settingsMap['data_dir_base'] + '/' + settingsMap['system']['structure2']['name'] + '/'
+    settingsMap['system']['structure1']['charmm_gui_dir'] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure1']['name']}/"
+    settingsMap['system']['structure2']['charmm_gui_dir'] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure2']['name']}/"
     settingsMap['system']['name'] = system_name
     return settingsMap
 
