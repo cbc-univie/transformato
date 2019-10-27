@@ -214,6 +214,10 @@ class ProposeMutationRoute(object):
 class BondedMutation(object):
 
     def __init__(self, cc1_idx:list, cc2_idx:list, cc2_psf, nr_of_steps:int, tlc_cc1:str, tlc_cc2:str):
+        """
+        Scale the bonded parameters inside the common core AND (#NOTE) also scale the charges.
+        
+        """
         self.cc1_idx = cc1_idx
         self.cc2_idx = cc2_idx
         self.cc2_psf = cc2_psf #a copy of only the ligand!
@@ -438,11 +442,12 @@ class BondedMutation(object):
 
         scale = current_step/(self.nr_of_steps -1)
         print('Bonded parameters scaled.')
-        # scale atoms
+        # scale atoms + CHARGE
         for old_atom, new_atom in zip(psf.cc_atoms, self.new_atoms):
             self._modify_type(old_atom, psf)
             old_atom.epsilon = (1.0 - scale) * old_atom.real_epsilon + scale * new_atom.epsilon
             old_atom.sigma = (1.0 - scale) * old_atom.real_sigma + scale * new_atom.sigma
+            old_atom.charge = (1.0 - scale) * old_atom.real_charge + scale * new_atom.charge
 
         # scale bonds
         for old_bond, new_bond in zip(psf.cc_bonds, self.new_bonds):

@@ -48,7 +48,7 @@ class IntermediateStateFactory(object):
         crd_file_target = f"{intermediate_state_file_path}/lig_in_waterbox.crd"
         shutil.copyfile(crd_file_source , crd_file_target)
 
-        # copy crd files
+        # copy rst files
         # for complex
         rst_file_source = f"{basedir}/complex/openmm/{self.conf['system'][self.system.structure]['complex']['rst_file_name']}.rst"
         rst_file_target = f"{intermediate_state_file_path}/lig_in_complex.rst"
@@ -405,8 +405,6 @@ dummy_parameters.prm
 
     def _init_intermediate_state_dir(self, nr):
         output_file_base = f"{self.path}/intst{nr}/" 
-        #if os.path.isdir(output_file_base):
-        #    shutil.rmtree(output_file_base)
 
         print(' - Created directory: - ' + str(output_file_base))
         os.makedirs(output_file_base)
