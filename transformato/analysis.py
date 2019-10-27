@@ -78,7 +78,7 @@ def calculate_energies(env, state, structure_name, current_state=0, conf=None):
     elif conf['system']['structure2']['name'] == structure_name:
         structure = 'structure2'
     else:
-        raise RuntimeError()
+        raise RuntimeError(f"Could not finde structure entry for : {structure_name}")
 
 
     conf_sub = conf['system'][structure][env]
