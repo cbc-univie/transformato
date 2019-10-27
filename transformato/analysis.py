@@ -95,7 +95,7 @@ def calculate_energies(env:str, state:int, structure_name:str, current_state:int
     psf = pm.charmm.CharmmPsfFile(psf_file_path)
 
     simulation = Simulation(psf.topology, system, integrator)
-    simulation.context.setState(XmlSerializer.deserialize(open(f"{base}/{conf_sub['intermediate-filename']}.rst", 'r').read()))
+    simulation.context.setState(XmlSerializer.deserialize(open(f"{base}/intst{current_state}/{conf_sub['intermediate-filename']}.rst", 'r').read()))
     logger.info('#############')
     logger.info('- Energy evaluation with potential from lambda: {}'.format(str(current_state)))
 
