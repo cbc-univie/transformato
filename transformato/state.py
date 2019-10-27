@@ -133,19 +133,19 @@ class IntermediateStateFactory(object):
 
         f = open(omm_simulation_script_target, 'a')
         f.write(
-    '''
-    # mw: adding xml serializer to the simulation script
-    file_name = str(args.psffile).replace('.psf', '')
-    print(file_name)
-    serialized_integrator = XmlSerializer.serialize(integrator)
-    outfile = open(file_name + '_integrator.xml','w')
-    outfile.write(serialized_integrator)
-    outfile.close()
-    serialized_system = XmlSerializer.serialize(system)
-    outfile = open(file_name + '_system.xml','w')
-    outfile.write(serialized_system)
-    outfile.close()
-    '''
+'''
+# mw: adding xml serializer to the simulation script
+file_name = str(args.psffile).replace('.psf', '')
+print(file_name)
+serialized_integrator = XmlSerializer.serialize(integrator)
+outfile = open(file_name + '_integrator.xml','w')
+outfile.write(serialized_integrator)
+outfile.close()
+serialized_system = XmlSerializer.serialize(system)
+outfile = open(file_name + '_system.xml','w')
+outfile.write(serialized_system)
+outfile.close()
+'''
         )
         f.close()
 
