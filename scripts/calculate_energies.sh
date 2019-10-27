@@ -4,7 +4,7 @@
 #$ -j y
 #$ -p -500
 #$ -o /data/shared/projects/SGE_LOG/
-#$ -l gpu=1
+#$ -pe smp 3
 
 . /data/shared/software/python_env/anaconda3/etc/profile.d/conda.sh
 conda activate transformato
@@ -51,6 +51,7 @@ for env in ['complex', 'waterbox']:
     results_for_each_env[env] = transformato.calculate_energies(env, eval_state, structure, current_state=current_state, conf=conf)
 
 json_string = json.dumps(results_for_each_env)
+os.makedirs(f"{conf['system_dir']}/results/", exist_ok=True)
 f = open(f"{conf['system_dir']}/results/energy_{structure}_{current_state}_{eval_state}.json", 'w+')
 f.write(json_string)
 
