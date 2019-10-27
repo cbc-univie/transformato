@@ -11,7 +11,7 @@ conda activate transformato
 
 config_file=$1
 working_dir=$2
-structure=$4
+structure=$3
 eval_state=$4
 current_state=$5
 

@@ -82,7 +82,7 @@ def calculate_energies(env, state, structure_name, current_state=0, conf=None):
 
 
     conf_sub = conf['system'][structure][env]
-    base = f"{conf['system_dir']}/{structure_name}/intst{current_state}/"
+    base = f"{conf['analysis_dir_base']}/{structure_name}/intst{current_state}/"
 
     file_name = f"{base}/{conf_sub['intermediate-filename']}_system.xml"
     system  = XmlSerializer.deserialize(open(file_name).read())
