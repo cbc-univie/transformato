@@ -9,18 +9,20 @@
 . /data/shared/software/python_env/anaconda3/etc/profile.d/conda.sh
 conda activate transformato
 
-system=$1
-structure=$2
-eval_state=$3
-current_state=$4
+config_file=$1
+working_dir=$2
+structure=$4
+eval_state=$4
+current_state=$5
 
 hostname
-echo ${system}
+echo ${config_file}
+echo ${working_dir}
 echo ${structure}
 echo ${eval_state}
 echo ${current_state}
 
-python  - ${system} ${structure} ${eval_state} ${current_state} <<END
+python  - ${config_file} ${working_dir} ${structure} ${eval_state} ${current_state} <<END
 
 import transformato
 from simtk.openmm import XmlSerializer
