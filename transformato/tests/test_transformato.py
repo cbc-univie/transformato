@@ -17,22 +17,22 @@ def test_read_yaml():
 
     from transformato.utils import load_config_yaml
     settingsMap = load_config_yaml(config='config/2oj9-test.yaml',
-                       data_dir='.', output_dir='data/')
+                       input_dir='.', output_dir='data/')
 
     assert(settingsMap['system']['name'] == '2OJ9-2OJ9-mod')
 
 
 def test_initialize_systems():
     from transformato.utils import load_config_yaml
-    conf = load_config_yaml(config='config/2oj9-test.yaml',
-                       data_dir='data/', output_dir='.')
+    configuration = load_config_yaml(config='config/2oj9-test.yaml',
+                       input_dir='data/', output_dir='.')
     from transformato.system import SystemStructure
 
-    s1 = SystemStructure(conf, 'structure1')
+    s1 = SystemStructure(configuration, 'structure1')
     assert(int(s1.waterbox_offset) == 0)
     assert(int(s1.complex_offset) == 4811)
 
-    s2 = SystemStructure(conf, 'structure2')
+    s2 = SystemStructure(configuration, 'structure2')
     assert(int(s2.waterbox_offset) == 0)
     assert(int(s2.complex_offset) == 4692)
 
@@ -41,10 +41,10 @@ def test_initialize_systems():
 
 def test_proposed_mutation():
     from transformato import load_config_yaml, SystemStructure, ProposeMutationRoute
-    conf = load_config_yaml(config='config/2oj9-test.yaml',
-                       data_dir='data/', output_dir='.')
-    s1 = SystemStructure(conf, 'structure1')
-    s2 = SystemStructure(conf, 'structure2')
+    configuration = load_config_yaml(config='config/2oj9-test.yaml',
+                       input_dir='data/', output_dir='.')
+    s1 = SystemStructure(configuration, 'structure1')
+    s2 = SystemStructure(configuration, 'structure2')
 
     a = ProposeMutationRoute(s1, s2)
     cc1 = [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41, 44, 45, 46, 47, 48]
