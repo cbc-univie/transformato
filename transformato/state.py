@@ -5,18 +5,34 @@ from .utils import get_toppar_dir
 
 class IntermediateStateFactory(object):
 
-    def __init__(self, system:transformato.system, mutation_list:list, conf:dict):
+    def __init__(self, system:transformato.system, mutation_list:list, configuration:dict):
+        """
+        Generate the intermediate directories with for the provided systems with the provided mutations.
+        Parameters
+        ----------
+        system : transformato.system
+            definition of the two states for a given system (either waterbox and vacuum or waterbox and complex)
+        mutation_list : list
+            list of mutations defined by the transformato.ProposeMutationRoute object
+        configuration : dict
+            configuration dictionary
+        """
 
         self.system = system
         self.mutation_list = mutation_list
-        self.path = f"{conf['analysis_dir_base']}/{self.system.name}"
+        self.path = f"{configuration['analysis_dir_base']}/{self.system.name}"
         self._init_base_dir()
-        self.conf = conf
+        self.configuration = configuration
 
     def generate_intermediate_states(self, strategy='seperate'):
+        """
+        Generate the intermediate states as defined the the mutation list.
+        """
 
         intst_nr = 1
         if strategy == 'seperate':
+            # no mixing of the different mutation states - first electrostatics is turend off,
+            # then VdW and the the bonded terms are transformed 
             
             for m in self.mutation_list:
                 for current_step in range(0, m.nr_of_steps):
@@ -36,30 +52,32 @@ class IntermediateStateFactory(object):
 
 
     def _copy_files(self, intermediate_state_file_path):
-
+        """
+        Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
+        """
         # copy crd files
         basedir = self.system.charmm_gui_base
         # for complex
-        crd_file_source = f"{basedir}/complex/openmm/{self.conf['system'][self.system.structure]['complex']['crd_file_name']}.crd"
+        crd_file_source = f"{basedir}/complex/openmm/{self.configuration['system'][self.system.structure]['complex']['crd_file_name']}.crd"
         crd_file_target = f"{intermediate_state_file_path}/lig_in_complex.crd"
         shutil.copyfile(crd_file_source , crd_file_target)
         # for lig in water
-        crd_file_source = f"{basedir}/waterbox/openmm/{self.conf['system'][self.system.structure]['complex']['crd_file_name']}.crd"
+        crd_file_source = f"{basedir}/waterbox/openmm/{self.configuration['system'][self.system.structure]['complex']['crd_file_name']}.crd"
         crd_file_target = f"{intermediate_state_file_path}/lig_in_waterbox.crd"
         shutil.copyfile(crd_file_source , crd_file_target)
 
         # copy rst files
         # for complex
-        rst_file_source = f"{basedir}/complex/openmm/{self.conf['system'][self.system.structure]['complex']['rst_file_name']}.rst"
+        rst_file_source = f"{basedir}/complex/openmm/{self.configuration['system'][self.system.structure]['complex']['rst_file_name']}.rst"
         rst_file_target = f"{intermediate_state_file_path}/lig_in_complex.rst"
         shutil.copyfile(rst_file_source , rst_file_target)
         # for lig in water
-        rst_file_source = f"{basedir}/waterbox/openmm/{self.conf['system'][self.system.structure]['waterbox']['rst_file_name']}.rst"
+        rst_file_source = f"{basedir}/waterbox/openmm/{self.configuration['system'][self.system.structure]['waterbox']['rst_file_name']}.rst"
         rst_file_target = f"{intermediate_state_file_path}/lig_in_waterbox.rst"
         shutil.copyfile(rst_file_source , rst_file_target)
 
 
-
+        # copy diverse set of helper functions
         omm_barostat_source = f"{basedir}/complex/openmm/omm_barostat.py"
         omm_barostat_target = f"{intermediate_state_file_path}/omm_barostat.py"
         shutil.copyfile(omm_barostat_source, omm_barostat_target)
@@ -87,8 +105,8 @@ class IntermediateStateFactory(object):
 
         # parse omm simulation paramter
         # for complex
-        omm_simulation_parameter_source = f"{basedir}/complex/openmm/{self.conf['system'][self.system.structure]['complex']['simulation_parameter']}" 
-        omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.conf['system'][self.system.structure]['complex']['intermediate-filename']}"
+        omm_simulation_parameter_source = f"{basedir}/complex/openmm/{self.configuration['system'][self.system.structure]['complex']['simulation_parameter']}" 
+        omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure]['complex']['intermediate-filename']}"
         input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
         output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
         
@@ -100,14 +118,14 @@ class IntermediateStateFactory(object):
                 t2 = t2.strip()
                 comment = comment.strip()
                 if t1 == 'nstep':
-                    t2 = self.conf['simulation']['nsteps']
+                    t2 = self.configuration['simulation']['nsteps']
                 output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
             else:
                 output_simulation_parameter.write('\n')
         
         # for lig in water
-        omm_simulation_parameter_source = f"{basedir}/waterbox/openmm/{self.conf['system'][self.system.structure]['waterbox']['simulation_parameter']}" 
-        omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.conf['system'][self.system.structure]['waterbox']['intermediate-filename']}"
+        omm_simulation_parameter_source = f"{basedir}/waterbox/openmm/{self.configuration['system'][self.system.structure]['waterbox']['simulation_parameter']}" 
+        omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure]['waterbox']['intermediate-filename']}"
         input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
         output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
         
@@ -119,7 +137,7 @@ class IntermediateStateFactory(object):
                 t2 = t2.strip()
                 comment = comment.strip()
                 if t1 == 'nstep':
-                    t2 = self.conf['simulation']['nsteps']
+                    t2 = self.configuration['simulation']['nsteps']
                 output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
             else:
                 output_simulation_parameter.write('\n')
@@ -130,7 +148,7 @@ class IntermediateStateFactory(object):
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
 
-
+        # adding serializer functions
         f = open(omm_simulation_script_target, 'a')
         f.write(
 '''
@@ -166,16 +184,19 @@ outfile.close()
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm" 
         shutil.copyfile(ligand_prm, toppar_target)
 
-        omm_simulation_submit_script_source = f"{self.conf['bin_dir']}/simulation.sh"
+        omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation.sh"
         omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
         shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)  
     
     
     
     def _write_rtf_file(self, psf, output_file_base, tlc):
+        """
+        Generates the dummy atom parameter rtf.
+        """
 
         header_rtf = '''* Dummy atom parameters 
-* test
+* generated by transformato
 *
 36  1
 '''
@@ -201,7 +222,7 @@ outfile.close()
 * CHARMM General Force Field (CGenFF) program version 1.0.0
 *
 ! Automatically obtained dummy parameters 
-! some url
+! from transformato
 '''
 
         prm_file_handler = open(output_file_base + '/dummy_parameters.prm', 'w')
@@ -222,14 +243,11 @@ outfile.close()
             if hasattr(atom, 'real_type'):
                 if atom.type in atom_set:
                     continue
-
                 atom_set.add(atom.type)
-
                 print('- Setting dummy parameters ...')
                 print('  + Atom-Name: ', atom.name)
                 print('  + Atom-Type: ', atom.real_type)
                 print('  + Atom Dummy Type: ', atom.type)
-
                 prm_file_handler.write('{:7} {:6} {:6} {:9.5f}\n'.format('MASS', '-1', atom.type, atom.mass))
             
         prm_file_handler.write('\n\n')
@@ -246,10 +264,8 @@ outfile.close()
                 s = frozenset([atom1.type, atom2.type])
             else:
                 continue
-
             if s in bond_set:
                 continue
-                
             bond_set.add(s)
             #logger.info(' >> Setting dummy bond parameters for: {} - {}'.format(str(atom1.type),str(atom2.type)))
             prm_file_handler.write('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
@@ -264,10 +280,8 @@ outfile.close()
                 s = frozenset([atom1.type, atom2.type, atom3.type])
             else:
                 continue
-            
             if s in angle_set:
                 continue
-            
             angle_set.add(s)
 
             #print(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
@@ -283,10 +297,8 @@ outfile.close()
                 s = frozenset([atom1.type, atom2.type, atom3.type, atom4.type])
             else:
                 continue
-
             if s in dihedral_set:
                 continue
-            
             dihedral_set.add(s)
 
             #print(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
@@ -322,21 +334,21 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5''')
         for atom in view.atoms:
             if not hasattr(atom, 'real_type'):
                 continue
-
             if atom.type in nb_set:
                 continue
-
             nb_set.add(atom.type)
             prm_file_handler.write('{:7} {:6} {:9.5f} {:9.5f}\n'.format(atom.type, 0.0, atom.epsilon, atom.rmin))
 
         prm_file_handler.write('\n')
         prm_file_handler.write('END')
-
         prm_file_handler.close()
 
 
 
     def _init_base_dir(self):
+        """
+        Generates the base directory which all intermediate states are located.
+        """
        
         if os.path.isdir(self.path):
             shutil.rmtree(self.path)
@@ -396,14 +408,20 @@ dummy_parameters.prm
         f.close()
 
 
-    def _write_psf(self, psf, output_file_base, env):
+    def _write_psf(self, psf, output_file_base:str, env:str):
+        """
+        Writes the new psf.
+        """
            
-            psf.write_psf(f"{output_file_base}/lig_in_{env}.psf")
-            psf.write_pdb(f"{output_file_base}/lig_in_{env}.pdb")
+        psf.write_psf(f"{output_file_base}/lig_in_{env}.psf")
+        psf.write_pdb(f"{output_file_base}/lig_in_{env}.pdb")
                     
 
 
-    def _init_intermediate_state_dir(self, nr):
+    def _init_intermediate_state_dir(self, nr:int):
+        """
+        Generates the intermediate state directory.
+        """
         output_file_base = f"{self.path}/intst{nr}/" 
 
         print(' - Created directory: - ' + str(output_file_base))

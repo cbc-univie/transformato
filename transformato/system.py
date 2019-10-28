@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 class SystemStructure(object):
 
-    def __init__(self, conf:dict, structure:str):
+    def __init__(self, configuration:dict, structure:str):
         """
         A class that contains all informations for a single small ligand in different environments.
         Everything is constructed automatically from the charmm-gui folder.
         Parameters
         ----------
-        conf: dict
+        configuration: dict
             the configuration dictionary obtained with utils.load_config_yaml
         structure: str
             either 'structure1' or 'structure2'
@@ -26,24 +26,24 @@ class SystemStructure(object):
 
 
         self.structure:str = structure
-        self.name:str = conf['system'][structure]['name']
-        self.tlc:str = conf['system'][structure]['tlc']
-        self.charmm_gui_base:str = conf['system'][structure]['charmm_gui_dir']
+        self.name:str = configuration['system'][structure]['name']
+        self.tlc:str = configuration['system'][structure]['tlc']
+        self.charmm_gui_base:str = configuration['system'][structure]['charmm_gui_dir']
 
         # running a binding-free energy calculation? 
-        if conf['simulation']['free-energy-type'] == 'binding-free-energy':
+        if configuration['simulation']['free-energy-type'] == 'binding-free-energy':
             self.envs:list = ['complex', 'waterbox']
-            self.parameter:pm.charmm.CharmmParameterSet = self._read_parameters(conf, 'complex')
+            self.parameter:pm.charmm.CharmmParameterSet = self._read_parameters(configuration, 'complex')
 
             # set up complex objects
-            self.complex_psf:pm.charmm.CharmmPsfFile = self._initialize_system(conf, 'complex')
+            self.complex_psf:pm.charmm.CharmmPsfFile = self._initialize_system(configuration, 'complex')
             # load parameters
             self.complex_psf.load_parameters(self.parameter)
             # get offset
             self.complex_offset:int = self._determine_offset_and_set_possible_dummy_properties(self.complex_psf)
             
             # set up waterbox objects
-            self.waterbox_psf:pm.charmm.CharmmPsfFile = self._initialize_system(conf, 'waterbox')
+            self.waterbox_psf:pm.charmm.CharmmPsfFile = self._initialize_system(configuration, 'waterbox')
             # load parameters
             self.waterbox_psf.load_parameters(self.parameter)
             # get offset
@@ -55,15 +55,15 @@ class SystemStructure(object):
         else:
             raise NotImplementedError('solvation free energy not finished yet.')
             self.envs = ['waterbox', 'vacuum']
-            self.parameter = self._read_parameters(conf, 'waterbox')
+            self.parameter = self._read_parameters(configuration, 'waterbox')
 
 
-    def _read_parameters(self, conf:dict, env:str)->pm.charmm.CharmmParameterSet:
+    def _read_parameters(self, configuration:dict, env:str)->pm.charmm.CharmmParameterSet:
         """
         Reads in topparameters from a toppar dir and ligand specific parameters.
         Parameters
         ----------
-        conf: dict
+        configuration: dict
             the configuration dictionary obtained with utils.load_config_yaml
         env: str
             waterbox,complex or vacuum
@@ -93,12 +93,12 @@ class SystemStructure(object):
         parameter = pm.charmm.CharmmParameterSet(*parameter_files)
         return parameter
 
-    def _initialize_system(self, conf:dict, env:str)->pm.charmm.CharmmPsfFile:
+    def _initialize_system(self, configuration:dict, env:str)->pm.charmm.CharmmPsfFile:
         """
         Generates the psf file and sets the coordinates from the CHARMM-GUI files.
         Parameters
         ----------
-        conf: dict
+        configuration: dict
             the configuration dictionary obtained with utils.load_config_yaml
         env: str
             waterbox,complex or vacuum
@@ -107,8 +107,8 @@ class SystemStructure(object):
         psf : pm.charmm.CharmmPsfFile
         """
         
-        psf_file_name = conf['system'][self.structure][env]['psf_file_name']
-        crd_file_name = conf['system'][self.structure][env]['crd_file_name']
+        psf_file_name = configuration['system'][self.structure][env]['psf_file_name']
+        crd_file_name = configuration['system'][self.structure][env]['crd_file_name']
 
         psf_file_path = f"{self.charmm_gui_base}/{env}/openmm/{psf_file_name}.psf"
         crd_file_path = f"{self.charmm_gui_base}/{env}/openmm/{crd_file_name}.crd"

@@ -12,47 +12,47 @@ conda activate transformato
 config_file=$1
 working_dir=$2
 structure=$3
-eval_state=$4
+conformations=$4
 current_state=$5
 
 hostname
 echo ${config_file}
 echo ${working_dir}
 echo ${structure}
-echo ${eval_state}
+echo ${conformations}
 echo ${current_state}
 
-python  - ${config_file} ${working_dir} ${structure} ${eval_state} ${current_state} <<END
+python  - ${config_file} ${working_dir} ${structure} ${conformations} ${current_state} <<END
 
 import transformato
 from simtk.openmm import XmlSerializer
 from simtk.openmm.app import *
 import mdtraj
 import json
-import sys
+import sys, os
 import logging
 
 config_file = str(sys.argv[1])
 working_dir = str(sys.argv[2])
 structure = str(sys.argv[3])
-eval_state = int(sys.argv[4])
-current_state = int(sys.argv[5])
+conformations = int(sys.argv[4])
+potential = int(sys.argv[5])
 print(config_file)
 print(structure)
-print(eval_state)
-print(current_state)
+print(conformations)
+print(potential)
 
-conf = transformato.load_config_yaml(config=config_file, input_dir='.', output_dir=working_dir)
-logging.info('State considered for energy calculations: {}'.format(eval_state))
+configuration = transformato.load_config_yaml(config=config_file, input_dir='.', output_dir=working_dir)
+logging.info('Conformations at state {} are evaluated.'.format(conformations))
 
 results_for_each_env = {}
 for env in ['complex', 'waterbox']:
     print(env)
-    results_for_each_env[env] = transformato.calculate_energies(env, eval_state, structure, current_state=current_state, conf=conf)
+    results_for_each_env[env] = transformato.calculate_energies(env=env, potential=potential, conformations=conformations, structure=structure, , configuration=configuration)
 
 json_string = json.dumps(results_for_each_env)
-os.makedirs(f"{conf['system_dir']}/results/", exist_ok=True)
-f = open(f"{conf['system_dir']}/results/energy_{structure}_{current_state}_{eval_state}.json", 'w+')
+os.makedirs(f"{configuration['system_dir']}/results/", exist_ok=True)
+f = open(f"{configuration['system_dir']}/results/energy_{structure}_{potential}_{conformations}.json", 'w+')
 f.write(json_string)
 
 END
