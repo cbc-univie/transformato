@@ -168,7 +168,7 @@ class ProposeMutationRoute(object):
         Generates the mutation route to the common fore for mol1.
         """
         m = self._mutate_to_common_core('m1', self.get_common_core_idx_mol1())
-        t = [self._transform_common_core()]
+        t = self._transform_common_core()
 
         return m + t
 
@@ -183,8 +183,23 @@ class ProposeMutationRoute(object):
 
     def _transform_common_core(self):
         
-        m = BondedMutation(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 10, self.s1_tlc, self.s2_tlc)
-        return m
+        transformations = []
+        # transform charges from cc1 to cc2
+        t1 = TransformChargesToTargetCharge(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 2 )
+        transformations.append(t1)
+        # test if bonded mutations are necessary
+        bonded_mutations_necessary = False
+        for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.generate_mutations_to_common_core_for_mol2()):
+            # did atom type change? if not don't add BondedMutations           
+            if self.psfs['m1'][f":{self.s1_tlc}"][cc1].type != self.psfs['m2'][f":{self.s2_tlc}"][cc2].type:
+                bonded_mutations_necessary == True
+
+        if bonded_mutations_necessary:
+            # ugh
+            t2 = BondedMutation(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 10, self.s1_tlc, self.s2_tlc)
+            transformations.append(t2)
+
+        return transformations
 
 
     def _mutate_to_common_core(self, name:str, cc_idx:list)->list:
@@ -436,9 +451,9 @@ class BondedMutation(object):
         
     def mutate(self, psf, offset, current_step:int):
 
-        if psf.already_done_once == False:         
+        if psf.already_initialized == False:         
             self._initialize(psf, offset)
-            psf.already_done_once = True
+            psf.already_initialized = True
 
         scale = current_step/(self.nr_of_steps -1)
         print('Bonded parameters scaled.')
@@ -447,7 +462,6 @@ class BondedMutation(object):
             self._modify_type(old_atom, psf)
             old_atom.epsilon = (1.0 - scale) * old_atom.real_epsilon + scale * new_atom.epsilon
             old_atom.sigma = (1.0 - scale) * old_atom.real_sigma + scale * new_atom.sigma
-            old_atom.charge = (1.0 - scale) * old_atom.real_charge + scale * new_atom.charge
 
         # scale bonds
         for old_bond, new_bond in zip(psf.cc_bonds, self.new_bonds):
@@ -558,6 +572,25 @@ class ELtoZeroMutation(ELMutation):
             multiplicator = 1 - (current_step / (self.nr_of_steps -1))
             charge = round(atom.real_charge * multiplicator , 5)
             self._scale_charge(atom, charge)
+
+
+class TransformChargesToTargetCharge(ELMutation):
+
+    def __init__(self, atom_idx:list, target_idx:list, target_psf, nr_of_steps:int):
+        super().__init__(atom_idx, nr_of_steps)
+        self.target_psf = target_psf
+        self.target_idx = target_idx
+
+    def mutate(self, psf, offset:int, current_step:int):
+        print('Mutate charge from cc1 to cc2')
+        scale = current_step/(self.nr_of_steps -1)
+
+        for idx, target_idx in zip(self.atom_idx, self.target_idx):
+            atom = psf[idx + offset]
+            target_atom = self.target_psf[target_idx]
+            charge = (1.0 - scale) * atom.real_charge + scale * target_atom.charge
+            self._scale_charge(atom, charge)
+
 
 
 class LJtoZeroMutation(LJMutation):
