@@ -57,24 +57,29 @@ class IntermediateStateFactory(object):
         """
         # copy crd files
         basedir = self.system.charmm_gui_base
-        # for complex
-        crd_file_source = f"{basedir}/complex/openmm/{self.configuration['system'][self.system.structure]['complex']['crd_file_name']}.crd"
-        crd_file_target = f"{intermediate_state_file_path}/lig_in_complex.crd"
-        shutil.copyfile(crd_file_source , crd_file_target)
-        # for lig in water
-        crd_file_source = f"{basedir}/waterbox/openmm/{self.configuration['system'][self.system.structure]['complex']['crd_file_name']}.crd"
-        crd_file_target = f"{intermediate_state_file_path}/lig_in_waterbox.crd"
-        shutil.copyfile(crd_file_source , crd_file_target)
+        for env in ['waterbox', 'complex']:
+            crd_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.crd"
+            crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
+            shutil.copyfile(crd_file_source , crd_file_target)
+
 
         # copy rst files
-        # for complex
-        rst_file_source = f"{basedir}/complex/openmm/{self.configuration['system'][self.system.structure]['complex']['rst_file_name']}.rst"
-        rst_file_target = f"{intermediate_state_file_path}/lig_in_complex.rst"
-        shutil.copyfile(rst_file_source , rst_file_target)
-        # for lig in water
-        rst_file_source = f"{basedir}/waterbox/openmm/{self.configuration['system'][self.system.structure]['waterbox']['rst_file_name']}.rst"
-        rst_file_target = f"{intermediate_state_file_path}/lig_in_waterbox.rst"
-        shutil.copyfile(rst_file_source , rst_file_target)
+        for env in ['waterbox', 'complex']:
+            rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
+            rst_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
+            shutil.copyfile(rst_file_source , rst_file_target)
+
+
+        # copy ligand rtf file
+        ligand_rtf = f"{basedir}/complex/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
+        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}_g.rtf" 
+        shutil.copyfile(ligand_rtf, toppar_target)
+
+        # copy ligand prm file
+        ligand_prm = f"{basedir}/complex/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
+        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm" 
+        shutil.copyfile(ligand_prm, toppar_target)
+
 
 
         # copy diverse set of helper functions
@@ -104,43 +109,26 @@ class IntermediateStateFactory(object):
 
 
         # parse omm simulation paramter
-        # for complex
-        omm_simulation_parameter_source = f"{basedir}/complex/openmm/{self.configuration['system'][self.system.structure]['complex']['simulation_parameter']}" 
-        omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure]['complex']['intermediate-filename']}"
-        input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
-        output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
+        for env in ['waterbox', 'complex']:
+            omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}" 
+            omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
+            input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
+            output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
         
-        for l in input_simulation_parameter.readlines():
-            if l.strip():
-                t1, t2 = l.split('=')
-                t1 = t1.strip()
-                t2, comment = t2.split('#')
-                t2 = t2.strip()
-                comment = comment.strip()
-                if t1 == 'nstep':
-                    t2 = self.configuration['simulation']['nsteps']
-                output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
-            else:
-                output_simulation_parameter.write('\n')
-        
-        # for lig in water
-        omm_simulation_parameter_source = f"{basedir}/waterbox/openmm/{self.configuration['system'][self.system.structure]['waterbox']['simulation_parameter']}" 
-        omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure]['waterbox']['intermediate-filename']}"
-        input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
-        output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
-        
-        for l in input_simulation_parameter.readlines():
-            if l.strip():
-                t1, t2 = l.split('=')
-                t1 = t1.strip()
-                t2, comment = t2.split('#')
-                t2 = t2.strip()
-                comment = comment.strip()
-                if t1 == 'nstep':
-                    t2 = self.configuration['simulation']['nsteps']
-                output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
-            else:
-                output_simulation_parameter.write('\n')
+            for l in input_simulation_parameter.readlines():
+                if l.strip():
+                    t1, t2 = l.split('=')
+                    t1 = t1.strip()
+                    t2, comment = t2.split('#')
+                    t2 = t2.strip()
+                    comment = comment.strip()
+                    if t1 == 'nstep':
+                        t2 = self.configuration['simulation']['nsteps']
+                    output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
+                else:
+                    output_simulation_parameter.write('\n')
+            input_simulation_parameter.close()
+            output_simulation_parameter.close()
 
 
         # copy omm simulation script
@@ -173,24 +161,13 @@ outfile.close()
         toppar_target = f"{intermediate_state_file_path}/toppar" 
         shutil.copytree(toppar_source, toppar_target)
 
-
-        # copy ligand rtf file
-        ligand_rtf = f"{basedir}/complex/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
-        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}_g.rtf" 
-        shutil.copyfile(ligand_rtf, toppar_target)
-
-        # copy ligand prm file
-        ligand_prm = f"{basedir}/complex/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
-        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm" 
-        shutil.copyfile(ligand_prm, toppar_target)
-
         omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation.sh"
         omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
         shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)  
     
     
     
-    def _write_rtf_file(self, psf, output_file_base, tlc):
+    def _write_rtf_file(self, psf, output_file_base, tlc): # NOTE: thisneeds some refactoring!
         """
         Generates the dummy atom parameter rtf.
         """
