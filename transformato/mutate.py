@@ -167,22 +167,27 @@ class ProposeMutationRoute(object):
         return(svg)
 
 
-    def generate_mutations_to_common_core_for_mol1(self)->list:
+    def generate_mutations_to_common_core_for_mol1(self, nr_of_steps_for_el:int, nr_of_steps_for_bonded_parameters:int)->list:
         """
         Generates the mutation route to the common fore for mol1.
+        Parameters
+        ----------
+        nr_of_steps_for_el : int
+            nr of steps used for linearly scaling the charges to zero
+        nr_of_steps_for_bonded_parameters : int
         Returns
         ----------
         mutations: list
             list of mutations
 
         """
-        m = self._mutate_to_common_core('m1', self.get_common_core_idx_mol1())
-        t = self._transform_common_core()
+        m = self._mutate_to_common_core('m1', self.get_common_core_idx_mol1(), nr_of_steps_for_el)
+        t = self._transform_common_core(nr_of_steps_for_bonded_parameters)
 
         return m + t
 
 
-    def generate_mutations_to_common_core_for_mol2(self)->list:
+    def generate_mutations_to_common_core_for_mol2(self, nr_of_steps_for_el:int)->list:
         """
         Generates the mutation route to the common fore for mol2.
         Returns
@@ -191,21 +196,15 @@ class ProposeMutationRoute(object):
             list of mutations        
         """
 
-        m = self._mutate_to_common_core('m2', self.get_common_core_idx_mol2())
+        m = self._mutate_to_common_core('m2', self.get_common_core_idx_mol2(), nr_of_steps_for_el)
         return m
 
-    def _transform_common_core(self)->list:
+    def _transform_common_core(self, nr_of_steps_for_bonded_parameters:int)->list:
         """
         Common Core 1 is transformed to Common core 2. Bonded parameters and charges are adjusted. 
         """
         
         transformations = []
-        
-        # transform charges from cc1 to cc2
-        logger.info('Transforming charge distribution from cc1 to cc2 in hardcoded 2 steps.')
-        t1 = TransformChargesToTargetCharge(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 2 )
-        transformations.append(t1)
-
         # test if bonded mutations are necessary
         bonded_mutations_necessary = False
         for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
@@ -226,13 +225,18 @@ class ProposeMutationRoute(object):
         if bonded_mutations_necessary:
             logger.info('Bonded parameters need to be transformed for the cc1 topology.')
             # ugh
-            t2 = BondedMutation(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 10, self.s1_tlc, self.s2_tlc)
+            t2 = BondedMutation(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], nr_of_steps_for_bonded_parameters, self.s1_tlc, self.s2_tlc)
             transformations.append(t2)
+        
+        # transform charges from cc1 to cc2
+        logger.info('Transforming charge distribution from cc1 to cc2 in hardcoded 2 steps.')
+        t1 = TransformChargesToTargetCharge(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 2 )
+        transformations.append(t1)
 
         return transformations
 
 
-    def _mutate_to_common_core(self, name:str, cc_idx:list)->list:
+    def _mutate_to_common_core(self, name:str, cc_idx:list, nr_of_steps_for_el:int)->list:
         """
         Helper function - do not call directly.
         Generates the mutation route to the common fore for mol2.
@@ -240,18 +244,27 @@ class ProposeMutationRoute(object):
 
         mol = self.mols[name]
         # first LJ and electrostatic is scaled
+        hydrogens = []
         mutations = []
         atoms_to_be_mutated = []
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             if idx not in cc_idx:
+                if atom.GetSymbol() == 'H':
+                    hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
-                logger.info('Will be decoupled: Idx:{} Elemeng:{}'.format(idx, atom.GetSymbol()))
+                logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
         
         # scale all EL of all atoms to zero
-        mutations.append(ELtoZeroMutation(atoms_to_be_mutated, 15))
-        # start with mutation of VdW of hydrogens
-        mutations.append(LJtoZeroMutation(atoms_to_be_mutated, 15))
+        mutations.append(ELtoZeroMutation(atoms_to_be_mutated, nr_of_steps_for_el))
+        
+        # scale LJ
+        # start with mutation of LJ of hydrogens
+        mutations.append(LJtoZeroMutation(hydrogens))
+        for idx in atoms_to_be_mutated:
+            if idx not in hydrogens:
+                mutations.append(LJtoZeroMutation([idx]))
+
  
         return mutations
 
@@ -670,17 +683,15 @@ class TransformChargesToTargetCharge(ELMutation):
 
 class LJtoZeroMutation(LJMutation):
 
-    def __init__(self, atom_idx:list, nr_of_steps:int):
+    def __init__(self, atom_idx:list):
         """
-        Scale the VdW terms of atoms specified in the atom_idx list to zero.
+        Set the VdW terms of atoms specified in the atom_idx list to zero.
         Parameters
         ----------
         atom_list : list
             atoms for which charges are scaled to zero
-        mr_of_steps : int
-            determines the scaling factor : multiplicator = 1 - (current_step / (nr_of_steps))
         """
-        super().__init__(atom_idx, nr_of_steps)
+        super().__init__(atom_idx, 1)
     
     def mutate(self, psf, offset:int, current_step:int):
         logger.info('VdW to zero mutation')
