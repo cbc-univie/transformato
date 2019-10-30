@@ -217,8 +217,8 @@ class ProposeMutationRoute(object):
                 logger.info('###########')
                 logger.info('Atom that needs to be transformed: {}.'.format(atom1))
                 logger.info('Atom type of atom in cc1: {}.'.format(atom1.type))
-                logger.info('Template atom: {}.'.format(atom1))
-                logger.info('Atom type of atom in cc2: {}.'.format(atom1.type))
+                logger.info('Template atom: {}.'.format(atom2))
+                logger.info('Atom type of atom in cc2: {}.'.format(atom2.type))
 
                 bonded_mutations_necessary = True
         
