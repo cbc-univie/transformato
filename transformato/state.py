@@ -2,6 +2,10 @@ import transformato
 import os
 import shutil
 from .utils import get_toppar_dir
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class IntermediateStateFactory(object):
 
@@ -24,6 +28,22 @@ class IntermediateStateFactory(object):
         self._init_base_dir()
         self.configuration = configuration
 
+    def generate_specific_intermediate_state(self, mutation, state:int):
+
+        output_file_base = self._init_intermediate_state_dir(state)
+        logger.info('Writing to {}'.format(output_file_base))
+        logger.info('#########################################')
+        for psf, offset, env in zip([self.system.complex_psf, self.system.waterbox_psf], [self.system.complex_offset, self.system.waterbox_offset], ['complex', 'waterbox']):
+            mutation.mutate(psf, offset, state)
+            self._write_psf(psf, output_file_base, env)
+        self._write_rtf_file(psf, output_file_base, self.system.tlc)
+        self._write_prm_file(psf, output_file_base, self.system.tlc)
+        self._write_toppar_str(output_file_base, self.system.tlc)
+        self._copy_files(output_file_base)
+        return output_file_base
+
+
+    
     def generate_intermediate_states(self, strategy='seperate'):
         """
         Generate the intermediate states as defined the the mutation list.
@@ -36,11 +56,10 @@ class IntermediateStateFactory(object):
             
             for m in self.mutation_list:
                 for current_step in range(0, m.nr_of_steps):
-                    print(current_step)
+                    logger.info('Current step: {}'.format(current_step))
                     output_file_base = self._init_intermediate_state_dir(intst_nr)
-                    print('#########################################')
-                    print('#########################################')
-                    print('#########################################')
+                    logger.info('#########################################')
+                    logger.info('#########################################')
                     for psf, offset, env in zip([self.system.complex_psf, self.system.waterbox_psf], [self.system.complex_offset, self.system.waterbox_offset], ['complex', 'waterbox']):
                         m.mutate(psf, offset, current_step)
                         self._write_psf(psf, output_file_base, env)
@@ -401,7 +420,7 @@ dummy_parameters.prm
         """
         output_file_base = f"{self.path}/intst{nr}/" 
 
-        print(' - Created directory: - ' + str(output_file_base))
+        logger.info(' - Created directory: - {}'.format(os.path.abspath(output_file_base)))
         os.makedirs(output_file_base)
-        print(' - Writing in - ' + str(output_file_base))
+        logger.info(' - Writing in - {}'.format(os.path.abspath(output_file_base)))
         return output_file_base
