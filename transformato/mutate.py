@@ -88,23 +88,23 @@ class ProposeMutationRoute(object):
         m1,m2 = [deepcopy(self.mols[mol1_name]), deepcopy(self.mols[mol2_name])]
 
         for m in [m1,m2]:
-            print('Mol in SMILES format: {}.'.format(Chem.MolToSmiles(m,True)))
+            logger.info('Mol in SMILES format: {}.'.format(Chem.MolToSmiles(m,True)))
 
         # make copy of mols and write atom type in isotope propertie
         changed_mols = [Chem.Mol(x) for x in [m1, m2]]
 
         # find substructure match (ignore bond order but enforce element matching)
         mcs = rdFMCS.FindMCS(changed_mols, bondCompare=rdFMCS.BondCompare.CompareAny, timeout=120, atomCompare=rdFMCS.AtomCompare.CompareElements)
-        print('Substructure match: {}'.format(mcs.smartsString))
+        logger.info('Substructure match: {}'.format(mcs.smartsString))
 
         # convert from SMARTS
         mcsp = Chem.MolFromSmarts(mcs.smartsString, False)
 
         s1 = (m1.GetSubstructMatch(mcsp))
-        print('Substructere match idx: {}'.format(s1))
+        logger.info('Substructere match idx: {}'.format(s1))
         self._display_mol(m1)
         s2 = (m2.GetSubstructMatch(mcsp))
-        print('Substructere match idx: {}'.format(s2))
+        logger.info('Substructere match idx: {}'.format(s2))
         self._display_mol(m2)
 
         self._substructure_match[mol1_name] = s1
@@ -113,6 +113,10 @@ class ProposeMutationRoute(object):
     def _display_mol(self, mol:Chem.Mol):
         """
         Gets mol as input and displays its 2D Structure using IPythonConsole.
+        Parameters
+        ----------
+        mol: Chem.Mol
+            a rdkit mol object
         """
 
         def mol_with_atom_index(mol):
@@ -166,6 +170,11 @@ class ProposeMutationRoute(object):
     def generate_mutations_to_common_core_for_mol1(self)->list:
         """
         Generates the mutation route to the common fore for mol1.
+        Returns
+        ----------
+        mutations: list
+            list of mutations
+
         """
         m = self._mutate_to_common_core('m1', self.get_common_core_idx_mol1())
         t = self._transform_common_core()
@@ -176,25 +185,46 @@ class ProposeMutationRoute(object):
     def generate_mutations_to_common_core_for_mol2(self)->list:
         """
         Generates the mutation route to the common fore for mol2.
+        Returns
+        ----------
+        mutations: list
+            list of mutations        
         """
 
         m = self._mutate_to_common_core('m2', self.get_common_core_idx_mol2())
         return m
 
-    def _transform_common_core(self):
+    def _transform_common_core(self)->list:
+        """
+        Common Core 1 is transformed to Common core 2. Bonded parameters and charges are adjusted. 
+        """
         
         transformations = []
+        
         # transform charges from cc1 to cc2
+        logger.info('Transforming charge distribution from cc1 to cc2 in hardcoded 2 steps.')
         t1 = TransformChargesToTargetCharge(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 2 )
         transformations.append(t1)
+
         # test if bonded mutations are necessary
         bonded_mutations_necessary = False
-        for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.generate_mutations_to_common_core_for_mol2()):
-            # did atom type change? if not don't add BondedMutations           
-            if self.psfs['m1'][f":{self.s1_tlc}"][cc1].type != self.psfs['m2'][f":{self.s2_tlc}"][cc2].type:
-                bonded_mutations_necessary == True
+        for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
+            # did atom type change? if not don't add BondedMutations
+            atom1 = self.psfs['m1'][f":{self.s1_tlc}"][cc1]
+            atom2 = self.psfs['m2'][f":{self.s2_tlc}"][cc2] 
+            # NOTE: This does not work!
+            if atom1.type != atom2.type:
+                logger.info('###########')
+                logger.info('Atom that needs to be transformed: {}.'.format(atom1))
+                logger.info('Atom type of atom in cc1: {}.'.format(atom1.type))
+                logger.info('Template atom: {}.'.format(atom1))
+                logger.info('Atom type of atom in cc2: {}.'.format(atom1.type))
 
+                bonded_mutations_necessary = True
+        
+        # if necessary transform bonded parameters
         if bonded_mutations_necessary:
+            logger.info('Bonded parameters need to be transformed for the cc1 topology.')
             # ugh
             t2 = BondedMutation(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 10, self.s1_tlc, self.s2_tlc)
             transformations.append(t2)
@@ -216,7 +246,7 @@ class ProposeMutationRoute(object):
             idx = atom.GetIdx()
             if idx not in cc_idx:
                 atoms_to_be_mutated.append(idx)
-                print('Will be decoupled: Idx:{} Elemeng:{}'.format(idx, atom.GetSymbol()))
+                logger.info('Will be decoupled: Idx:{} Elemeng:{}'.format(idx, atom.GetSymbol()))
         
         # scale all EL of all atoms to zero
         mutations.append(ELtoZeroMutation(atoms_to_be_mutated, 15))
@@ -228,10 +258,22 @@ class ProposeMutationRoute(object):
 
 class BondedMutation(object):
 
-    def __init__(self, cc1_idx:list, cc2_idx:list, cc2_psf, nr_of_steps:int, tlc_cc1:str, tlc_cc2:str):
+    def __init__(self, cc1_idx:list, cc2_idx:list, cc2_psf:pm.charmm.CharmmPsfFile, nr_of_steps:int, tlc_cc1:str, tlc_cc2:str):
         """
-        Scale the bonded parameters inside the common core AND (#NOTE) also scale the charges.
-        
+        Scale the bonded parameters inside the common core.
+        Parameters
+        ----------
+        cc1_idx : list
+            indices of cc1
+        cc2_idx : list
+            indices of cc2 (in the same order as cc1)
+        cc2_psf : pm.charmm.CharmmPsfFile
+            the template psf that is used to generate the new bonded parmaeters
+        nr_of_steps : int
+        tlc_cc1 : str
+            three letter code of ligand in cc1
+        tlc_cc2 : str
+            three letter code of ligand in cc2
         """
         self.cc1_idx = cc1_idx
         self.cc2_idx = cc2_idx
@@ -244,7 +286,7 @@ class BondedMutation(object):
         self.new_bonds = []
         self.new_angles = []
 
-    def _initialize(self, psf, offset):
+    def _initialize(self, psf:pm.charmm.CharmmPsfFile, offset:int):
         """
         Initialize the parameter lists, also set real_{parameter} on old_atom, old_bond, ...
         """
@@ -307,8 +349,8 @@ class BondedMutation(object):
             print('New bonds: {}'.format(len(self.new_bonds)))
             raise RuntimeError('Nr of bonds is different in the common cores.')
         else:
-            print('Old bonds: {}'.format(len(psf.cc_bonds)))
-            print('New bonds: {}'.format(len(self.new_bonds)))
+            logger.info('Old bonds: {}'.format(len(psf.cc_bonds)))
+            logger.info('New bonds: {}'.format(len(self.new_bonds)))
 
         ##########################################
         for cc1_angle in psf.angles:
@@ -346,8 +388,8 @@ class BondedMutation(object):
             print('New angles: {}'.format(len(self.new_angles)))
             raise RuntimeError('Nr of angles is different in the common cores.')
         else:
-            print('Old angles: {}'.format(len(psf.cc_angles)))
-            print('New angles: {}'.format(len(self.new_angles)))
+            logger.info('Old angles: {}'.format(len(psf.cc_angles)))
+            logger.info('New angles: {}'.format(len(self.new_angles)))
 
         
         ##########################################
@@ -449,15 +491,27 @@ class BondedMutation(object):
         #     psf.improper_types.append(deepcopy(tor_type))
 
         
-    def mutate(self, psf, offset, current_step:int):
+    def mutate(self, psf:pm.charmm.CharmmPsfFile, offset:int, current_step:int):
+        """
+        Mutates the bonded parameters of cc1 to cc2.
+        Parameters
+        ----------
+        psf : pm.charmm.CharmmPsfFile
+            psf that gets mutated
+        offset : int
+            first index of ligand in the psf
+        current_step : int
+            the current step in the mutation protocoll
+        """
+
+        assert(type(psf) == pm.charmm.CharmmPsfFile)
 
         if psf.already_initialized == False:         
             self._initialize(psf, offset)
             psf.already_initialized = True
 
         scale = current_step/(self.nr_of_steps -1)
-        print('Bonded parameters scaled.')
-        # scale atoms + CHARGE
+        # scale atoms
         for old_atom, new_atom in zip(psf.cc_atoms, self.new_atoms):
             self._modify_type(old_atom, psf)
             old_atom.epsilon = (1.0 - scale) * old_atom.real_epsilon + scale * new_atom.epsilon
@@ -474,7 +528,6 @@ class BondedMutation(object):
             old_angle.type.theteq = (1.0 - scale) * old_angle.real_theteq + scale * new_angle.type.theteq
 
         # scale torsions
-        print('#####################')
         for torsion in psf.dihedrals:
             # test if one of the torsions that needs to change
             if not hasattr(torsion, 'gets_modified'):
@@ -507,7 +560,7 @@ class BondedMutation(object):
 
 
 
-    def _modify_type(self, atom, psf):
+    def _modify_type(self, atom:pm.Atom, psf:pm.charmm.CharmmPsfFile):
 
         if (hasattr(atom, 'real_type')):
             # only change parameters
@@ -563,10 +616,19 @@ class LJMutation(BaseMutation):
 class ELtoZeroMutation(ELMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
+        """
+        Scale the electrostatics of atoms specified in the atom_idx list to zero.
+        Parameters
+        ----------
+        atom_list : list
+            atoms for which charges are scaled to zero
+        mr_of_steps : int
+            determines the scaling factor : multiplicator = 1 - (current_step / (nr_of_steps))
+        """
         super().__init__(atom_idx, nr_of_steps)
 
-    def mutate(self, psf, offset:int, current_step:int):
-        print('EL to Zero Mutation')
+    def mutate(self, psf:pm.charmm.CharmmPsfFile, offset:int, current_step:int):
+        logger.info('Charges to zero mutation')
         for i in self.atom_idx:
             atom = psf[i + offset]
             multiplicator = 1 - (current_step / (self.nr_of_steps -1))
@@ -576,13 +638,26 @@ class ELtoZeroMutation(ELMutation):
 
 class TransformChargesToTargetCharge(ELMutation):
 
-    def __init__(self, atom_idx:list, target_idx:list, target_psf, nr_of_steps:int):
+    def __init__(self, atom_idx:list, target_idx:list, target_psf:pm.charmm.CharmmPsfFile, nr_of_steps:int):
+        """
+        Scale the electrostatics of atoms specified in the atom_idx list to the charges specified in the target_idx list.
+        Parameters
+        ----------
+        atom_list : list
+            atom indices that specify atoms for which charges are scaled
+        target_idx : list
+            atom indices that specify atoms that have the target charge
+        target_psf : pm.charmm.CharmmPsfFile
+            target_psf has the target charges 
+        mr_of_steps : int
+            determines the scaling factor : (1.0 - (current_step/nr_of_steps) * atom.charge + (current_step/nr_of_steps) * target_atom.charge
+        """
         super().__init__(atom_idx, nr_of_steps)
         self.target_psf = target_psf
         self.target_idx = target_idx
 
     def mutate(self, psf, offset:int, current_step:int):
-        print('Mutate charge from cc1 to cc2')
+        logger.info('Mutate charge from cc1 to cc2')
         scale = current_step/(self.nr_of_steps -1)
 
         for idx, target_idx in zip(self.atom_idx, self.target_idx):
@@ -596,10 +671,19 @@ class TransformChargesToTargetCharge(ELMutation):
 class LJtoZeroMutation(LJMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
+        """
+        Scale the VdW terms of atoms specified in the atom_idx list to zero.
+        Parameters
+        ----------
+        atom_list : list
+            atoms for which charges are scaled to zero
+        mr_of_steps : int
+            determines the scaling factor : multiplicator = 1 - (current_step / (nr_of_steps))
+        """
         super().__init__(atom_idx, nr_of_steps)
     
     def mutate(self, psf, offset:int, current_step:int):
-        print('VdW to Zero Mutation')
+        logger.info('VdW to zero mutation')
 
         for i in self.atom_idx:
             atom = psf[i + offset]
@@ -607,23 +691,4 @@ class LJtoZeroMutation(LJMutation):
             self._modify_type(atom, psf)
             self._scale_epsilon(atom, multiplicator)
             self._scale_sigma(atom, multiplicator)
-
-
-
-class LJtoZeroMutationWithSoftCore(LJMutation):
-
-    def __init__(self, atom_idx:list, nr_of_steps:int):
-        super().__init__(atom_idx, nr_of_steps)
-    
-    def mutate(self, psf, offset:int, current_step:int):
-        print('VdW to Zero Mutation')
-
-        for i in self.atom_idx:
-            atom = psf[i + offset]
-            multiplicator = 1 - (current_step / (self.nr_of_steps -1))
-            self._modify_type(atom, psf)
-            self._scale_epsilon(atom, multiplicator)
-            self._scale_sigma(atom, multiplicator)
-
-
 
