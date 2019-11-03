@@ -33,8 +33,8 @@ class IntermediateStateFactory(object):
         output_file_base = self._init_intermediate_state_dir(state)
         logger.info('Writing to {}'.format(output_file_base))
         logger.info('#########################################')
-        for psf, offset, env in zip([self.system.complex_psf, self.system.waterbox_psf], [self.system.complex_offset, self.system.waterbox_offset], ['complex', 'waterbox']):
-            mutation.mutate(psf, offset, state)
+        for psf, env in zip([self.system.complex_psf, self.system.waterbox_psf], ['complex', 'waterbox']):
+            mutation.mutate(psf, self.system.tlc, state)
             self._write_psf(psf, output_file_base, env)
         self._write_rtf_file(psf, output_file_base, self.system.tlc)
         self._write_prm_file(psf, output_file_base, self.system.tlc)
@@ -53,22 +53,26 @@ class IntermediateStateFactory(object):
         if strategy == 'seperate':
             # no mixing of the different mutation states - first electrostatics is turend off,
             # then VdW and the the bonded terms are transformed 
-            
+            start_idx = 0 # for the first iteration it is zero to get one endstate
             for m in self.mutation_list:
-                for current_step in range(0, m.nr_of_steps):
+                for current_step in range(start_idx, m.nr_of_steps):
                     logger.info('Current step: {}'.format(current_step))
                     output_file_base = self._init_intermediate_state_dir(intst_nr)
                     logger.info('#########################################')
                     logger.info('#########################################')
-                    for psf, offset, env in zip([self.system.complex_psf, self.system.waterbox_psf], [self.system.complex_offset, self.system.waterbox_offset], ['complex', 'waterbox']):
-                        m.mutate(psf, offset, current_step)
+                    for psf, env in zip([self.system.complex_psf, self.system.waterbox_psf], ['complex', 'waterbox']):
+                        m.mutate(psf, self.system.tlc, current_step)
                         self._write_psf(psf, output_file_base, env)
                     self._write_rtf_file(psf, output_file_base, self.system.tlc)
                     self._write_prm_file(psf, output_file_base, self.system.tlc)
                     self._write_toppar_str(output_file_base, self.system.tlc)
                     self._copy_files(output_file_base)
                     intst_nr += 1
-
+                
+                # set the start_idx to 1 - otherwise we would get for every new 
+                # mutation a state at the beginning that is excatly the same as 
+                # the end of the previous mutation 
+                start_idx = 1 # NOTE: this line
 
     def _copy_files(self, intermediate_state_file_path):
         """
@@ -199,10 +203,10 @@ outfile.close()
         rtf_file_handler = open(output_file_base +'/dummy_atom_definitions.rtf', 'w')
         rtf_file_handler.write(header_rtf)
         for atom in psf.view[f":{tlc}"].atoms:            
-            if hasattr(atom, 'real_type'):
+            if hasattr(atom, 'initial_type'):
                 print('- Setting dummy parameters ...')
                 print('  + Atom-Name: ', atom.name)
-                print('  + Atom-Type: ', atom.real_type)
+                print('  + Atom-Type: ', atom.initial_type)
                 print('  + Atom Dummy Type: ', atom.type)
 
                 rtf_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', '-1', atom.type, atom.mass))
@@ -236,13 +240,13 @@ outfile.close()
         view = psf.view[f":{tlc}"]
         # writing atom parameters
         for atom in view.atoms:
-            if hasattr(atom, 'real_type'):
+            if hasattr(atom, 'initial_type'):
                 if atom.type in atom_set:
                     continue
                 atom_set.add(atom.type)
                 print('- Setting dummy parameters ...')
                 print('  + Atom-Name: ', atom.name)
-                print('  + Atom-Type: ', atom.real_type)
+                print('  + Atom-Type: ', atom.initial_type)
                 print('  + Atom Dummy Type: ', atom.type)
                 prm_file_handler.write('{:7} {:6} {:6} {:9.5f}\n'.format('MASS', '-1', atom.type, atom.mass))
             
@@ -256,7 +260,7 @@ outfile.close()
         prm_file_handler.write('BONDS\n')
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
-            if hasattr(atom1, 'real_type') or hasattr(atom2, 'real_type'):
+            if hasattr(atom1, 'initial_type') or hasattr(atom2, 'initial_type'):
                 s = frozenset([atom1.type, atom2.type])
             else:
                 continue
@@ -272,7 +276,7 @@ outfile.close()
         prm_file_handler.write('ANGLES\n')
         for angle in view.angles:
             atom1, atom2, atom3 = angle.atom1, angle.atom2, angle.atom3
-            if hasattr(atom1, 'real_type') or hasattr(atom2, 'real_type') or hasattr(atom3, 'real_type'):
+            if hasattr(atom1, 'initial_type') or hasattr(atom2, 'initial_type') or hasattr(atom3, 'initial_type'):
                 s = frozenset([atom1.type, atom2.type, atom3.type])
             else:
                 continue
@@ -289,7 +293,7 @@ outfile.close()
         prm_file_handler.write('DIHEDRALS\n')
         for dihedral in view.dihedrals:
             atom1, atom2, atom3, atom4 = dihedral.atom1, dihedral.atom2, dihedral.atom3, dihedral.atom4
-            if hasattr(atom1, 'real_type') or hasattr(atom2, 'real_type') or hasattr(atom3, 'real_type') or hasattr(atom4, 'real_type'):
+            if hasattr(atom1, 'initial_type') or hasattr(atom2, 'initial_type') or hasattr(atom3, 'initial_type') or hasattr(atom4, 'initial_type'):
                 s = frozenset([atom1.type, atom2.type, atom3.type, atom4.type])
             else:
                 continue
@@ -307,7 +311,7 @@ outfile.close()
         prm_file_handler.write('IMPROPERS\n')
         for impr in view.impropers:
             atom1, atom2, atom3, atom4 = impr.atom1, impr.atom2, impr.atom3, impr.atom4
-            if hasattr(atom1, 'real_type') or hasattr(atom2, 'real_type') or hasattr(atom3, 'real_type') or hasattr(atom4, 'real_type'):
+            if hasattr(atom1, 'initial_type') or hasattr(atom2, 'initial_type') or hasattr(atom3, 'initial_type') or hasattr(atom4, 'initial_type'):
                 s = frozenset([atom1.type, atom2.type, atom3.type, atom4.type])
             else:
                 continue
@@ -328,7 +332,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5''')
         prm_file_handler.write('\n\n')
 
         for atom in view.atoms:
-            if not hasattr(atom, 'real_type'):
+            if not hasattr(atom, 'initial_type'):
                 continue
             if atom.type in nb_set:
                 continue
