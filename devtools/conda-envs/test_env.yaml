@@ -16,6 +16,7 @@ dependencies:
   - pyyaml
   - ipython
   - jupyter
+  - mdtraj
 
     # Testing
   - pytest
