@@ -12,6 +12,7 @@ from rdkit.Chem import AllChem
 from rdkit.Chem.Draw import IPythonConsole
 from IPython.core.display import display
 from transformato import state
+from collections import namedtuple
 
 logger = logging.getLogger(__name__)
 
@@ -209,9 +210,8 @@ class ProposeMutationRoute(object):
         bonded_mutations_necessary = False
         for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
             # did atom type change? if not don't add BondedMutations
-            atom1 = self.psfs['m1'][f":{self.s1_tlc}"][cc1]
-            atom2 = self.psfs['m2'][f":{self.s2_tlc}"][cc2] 
-            # NOTE: This does not work!
+            atom1 = self.psfs['m1'][cc1]
+            atom2 = self.psfs['m2'][cc2] 
             if atom1.type != atom2.type:
                 logger.info('###########')
                 logger.info('Atom that needs to be transformed: {}.'.format(atom1))
@@ -225,14 +225,10 @@ class ProposeMutationRoute(object):
         if bonded_mutations_necessary:
             logger.info('Bonded parameters need to be transformed for the cc1 topology.')
             # ugh
-            t2 = BondedParameterMutation(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], nr_of_steps_for_bonded_parameters, self.s1_tlc, self.s2_tlc)
-            transformations.append(t2)
+            t = BondedParameterMutation(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m1'], self.psfs['m2'], nr_of_steps_for_bonded_parameters, self.s1_tlc, self.s2_tlc)
+            transformations.append(t)
         
-        # transform charges from cc1 to cc2
-        logger.info('Transforming charge distribution from cc1 to cc2 in hardcoded 2 steps.')
-        t1 = TransformChargesToTargetCharge(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m2'], 2 )
-        transformations.append(t1)
-
+        # TODO: Add Charge transformation
         return transformations
 
 
@@ -271,7 +267,7 @@ class ProposeMutationRoute(object):
 
 class BondedParameterMutation(object):
 
-    def __init__(self, cc1_idx:list, cc2_idx:list, cc2_psf:pm.charmm.CharmmPsfFile, nr_of_steps:int, tlc_cc1:str, tlc_cc2:str):
+    def __init__(self, cc1_idx:list, cc2_idx:list, cc1_psf:pm.charmm.CharmmPsfFile, cc2_psf:pm.charmm.CharmmPsfFile, nr_of_steps:int, tlc_cc1:str, tlc_cc2:str):
         """
         Scale the bonded parameters inside the common core.
         Parameters
@@ -280,8 +276,9 @@ class BondedParameterMutation(object):
             indices of cc1
         cc2_idx : list
             indices of cc2 (in the same order as cc1)
-        cc2_psf : pm.charmm.CharmmPsfFile
-            the template psf that is used to generate the new bonded parmaeters
+        cc1_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
+        cc2_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
+            the target psf that is used to generate the new bonded parmaeters
         nr_of_steps : int
         tlc_cc1 : str
             three letter code of ligand in cc1
@@ -290,199 +287,184 @@ class BondedParameterMutation(object):
         """
         self.cc1_idx = cc1_idx
         self.cc2_idx = cc2_idx
-        self.cc2_psf = cc2_psf #a copy of only the ligand!
+        self.cc2_psf = cc2_psf 
+        self.cc1_psf = cc1_psf 
         self.nr_of_steps = nr_of_steps
         self.tlc_cc1 = tlc_cc1
         self.tlc_cc2 = tlc_cc2
-        self.new_atoms = []
-        self.new_bonds = []
-        self.new_angles = []
+        self.atom_names_mapping = self._get_atom_mapping() 
 
-    def _initialize(self, psf:pm.charmm.CharmmPsfFile):
-        """
-        Initialize the parameter lists, also set initial_{parameter} on old_atom, old_bond, ...
-        """
-        # NOTE: this could be made more readable and easier if we would iterate
-        # over all atoms and than over their angles/bonds/torsions/improper
-        # TODO: check if the order of angle/bond/torsion is fixed for a single atom
+    def _get_atom_mapping(self):
         match_atom_names_cc1_to_cc2 = {}
-        # overwritting since this is done twice #NOTE: not best coding
-        self.new_atoms = []
-        self.new_bonds = []
-        self.new_angles = []
-        self.new_torsions = []
-        self.new_improper = []
-
-        cc1_psf = psf
-        cc2_psf = self.cc2_psf
-
-        cc1_offset = min([a.idx for a in cc1_psf.view[f":{self.tlc_cc1.upper()}"].atoms])
-        cc2_offset = min([a.idx for a in cc2_psf.view[f":{self.tlc_cc1.upper()}"].atoms])
-
-        ##########################################
-        # atoms matching
         for cc1, cc2 in zip(self.cc1_idx, self.cc2_idx):
             # did atom type change? if not continue
-            cc1_a = cc1_psf[cc1+cc1_offset]
-            cc2_a = cc2_psf[cc2+cc2_offset]
+            cc1_a = self.cc1_psf[cc1]
+            cc2_a = self.cc2_psf[cc2]
             if cc1_a.type == cc2_a.type:
                 continue
             match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
-            psf.cc_atoms.append(cc1_a)
-            self.new_atoms.append(cc2_a)
+        
+        return match_atom_names_cc1_to_cc2
 
-        ##########################################
-        # bonds
-        for cc1_bond in cc1_psf.view[f":{self.tlc_cc1.upper()}"].bonds:
+    def _mutate_atoms(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
+        mod_type = namedtuple('Atom', 'epsilon, rmin')
+        for cc1_atom in psf.view[f":{tlc}"]:
+            if cc1_atom.name not in self.atom_names_mapping:
+                continue
+            
+            self._modify_type(cc1_atom, psf)
+            logging.info(f"Modifying atom: {cc1_atom}")
+            
+            for cc2_atom in self.cc2_psf:
+                if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
+                    break
+
+            logging.info(f"Template atom: {cc2_atom}")
+            logging.info('Scaling VdW + charge')
+
+            # scale charge # NOTE: Charges are scaled directly
+            logging.info(f"Old charge: {cc1_atom.charge}")
+            cc1_atom.charge = (1.0 - scale) * cc1_atom.initial_charge + scale * cc2_atom.charge
+            logging.info(f"New charge: {cc1_atom.charge}")
+
+            
+            # scale epsilon
+            logging.info(f"Real epsilon: {cc1_atom.epsilon}")
+            modified_epsilon = (1.0 - scale) * cc1_atom.epsilon + scale * cc2_atom.epsilon
+            logging.info(f"New epsilon: {modified_epsilon}")
+            
+            # scale rmin
+            logging.info(f"Real rmin: {cc1_atom.rmin}")
+            modified_rmin = (1.0 - scale) * cc1_atom.rmin + scale * cc2_atom.rmin
+            logging.info(f"New rmin: {modified_rmin}")
+
+            cc1_atom.mod_type = mod_type(modified_epsilon, modified_rmin)
+
+    def _mutate_bonds(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
+
+        mod_type = namedtuple('Bond', 'k, req')
+        for cc1_bond in psf.view[f":{tlc}"].bonds:
+            logging.info('##############################')
+            logging.info(scale)
+            logging.info(f"Modifying bond: {cc1_bond}")
+
             cc1_a1 = cc1_bond.atom1.name
             cc1_a2 = cc1_bond.atom2.name
             # all atoms of the bond must be in cc
             # everything outside the cc are bonded terms between dummies or 
             # between real atoms and dummies and we can ignore them for now
-            if not all(elem in match_atom_names_cc1_to_cc2.keys() for elem in [cc1_a1, cc1_a2]):
+            if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2]):
                     continue
 
-            cc1_psf.cc_bonds.append(cc1_bond)
-            for cc2_bond in cc2_psf.view[f":{self.tlc_cc2.upper()}"].bonds:
+            for cc2_bond in self.cc2_psf.bonds:
                 cc2_a1 = cc2_bond.atom1.name
                 cc2_a2 = cc2_bond.atom2.name
                 # all atoms of the bond must be in cc
-                if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2]):
+                if not all(elem in self.atom_names_mapping.values() for elem in [cc2_a1, cc2_a2]):
                     continue
                 
                 # match the two bonds
-                if sorted([match_atom_names_cc1_to_cc2[cc1_a1], match_atom_names_cc1_to_cc2[cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
-                    self.new_bonds.append(cc2_bond)
+                if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
+                    break
 
-        if(len(cc1_psf.cc_bonds) != len(self.new_bonds)):
-            print('Old bonds: {}'.format(len(cc1_psf.cc_bonds)))
-            print('New bonds: {}'.format(len(self.new_bonds)))
-            raise RuntimeError('Nr of bonds is different in the common cores.')
-        else:
-            logger.info('Old bonds: {}'.format(len(cc1_psf.cc_bonds)))
-            logger.info('New bonds: {}'.format(len(self.new_bonds)))
+            logging.info(f"Template bond: {cc2_bond}")
+            logging.info('Original value for k: {}'.format(cc1_bond.type.k))
+            logging.info(f"Target k: {cc2_bond.type.k}")
+            new_k = ((1.0 - scale) * cc1_bond.type.k)   + (scale * cc2_bond.type.k)
+            logging.info(new_k)
+            
+            modified_k = new_k
+            
+            logging.info(f"New k: {modified_k}")
 
-        ##########################################
-        for cc1_angle in cc1_psf.view[f":{self.tlc_cc1.upper()}"].angles:
+            logging.info(f"Old req: {cc1_bond.type.req}")
+            modified_req = ((1.0 - scale) * cc1_bond.type.req) + (scale * cc2_bond.type.req)
+            logging.info(f"Modified bond: {cc1_bond}")
+
+            cc1_bond.mod_type = mod_type(modified_k, modified_req)
+            logger.info(cc1_bond.mod_type)
+
+
+    def _mutate_angles(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
+
+        mod_type = namedtuple('Angle', 'k, theteq')
+        for cc1_angle in psf.view[f":{tlc}"].angles:
             cc1_a1 = cc1_angle.atom1.name
             cc1_a2 = cc1_angle.atom2.name
             cc1_a3 = cc1_angle.atom3.name
             # only angles in cc
-            if not all(elem in match_atom_names_cc1_to_cc2.keys() for elem in [cc1_a1, cc1_a2, cc1_a3]):
+            if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2, cc1_a3]):
                     continue
 
-            cc1_psf.cc_angles.append(cc1_angle)
-
-            for cc2_angle in cc2_psf.view[f":{self.tlc_cc2.upper()}"].angles:
+    
+            for cc2_angle in self.cc2_psf.angles:
                 cc2_a1 = cc2_angle.atom1.name
                 cc2_a2 = cc2_angle.atom2.name
                 cc2_a3 = cc2_angle.atom3.name
                 # only angles in cc
-                if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2, cc2_a3]):
+                if not all(elem in self.atom_names_mapping.values() for elem in [cc2_a1, cc2_a2, cc2_a3]):
                     continue
 
-                if sorted([match_atom_names_cc1_to_cc2[cc1_a1], match_atom_names_cc1_to_cc2[cc1_a2], match_atom_names_cc1_to_cc2[cc1_a3]]) == sorted([cc2_a1, cc2_a2, cc2_a3]):
-                    self.new_angles.append(cc2_angle)
-    
-        if(len(cc1_psf.cc_angles) != len(self.new_angles)):
-            print('Old angles: {}'.format(len(cc1_psf.cc_angles)))
-            print('New angles: {}'.format(len(self.new_angles)))
-            raise RuntimeError('Nr of angles is different in the common cores.')
-        else:
-            logger.info('Old angles: {}'.format(len(cc1_psf.cc_angles)))
-            logger.info('New angles: {}'.format(len(self.new_angles)))
+                if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2, cc1_a3]]) == sorted([cc2_a1, cc2_a2, cc2_a3]):
+                     break
 
-        
-        ##########################################
-        # torsions are treated differently
-        # here we add torsions from the 
-        # target topology to the starting topology and 
-        # turn the starting dihedrals off and the target 
-        # dihedrals on
+            logging.info(f"Modifying angle: {cc1_angle}")
+            logging.info(f"Template bond: {cc2_angle}")
+            logging.info('Scaling k and theteq')
+
+            logging.info(f"Old k: {cc1_angle.type.k}")
+            modified_k      = (1.0 - scale) * cc1_angle.type.k      + scale * cc2_angle.type.k
+            logging.info(f"New k: {modified_k}")
+            
+            logging.info(f"Old k: {cc1_angle.type.theteq}")
+            modified_theteq = (1.0 - scale) * cc1_angle.type.theteq + scale * cc2_angle.type.theteq
+            logging.info(f"New k: {modified_theteq}")
+
+            cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
+
+    def _mutate_torsions(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
+
+        mod_type = namedtuple('Torsion', 'phi_k, per, phase, scee, scnb')
 
         # get all torsions present in initial topology
-        for cc1_torsion in cc1_psf.view[f":{self.tlc_cc1.upper()}"].dihedrals:
+        for cc1_torsion in psf.view[f":{tlc}"].dihedrals:
             cc1_a1 = cc1_torsion.atom1.name
             cc1_a2 = cc1_torsion.atom2.name
             cc1_a3 = cc1_torsion.atom3.name
             cc1_a4 = cc1_torsion.atom4.name
             # all atoms must be in the cc
-            if not all(elem in match_atom_names_cc1_to_cc2.keys() for elem in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]):
+            if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]):
                 continue
             
-            # set identifier
-            cc1_torsion.gets_modified = True
-            cc1_torsion.type_cc2 = []
-
             # get corresponding torsion types in the new topology
-            found = False
-            for cc2_torsion in cc2_psf.view[f":{self.tlc_cc2.upper()}"].dihedrals:
+            for cc2_torsion in self.cc2_psf.dihedrals:
                 cc2_a1 = cc2_torsion.atom1.name
                 cc2_a2 = cc2_torsion.atom2.name
                 cc2_a3 = cc2_torsion.atom3.name
                 cc2_a4 = cc2_torsion.atom4.name
                 # only torsion in cc
-                if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                if not all(elem in self.atom_names_mapping.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
                     continue
 
-                if sorted([match_atom_names_cc1_to_cc2[cc1_a1], match_atom_names_cc1_to_cc2[cc1_a2], match_atom_names_cc1_to_cc2[cc1_a3], match_atom_names_cc1_to_cc2[cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
-                    found = True
-                    for torsion_t in cc2_torsion.type:
-                        cc1_torsion.type_cc2.append(torsion_t)
-            
-            
-            if found == False:
-                # somehow more torsions in one scaffold as in the other ...
-                raise RuntimeError('Be careful - there is an unmatched torsion present.')
+                if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                    break
 
-        ##########################################
-        # impropers
-
-        for cc1_torsion in cc1_psf.view[f":{self.tlc_cc1.upper()}"].impropers:
-            cc1_a1 = cc1_torsion.atom1.name
-            cc1_a2 = cc1_torsion.atom2.name
-            cc1_a3 = cc1_torsion.atom3.name
-            cc1_a4 = cc1_torsion.atom4.name
-           
-            # only improper in ligand
-            if not all(elem.residue.name == self.tlc_cc1.upper() for elem in [cc1_torsion.atom1, cc1_torsion.atom2, cc1_torsion.atom3, cc1_torsion.atom4]):
-                continue
-            # impropers don't need to have only members that are in the commen core
-            # but the central atom needs to be in the commen core
-            # NOTE: I think the central atom is the first! 
-            if not cc1_a1 in match_atom_names_cc1_to_cc2.keys():
-                continue
-            # set real parameter
-            cc1_torsion.improper_present_in = 'cc1'
-
-
-        for cc2_torsion in cc2_psf.view[f":{self.tlc_cc2.upper()}"].impropers:
-            cc2_a1 = cc2_torsion.atom1.name
-            cc2_a2 = cc2_torsion.atom2.name
-            cc2_a3 = cc2_torsion.atom3.name
-            cc2_a4 = cc2_torsion.atom4.name
-            # impropers don't need to have only members that are in the commen core
-            if not cc1_a1 in match_atom_names_cc1_to_cc2.keys():
-                continue
-            logger.info('Found improper in cc2')
-            logger.info(cc2_torsion)
-            
-        #     new_improper.append(cc2_torsion)
-        #     new_improper_type.append(cc2_torsion.type)
-
-        # # append torstion and torsion type to psf
-        # for tor, tor_type in zip(new_improper, new_improper_type):
-        #     new_tor = deepcopy(tor)
-        #     # save the initial psi_k
-        #     new_tor.initial_psi_k = tor.type.psi_k
-        #     # set the new torsions to zero
-        #     new_tor.type.psi_k = 0.0
-
-        #     psf.impropers.append(new_tor)
-        #     psf.impropers[-1].improper_present_in = 'cc2'
-        #     psf.improper_types.append(deepcopy(tor_type))
-
+            mod_types = []       
+            if scale <= 0.5:
+                # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+                for torsion_t in cc1_torsion.type:
+                    modified_phi_k = torsion_t.phi_k * max(((1.0 - scale * 2)), 0.0)
+                    mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase, 
+                                        torsion_t.scee, torsion_t.scnb))
+            else:
+                # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2
+                for torsion_t in cc2_torsion.type:
+                    modified_phi_k = torsion_t.initial_phi_k * max((scale -0.5) * 2, 0.0)
+                    mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase, 
+                                        torsion_t.scee, torsion_t.scnb))
         
+            cc1_torsion.mod_type = mod_types
+
     def mutate(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
         """
         Mutates the bonded parameters of cc1 to cc2.
@@ -497,58 +479,17 @@ class BondedParameterMutation(object):
 
         assert(type(psf) == pm.charmm.CharmmPsfFile)
 
-        if psf.already_initialized == False:         
-            self._initialize(psf)
-            psf.already_initialized = True
 
         scale = current_step/(self.nr_of_steps -1)
         # scale atoms
-        for old_atom, new_atom in zip(psf.cc_atoms, self.new_atoms):
-            self._modify_type(old_atom, psf)
-            old_atom.epsilon = (1.0 - scale) * old_atom.initial_epsilon + scale * new_atom.epsilon
-            old_atom.sigma = (1.0 - scale) * old_atom.initial_sigma + scale * new_atom.sigma
-
+        self._mutate_atoms(psf, tlc, scale)
         # scale bonds
-        for old_bond, new_bond in zip(psf.cc_bonds, self.new_bonds):
-            old_bond.type.k   = (1.0 - scale) * old_bond.initial_k   + scale * new_bond.type.k
-            old_bond.type.req = (1.0 - scale) * old_bond.initial_req + scale * new_bond.type.req
-
+        self._mutate_bonds(psf, tlc, scale)
         # scale angles
-        for old_angle, new_angle in zip(psf.cc_angles, self.new_angles):
-            old_angle.type.k      = (1.0 - scale) * old_angle.initial_k      + scale * new_angle.type.k
-            old_angle.type.theteq = (1.0 - scale) * old_angle.initial_theteq + scale * new_angle.type.theteq
-
+        self._mutate_angles(psf, tlc, scale)
         # scale torsions
-        for torsion in psf.dihedrals:
-            # test if one of the torsions that needs to change
-            if not hasattr(torsion, 'gets_modified'):
-                continue
+        self._mutate_torsions(psf, tlc, scale)
             
-            # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-            if scale <= 0.5:
-                for torsion_t in torsion.type:
-                    torsion_t.phi_k = torsion_t.initial_phi_k * max(((1.0 - scale * 2)), 0.0)
-            else:
-            # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-                torsion.type = deepcopy(torsion.type_cc2)
-                for torsion_t in torsion.type:
-                    torsion_t.phi_k = torsion_t.initial_phi_k * max((scale -0.5) * 2, 0.0)
-
-        # # scale improper
-        # for torsion in psf.impropers:
-        #     # test if one of the torsions that needs to change
-        #     if not hasattr(torsion, 'improper_present_in'):
-        #         continue
-            
-        #     # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-        #     if torsion.improper_present_in == 'cc1':
-        #         # scale the initial torsions down
-        #         torsion.type.psi_k = torsion.initial_psi_k * max(((1.0 - scale * 2)), 0.0)
-        #     # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-        #     elif torsion.improper_present_in == 'cc2':
-        #         # scale the new torsinos up
-        #         torsion.type.psi_k = torsion.initial_psi_k * max((scale -0.5) * 2, 0.0)
-
 
 
     def _modify_type(self, atom:pm.Atom, psf:pm.charmm.CharmmPsfFile):
@@ -557,9 +498,9 @@ class BondedParameterMutation(object):
             # only change parameters
             pass
         else:
-            print('Setting RRR atomtype.')
-            atom.initial_type = atom.type
+            logging.info(f"Setting RRR atomtype for atom: {atom}.")
             atom.type = f"RRR{psf.number_of_dummys}"
+            atom.initial_type = atom.type
             psf.number_of_dummys += 1
 
 
@@ -585,12 +526,12 @@ class LJMutation(BaseMutation):
         super().__init__(atom_idx, nr_of_steps)
 
     def _scale_epsilon(self, atom, multiplicator):
-        epsilon = atom.initial_epsilon * multiplicator
-        atom.epsilon = epsilon
+        epsilon = atom.epsilon * multiplicator
+        atom.modified_epsilon = epsilon
 
-    def _scale_sigma(self, atom, multiplicator):
-        sigma = atom.initial_sigma *  multiplicator
-        atom.sigma = sigma
+    def _scale_rmin(self, atom, multiplicator):
+        rmin = atom.rmin *  multiplicator
+        atom.modified_rmin = rmin
 
     def _modify_type(self, atom, psf):
 
@@ -627,12 +568,37 @@ class ELtoZeroMutation(ELMutation):
             idxo = idx + offset
             atom = psf[idxo]
             multiplicator = 1 - (current_step / (self.nr_of_steps -1))
-            charge = round(atom.initial_charge * multiplicator , 5)
+            charge = round(atom.charge * multiplicator , 5)
             self._scale_charge(atom, charge)
 
 
-class TransformChargesToTargetCharge(ELMutation):
+class LJtoZeroMutation(LJMutation):
 
+    def __init__(self, atom_idx:list):
+        """
+        Set the VdW terms of atoms specified in the atom_idx list to zero.
+        Parameters
+        ----------
+        atom_list : list
+            atoms for which charges are scaled to zero
+        """
+        super().__init__(atom_idx, 1)
+    
+    def mutate(self, psf, tlc:str, current_step:int):
+
+        logger.info('VdW to zero mutation')
+        offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
+
+        for i in self.atom_idx:
+            atom = psf[i + offset]
+            multiplicator = 0
+            self._modify_type(atom, psf)
+            self._scale_epsilon(atom, multiplicator)
+            self._scale_rmin(atom, multiplicator)
+            
+
+class TransformChargesToTargetCharge(ELMutation):
+    # TODO: offsets need to be corrected
     def __init__(self, atom_idx:list, target_idx:list, target_psf:pm.charmm.CharmmPsfFile, nr_of_steps:int):
         """
         Scale the electrostatics of atoms specified in the atom_idx list to the charges specified in the target_idx list.
@@ -665,27 +631,23 @@ class TransformChargesToTargetCharge(ELMutation):
 
 
 
-class LJtoZeroMutation(LJMutation):
+# TODO: RemoveImproperMutation()
 
-    def __init__(self, atom_idx:list):
-        """
-        Set the VdW terms of atoms specified in the atom_idx list to zero.
-        Parameters
-        ----------
-        atom_list : list
-            atoms for which charges are scaled to zero
-        """
-        super().__init__(atom_idx, 1)
-    
-    def mutate(self, psf, tlc:str, current_step:int):
+        # # scale improper
+        # for torsion in psf.impropers:
+        #     # test if one of the torsions that needs to change
+        #     if not hasattr(torsion, 'improper_present_in'):
+        #         continue
+            
+        #     # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+        #     if torsion.improper_present_in == 'cc1':
+        #         # scale the initial torsions down
+        #         torsion.type.psi_k = torsion.initial_psi_k * max(((1.0 - scale * 2)), 0.0)
+        #     # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+        #     elif torsion.improper_present_in == 'cc2':
+        #         # scale the new torsinos up
+        #         torsion.type.psi_k = torsion.initial_psi_k * max((scale -0.5) * 2, 0.0)
 
-        logger.info('VdW to zero mutation')
-        offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
 
-        for i in self.atom_idx:
-            atom = psf[i + offset]
-            multiplicator = 0
-            self._modify_type(atom, psf)
-            self._scale_epsilon(atom, multiplicator)
-            self._scale_sigma(atom, multiplicator)
+
 

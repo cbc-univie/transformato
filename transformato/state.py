@@ -36,6 +36,7 @@ class IntermediateStateFactory(object):
         for psf, env in zip([self.system.complex_psf, self.system.waterbox_psf], ['complex', 'waterbox']):
             mutation.mutate(psf, self.system.tlc, state)
             self._write_psf(psf, output_file_base, env)
+
         self._write_rtf_file(psf, output_file_base, self.system.tlc)
         self._write_prm_file(psf, output_file_base, self.system.tlc)
         self._write_toppar_str(output_file_base, self.system.tlc)
@@ -204,10 +205,10 @@ outfile.close()
         rtf_file_handler.write(header_rtf)
         for atom in psf.view[f":{tlc}"].atoms:            
             if hasattr(atom, 'initial_type'):
-                print('- Setting dummy parameters ...')
-                print('  + Atom-Name: ', atom.name)
-                print('  + Atom-Type: ', atom.initial_type)
-                print('  + Atom Dummy Type: ', atom.type)
+                logging.info('- Setting dummy parameters ...')
+                logging.info(f"  + Atom-Name: {atom.name}")
+                logging.info(f"  + Atom-Type: {atom.initial_type}")
+                logging.info(f"  + Atom Dummy Type: {atom.type}")
 
                 rtf_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', '-1', atom.type, atom.mass))
             
@@ -228,26 +229,15 @@ outfile.close()
         prm_file_handler = open(output_file_base + '/dummy_parameters.prm', 'w')
         prm_file_handler.write(header_prm)
         prm_file_handler.write('\nATOMS\n')
-        # for debugging porpose:
-        atom_set = set()
-        bond_set = set()
-        angle_set = set()
-        dihedral_set = set()
-        improper_set = set()
-        nb_set = set()
-
 
         view = psf.view[f":{tlc}"]
         # writing atom parameters
         for atom in view.atoms:
             if hasattr(atom, 'initial_type'):
-                if atom.type in atom_set:
-                    continue
-                atom_set.add(atom.type)
-                print('- Setting dummy parameters ...')
-                print('  + Atom-Name: ', atom.name)
-                print('  + Atom-Type: ', atom.initial_type)
-                print('  + Atom Dummy Type: ', atom.type)
+                logging.info('- Setting dummy parameters ...')
+                logging.info(f"  + Atom-Name: {atom.name}")
+                logging.info(f"  + Atom-Type: {atom.initial_type}")
+                logging.info(f"  + Atom Dummy Type: {atom.type}")
                 prm_file_handler.write('{:7} {:6} {:6} {:9.5f}\n'.format('MASS', '-1', atom.type, atom.mass))
             
         prm_file_handler.write('\n\n')
@@ -260,32 +250,29 @@ outfile.close()
         prm_file_handler.write('BONDS\n')
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
-            if hasattr(atom1, 'initial_type') or hasattr(atom2, 'initial_type'):
-                s = frozenset([atom1.type, atom2.type])
-            else:
-                continue
-            if s in bond_set:
-                continue
-            bond_set.add(s)
-            #logger.info(' >> Setting dummy bond parameters for: {} - {}'.format(str(atom1.type),str(atom2.type)))
-            prm_file_handler.write('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
-
+            if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2]):
+                logger.info(' >> Setting dummy bond parameters for: {} - {}'.format(str(atom1.type),str(atom2.type)))
+                try:
+                    logger.info('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.mod_type.k ,bond.mod_type.req))
+                    prm_file_handler.write('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.mod_type.k ,bond.mod_type.req))
+                except AttributeError:
+                    logger.info('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
+                    prm_file_handler.write('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
 
         #################################################################
         prm_file_handler.write('\n\n')
         prm_file_handler.write('ANGLES\n')
         for angle in view.angles:
             atom1, atom2, atom3 = angle.atom1, angle.atom2, angle.atom3
-            if hasattr(atom1, 'initial_type') or hasattr(atom2, 'initial_type') or hasattr(atom3, 'initial_type'):
-                s = frozenset([atom1.type, atom2.type, atom3.type])
-            else:
-                continue
-            if s in angle_set:
-                continue
-            angle_set.add(s)
-
-            #print(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
-            prm_file_handler.write('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
+            if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2, atom3]):            
+                logger.info(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
+                try:
+                    prm_file_handler.write('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.mod_type.k , angle.mod_type.theteq))
+                    logger.info('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.mod_type.k , angle.mod_type.theteq))
+                except AttributeError:
+                    prm_file_handler.write('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
+                    logger.info('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
+                    
 
 
         #################################################################
@@ -293,37 +280,25 @@ outfile.close()
         prm_file_handler.write('DIHEDRALS\n')
         for dihedral in view.dihedrals:
             atom1, atom2, atom3, atom4 = dihedral.atom1, dihedral.atom2, dihedral.atom3, dihedral.atom4
-            if hasattr(atom1, 'initial_type') or hasattr(atom2, 'initial_type') or hasattr(atom3, 'initial_type') or hasattr(atom4, 'initial_type'):
-                s = frozenset([atom1.type, atom2.type, atom3.type, atom4.type])
-            else:
-                continue
-            if s in dihedral_set:
-                continue
-            dihedral_set.add(s)
-
-            #print(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
-            for i in range(len(dihedral.type)):
-                prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral.type[i].phi_k ,dihedral.type[i].per, dihedral.type[i].phase))
-
+            if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2, atom3, atom4]):            
+                logger.info(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
+                try:
+                    for dihedral_type in dihedral.mod_type:
+                        prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral_type.phi_k ,dihedral_type.per, dihedral_type.phase))
+                except AttributeError:
+                    for dihedral_type in dihedral.type:
+                        prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral_type.phi_k ,dihedral_type.per, dihedral_type.phase))
+                    
         #################################################################
         # get all unique improper and parameters
         prm_file_handler.write('\n\n')
         prm_file_handler.write('IMPROPERS\n')
         for impr in view.impropers:
             atom1, atom2, atom3, atom4 = impr.atom1, impr.atom2, impr.atom3, impr.atom4
-            if hasattr(atom1, 'initial_type') or hasattr(atom2, 'initial_type') or hasattr(atom3, 'initial_type') or hasattr(atom4, 'initial_type'):
-                s = frozenset([atom1.type, atom2.type, atom3.type, atom4.type])
-            else:
-                continue
-
-            if s in improper_set:
-                continue
-
-            improper_set.add(s)
-            
-            #print('>> Setting dummy improper parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
-            # carefull with this solution - > central atom has to be set in the beginning
-            prm_file_handler.write('{:7} {:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), impr.type.psi_k , impr.type.psi_eq))
+            if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2, atom3, atom4]):            
+                #print('>> Setting dummy improper parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
+                # carefull with this solution - > central atom has to be set in the beginning
+                prm_file_handler.write('{:7} {:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), impr.type.psi_k , impr.type.psi_eq))
 
         #################################################################
         prm_file_handler.write('\n\n')
@@ -332,12 +307,16 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5''')
         prm_file_handler.write('\n\n')
 
         for atom in view.atoms:
-            if not hasattr(atom, 'initial_type'):
-                continue
-            if atom.type in nb_set:
-                continue
-            nb_set.add(atom.type)
-            prm_file_handler.write('{:7} {:6} {:9.5f} {:9.5f}\n'.format(atom.type, 0.0, atom.epsilon, atom.rmin))
+            if hasattr(atom, 'initial_type'):
+                try:
+                    prm_file_handler.write('{:7} {:6} {:9.5f} {:9.5f}\n'.format(atom.type, 0.0, 
+                                            atom.mod_type.epsilon, 
+                                            atom.mod_type.rmin))
+                except AttributeError:
+                    prm_file_handler.write('{:7} {:6} {:9.5f} {:9.5f}\n'.format(atom.type, 0.0, 
+                                            atom.type.epsilon, 
+                                            atom.type.rmin))
+
 
         prm_file_handler.write('\n')
         prm_file_handler.write('END')
@@ -377,7 +356,6 @@ toppar/toppar_all36_prot_heme.str
 toppar/toppar_all36_prot_na_combined.str
 toppar/toppar_all36_prot_retinol.str
 toppar/toppar_all36_na_nad_ppi.str
-toppar/toppar_all36_na_rna_modified.str
 toppar/toppar_all36_lipid_bacterial.str
 toppar/toppar_all36_lipid_cardiolipin.str
 toppar/toppar_all36_lipid_cholesterol.str
