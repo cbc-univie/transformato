@@ -116,7 +116,7 @@ def test_endpoint():
             for idx in m.atom_idx:
                 assert(original_psf.atoms[idx+offset].epsilon  == new_psf.atoms[idx+offset].epsilon)
                 assert(original_psf.atoms[idx+offset].charge  == new_psf.atoms[idx+offset].charge)
-                assert(original_psf.atoms[idx+offset].sigma  == new_psf.atoms[idx+offset].sigma)
+                assert(original_psf.atoms[idx+offset].rmin  == new_psf.atoms[idx+offset].rmin)
                 
                 # test all bond parameters
                 for o_bond, n_bond in zip(original_psf.atoms[idx+offset].bonds, new_psf.atoms[idx+offset].bonds):
@@ -229,18 +229,18 @@ def test_vdw_mutation():
             offset = min([a.idx for a in original_psf.view[f":{system.tlc.upper()}"].atoms])
             
             new_psf = generate_psf(output_file_base, env)
-            print('Set epsilon/sigma to zero for selected atoms')
+            print('Set epsilon/rmin to zero for selected atoms')
             for idx in m1.atom_idx:
                 idxo = idx + offset
                 assert(np.isclose(original_psf.atoms[idxo].epsilon * 0, new_psf.atoms[idxo].epsilon))
-                assert(np.isclose(original_psf.atoms[idxo].sigma * 0, new_psf.atoms[idxo].sigma))
+                assert(np.isclose(original_psf.atoms[idxo].rmin * 0, new_psf.atoms[idxo].rmin))
 
             # make sure that all other idx are not touched
             for idx in range(len(original_psf.atoms)):
                 idxo = idx - offset # NOTE: the '-'
                 if idxo not in m1.atom_idx:
                     assert(np.isclose(original_psf.atoms[idx].epsilon, new_psf.atoms[idx].epsilon))
-                    assert(np.isclose(original_psf.atoms[idx].sigma, new_psf.atoms[idx].sigma))
+                    assert(np.isclose(original_psf.atoms[idx].rmin, new_psf.atoms[idx].rmin))
 
         shutil.rmtree(output_file_base) 
 
@@ -255,11 +255,11 @@ def test_vdw_mutation():
             
             offset = min([a.idx for a in original_psf.view[f":{system.tlc.upper()}"].atoms])
             new_psf = generate_psf(output_file_base, env)
-            print('Set epsilon/sigma to zero for selected atoms')
+            print('Set epsilon/rmin to zero for selected atoms')
             for idx in m2.atom_idx:
                 idxo = idx + offset
                 assert(np.isclose(original_psf.atoms[idxo].epsilon * 0, new_psf.atoms[idxo].epsilon))
-                assert(np.isclose(original_psf.atoms[idxo].sigma * 0, new_psf.atoms[idxo].sigma))
+                assert(np.isclose(original_psf.atoms[idxo].rmin * 0, new_psf.atoms[idxo].rmin))
 
             # make sure that all other idx are not touched
             print(m2.atom_idx + m1.atom_idx)
@@ -268,9 +268,147 @@ def test_vdw_mutation():
                 if idxo not in m2.atom_idx + m1.atom_idx:
                     print(idxo)
                     assert(np.isclose(original_psf.atoms[idx].epsilon, new_psf.atoms[idx].epsilon))
-                    assert(np.isclose(original_psf.atoms[idx].sigma, new_psf.atoms[idx].sigma))
+                    assert(np.isclose(original_psf.atoms[idx].rmin, new_psf.atoms[idx].rmin))
 
         shutil.rmtree(output_file_base) 
 
 
+def test_bonded_mutation():
 
+    configuration = load_config_yaml(config='config/2oj9-test.yaml',
+                    input_dir='data/', output_dir='.')
+    s1 = SystemStructure(configuration, 'structure1')
+    s2 = SystemStructure(configuration, 'structure2')
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s2_to_s1 = ProposeMutationRoute(s2, s1)
+
+
+    for a, system, template in zip([s1_to_s2, s2_to_s1], [SystemStructure(configuration, 'structure1'), SystemStructure(configuration, 'structure2')], 
+                                [SystemStructure(configuration, 'structure2'), SystemStructure(configuration, 'structure1')]):
+        
+        original_psf_waterbox = copy.deepcopy(system.waterbox_psf)
+        original_psf_complex = copy.deepcopy(system.complex_psf)
+        template_psf_waterbox = copy.deepcopy(template.waterbox_psf)
+        template_psf_complex = copy.deepcopy(template.complex_psf)
+        
+        mutation_list = a.generate_mutations_to_common_core_for_mol1(nr_of_steps_for_el=3, nr_of_steps_for_bonded_parameters=3)
+        i = IntermediateStateFactory(system=system, mutation_list=mutation_list, configuration=configuration)
+
+        m1 = mutation_list[-1]
+        current_step = 1
+        output_file_base = i.generate_specific_intermediate_state(m1, current_step)
+
+        
+        for env in ['waterbox', 'complex']:
+            print('Env : {}'.format(env))
+            if env == 'waterbox':
+                original_psf = original_psf_waterbox
+                template_psf = template_psf_waterbox
+            else:
+                original_psf = original_psf_complex
+                template_psf = template_psf_complex
+            
+            new_psf = generate_psf(output_file_base, env)
+            
+            
+            # atom names are the same in new and orginal psf
+            for natom, oatom in zip(new_psf.view[f":{system.tlc.upper()}"].atoms, 
+                                    original_psf.view[f":{system.tlc.upper()}"].atoms):
+                
+                assert(natom.name== oatom.name)
+
+            # changes are only in the ligand
+            for natom, oatom in zip(new_psf.view[f"!(:{system.tlc.upper()})"].atoms, 
+                                    original_psf.view[f"!(:{system.tlc.upper()})"].atoms):
+                
+                assert(np.isclose(natom.charge, oatom.charge))
+                assert(np.isclose(natom.epsilon, oatom.epsilon))
+            
+            
+            # get mapping between original/new and template psf
+            match_atom_names_cc1_to_cc2 = dict()
+            cc1_offset = min([a.idx for a in original_psf.view[f":{m1.tlc_cc1.upper()}"].atoms])
+            cc2_offset = min([a.idx for a in template_psf.view[f":{m1.tlc_cc2.upper()}"].atoms])
+            scale = current_step/(m1.nr_of_steps - 1)
+
+            # test atom parameters
+            for cc1, cc2 in zip(m1.cc1_idx, m1.cc2_idx):
+                # did atom type change? if not continue
+
+                cc1_oidx = cc1 + cc1_offset
+                cc2_oidx = cc2 + cc2_offset
+                cc1_a = original_psf[cc1_oidx]
+                cc2_a = template_psf[cc2_oidx]
+                if cc1_a.type == cc2_a.type:
+                    continue
+
+                match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
+                                    
+                
+                assert(np.isclose((1.0 - scale) * cc1_a.charge + scale * cc2_a.charge, 
+                                new_psf[cc1_oidx].charge))
+                assert(np.isclose((1.0 - scale) * cc1_a.epsilon + scale * cc2_a.epsilon, 
+                                new_psf[cc1_oidx].epsilon))
+                assert(np.isclose((1.0 - scale) * cc1_a.sigma + scale * cc2_a.sigma, 
+                                new_psf[cc1_oidx].sigma))
+                
+            
+            # get mapping between original/new and template psf
+            for cc1_bond, new_bond in zip(original_psf.view[f":{m1.tlc_cc1.upper()}"].bonds, 
+                                        new_psf.view[f":{m1.tlc_cc1.upper()}"].bonds):
+                cc1_a1 = cc1_bond.atom1.name
+                cc1_a2 = cc1_bond.atom2.name
+                # all atoms of the bond must be in cc
+                # everything outside the cc are bonded terms between dummies or 
+                # between real atoms and dummies and we can ignore them for now
+                if not all(elem in match_atom_names_cc1_to_cc2 for elem in [cc1_a1, cc1_a2]):
+                    assert(np.isclose(cc1_bond.type.k, new_bond.type.k))
+                    continue
+
+                for cc2_bond in template_psf.view[f":{m1.tlc_cc2.upper()}"].bonds:
+                    cc2_a1 = cc2_bond.atom1.name
+                    cc2_a2 = cc2_bond.atom2.name
+                    # all atoms of the bond must be in cc
+                    if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2]):
+                        continue
+
+                    # match the two bonds
+                    if sorted([match_atom_names_cc1_to_cc2[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
+                        scaled = (1.0 - scale) * cc1_bond.type.k + scale * cc2_bond.type.k
+                        assert(np.isclose(scaled, new_bond.type.k))
+            
+            # make sure everything else in not changed
+            for cc1_bond, new_bond in zip(original_psf.view[f"!:{m1.tlc_cc1.upper()}"].bonds, 
+                                        new_psf.view[f"!:{m1.tlc_cc1.upper()}"].bonds):
+                assert(np.isclose(cc1_bond.type.k, new_bond.type.k))
+
+            
+            
+            # get mapping between original/new and template psf
+            for cc1_angle, new_angle in zip(original_psf.view[f":{m1.tlc_cc1.upper()}"].angles, 
+                                        new_psf.view[f":{m1.tlc_cc1.upper()}"].angles):
+                cc1_a1 = cc1_angle.atom1.name
+                cc1_a2 = cc1_angle.atom2.name
+                cc1_a3 = cc1_angle.atom3.name
+                # all atoms of the bond must be in cc
+                # everything outside the cc are bonded terms between dummies or 
+                # between real atoms and dummies and we can ignore them for now
+                if not all(elem in match_atom_names_cc1_to_cc2 for elem in [cc1_a1, cc1_a2, cc1_a3]):
+                    assert(np.isclose(cc1_angle.type.k, new_angle.type.k))
+                    continue
+                
+                for cc2_angle in template_psf.view[f":{m1.tlc_cc2.upper()}"].angles:
+                    cc2_a1 = cc2_angle.atom1.name
+                    cc2_a2 = cc2_angle.atom2.name
+                    cc2_a3 = cc2_angle.atom3.name
+                    # all atoms of the bond must be in cc
+                    if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2, cc2_a3]):
+                        continue
+
+                    # match the two bonds
+                    if sorted([match_atom_names_cc1_to_cc2[e] for e in [cc1_a1, cc1_a2, cc1_a3]]) == sorted([cc2_a1, cc2_a2, cc2_a3]):
+                        scaled = (1.0 - scale) * cc1_angle.type.k + scale * cc2_angle.type.k
+                        assert(np.isclose(scaled, new_angle.type.k))
+
+    shutil.rmtree(output_file_base) 

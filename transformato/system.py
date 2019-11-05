@@ -142,30 +142,10 @@ class SystemStructure(object):
 
         idx_list = []
         for atom in psf.view[f":{self.tlc}"].atoms:
-            idx = int(atom.idx)
-            idx_list.append(idx)
+            idx_list.append(int(atom.idx))
+            
+            # charge is directly modiefied
             atom.initial_charge = atom.charge
-            atom.initial_epsilon = atom.epsilon
-            atom.initial_sigma = atom.sigma
-
-        # set initial parameters for all entries that will 
-        # be modified
-        for bond in psf.view[f":{self.tlc}"].bonds:
-            # set real parameter
-            bond.initial_k = bond.type.k
-            bond.initial_req = bond.type.req
-
-        for angle in psf.view[f":{self.tlc}"].angles:
-            angle.initial_k = angle.type.k
-            angle.initial_theteq = angle.type.theteq
-
-        for torsion in psf.view[f":{self.tlc}"].dihedrals:
-            for torsion_t in torsion.type:
-                torsion_t.initial_phi_k = torsion_t.phi_k
-
-        for torsion in psf.view[f":{self.tlc}"].impropers:
-            torsion.initial_psi_k = torsion.type.psi_k
-
 
         return min(idx_list)
     
