@@ -70,11 +70,6 @@ class IntermediateStateFactory(object):
                     self._copy_files(output_file_base)
                     intst_nr += 1
                 
-                # set the start_idx to 1 - otherwise we would get for every new 
-                # mutation a state at the beginning that is excatly the same as 
-                # the end of the previous mutation 
-                start_idx = 1 # NOTE: this line
-
     def _copy_files(self, intermediate_state_file_path):
         """
         Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
@@ -314,8 +309,8 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5''')
                                             atom.mod_type.rmin))
                 except AttributeError:
                     prm_file_handler.write('{:7} {:6} {:9.5f} {:9.5f}\n'.format(atom.type, 0.0, 
-                                            atom.type.epsilon, 
-                                            atom.type.rmin))
+                                            atom.epsilon, 
+                                            atom.rmin))
 
 
         prm_file_handler.write('\n')
@@ -366,15 +361,6 @@ toppar/toppar_all36_lipid_model.str
 toppar/toppar_all36_lipid_prot.str
 toppar/toppar_all36_lipid_pyrophosphate.str
 toppar/toppar_all36_lipid_sphingo.str
-toppar/toppar_all36_lipid_yeast.str
-toppar/toppar_all36_lipid_hmmm.str
-toppar/toppar_all36_lipid_detergent.str
-toppar/toppar_all36_lipid_ether.str
-toppar/toppar_all36_carb_glycolipid.str
-toppar/toppar_all36_carb_glycopeptide.str
-toppar/toppar_all36_carb_imlab.str
-toppar/toppar_all36_label_spin.str
-toppar/toppar_all36_label_fluorophore.str
 {}_g.rtf
 {}.prm
 dummy_atom_definitions.rtf

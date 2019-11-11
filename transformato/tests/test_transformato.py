@@ -245,7 +245,7 @@ def test_vdw_mutation():
         shutil.rmtree(output_file_base) 
 
         m2 = mutation_list[2]
-        current_step = 0
+        current_step = 1
         output_file_base = i.generate_specific_intermediate_state(m2, current_step)
         for env in ['waterbox', 'complex']:
             if env == 'waterbox':
