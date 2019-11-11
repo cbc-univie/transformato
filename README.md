@@ -8,14 +8,15 @@ Transformato is a package that helps to set up an equilibrium sampling protocol 
 
 ### Theory
 
-The thermodynamic cycle used by transformto is shown below:
+The thermodynamic cycle used by Transformto is shown below:
 
-![bitmap](https://user-images.githubusercontent.com/31651017/68555270-2a6c4700-042d-11ea-9305-4c27663c1b3e.png)
+![bitmap](https://user-images.githubusercontent.com/31651017/68591079-33dacb00-0490-11ea-9ca7-9c885b6f6b3f.png)
 
-The strategy is to turn atoms of two molecules to dummy atoms (shown in green) to obtain a common core (cc) between the two molecules and then mutate cc of molecule 1 to the cc of molecule 2. This closes the thermodynamic cycle. 
+The strategy is to turn atoms of two molecules to dummy atoms (shown in green) to obtain a common core (cc) between the two molecules (in this case a CH3 group) and subsequently mutate the common core of molecule 1 (cc1) to the common core of molecule 2 (cc2) to obtain equivalen states. This closes the thermodynamic cycle. 
+In the depicted example the additional step from cc1 to cc2 might not be necessary since both cc1-CH3 and cc2-CH3 might be equivalent in their bonded and non-bonded terms, but this is a special case. For more general mutations the change in bonded and non-bonded terms will be necessary. The mutation strategy used by Transformato can deal with changes in bonded and non-bonded parameters of the common core.   
 
 
-The mutation strategy between two molecules that transformato is using will be described using the following two molecules:
+A more in detail description of the mutation strategy used by Transformto will be described using the the following two molecules:
 ![bitmap](https://user-images.githubusercontent.com/31651017/68553941-6e5b4e00-0425-11ea-8b81-065e013276c2.png)
 
 The general approach is:
@@ -23,8 +24,8 @@ The general approach is:
   - this defines the commen core (cc) for both small molecules resulting in cc1 and cc2. The commen core can be different in atom types, charges and bonded parameters but has a mapping between the atoms.
 - mutate the atoms that are not in the CMS.
   - charges are linearly scaled to zero in multiple lambda states.
-  - LJ parameters are set to zero. All hydrogens in one lambda state, followed by one lambda state per heavy atom.
-- linearly scale the bonded parameters
+  - LJ parameters are set to zero using a mutation strategy called serial atom insertion (SAI). This leads to either LJ fully intact or completly turned of for a single atom outside of the common core. At each LJ lambda protocol step the LJ terms of at least one atom are turned off.
+- linearly scaling of the bonded and non-bonded parameters of the common core.
 
 Using these transformations we obtain the same common core between two different molecules with a common substructure.
 
