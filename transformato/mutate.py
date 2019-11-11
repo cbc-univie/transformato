@@ -153,8 +153,8 @@ class ProposeMutationRoute(object):
         mol = deepcopy(mol)
         AllChem.Compute2DCoords(mol)
 
-        drawer = rdMolDraw2D.MolDraw2DSVG(600,600)
-        drawer.SetFontSize(0.25)
+        drawer = rdMolDraw2D.MolDraw2DSVG(800,800)
+        drawer.SetFontSize(0.3)
 
         opts = drawer.drawOptions()
 
@@ -459,7 +459,7 @@ class BondedParameterMutation(object):
             else:
                 # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2
                 for torsion_t in cc2_torsion.type:
-                    modified_phi_k = torsion_t.initial_phi_k * max((scale -0.5) * 2, 0.0)
+                    modified_phi_k = torsion_t.phi_k * max((scale -0.5) * 2, 0.0)
                     mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase, 
                                         torsion_t.scee, torsion_t.scnb))
         
@@ -526,12 +526,10 @@ class LJMutation(BaseMutation):
         super().__init__(atom_idx, nr_of_steps)
 
     def _scale_epsilon(self, atom, multiplicator):
-        epsilon = atom.epsilon * multiplicator
-        atom.modified_epsilon = epsilon
+        atom.epsilon = atom.initial_epsilon * multiplicator
 
     def _scale_rmin(self, atom, multiplicator):
-        rmin = atom.rmin *  multiplicator
-        atom.modified_rmin = rmin
+        atom.rmin = atom.initial_rmin *  multiplicator
 
     def _modify_type(self, atom, psf):
 
@@ -568,15 +566,14 @@ class ELtoZeroMutation(ELMutation):
             idxo = idx + offset
             atom = psf[idxo]
             multiplicator = 1 - (current_step / (self.nr_of_steps -1))
-            charge = round(atom.charge * multiplicator , 5)
-            self._scale_charge(atom, charge)
+            self._scale_charge(atom, round(atom.initial_charge * multiplicator , 5))
 
 
 class LJtoZeroMutation(LJMutation):
 
     def __init__(self, atom_idx:list):
         """
-        Set the VdW terms of atoms specified in the atom_idx list to zero.
+        Set the LJ terms of atoms specified in the atom_idx list to zero.
         Parameters
         ----------
         atom_list : list
@@ -586,7 +583,7 @@ class LJtoZeroMutation(LJMutation):
     
     def mutate(self, psf, tlc:str, current_step:int):
 
-        logger.info('VdW to zero mutation')
+        logger.info('LJ to zero mutation')
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
 
         for i in self.atom_idx:
@@ -626,7 +623,7 @@ class TransformChargesToTargetCharge(ELMutation):
             idxo = idx + offset
             atom = psf[idxo]
             target_atom = self.target_psf[target_idx]
-            charge = (1.0 - scale) * atom.initial_charge + scale * target_atom.charge
+            charge = (1.0 - scale) * atom.initial_charge + scale * target_atom.initial_charge
             self._scale_charge(atom, charge)
 
 

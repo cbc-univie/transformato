@@ -132,20 +132,15 @@ class SystemStructure(object):
         """
         assert(type(psf) == pm.charmm.CharmmPsfFile)
         psf.number_of_dummys = 0
-        psf.already_initialized = False
-
-        psf.cc_atoms = []
-        psf.cc_bonds = []
-        psf.cc_angles = []
-        psf.cc_torsions = []
-        psf.cc_improper = []
 
         idx_list = []
         for atom in psf.view[f":{self.tlc}"].atoms:
             idx_list.append(int(atom.idx))
             
-            # charge is directly modiefied
+            # charge, epsilon and rmin are directly modiefied
             atom.initial_charge = atom.charge
+            atom.initial_epsilon = atom.epsilon
+            atom.initial_rmin = atom.rmin
 
         return min(idx_list)
     
