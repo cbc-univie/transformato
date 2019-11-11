@@ -24,7 +24,7 @@ The general approach is:
   - this defines the commen core (cc) for both small molecules resulting in cc1 and cc2. The commen core can be different in atom types, charges and bonded parameters but has a mapping between the atoms.
 - mutate the atoms that are not in the CMS.
   - charges are linearly scaled to zero in multiple lambda states.
-  - LJ parameters are set to zero using a mutation strategy called serial atom insertion (SAI). This leads to either LJ fully intact or completly turned of for a single atom outside of the common core. At each LJ lambda protocol step the LJ terms of at least one atom are turned off.
+  - LJ parameters are set to zero using a mutation strategy called serial atom insertion (SAI). This leads to either LJ fully intact or completly turned off for a single atom outside of the common core. At each LJ lambda protocol step the LJ terms of at least one atom are turned off.
 - linearly scaling of the bonded and non-bonded parameters of the common core.
 
 Using these transformations we obtain the same common core between two different molecules with a common substructure.
@@ -35,7 +35,7 @@ Using these transformations we obtain the same common core between two different
 For our example the maximum common substructure is marked in read on both molecules.
 ![bitmap](https://user-images.githubusercontent.com/31651017/68554631-c2683180-0429-11ea-8846-ce303fa933b9.png)
 
-The common core of mol1 and mol2 are different in atom type, charges and bonded terms (mol1 is aromatic, mol2 is not aromatic). The first step is now to define a mutation route to obtain a molecule where only the  
+The common core of mol1 and mol2 is different in bonded and non-bonded parameters (mol1 is aromatic, mol2 is not aromatic). The first step is now to define a mutation route to obtain a molecule where only the common core is 
 
 
 ### How to use transformato for binding free energy calculations
