@@ -13,6 +13,7 @@ from rdkit.Chem.Draw import IPythonConsole
 from IPython.core.display import display
 from transformato import state
 from collections import namedtuple
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -229,6 +230,8 @@ class ProposeMutationRoute(object):
             transformations.append(t)
         
         # TODO: Add Charge transformation
+
+        
         return transformations
 
 
@@ -239,7 +242,6 @@ class ProposeMutationRoute(object):
         """
 
         mol = self.mols[name]
-        # first LJ and electrostatic is scaled
         hydrogens = []
         mutations = []
         atoms_to_be_mutated = []
@@ -252,11 +254,12 @@ class ProposeMutationRoute(object):
                 logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
         
         # scale all EL of all atoms to zero
-        mutations.append(ELtoZeroMutation(atoms_to_be_mutated, nr_of_steps_for_el))
+        mutations.append(ELtoZeroMutation(atom_idx=atoms_to_be_mutated, nr_of_steps=nr_of_steps_for_el, common_core=cc_idx ))
         
         # scale LJ
         # start with mutation of LJ of hydrogens
         mutations.append(LJtoZeroMutation(hydrogens))
+        # continue with scaling of heavy atoms LJ
         for idx in atoms_to_be_mutated:
             if idx not in hydrogens:
                 mutations.append(LJtoZeroMutation([idx]))
@@ -513,11 +516,35 @@ class BaseMutation(object):
 
 class ELMutation(BaseMutation):
 
-    def __init__(self, atom_idx:list, nr_of_steps:int):
+    def __init__(self, atom_idx:list, nr_of_steps:int, common_core:list):
         super().__init__(atom_idx, nr_of_steps)
+        self.common_core = common_core
 
-    def _scale_charge(self, atom, charge):
-        atom.charge = charge
+    def _scale_charge(self, atom, new_charge):
+        """
+        Scale atom with charge and compensate the charge change.
+        """
+        diff_charge = atom.charge - new_charge
+        atom.charge = new_charge
+        return float(diff_charge)
+    
+    def _compensate_charge(self, diff_charge:float, offset:int, psf, total_charge):
+
+        nr_of_atoms_to_spread_charge = len(self.common_core)
+        print('##############')
+        print(diff_charge)
+        charge_part = diff_charge / nr_of_atoms_to_spread_charge
+        print(charge_part)
+        print('##############')
+        for idx in self.common_core:
+            odx = idx + offset
+            print(psf[odx].charge)
+            psf[odx].charge += charge_part
+            print(psf[odx].charge)
+        
+        # rescale all values so that the sum is zero
+
+    
 
 
 class LJMutation(BaseMutation):
@@ -541,11 +568,9 @@ class LJMutation(BaseMutation):
             atom.type = f"DDD{psf.number_of_dummys}"
             psf.number_of_dummys += 1
 
-
-
 class ELtoZeroMutation(ELMutation):
 
-    def __init__(self, atom_idx:list, nr_of_steps:int):
+    def __init__(self, atom_idx:list, nr_of_steps:int, common_core:list):
         """
         Scale the electrostatics of atoms specified in the atom_idx list to zero.
         Parameters
@@ -554,19 +579,33 @@ class ELtoZeroMutation(ELMutation):
             atoms for which charges are scaled to zero
         mr_of_steps : int
             determines the scaling factor : multiplicator = 1 - (current_step / (nr_of_steps))
+        common_core : list
         """
-        super().__init__(atom_idx, nr_of_steps)
+        super().__init__(atom_idx, nr_of_steps, common_core)
 
     def mutate(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
         logger.info('Charges to zero mutation')
         
+        old_total_charge = int(sum([a.charge for a in psf.view[f":{tlc.upper()}"].atoms]))
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
-
+        diff_charge = 0.0
         for idx in self.atom_idx:
-            idxo = idx + offset
-            atom = psf[idxo]
+            odx = idx + offset
+            atom = psf[odx]
             multiplicator = 1 - (current_step / (self.nr_of_steps -1))
-            self._scale_charge(atom, round(atom.initial_charge * multiplicator , 5))
+            new_charge = float(np.round(atom.initial_charge * multiplicator , 4))
+            diff_charge += self._scale_charge(atom, new_charge)
+        
+        # compensate for the total change in charge 
+        #self._compensate_charge(diff_charge, offset, psf, old_total_charge)
+
+        #new_total_charge = sum([a.charge for a in psf.view[f":{tlc.upper()}"].atoms])
+        #try:
+        #    assert(np.isclose(new_total_charge, old_total_charge))
+        #except AssertionError:
+        #    raise AssertionError(f"Charge has changed from {old_total_charge} to {new_total_charge}")
+            
+
 
 
 class LJtoZeroMutation(LJMutation):
@@ -620,8 +659,8 @@ class TransformChargesToTargetCharge(ELMutation):
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
 
         for idx, target_idx in zip(self.atom_idx, self.target_idx):
-            idxo = idx + offset
-            atom = psf[idxo]
+            odx = idx + offset
+            atom = psf[odx]
             target_atom = self.target_psf[target_idx]
             charge = (1.0 - scale) * atom.initial_charge + scale * target_atom.initial_charge
             self._scale_charge(atom, charge)
