@@ -35,15 +35,29 @@ Using these transformations we obtain the same common core between two different
 For our example the maximum common substructure is marked in read on both molecules.
 ![bitmap](https://user-images.githubusercontent.com/31651017/68554631-c2683180-0429-11ea-8846-ce303fa933b9.png)
 
-The common core of mol1 and mol2 is different in bonded and non-bonded parameters (mol1 is aromatic, mol2 is not aromatic). The first step is now to define a mutation route to obtain a molecule where only the common core is 
+The common core of mol1 and mol2 is different in bonded and non-bonded parameters (mol1 is aromatic, mol2 is not aromatic). The first step is now to define a mutation route to obtain a molecule where only the common core is interacting with the environment.
 
 
 ### How to use transformato for binding free energy calculations
 
-
-
 ## Setting up free energy calculations
-Set up your set of ligands in a waterbox and in the binding pocket of a protein using CHARMM-GUI and download the system for openMM. Put the data in the transformato/data folder. There is already an example for 2OJ9 in there, the new system should be set up the same way. E.g., if your new system is called 3BYL with ligand UN1 and UN2 you should generate two directories: transformato/data/3BYL-UN1 and transformato/data/3BYL-UN2 and move the CHARMM-GUI output for the complex in transformato/data/3BYL-UN1/complex and for the solvated ligand in transformato/data/3BYL-UN1/waterbox. Afterwards make sure that you generate a new yaml file in transformato/config. There is already an example file shown in transformato/config/2oj9-test.yaml. Most likely you only need to modify the name and the ligand three letter code of the yaml file. Then run the equilibration step of the simulation directly in transformato/data/3BYL-UN1/complex/openMM to generate the restart file for the complex and the waterbox.
+
+For 'endpoints' are needed to run a protein binding free energy simulation. 
+1. Ligand 1 in a waterbox
+2. Ligand 2 in a waterbox
+3. Ligand 1 in complex
+4. Ligand 2 in complex
+
+An example with the ligands shown above is deposited in transformato/data.
+The directory with 2OJ9-e1 has the enol form of the ligand and 2OJ9-e2 the keto form of the ligand.
+
+All these directories are directly taken from CHARMM-GUI. After you solvate either the ligand or the ligand+protein and download the system for openMM you have to run a short minimization using the scripts obtaine from CHARMM-GUI.
+
+To use the Transformato free energy set up the next step is to set up a config file for you run.
+The config file for 2OJ9-e1 and 2OJ9-e2 is shown in transformato/config/2oj9_example.yaml.
+What is important here is that the tree letter code (tlc) used in the psf is the same as in the config file.
+
+
 ## Generating equilibrium samples along the alchemical path 
 After this step you should run the transformato/notebooks/example.ipynb notebook to generate the intermediate states connecting the two ligands. There are two variables you want to adapt there: the yaml file that is loaded and where you want to write the intermediate state files to. Both is further explained in the jupyter notebook.
 
