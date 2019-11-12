@@ -161,7 +161,7 @@ class SystemStructure(object):
         charmm_gui_env = self.charmm_gui_base + env
         tlc = self.tlc       
         tlc_lower = str(tlc).lower()
-        sdf_file = f"{charmm_gui_env}/{tlc_lower}/{tlc}.sdf"        
+        sdf_file = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.sdf"        
 
         
         mol = Chem.MolFromMolFile(sdf_file, removeHs=False)

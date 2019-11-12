@@ -48,7 +48,7 @@ def test_read_yaml():
     settingsMap = load_config_yaml(config='config/2oj9-test.yaml',
                        input_dir='.', output_dir='data/')
 
-    assert(settingsMap['system']['name'] == '2OJ9-2OJ9-mod')
+    assert(settingsMap['system']['name'] == '2OJ9-test1-2OJ9-test2')
 
 
 def test_initialize_systems():
