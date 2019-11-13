@@ -567,6 +567,7 @@ class LJMutation(BaseMutation):
     def __init__(self, atom_idx:list, nr_of_steps:int):
         super().__init__(atom_idx, nr_of_steps)
 
+
     def _scale_epsilon(self, atom, multiplicator):
         atom.epsilon = atom.initial_epsilon * multiplicator
 
@@ -597,6 +598,12 @@ class ELtoZeroMutation(ELMutation):
         common_core : list
         """
         super().__init__(atom_idx, nr_of_steps, common_core)
+
+    def __str__(self):
+        return "charges to zero mutation"
+    def __unicode__(self):
+        return u"charges to zero mutation"
+
 
     def mutate(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
         logger.info('Charges to zero mutation')
@@ -635,6 +642,12 @@ class LJtoZeroMutation(LJMutation):
         """
         super().__init__(atom_idx, 1)
     
+    def __str__(self):
+        return "LJ to zero mutation"
+    def __unicode__(self):
+        return u"LJ to zero mutation"
+
+
     def mutate(self, psf, tlc:str, current_step:int):
 
         logger.info('LJ to zero mutation')
@@ -674,7 +687,13 @@ class TransformChargesToTargetCharge():
         self.cc1_psf = cc1_psf 
         self.tlc_cc1 = tlc_cc1
         self.tlc_cc2 = tlc_cc2
+        self.nr_of_steps = 1
         self.atom_names_mapping = self._get_atom_mapping() 
+    
+    def __str__(self):
+        return "Transform charge distribution of common core 1 to common core 2"
+    def __unicode__(self):
+        return u"Transform charge distribution of common core 1 to common core 2"
 
     def _get_atom_mapping(self):
         match_atom_names_cc1_to_cc2 = {}
