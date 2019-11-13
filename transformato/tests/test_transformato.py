@@ -345,8 +345,6 @@ def test_bonded_mutation():
                 match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
                                     
                 
-                assert(np.isclose((1.0 - scale) * cc1_a.charge + scale * cc2_a.charge, 
-                                new_psf[cc1_oidx].charge))
                 assert(np.isclose((1.0 - scale) * cc1_a.epsilon + scale * cc2_a.epsilon, 
                                 new_psf[cc1_oidx].epsilon))
                 assert(np.isclose((1.0 - scale) * cc1_a.sigma + scale * cc2_a.sigma, 
