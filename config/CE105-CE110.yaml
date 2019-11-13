@@ -71,7 +71,7 @@ system:
 simulation:
 ################
   nsteps:
-    '2500000'
+    '1000000'
   free-energy-type:
     'binding-free-energy'
 ################
