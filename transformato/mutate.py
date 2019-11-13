@@ -494,7 +494,6 @@ class BondedParameterMutation(object):
         self._mutate_torsions(psf, tlc, scale)
             
 
-
     def _modify_type(self, atom:pm.Atom, psf:pm.charmm.CharmmPsfFile):
 
         if (hasattr(atom, 'initial_type')):
@@ -526,13 +525,13 @@ class ELMutation(BaseMutation):
         """
         diff_charge = atom.charge - new_charge
         atom.charge = new_charge
-        return float(diff_charge)
+        return diff_charge
     
-    def _compensate_charge(self, diff_charge:float, offset:int, psf, total_charge):
+    def _compensate_charge(self, psf, offset:int, diff_charge:float, tlc:str, total_charge):
 
         nr_of_atoms_to_spread_charge = len(self.common_core)
         print('##############')
-        print(diff_charge)
+        print('Charge to compensate: {}'.format(diff_charge))
         charge_part = diff_charge / nr_of_atoms_to_spread_charge
         print(charge_part)
         print('##############')
@@ -541,10 +540,29 @@ class ELMutation(BaseMutation):
             print(psf[odx].charge)
             psf[odx].charge += charge_part
             print(psf[odx].charge)
-        
-        # rescale all values so that the sum is zero
 
-    
+        unscaled_list_of_new_charges = []
+        for atom in psf[f":{tlc.upper()}"]:
+            unscaled_list_of_new_charges.append(atom.charge)
+        
+        print('New charge sum: {}'.format(sum(unscaled_list_of_new_charges)))
+        charge_list = np.array(unscaled_list_of_new_charges)
+        # rescale all values so that the sum is zero
+        correctly_scaled_charges = np.exp(charge_list) / np.sum(np.exp(charge_list))
+        if round(total_charge) == 1:
+            print('-1 charge mutation!')
+            pass
+        elif round(total_charge) == 0:
+            print('0 charge mutation!')
+            correctly_scaled_charges = correctly_scaled_charges - (np.average(correctly_scaled_charges))
+        else:
+            raise NotImplementedError()
+        
+        for atom, new_charge in zip(psf[f":{tlc.upper()}"], list(correctly_scaled_charges)):
+            atom.charge = new_charge
+            
+
+   
 
 
 class LJMutation(BaseMutation):
@@ -586,9 +604,9 @@ class ELtoZeroMutation(ELMutation):
     def mutate(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
         logger.info('Charges to zero mutation')
         
-        old_total_charge = int(sum([a.charge for a in psf.view[f":{tlc.upper()}"].atoms]))
+        old_total_charge = round(sum([a.charge for a in psf.view[f":{tlc.upper()}"].atoms]))
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
-        diff_charge = 0.0
+        diff_charge = 0
         for idx in self.atom_idx:
             odx = idx + offset
             atom = psf[odx]
@@ -596,14 +614,14 @@ class ELtoZeroMutation(ELMutation):
             new_charge = float(np.round(atom.initial_charge * multiplicator , 4))
             diff_charge += self._scale_charge(atom, new_charge)
         
-        # compensate for the total change in charge 
-        #self._compensate_charge(diff_charge, offset, psf, old_total_charge)
-
-        #new_total_charge = sum([a.charge for a in psf.view[f":{tlc.upper()}"].atoms])
-        #try:
-        #    assert(np.isclose(new_total_charge, old_total_charge))
-        #except AssertionError:
-        #    raise AssertionError(f"Charge has changed from {old_total_charge} to {new_total_charge}")
+        if multiplicator != 1:
+            # compensate for the total change in charge 
+            self._compensate_charge(psf, offset, diff_charge, tlc, old_total_charge)
+            new_total_charge = sum([a.charge for a in psf.view[f":{tlc.upper()}"].atoms])
+            try:
+                assert(np.isclose(new_total_charge, old_total_charge))
+            except AssertionError:
+                raise AssertionError(f"Charge has changed from {old_total_charge} to {new_total_charge}")
             
 
 
