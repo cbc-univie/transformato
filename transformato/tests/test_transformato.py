@@ -266,7 +266,6 @@ def test_vdw_mutation():
             for idx in range(len(original_psf.atoms)):
                 idxo = idx - offset # NOTE: the '-'
                 if idxo not in m2.atom_idx + m1.atom_idx:
-                    print(idxo)
                     assert(np.isclose(original_psf.atoms[idx].epsilon, new_psf.atoms[idx].epsilon))
                     assert(np.isclose(original_psf.atoms[idx].rmin, new_psf.atoms[idx].rmin))
 
