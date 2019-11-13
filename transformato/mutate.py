@@ -526,7 +526,7 @@ class ELMutation(BaseMutation):
         atom.charge = new_charge
         return diff_charge
     
-    def _compensate_charge(self, psf, offset:int, diff_charge:float, tlc:str, total_charge):
+    def _compensate_charge(self, psf, offset:int, diff_charge:float, tlc:str):
 
         nr_of_atoms_to_spread_charge = len(self.common_core)
         print('##############')
@@ -537,27 +537,6 @@ class ELMutation(BaseMutation):
         for idx in self.common_core:
             odx = idx + offset
             psf[odx].charge += charge_part
-
-        unscaled_list_of_new_charges = []
-        for atom in psf[f":{tlc.upper()}"]:
-            unscaled_list_of_new_charges.append(atom.charge)
-        
-        print('New charge sum: {}'.format(sum(unscaled_list_of_new_charges)))
-        charge_list = np.array(unscaled_list_of_new_charges)
-        # rescale all values so that the sum is zero
-        correctly_scaled_charges = np.exp(charge_list) / np.sum(np.exp(charge_list))
-        if round(total_charge) == 1:
-            print('-1 charge mutation!')
-            pass
-        elif round(total_charge) == 0:
-            print('0 charge mutation!')
-            correctly_scaled_charges = correctly_scaled_charges - (np.average(correctly_scaled_charges))
-        else:
-            raise NotImplementedError()
-        
-        for atom, new_charge in zip(psf[f":{tlc.upper()}"], list(correctly_scaled_charges)):
-            atom.charge = new_charge
-            
 
    
 
@@ -608,7 +587,7 @@ class ELtoZeroMutation(ELMutation):
     def mutate(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
         logger.info('Charges to zero mutation')
         
-        old_total_charge = round(sum([a.charge for a in psf.view[f":{tlc.upper()}"].atoms]))
+        old_total_charge = round(sum([a.charge for a in psf[f":{tlc.upper()}"].atoms]))
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
         diff_charge = 0
         for idx in self.atom_idx:
@@ -620,12 +599,16 @@ class ELtoZeroMutation(ELMutation):
         
         if multiplicator != 1:
             # compensate for the total change in charge 
-            self._compensate_charge(psf, offset, diff_charge, tlc, old_total_charge)
-            new_total_charge = sum([a.charge for a in psf.view[f":{tlc.upper()}"].atoms])
+            self._compensate_charge(psf, offset, diff_charge, tlc)
+            new_charges = [a.charge for a in psf[f":{tlc.upper()}"].atoms]
             try:
-                assert(np.isclose(new_total_charge, old_total_charge))
+                assert(np.isclose(sum(new_charges), old_total_charge))
             except AssertionError:
-                raise AssertionError(f"Charge has changed from {old_total_charge} to {new_total_charge}")
+                new_charges = (np.array(new_charges) - np.average(np.array(new_charges)))
+                for a, new_charge in zip(psf.view[f":{tlc.upper()}"].atoms, new_charges):
+                    a.charge = new_charge
+                new_charges = [a.charge for a in psf[f":{tlc.upper()}"].atoms]
+                assert(np.isclose(sum(new_charges), old_total_charge))
             
 
 
@@ -688,7 +671,7 @@ class TransformChargesToTargetCharge():
         self.tlc_cc1 = tlc_cc1
         self.tlc_cc2 = tlc_cc2
         self.nr_of_steps = 1
-        self.atom_names_mapping = self._get_atom_mapping() 
+        self.atom_names_mapping = self._get_atom_mapping()
     
     def __str__(self):
         return "Transform charge distribution of common core 1 to common core 2"
@@ -698,28 +681,55 @@ class TransformChargesToTargetCharge():
     def _get_atom_mapping(self):
         match_atom_names_cc1_to_cc2 = {}
         for cc1, cc2 in zip(self.cc1_idx, self.cc2_idx):
-            # did atom type change? if not continue
             cc1_a = self.cc1_psf[cc1]
             cc2_a = self.cc2_psf[cc2]
-            if cc1_a.type == cc2_a.type:
-                continue
             match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
         
         return match_atom_names_cc1_to_cc2
 
+    def _compensate_charge(self, psf, diff_charge:float, total_charge):
+
+        nr_of_atoms_to_spread_charge = len(self.cc2_idx)
+        print('##############')
+        print('Charge to compensate: {}'.format(diff_charge))
+        charge_part = diff_charge / nr_of_atoms_to_spread_charge
+        print('##############')
+        for idx in self.cc2_idx:
+            psf[idx].charge += charge_part
+
+        return psf
+
+    def _scale_cc2_charges(self):
+        
+        cc2_scaled_psf_ligand = self.cc2_psf[f":{self.tlc_cc2.upper()}"] 
+        new_charge = 0.0
+        diff_charge = 0.0
+        for atom in cc2_scaled_psf_ligand:
+            if atom.idx in self.cc2_idx:
+                continue
+            diff_charge += atom.charge - new_charge    
+            atom.charge = new_charge
+        return cc2_scaled_psf_ligand, diff_charge
+
+
+
     def _mutate_charge(self, psf:pm.charmm.CharmmPsfFile, tlc:str):
+        
+        total_charge = round(sum([a.charge for a in self.cc2_psf[f":{self.tlc_cc2.upper()}"].atoms]))
+        cc2_scaled_psf_ligand, diff_charge = self._scale_cc2_charges()
+        cc2_psf = self._compensate_charge(cc2_scaled_psf_ligand, diff_charge, total_charge)
+
         for cc1_atom in psf.view[f":{tlc}"]:
             if cc1_atom.name not in self.atom_names_mapping:
                 continue
             
             logging.info(f"Scale charge for atom: {cc1_atom}")
             
-            for cc2_atom in self.cc2_psf:
+            for cc2_atom in cc2_psf:
                 if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
                     break
 
             logging.info(f"Template atom: {cc2_atom}")
-
             # scale charge # NOTE: Charges are scaled directly
             logging.info(f"Old charge: {cc1_atom.charge}")
             cc1_atom.charge = cc2_atom.charge
@@ -739,8 +749,7 @@ class TransformChargesToTargetCharge():
 
         assert(type(psf) == pm.charmm.CharmmPsfFile)
 
-
-        # scale charge
+        # mutate charge
         self._mutate_charge(psf, tlc)
 
 
