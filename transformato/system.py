@@ -199,7 +199,7 @@ class SystemStructure(object):
         atom_name_to_atom_type = dict()
         atom_idx_to_atom_partial_charge = dict()
 
-        for atom in psf.view[':' + str(self.tlc)].atoms:
+        for atom in psf.view[f":{self.tlc}"].atoms:
             atom_name = atom.name
             atom_index = atom.idx
             atom_type = atom.type

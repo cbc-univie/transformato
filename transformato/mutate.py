@@ -207,6 +207,7 @@ class ProposeMutationRoute(object):
         """
         
         transformations = []
+
         # test if bonded mutations are necessary
         bonded_mutations_necessary = False
         for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
@@ -230,6 +231,9 @@ class ProposeMutationRoute(object):
             transformations.append(t)
         
         # TODO: Add Charge transformation
+        logger.info('Charges at commen core need to be transformed')
+        t = TransformChargesToTargetCharge(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2(), self.psfs['m1'], self.psfs['m2'], self.s1_tlc, self.s2_tlc)
+        transformations.append(t)
 
         
         return transformations
@@ -323,12 +327,7 @@ class BondedParameterMutation(object):
                     break
 
             logging.info(f"Template atom: {cc2_atom}")
-            logging.info('Scaling VdW + charge')
-
-            # scale charge # NOTE: Charges are scaled directly
-            logging.info(f"Old charge: {cc1_atom.charge}")
-            cc1_atom.charge = (1.0 - scale) * cc1_atom.initial_charge + scale * cc2_atom.charge
-            logging.info(f"New charge: {cc1_atom.charge}")
+            logging.info('Scaling bonded terms')
 
             
             # scale epsilon
@@ -537,9 +536,7 @@ class ELMutation(BaseMutation):
         print('##############')
         for idx in self.common_core:
             odx = idx + offset
-            print(psf[odx].charge)
             psf[odx].charge += charge_part
-            print(psf[odx].charge)
 
         unscaled_list_of_new_charges = []
         for atom in psf[f":{tlc.upper()}"]:
@@ -651,37 +648,81 @@ class LJtoZeroMutation(LJMutation):
             self._scale_rmin(atom, multiplicator)
             
 
-class TransformChargesToTargetCharge(ELMutation):
-    # TODO: offsets need to be corrected
-    def __init__(self, atom_idx:list, target_idx:list, target_psf:pm.charmm.CharmmPsfFile, nr_of_steps:int):
+class TransformChargesToTargetCharge():
+    
+    def __init__(self, cc1_idx:list, cc2_idx:list, cc1_psf:pm.charmm.CharmmPsfFile, cc2_psf:pm.charmm.CharmmPsfFile, tlc_cc1:str, tlc_cc2:str):
         """
-        Scale the electrostatics of atoms specified in the atom_idx list to the charges specified in the target_idx list.
+        Scale the charges inside the common core.
         Parameters
         ----------
-        atom_list : list
-            atom indices that specify atoms for which charges are scaled
-        target_idx : list
-            atom indices that specify atoms that have the target charge
-        target_psf : pm.charmm.CharmmPsfFile
-            target_psf has the target charges 
-        mr_of_steps : int
-            determines the scaling factor : (1.0 - (current_step/nr_of_steps) * atom.charge + (current_step/nr_of_steps) * target_atom.charge
+        cc1_idx : list
+            indices of cc1
+        cc2_idx : list
+            indices of cc2 (in the same order as cc1)
+        cc1_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
+        cc2_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
+            the target psf that is used to generate the new bonded parmaeters
+        nr_of_steps : int
+        tlc_cc1 : str
+            three letter code of ligand in cc1
+        tlc_cc2 : str
+            three letter code of ligand in cc2
         """
-        super().__init__(atom_idx, nr_of_steps)
-        self.target_psf = target_psf
-        self.target_idx = target_idx
+        self.cc1_idx = cc1_idx
+        self.cc2_idx = cc2_idx
+        self.cc2_psf = cc2_psf 
+        self.cc1_psf = cc1_psf 
+        self.tlc_cc1 = tlc_cc1
+        self.tlc_cc2 = tlc_cc2
+        self.atom_names_mapping = self._get_atom_mapping() 
 
-    def mutate(self, psf, tlc:str, current_step:int):
-        logger.info('Mutate charge from cc1 to cc2')
-        scale = current_step/(self.nr_of_steps -1)
-        offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
+    def _get_atom_mapping(self):
+        match_atom_names_cc1_to_cc2 = {}
+        for cc1, cc2 in zip(self.cc1_idx, self.cc2_idx):
+            # did atom type change? if not continue
+            cc1_a = self.cc1_psf[cc1]
+            cc2_a = self.cc2_psf[cc2]
+            if cc1_a.type == cc2_a.type:
+                continue
+            match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
+        
+        return match_atom_names_cc1_to_cc2
 
-        for idx, target_idx in zip(self.atom_idx, self.target_idx):
-            odx = idx + offset
-            atom = psf[odx]
-            target_atom = self.target_psf[target_idx]
-            charge = (1.0 - scale) * atom.initial_charge + scale * target_atom.initial_charge
-            self._scale_charge(atom, charge)
+    def _mutate_charge(self, psf:pm.charmm.CharmmPsfFile, tlc:str):
+        for cc1_atom in psf.view[f":{tlc}"]:
+            if cc1_atom.name not in self.atom_names_mapping:
+                continue
+            
+            logging.info(f"Scale charge for atom: {cc1_atom}")
+            
+            for cc2_atom in self.cc2_psf:
+                if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
+                    break
+
+            logging.info(f"Template atom: {cc2_atom}")
+
+            # scale charge # NOTE: Charges are scaled directly
+            logging.info(f"Old charge: {cc1_atom.charge}")
+            cc1_atom.charge = cc2_atom.charge
+            logging.info(f"New charge: {cc1_atom.charge}")
+
+
+
+    def mutate(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
+        """
+        Mutates the charge parameters of cc1 to cc2.
+        Parameters
+        ----------
+        psf : pm.charmm.CharmmPsfFile
+            psf that gets mutated
+        tlc : str
+        """
+
+        assert(type(psf) == pm.charmm.CharmmPsfFile)
+
+
+        # scale charge
+        self._mutate_charge(psf, tlc)
 
 
 
