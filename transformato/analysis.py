@@ -139,47 +139,72 @@ def calculate_energies_with_potential_on_conf(env:str, potential:int, conformati
 
     return energy
 
-def _parse_files(configuration:dict, structure:str, nr_of_states:int)->(dict,dict):
 
-    r_waterbox_state = defaultdict(dict)
-    r_complex_state = defaultdict(dict)
-    for i in range(1, nr_of_states+1):
-        for j in range(1, nr_of_states+1):
-            file_path = f"{configuration['system_dir']}/results/energy_{structure}_{i}_{j}.json"
-            f = open(file_path, 'r')
-            r = json.load(f)
-            r_waterbox_state[i][j] = r['waterbox']
-            r_complex_state[i][j] = r['complex']
-            f.close()
-    return r_waterbox_state, r_complex_state, 
+    
+class FreeEnergyCalculator(object):
+    def __init__(self, configuration:dict, nr_of_states:int, structure:str):
+        self.configuration = configuration
+        self.nr_of_states = nr_of_states
+        self.structure = structure
 
-def calculate_dG_to_common_core(configuration:dict, structure:str, nr_of_states:int):
+    def _parse_files(self)->(dict,dict):
 
-    Results = namedtuple('Results', 'env, Deltaf_ij, dDeltaf_ij, Theta_ij')
-    r_waterbox_state, r_complex_state = _parse_files(configuration, structure, nr_of_states)
-    Deltaf_ij, dDeltaf_ij, Theta_ij = _analyse_results_using_mbar(r_waterbox_state, nr_of_states)
-    r1 = Results(env='solv', Deltaf_ij=Deltaf_ij, dDeltaf_ij=dDeltaf_ij, Theta_ij=Theta_ij)
-    Deltaf_ij, dDeltaf_ij, Theta_ij = _analyse_results_using_mbar(r_complex_state, nr_of_states)
-    r2 = Results(env='complex', Deltaf_ij=Deltaf_ij, dDeltaf_ij=dDeltaf_ij, Theta_ij=Theta_ij)
+        r_waterbox_state = defaultdict(dict)
+        r_complex_state = defaultdict(dict)
+        for i in range(1, self.nr_of_states+1):
+            for j in range(1, self.nr_of_states+1):
+                file_path = f"{self.configuration['system_dir']}/results/energy_{self.structure}_{i}_{j}.json"
+                f = open(file_path, 'r')
+                r = json.load(f)
+                r_waterbox_state[i][j] = r['waterbox']
+                r_complex_state[i][j] = r['complex']
+                f.close()
+        
+        self.r_waterbox_state = r_waterbox_state
+        self.r_complex_state = r_complex_state 
 
-    return r1, r2
 
-def _analyse_results_using_mbar(results_dict:dict, nr_of_states:int):
+    @property
+    def free_energy_differences(self):
+        """matrix of free energy differences"""
+        return self.mbar.getFreeEnergyDifferences()[0]
+    
+    @property
+    def free_energy_difference_uncertainties(self):
+        """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
+        return self.mbar.getFreeEnergyDifferences()[1]
+    
+    @property
+    def end_state_free_energy_difference(self):
+        """DeltaF[lambda=1 --> lambda=0]"""
+        DeltaF_ij, dDeltaF_ij, _ = self.mbar.getFreeEnergyDifferences()
+        K = len(DeltaF_ij)
+        return DeltaF_ij[0, K-1], dDeltaF_ij[0, K-1]
 
-    nr_of_conformations_per_state = int(len(results_dict[1][1])) # => there is always a [0][0] entry
-    test = np.full(shape=nr_of_states, fill_value=nr_of_conformations_per_state)
-    u_kln = []
-    for u_for_traj in sorted(results_dict):
-        u_kn = []
-        for u_x in results_dict[u_for_traj]:
-            u_kn.extend((results_dict[u_for_traj][u_x]))
-        u_kln.append(u_kn)       
 
-    u_kln = np.asanyarray(u_kln)
-    print(u_kln.shape)
-    m = mbar.MBAR(u_kln, test)
-    Deltaf_ij, dDeltaf_ij, Theta_ij = m.getFreeEnergyDifferences()
-    return Deltaf_ij, dDeltaf_ij, Theta_ij
+
+    def calculate_dG_to_common_core(self):
+
+        self._parse_files()
+        waterbox_Deltaf_ij, waterbox_dDeltaf_ij, _ = self._analyse_results_using_mbar(self.r_waterbox_state)
+        complex_Deltaf_ij, complex_dDeltaf_ij, _ =   self._analyse_results_using_mbar(self.r_complex_state)
+
+    def _analyse_results_using_mbar(self, results_dict:dict):
+
+        nr_of_conformations_per_state = int(len(results_dict[1][1])) # => there is always a [0][0] entry
+        test = np.full(shape=self.nr_of_states, fill_value=nr_of_conformations_per_state)
+        u_kln = []
+        for u_for_traj in sorted(results_dict):
+            u_kn = []
+            for u_x in results_dict[u_for_traj]:
+                u_kn.extend((results_dict[u_for_traj][u_x]))
+            u_kln.append(u_kn)       
+
+        u_kln = np.asanyarray(u_kln)
+        m = mbar.MBAR(u_kln, test)
+        Deltaf_ij, dDeltaf_ij, overlap = m.getFreeEnergyDifferences()
+        overlap = m.computeOverlap()
+        return Deltaf_ij, dDeltaf_ij, overlap 
 
 
 
