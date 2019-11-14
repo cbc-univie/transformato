@@ -53,10 +53,10 @@ class IntermediateStateFactory(object):
         intst_nr = 1
         if strategy == 'seperate':
             # no mixing of the different mutation states - first electrostatics is turend off,
-            # then VdW and the the bonded terms are transformed 
-            start_idx = 0 # for the first iteration it is zero to get one endstate
+            # then VdW and the the bonded terms are transformed
+            start_step = 0 # get the endstate at 0
             for m in self.mutation_list:
-                for current_step in range(start_idx, m.nr_of_steps):
+                for current_step in range(start_step, m.nr_of_steps):
                     logger.info('Current step: {}'.format(current_step))
                     output_file_base = self._init_intermediate_state_dir(intst_nr)
                     logger.info('#########################################')
@@ -69,6 +69,7 @@ class IntermediateStateFactory(object):
                     self._write_toppar_str(output_file_base, self.system.tlc)
                     self._copy_files(output_file_base)
                     intst_nr += 1
+                start_step = 1 # don't write out the first, unmodified state
                 
     def _copy_files(self, intermediate_state_file_path):
         """

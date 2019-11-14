@@ -296,6 +296,7 @@ class BondedParameterMutation(object):
         self.cc2_psf = cc2_psf 
         self.cc1_psf = cc1_psf 
         self.nr_of_steps = nr_of_steps
+        assert(self.nr_of_steps >= 2)
         self.tlc_cc1 = tlc_cc1
         self.tlc_cc2 = tlc_cc2
         self.atom_names_mapping = self._get_atom_mapping() 
@@ -480,7 +481,7 @@ class BondedParameterMutation(object):
 
         assert(type(psf) == pm.charmm.CharmmPsfFile)
 
-        scale = current_step/(self.nr_of_steps -1)
+        scale = current_step/(self.nr_of_steps)
         # scale atoms
         self._mutate_atoms(psf, tlc, scale)
         # scale bonds
@@ -510,9 +511,11 @@ class BaseMutation(object):
         self.atom_idx = atom_idx
         self.nr_of_steps = nr_of_steps
 
+
 class ELMutation(BaseMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int, common_core:list):
+        assert(nr_of_steps >= 2)
         super().__init__(atom_idx, nr_of_steps)
         self.common_core = common_core
 
@@ -588,7 +591,7 @@ class ELtoZeroMutation(ELMutation):
         old_total_charge = round(sum([a.charge for a in psf[f":{tlc.upper()}"].atoms]))
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
         diff_charge = 0
-        multiplicator = 1 - (current_step / (self.nr_of_steps -1))
+        multiplicator = 1 - (current_step / (self.nr_of_steps))
         for idx in self.atom_idx:
             odx = idx + offset
             atom = psf[odx]
@@ -666,6 +669,7 @@ class TransformChargesToTargetCharge():
         self.cc1_psf = cc1_psf 
         self.tlc_cc1 = tlc_cc1
         self.tlc_cc2 = tlc_cc2
+        assert(nr_of_steps >= 2)
         self.nr_of_steps = nr_of_steps
         self.atom_names_mapping = self._get_atom_mapping()
     
@@ -713,7 +717,7 @@ class TransformChargesToTargetCharge():
     def _mutate_charge(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
         """ mutate charges of cc1 to cc2"""
         
-        scale =   1 - (current_step / (self.nr_of_steps -1))
+        scale =   1 - (current_step / (self.nr_of_steps))
         total_charge = round(sum([a.charge for a in self.cc2_psf[f":{self.tlc_cc2.upper()}"].atoms]))
         cc2_scaled_psf_ligand, diff_charge = self._scale_cc2_charges()
         cc2_psf = self._compensate_charge(cc2_scaled_psf_ligand, diff_charge, total_charge)
