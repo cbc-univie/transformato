@@ -138,7 +138,7 @@ def test_charge_mutation():
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s2_to_s1 = ProposeMutationRoute(s2, s1)
     for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
-        mutation_list = a.generate_mutations_to_common_core_for_mol1(nr_of_steps_for_el=3, nr_of_steps_for_bonded_parameters=3)
+        mutation_list = a.generate_mutations_to_common_core_for_mol1(nr_of_steps_for_el=4, nr_of_steps_for_bonded_parameters=4)
         i = IntermediateStateFactory(system=system, mutation_list=mutation_list, configuration=configuration)
 
         # test endpoint - charge not scaled
@@ -157,14 +157,14 @@ def test_charge_mutation():
             offset = min([a.idx for a in original_psf.view[f":{system.tlc.upper()}"].atoms])
 
             new_psf = generate_psf(output_file_base, env)
-            scale = current_step/(m.nr_of_steps - 1)
+            scale = current_step/(m.nr_of_steps)
             for idx in m.atom_idx:
                 assert(np.isclose(original_psf.atoms[idx+offset].charge * (1 - scale), new_psf.atoms[idx+offset].charge))
                 assert(np.isclose(original_psf.atoms[idx+offset].charge, new_psf.atoms[idx+offset].charge))
 
         shutil.rmtree(output_file_base) 
 
-        # scale charges with 0.5
+        # scale charges with 0.25
         current_step = 1
         output_file_base = i.generate_specific_intermediate_state(m, current_step)
         for env in ['waterbox', 'complex']:
@@ -175,14 +175,14 @@ def test_charge_mutation():
 
             offset = min([a.idx for a in original_psf.view[f":{system.tlc.upper()}"].atoms])
             new_psf = generate_psf(output_file_base, env)
-            scale = current_step/(m.nr_of_steps - 1)
+            scale = current_step/(m.nr_of_steps)
             print('Scaling charges with: {}'.format((1 - scale)))
             for idx in m.atom_idx:
-                assert(np.isclose(original_psf.atoms[idx+offset].charge * (1 - scale), new_psf.atoms[idx+offset].charge))
+                assert(np.isclose(original_psf.atoms[idx+offset].charge * (1 - scale), new_psf.atoms[idx+offset].charge, rtol=1e-03))
         shutil.rmtree(output_file_base) 
 
-        # scale charges with 0.0
-        current_step = 2
+        # scale charges with 1.0
+        current_step = 4
         output_file_base = i.generate_specific_intermediate_state(m, current_step)
         for env in ['waterbox', 'complex']:
             if env == 'waterbox':
@@ -192,11 +192,11 @@ def test_charge_mutation():
 
             offset = min([a.idx for a in original_psf.view[f":{system.tlc.upper()}"].atoms])
             new_psf = generate_psf(output_file_base, env)
-            scale = current_step/(m.nr_of_steps - 1)
+            scale = current_step/(m.nr_of_steps)
             print('Scaling charges with: {}'.format((1 - scale)))
             for idx in m.atom_idx:
                 idxo = idx+offset
-                assert(np.isclose(original_psf.atoms[idxo].charge * (1 - scale), new_psf.atoms[idxo].charge))
+                assert(np.isclose(original_psf.atoms[idxo].charge * (1 - scale), new_psf.atoms[idxo].charge, rtol=1e-03))
                 assert(np.isclose(0.0, new_psf.atoms[idxo].charge))
         shutil.rmtree(output_file_base) 
 
@@ -210,7 +210,7 @@ def test_vdw_mutation():
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s2_to_s1 = ProposeMutationRoute(s2, s1)
     for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
-        mutation_list = a.generate_mutations_to_common_core_for_mol1(nr_of_steps_for_el=3, nr_of_steps_for_bonded_parameters=3)
+        mutation_list = a.generate_mutations_to_common_core_for_mol1(nr_of_steps_for_el=4, nr_of_steps_for_bonded_parameters=4)
         i = IntermediateStateFactory(system=system, mutation_list=mutation_list, configuration=configuration)
 
         m1 = mutation_list[1]
@@ -291,10 +291,13 @@ def test_bonded_mutation():
         template_psf_waterbox = copy.deepcopy(template.waterbox_psf)
         template_psf_complex = copy.deepcopy(template.complex_psf)
         
-        mutation_list = a.generate_mutations_to_common_core_for_mol1(nr_of_steps_for_el=3, nr_of_steps_for_bonded_parameters=3)
+        mutation_list = a.generate_mutations_to_common_core_for_mol1(nr_of_steps_for_el=4, nr_of_steps_for_bonded_parameters=4)
         i = IntermediateStateFactory(system=system, mutation_list=mutation_list, configuration=configuration)
 
-        m1 = mutation_list[-1]
+        print(mutation_list)
+        # we select the bonded mutation which should be at postition [-2]
+        m1 = mutation_list[-2]
+        assert(type(m1) == transformato.mutate.BondedParameterMutation)
         current_step = 1
         output_file_base = i.generate_specific_intermediate_state(m1, current_step)
 
@@ -329,7 +332,7 @@ def test_bonded_mutation():
             match_atom_names_cc1_to_cc2 = dict()
             cc1_offset = min([a.idx for a in original_psf.view[f":{m1.tlc_cc1.upper()}"].atoms])
             cc2_offset = min([a.idx for a in template_psf.view[f":{m1.tlc_cc2.upper()}"].atoms])
-            scale = current_step/(m1.nr_of_steps - 1)
+            scale = current_step/(m1.nr_of_steps)
 
             # test atom parameters
             for cc1, cc2 in zip(m1.cc1_idx, m1.cc2_idx):
@@ -348,7 +351,7 @@ def test_bonded_mutation():
                 assert(np.isclose((1.0 - scale) * cc1_a.epsilon + scale * cc2_a.epsilon, 
                                 new_psf[cc1_oidx].epsilon))
                 assert(np.isclose((1.0 - scale) * cc1_a.sigma + scale * cc2_a.sigma, 
-                                new_psf[cc1_oidx].sigma))
+                                new_psf[cc1_oidx].sigma, rtol=1e-03))
                 
             
             # get mapping between original/new and template psf

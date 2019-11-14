@@ -48,7 +48,7 @@ logging.info('Conformations at state {} are evaluated.'.format(conformations))
 results_for_each_env = {}
 for env in ['complex', 'waterbox']:
     print(env)
-    results_for_each_env[env] = transformato.calculate_energies(env=env, potential=potential, conformations=conformations, structure=structure, , configuration=configuration)
+    results_for_each_env[env] = transformato.calculate_energies_with_potential_on_conf(env=env, potential=potential, conformations=conformations, structure_name=structure, configuration=configuration)
 
 json_string = json.dumps(results_for_each_env)
 os.makedirs(f"{configuration['system_dir']}/results/", exist_ok=True)

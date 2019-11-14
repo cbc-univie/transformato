@@ -8,7 +8,7 @@ from .utils import load_config_yaml
 from .system import SystemStructure
 from .state import IntermediateStateFactory
 from .mutate import ProposeMutationRoute
-from .analysis import calculate_dG_to_common_core, calculate_energies_with_potential_on_conf
+from .analysis import FreeEnergyCalculator, calculate_energies_with_potential_on_conf
 
 # Handle versioneer
 from ._version import get_versions
