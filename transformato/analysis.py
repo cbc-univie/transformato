@@ -142,10 +142,37 @@ def calculate_energies_with_potential_on_conf(env:str, potential:int, conformati
 
     
 class FreeEnergyCalculator(object):
+    
     def __init__(self, configuration:dict, nr_of_states:int, structure:str):
         self.configuration = configuration
         self.nr_of_states = nr_of_states
         self.structure = structure
+        
+        self.waterbox_mbar = None
+        self.complex_mbar = None
+
+        self._parse_files()
+        self._calculate_dG_to_common_core()
+
+    def _calculate_dG_to_common_core(self):
+
+        def _analyse_results_using_mbar(results_dict:dict, nr_of_states:int):
+
+            nr_of_conformations_per_state = int(len(results_dict[1][1])) # => there is always a [0][0] entry
+            test = np.full(shape=nr_of_states, fill_value=nr_of_conformations_per_state)
+            u_kln = []
+            for u_for_traj in sorted(results_dict):
+                u_kn = []
+                for u_x in results_dict[u_for_traj]:
+                    u_kn.extend((results_dict[u_for_traj][u_x]))
+                u_kln.append(u_kn)       
+
+            u_kln = np.asanyarray(u_kln)
+            return mbar.MBAR(u_kln, test)
+
+
+        self.waterbox_mbar = _analyse_results_using_mbar(self.r_waterbox_state, self.nr_of_states)
+        self.complex_mbar =   _analyse_results_using_mbar(self.r_complex_state, self.nr_of_states)
 
     def _parse_files(self)->(dict,dict):
 
@@ -165,46 +192,43 @@ class FreeEnergyCalculator(object):
 
 
     @property
-    def free_energy_differences(self):
+    def complex_free_energy_differences(self):
         """matrix of free energy differences"""
-        return self.mbar.getFreeEnergyDifferences()[0]
+        return self.complex_mbar.getFreeEnergyDifferences()[0]
     
     @property
-    def free_energy_difference_uncertainties(self):
+    def complex_free_energy_overlap(self):
+        """overlap of lambda states"""
+        return self.complex_mbar.computeOverlap()
+
+    @property
+    def complex_free_energy_difference_uncertainties(self):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
-        return self.mbar.getFreeEnergyDifferences()[1]
+        return self.complex_mbar.getFreeEnergyDifferences()[1]
     
+    @property
+    def waterbox_free_energy_differences(self):
+        """matrix of free energy differences"""
+        return self.waterbox_mbar.getFreeEnergyDifferences()[0]
+
+    @property
+    def waterbox_free_energy_overlap(self):
+        """overlap of lambda states"""
+        return self.waterbox_mbar.computeOverlap()
+    
+    @property
+    def waterbox_free_energy_difference_uncertainties(self):
+        """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
+        return self.waterbox_mbar.getFreeEnergyDifferences()[1]
+
+
     @property
     def end_state_free_energy_difference(self):
         """DeltaF[lambda=1 --> lambda=0]"""
-        DeltaF_ij, dDeltaF_ij, _ = self.mbar.getFreeEnergyDifferences()
-        K = len(DeltaF_ij)
-        return DeltaF_ij[0, K-1], dDeltaF_ij[0, K-1]
-
-
-
-    def calculate_dG_to_common_core(self):
-
-        self._parse_files()
-        waterbox_Deltaf_ij, waterbox_dDeltaf_ij, _ = self._analyse_results_using_mbar(self.r_waterbox_state)
-        complex_Deltaf_ij, complex_dDeltaf_ij, _ =   self._analyse_results_using_mbar(self.r_complex_state)
-
-    def _analyse_results_using_mbar(self, results_dict:dict):
-
-        nr_of_conformations_per_state = int(len(results_dict[1][1])) # => there is always a [0][0] entry
-        test = np.full(shape=self.nr_of_states, fill_value=nr_of_conformations_per_state)
-        u_kln = []
-        for u_for_traj in sorted(results_dict):
-            u_kn = []
-            for u_x in results_dict[u_for_traj]:
-                u_kn.extend((results_dict[u_for_traj][u_x]))
-            u_kln.append(u_kn)       
-
-        u_kln = np.asanyarray(u_kln)
-        m = mbar.MBAR(u_kln, test)
-        Deltaf_ij, dDeltaf_ij, overlap = m.getFreeEnergyDifferences()
-        overlap = m.computeOverlap()
-        return Deltaf_ij, dDeltaf_ij, overlap 
+        waterbox_DeltaF_ij, waterbox_dDeltaF_ij, _ = self.waterbox_mbar.getFreeEnergyDifferences()
+        complex_DeltaF_ij, complex_dDeltaF_ij, _ = self.complex_mbar.getFreeEnergyDifferences()
+        K = len(complex_DeltaF_ij)
+        return complex_DeltaF_ij[0, K-1] - waterbox_DeltaF_ij[0, K-1], waterbox_dDeltaF_ij[0, K-1] + complex_dDeltaF_ij[0, K-1] 
 
 
 
