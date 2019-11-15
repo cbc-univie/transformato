@@ -143,10 +143,10 @@ def calculate_energies_with_potential_on_conf(env:str, potential:int, conformati
     
 class FreeEnergyCalculator(object):
     
-    def __init__(self, configuration:dict, nr_of_states:int, structure:str):
+    def __init__(self, configuration:dict, nr_of_states:int, structure_name:str):
         self.configuration = configuration
         self.nr_of_states = nr_of_states
-        self.structure = structure
+        self.structure = structure_name
         
         self.waterbox_mbar = None
         self.complex_mbar = None
@@ -180,7 +180,7 @@ class FreeEnergyCalculator(object):
         r_complex_state = defaultdict(dict)
         for i in range(1, self.nr_of_states+1):
             for j in range(1, self.nr_of_states+1):
-                file_path = f"{self.configuration['system_dir']}/results/energy_{self.structure}_{i}_{j}.json"
+                file_path = f"{self.configuration['system_dir']}/results/energy_{self.structure_name}_{i}_{j}.json"
                 f = open(file_path, 'r')
                 r = json.load(f)
                 r_waterbox_state[i][j] = r['waterbox']
@@ -199,7 +199,7 @@ class FreeEnergyCalculator(object):
     @property
     def complex_free_energy_overlap(self):
         """overlap of lambda states"""
-        return self.complex_mbar.computeOverlap()
+        return self.complex_mbar.computeOverlap()[-1]
 
     @property
     def complex_free_energy_difference_uncertainties(self):
@@ -214,7 +214,7 @@ class FreeEnergyCalculator(object):
     @property
     def waterbox_free_energy_overlap(self):
         """overlap of lambda states"""
-        return self.waterbox_mbar.computeOverlap()
+        return self.waterbox_mbar.computeOverlap()[-1]
     
     @property
     def waterbox_free_energy_difference_uncertainties(self):
