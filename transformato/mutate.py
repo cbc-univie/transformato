@@ -540,8 +540,6 @@ class ELMutation(BaseMutation):
             psf[odx].charge += charge_part
 
    
-
-
 class LJMutation(BaseMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
@@ -717,7 +715,7 @@ class TransformChargesToTargetCharge():
     def _mutate_charge(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
         """ mutate charges of cc1 to cc2"""
         
-        scale =   1 - (current_step / (self.nr_of_steps))
+        scale =  (current_step / (self.nr_of_steps))
         total_charge = round(sum([a.charge for a in self.cc2_psf[f":{self.tlc_cc2.upper()}"].atoms]))
         cc2_scaled_psf_ligand, diff_charge = self._scale_cc2_charges()
         cc2_psf = self._compensate_charge(cc2_scaled_psf_ligand, diff_charge, total_charge)
