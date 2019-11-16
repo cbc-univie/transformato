@@ -146,7 +146,7 @@ class FreeEnergyCalculator(object):
     def __init__(self, configuration:dict, nr_of_states:int, structure_name:str):
         self.configuration = configuration
         self.nr_of_states = nr_of_states
-        self.structure = structure_name
+        self.structure_name = structure_name
         
         self.waterbox_mbar = None
         self.complex_mbar = None
