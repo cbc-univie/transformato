@@ -304,11 +304,8 @@ class BondedParameterMutation(object):
     def _get_atom_mapping(self):
         match_atom_names_cc1_to_cc2 = {}
         for cc1, cc2 in zip(self.cc1_idx, self.cc2_idx):
-            # did atom type change? if not continue
             cc1_a = self.cc1_psf[cc1]
             cc2_a = self.cc2_psf[cc2]
-            if cc1_a.type == cc2_a.type:
-                continue
             match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
         
         return match_atom_names_cc1_to_cc2
@@ -317,38 +314,37 @@ class BondedParameterMutation(object):
         mod_type = namedtuple('Atom', 'epsilon, rmin')
         for cc1_atom in psf.view[f":{tlc}"]:
             if cc1_atom.name not in self.atom_names_mapping:
-                continue
+                continue           
             
-            self._modify_type(cc1_atom, psf)
-            logging.info(f"Modifying atom: {cc1_atom}")
-            
+            found = False
             for cc2_atom in self.cc2_psf:
                 if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
-                    break
+                    found = True
+                    # are the atoms different?
+                    if cc1_atom.type != cc2_atom.type:
+                        self._modify_type(cc1_atom, psf)
+                        logging.info(f"Modifying atom: {cc1_atom}")            
+                        logging.info(f"Template atom: {cc2_atom}")
+          
+                        # scale epsilon
+                        logging.info(f"Real epsilon: {cc1_atom.epsilon}")
+                        modified_epsilon = (1.0 - scale) * cc1_atom.epsilon + scale * cc2_atom.epsilon
+                        logging.info(f"New epsilon: {modified_epsilon}")
+                        
+                        # scale rmin
+                        logging.info(f"Real rmin: {cc1_atom.rmin}")
+                        modified_rmin = (1.0 - scale) * cc1_atom.rmin + scale * cc2_atom.rmin
+                        logging.info(f"New rmin: {modified_rmin}")
 
-            logging.info(f"Template atom: {cc2_atom}")
-            logging.info('Scaling bonded terms')
-
-            
-            # scale epsilon
-            logging.info(f"Real epsilon: {cc1_atom.epsilon}")
-            modified_epsilon = (1.0 - scale) * cc1_atom.epsilon + scale * cc2_atom.epsilon
-            logging.info(f"New epsilon: {modified_epsilon}")
-            
-            # scale rmin
-            logging.info(f"Real rmin: {cc1_atom.rmin}")
-            modified_rmin = (1.0 - scale) * cc1_atom.rmin + scale * cc2_atom.rmin
-            logging.info(f"New rmin: {modified_rmin}")
-
-            cc1_atom.mod_type = mod_type(modified_epsilon, modified_rmin)
-
+                        cc1_atom.mod_type = mod_type(modified_epsilon, modified_rmin)
+            if not found:
+                raise RuntimeError('No corresponding atom in cc2 found')
+    
+    
     def _mutate_bonds(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
 
         mod_type = namedtuple('Bond', 'k, req')
         for cc1_bond in psf.view[f":{tlc}"].bonds:
-            logging.info('##############################')
-            logging.info(scale)
-            logging.info(f"Modifying bond: {cc1_bond}")
 
             cc1_a1 = cc1_bond.atom1.name
             cc1_a2 = cc1_bond.atom2.name
@@ -356,8 +352,10 @@ class BondedParameterMutation(object):
             # everything outside the cc are bonded terms between dummies or 
             # between real atoms and dummies and we can ignore them for now
             if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2]):
-                    continue
+                continue
 
+
+            found = False
             for cc2_bond in self.cc2_psf.bonds:
                 cc2_a1 = cc2_bond.atom1.name
                 cc2_a2 = cc2_bond.atom2.name
@@ -367,24 +365,32 @@ class BondedParameterMutation(object):
                 
                 # match the two bonds
                 if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
-                    break
+                    found = True
+                    # are the bonds different?
+                    if sorted([cc1_bond.atom1.type, cc1_bond.atom2.type]) == sorted([cc2_bond.atom1.type, cc2_bond.atom2.type]):
+                        continue
+                    logging.info('##############################')
+                    logging.info(scale)
+                    logging.info(f"Modifying bond: {cc1_bond}")
 
-            logging.info(f"Template bond: {cc2_bond}")
-            logging.info('Original value for k: {}'.format(cc1_bond.type.k))
-            logging.info(f"Target k: {cc2_bond.type.k}")
-            new_k = ((1.0 - scale) * cc1_bond.type.k)   + (scale * cc2_bond.type.k)
-            logging.info(new_k)
-            
-            modified_k = new_k
-            
-            logging.info(f"New k: {modified_k}")
+                    logging.info(f"Template bond: {cc2_bond}")
+                    logging.info('Original value for k: {}'.format(cc1_bond.type.k))
+                    logging.info(f"Target k: {cc2_bond.type.k}")
+                    new_k = ((1.0 - scale) * cc1_bond.type.k)   + (scale * cc2_bond.type.k)
+                    logging.info(new_k)
+                    
+                    modified_k = new_k
+                    
+                    logging.info(f"New k: {modified_k}")
 
-            logging.info(f"Old req: {cc1_bond.type.req}")
-            modified_req = ((1.0 - scale) * cc1_bond.type.req) + (scale * cc2_bond.type.req)
-            logging.info(f"Modified bond: {cc1_bond}")
+                    logging.info(f"Old req: {cc1_bond.type.req}")
+                    modified_req = ((1.0 - scale) * cc1_bond.type.req) + (scale * cc2_bond.type.req)
+                    logging.info(f"Modified bond: {cc1_bond}")
 
-            cc1_bond.mod_type = mod_type(modified_k, modified_req)
-            logger.info(cc1_bond.mod_type)
+                    cc1_bond.mod_type = mod_type(modified_k, modified_req)
+                    logger.info(cc1_bond.mod_type)
+            if not found:
+                raise RuntimeError('No corresponding bond in cc2 found')
 
 
     def _mutate_angles(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
@@ -394,11 +400,12 @@ class BondedParameterMutation(object):
             cc1_a1 = cc1_angle.atom1.name
             cc1_a2 = cc1_angle.atom2.name
             cc1_a3 = cc1_angle.atom3.name
+            
             # only angles in cc
             if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2, cc1_a3]):
                     continue
 
-    
+            found = False
             for cc2_angle in self.cc2_psf.angles:
                 cc2_a1 = cc2_angle.atom1.name
                 cc2_a2 = cc2_angle.atom2.name
@@ -408,21 +415,27 @@ class BondedParameterMutation(object):
                     continue
 
                 if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2, cc1_a3]]) == sorted([cc2_a1, cc2_a2, cc2_a3]):
-                     break
+                    found = True
+                    if sorted([cc1_angle.atom1.type, cc1_angle.atom2.type, cc1_angle.atom3.type]) == \
+                        sorted([cc2_angle.atom1.type, cc2_angle.atom2.type, cc2_angle.atom3.type]):
+                        continue
 
-            logging.info(f"Modifying angle: {cc1_angle}")
-            logging.info(f"Template bond: {cc2_angle}")
-            logging.info('Scaling k and theteq')
+                    logging.info(f"Modifying angle: {cc1_angle}")
+                    logging.info(f"Template bond: {cc2_angle}")
+                    logging.info('Scaling k and theteq')
 
-            logging.info(f"Old k: {cc1_angle.type.k}")
-            modified_k      = (1.0 - scale) * cc1_angle.type.k      + scale * cc2_angle.type.k
-            logging.info(f"New k: {modified_k}")
+                    logging.info(f"Old k: {cc1_angle.type.k}")
+                    modified_k      = (1.0 - scale) * cc1_angle.type.k      + scale * cc2_angle.type.k
+                    logging.info(f"New k: {modified_k}")
+                    
+                    logging.info(f"Old k: {cc1_angle.type.theteq}")
+                    modified_theteq = (1.0 - scale) * cc1_angle.type.theteq + scale * cc2_angle.type.theteq
+                    logging.info(f"New k: {modified_theteq}")
+
+                    cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
             
-            logging.info(f"Old k: {cc1_angle.type.theteq}")
-            modified_theteq = (1.0 - scale) * cc1_angle.type.theteq + scale * cc2_angle.type.theteq
-            logging.info(f"New k: {modified_theteq}")
-
-            cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
+            if not found:
+                raise RuntimeError('No corresponding angle in cc2 found')
 
     def _mutate_torsions(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
 
@@ -449,23 +462,28 @@ class BondedParameterMutation(object):
                     continue
 
                 if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
-                    break
+                    found = True
+                    if sorted([cc1_torsion.atom1.type, cc1_torsion.atom2.type, cc1_torsion.atom3.type, cc1_torsion.atom3.type]) == \
+                        sorted([cc2_torsion.atom1.type, cc2_torsion.atom2.type, cc2_torsion.atom3.type, cc2_torsion.atom4.type]):
+                        continue
 
-            mod_types = []       
-            if scale <= 0.5:
-                # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
-                for torsion_t in cc1_torsion.type:
-                    modified_phi_k = torsion_t.phi_k * max(((1.0 - scale * 2)), 0.0)
-                    mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase, 
-                                        torsion_t.scee, torsion_t.scnb))
-            else:
-                # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2
-                for torsion_t in cc2_torsion.type:
-                    modified_phi_k = torsion_t.phi_k * max((scale -0.5) * 2, 0.0)
-                    mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase, 
-                                        torsion_t.scee, torsion_t.scnb))
-        
-            cc1_torsion.mod_type = mod_types
+                    mod_types = []       
+                    if scale <= 0.5:
+                        # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2 
+                        for torsion_t in cc1_torsion.type:
+                            modified_phi_k = torsion_t.phi_k * max(((1.0 - scale * 2)), 0.0)
+                            mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase, 
+                                                torsion_t.scee, torsion_t.scnb))
+                    else:
+                        # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2
+                        for torsion_t in cc2_torsion.type:
+                            modified_phi_k = torsion_t.phi_k * max((scale -0.5) * 2, 0.0)
+                            mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase, 
+                                                torsion_t.scee, torsion_t.scnb))
+                
+                    cc1_torsion.mod_type = mod_types
+            if not found:
+                raise RuntimeError('No corresponding torsion in cc2 found')
 
     def mutate(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):
         """

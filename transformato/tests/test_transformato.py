@@ -342,9 +342,6 @@ def test_bonded_mutation():
                 cc2_oidx = cc2 + cc2_offset
                 cc1_a = original_psf[cc1_oidx]
                 cc2_a = template_psf[cc2_oidx]
-                if cc1_a.type == cc2_a.type:
-                    continue
-
                 match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
                                     
                 
