@@ -72,7 +72,7 @@ class ProposeMutationRoute(object):
         Returns the common core.
         """
         keep_idx = []
-        for idx in set(list(self._substructure_match[name]) + self.added_indeces[name]):
+        for idx in self._substructure_match[name]: # BEWARE: the ordering is important - don't cast set!
             if idx not in self.removed_indeces[name]:
                 keep_idx.append(idx)
         return keep_idx
