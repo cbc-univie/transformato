@@ -54,6 +54,16 @@ class IntermediateStateFactory(object):
         if strategy == 'seperate':
             # no mixing of the different mutation states - first electrostatics is turend off,
             # then VdW and the the bonded terms are transformed
+            nr_of_total_mutations = 0
+            start_step = 0 # get the endstate at 0
+            for m in self.mutation_list:
+                for current_step in range(start_step, m.nr_of_steps+1):
+                    nr_of_total_mutations += 1
+
+            logger.info(f"Preparing for a total of {nr_of_total_mutations} mutation steps")
+            
+
+
             start_step = 0 # get the endstate at 0
             for m in self.mutation_list:
                 for current_step in range(start_step, m.nr_of_steps+1):
