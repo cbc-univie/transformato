@@ -38,7 +38,7 @@ system:
     name:
       'CE121'
     tlc:
-      'UNL'
+      'UNK'
     complex:
       dirname:
         'complex'
@@ -71,7 +71,7 @@ system:
 simulation:
 ################
   nsteps:
-    '1250000'
+    '500000'
   free-energy-type:
     'binding-free-energy'
 ################
