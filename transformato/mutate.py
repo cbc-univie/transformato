@@ -344,6 +344,7 @@ class BondedParameterMutation(object):
     def _mutate_bonds(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
 
         mod_type = namedtuple('Bond', 'k, req')
+        print(self.atom_names_mapping)
         for cc1_bond in psf.view[f":{tlc}"].bonds:
 
             cc1_a1 = cc1_bond.atom1.name
