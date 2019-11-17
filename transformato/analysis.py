@@ -9,6 +9,7 @@ from pymbar import mbar
 from simtk.openmm.vec3 import Vec3
 import json
 from collections import defaultdict, namedtuple
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 
@@ -220,6 +221,32 @@ class FreeEnergyCalculator(object):
     def waterbox_free_energy_difference_uncertainties(self):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
         return self.waterbox_mbar.getFreeEnergyDifferences()[1]
+
+
+    def plot_complex_free_energy_overlap(self):
+        fig = plt.imshow(self.complex_free_energy_overlap, cmap='Blues')
+        plt.title('Overlap of lambda states')
+        plt.xlabel('lambda state (0 to 1)')
+        plt.ylabel('lambda state (0 to 1)')
+        plt.legend()
+        plt.colorbar()
+        return fig
+
+    def plot_waterbox_free_energy_overlap(self):
+        fig = plt.imshow(self.waterbox_free_energy_overlap, cmap='Blues',)
+        plt.title('Overlap of lambda states')
+        plt.xlabel('lambda state (0 to 1)')
+        plt.ylabel('lambda state (0 to 1)')       
+        plt.legend()
+        plt.colorbar()
+        return fig
+
+    def plot_complex_free_energy(self):
+        x = [a for a in range(1, len(self.complex_free_energy_differences[0])+1)]
+        y = self.complex_free_energy_differences[0]
+        y_error = self.complex_free_energy_difference_uncertainties[0]
+        fig = plt.errorbar(x, y, yerr=y_error, label='both limits (default)')
+        return fig
 
 
     @property
