@@ -393,7 +393,7 @@ class BondedParameterMutation(object):
                     logger.info(cc1_bond.mod_type)
             
             if not found:
-                pritn(cc1_bond)
+                print(cc1_bond)
                 raise RuntimeError('No corresponding bond in cc2 found')
 
 
