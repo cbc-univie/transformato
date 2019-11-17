@@ -354,6 +354,7 @@ class BondedParameterMutation(object):
             if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2]):
                 continue
 
+            print(cc1_bond)
 
             found = False
             for cc2_bond in self.cc2_psf.bonds:
@@ -366,8 +367,8 @@ class BondedParameterMutation(object):
                 print(cc2_bond)
                 # match the two bonds
                 if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
-                    print(cc1_bond)
                     found = True
+                    print(cc2_bond)
                     # are the bonds different?
                     if sorted([cc1_bond.atom1.type, cc1_bond.atom2.type]) == sorted([cc2_bond.atom1.type, cc2_bond.atom2.type]):
                         continue
@@ -394,7 +395,7 @@ class BondedParameterMutation(object):
             
             if not found:
                 print(cc1_bond)
-                raise RuntimeError('No corresponding bond in cc2 found')
+                raise RuntimeError('No corresponding bond in cc2 found: {}'.format(cc1_bond))
 
 
     def _mutate_angles(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
