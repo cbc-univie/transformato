@@ -363,8 +363,10 @@ class BondedParameterMutation(object):
                 if not all(elem in self.atom_names_mapping.values() for elem in [cc2_a1, cc2_a2]):
                     continue
                 
+                print(cc2_bond)
                 # match the two bonds
                 if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
+                    print(cc1_bond)
                     found = True
                     # are the bonds different?
                     if sorted([cc1_bond.atom1.type, cc1_bond.atom2.type]) == sorted([cc2_bond.atom1.type, cc2_bond.atom2.type]):
@@ -389,7 +391,9 @@ class BondedParameterMutation(object):
 
                     cc1_bond.mod_type = mod_type(modified_k, modified_req)
                     logger.info(cc1_bond.mod_type)
+            
             if not found:
+                pritn(cc1_bond)
                 raise RuntimeError('No corresponding bond in cc2 found')
 
 
