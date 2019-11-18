@@ -17,6 +17,7 @@ dependencies:
   - ipython
   - jupyter
   - mdtraj
+  - matplotlib
 
     # Testing
   - pytest
