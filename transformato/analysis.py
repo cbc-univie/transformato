@@ -222,7 +222,7 @@ class FreeEnergyCalculator(object):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
         return self.waterbox_mbar.getFreeEnergyDifferences()[1]
 
-
+    @property
     def plot_complex_free_energy_overlap(self):
         fig = plt.imshow(self.complex_free_energy_overlap, cmap='Blues')
         plt.title('Overlap of lambda states')
@@ -232,6 +232,7 @@ class FreeEnergyCalculator(object):
         plt.colorbar()
         return fig
 
+    @property
     def plot_waterbox_free_energy_overlap(self):
         fig = plt.imshow(self.waterbox_free_energy_overlap, cmap='Blues',)
         plt.title('Overlap of lambda states')
@@ -241,6 +242,7 @@ class FreeEnergyCalculator(object):
         plt.colorbar()
         return fig
 
+    @property
     def plot_complex_free_energy(self):
         x = [a for a in range(1, len(self.complex_free_energy_differences[0])+1)]
         y = self.complex_free_energy_differences[0]
