@@ -110,8 +110,6 @@ class IntermediateStateFactory(object):
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm" 
         shutil.copyfile(ligand_prm, toppar_target)
 
-
-
         # copy diverse set of helper functions
         omm_barostat_source = f"{basedir}/complex/openmm/omm_barostat.py"
         omm_barostat_target = f"{intermediate_state_file_path}/omm_barostat.py"
