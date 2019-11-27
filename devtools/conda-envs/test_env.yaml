@@ -18,6 +18,7 @@ dependencies:
   - jupyter
   - mdtraj
   - matplotlib
+  - networkx
 
     # Testing
   - pytest
