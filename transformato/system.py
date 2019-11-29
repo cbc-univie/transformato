@@ -6,6 +6,7 @@ import rdkit
 import os, io
 from .utils import get_toppar_dir
 from collections import namedtuple
+import networkx as nx
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +52,29 @@ class SystemStructure(object):
 
             # generate rdkit mol object of small molecule
             self.mol:Chem.Mol = self._generate_rdkit_mol('complex', self.complex_psf[f":{self.tlc}"])
-
+            self.graph:nx.Graph = self._mol_to_nx(self.mol)
         else:
-            raise NotImplementedError('solvation free energy not finished yet.')
             self.envs = ['waterbox', 'vacuum']
-            self.parameter = self._read_parameters(configuration, 'waterbox')
+            raise NotImplementedError('solvation free energy not finished yet.')
+
+    def _mol_to_nx(self, mol:Chem.Mol):
+        G = nx.Graph()
+
+        for atom in mol.GetAtoms():
+            G.add_node(atom.GetIdx(),
+                    atomic_num=atom.GetAtomicNum(),
+                    formal_charge=atom.GetFormalCharge(),
+                    chiral_tag=atom.GetChiralTag(),
+                    hybridization=atom.GetHybridization(),
+                    num_explicit_hs=atom.GetNumExplicitHs(),
+                    is_aromatic=atom.GetIsAromatic())
+        
+        for bond in mol.GetBonds():
+            G.add_edge(bond.GetBeginAtomIdx(),
+                    bond.GetEndAtomIdx(),
+                    bond_type=bond.GetBondType())
+        return G
+
 
 
     def _read_parameters(self, configuration:dict, env:str)->pm.charmm.CharmmParameterSet:

@@ -144,9 +144,9 @@ def calculate_energies_with_potential_on_conf(env:str, potential:int, conformati
     
 class FreeEnergyCalculator(object):
     
-    def __init__(self, configuration:dict, nr_of_states:int, structure_name:str):
+    def __init__(self, configuration:dict, structure_name:str):
         self.configuration = configuration
-        self.nr_of_states = nr_of_states
+        self.nr_of_states = -1
         self.structure_name = structure_name
         
         self.waterbox_mbar = None
@@ -159,38 +159,43 @@ class FreeEnergyCalculator(object):
 
         def _analyse_results_using_mbar(results_dict:dict, nr_of_states:int):
 
-            nr_of_conformations_per_state = int(len(results_dict[1][1])) # => there is always a [0][0] entry
-            test = np.full(shape=nr_of_states, fill_value=nr_of_conformations_per_state)
-            u_kln = []
-            for u_for_traj in sorted(results_dict):
-                u_kn = []
-                for u_x in results_dict[u_for_traj]:
-                    u_kn.extend((results_dict[u_for_traj][u_x]))
-                u_kln.append(u_kn)       
+            def _return_u_evaluated_on_all_snapshots(results, nr_of_states):
+                snapshots = []
+                for j in range(1, nr_of_states+1):
+                    snapshots.extend(results[j])
+                return snapshots
 
-            u_kln = np.asanyarray(u_kln)
-            return mbar.MBAR(u_kln, test)
+
+            nr_of_conformations_per_state = int(len(results_dict[1][1])) 
+            N_k = np.full(shape=nr_of_states, fill_value=nr_of_conformations_per_state)
+            u_kn = np.stack(
+                    [_return_u_evaluated_on_all_snapshots(results_dict[i], nr_of_states) for i in range(1, nr_of_states+1)]
+                    )
+            return mbar.MBAR(u_kn, N_k)
 
 
         self.waterbox_mbar = _analyse_results_using_mbar(self.r_waterbox_state, self.nr_of_states)
         self.complex_mbar =   _analyse_results_using_mbar(self.r_complex_state, self.nr_of_states)
 
     def _parse_files(self)->(dict,dict):
+        from pathlib import Path
 
         r_waterbox_state = defaultdict(dict)
         r_complex_state = defaultdict(dict)
-        for i in range(1, self.nr_of_states+1):
-            for j in range(1, self.nr_of_states+1):
-                file_path = f"{self.configuration['system_dir']}/results/energy_{self.structure_name}_{i}_{j}.json"
-                f = open(file_path, 'r')
-                r = json.load(f)
-                r_waterbox_state[i][j] = r['waterbox']
-                r_complex_state[i][j] = r['complex']
-                f.close()
+
+        pathlist = Path(f"{self.configuration['system_dir']}/results/").glob(f"energy_{self.structure_name}*.json")
+
+        for file_path in pathlist:
+            file_name = file_path.stem
+            i = int(str(file_path).split('_')[-2])
+            j = int(str(file_name).split('_')[-1])
+            r = json.load(open(file_path, 'r'))
+            r_waterbox_state[i][j] = r['waterbox']
+            r_complex_state[i][j] = r['complex']
         
         self.r_waterbox_state = r_waterbox_state
-        self.r_complex_state = r_complex_state 
-
+        self.r_complex_state = r_complex_state
+        self.nr_of_states = len(r_waterbox_state.keys())
 
     @property
     def complex_free_energy_differences(self):
@@ -222,31 +227,56 @@ class FreeEnergyCalculator(object):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
         return self.waterbox_mbar.getFreeEnergyDifferences()[1]
 
-
+    @property
     def plot_complex_free_energy_overlap(self):
-        fig = plt.imshow(self.complex_free_energy_overlap, cmap='Blues')
-        plt.title('Overlap of lambda states')
-        plt.xlabel('lambda state (0 to 1)')
-        plt.ylabel('lambda state (0 to 1)')
+        plt.figure(figsize=[8,8], dpi=300)
+        plt.imshow(self.complex_free_energy_overlap, cmap='Blues')
+        plt.title('Overlap of lambda states for ligand in complex', fontsize=15)
+        plt.xlabel('lambda state (0 to 1)', fontsize=15)
+        plt.ylabel('lambda state (0 to 1)', fontsize=15)
         plt.legend()
         plt.colorbar()
-        return fig
+        plt.show()
+        plt.close()    
 
+    @property
     def plot_waterbox_free_energy_overlap(self):
-        fig = plt.imshow(self.waterbox_free_energy_overlap, cmap='Blues',)
-        plt.title('Overlap of lambda states')
-        plt.xlabel('lambda state (0 to 1)')
-        plt.ylabel('lambda state (0 to 1)')       
+        plt.figure(figsize=[8,8], dpi=300)
+        plt.imshow(self.waterbox_free_energy_overlap, cmap='Blues',)
+        plt.title('Overlap of lambda states for ligand in waterbox', fontsize=15)
+        plt.xlabel('lambda state (0 to 1)', fontsize=15)
+        plt.ylabel('lambda state (0 to 1)', fontsize=15)       
         plt.legend()
         plt.colorbar()
-        return fig
+        plt.show()
+        plt.close()    
 
+    @property
     def plot_complex_free_energy(self):
         x = [a for a in range(1, len(self.complex_free_energy_differences[0])+1)]
         y = self.complex_free_energy_differences[0]
         y_error = self.complex_free_energy_difference_uncertainties[0]
-        fig = plt.errorbar(x, y, yerr=y_error, label='both limits (default)')
-        return fig
+
+        plt.errorbar(x, y, yerr=y_error, label='ddG +- stddev [kT]')
+        plt.title('Free energy estimate for ligand in complex', fontsize=15)
+        plt.xlabel('Free energy estimate in kT')
+        plt.ylabel('lambda state (0 to 1)', fontsize=15)       
+        plt.show()
+        plt.close()    
+
+    @property
+    def plot_waterbox_free_energy(self):
+        x = [a for a in range(1, len(self.waterbox_free_energy_differences[0])+1)]
+        y = self.waterbox_free_energy_differences[0]
+        y_error = self.waterbox_free_energy_difference_uncertainties[0]
+
+        plt.errorbar(x, y, yerr=y_error, label='ddG +- stddev [kT]')
+        plt.title('Free energy estimate for ligand in waterbox', fontsize=15)
+        plt.xlabel('Free energy estimate in kT')
+        plt.ylabel('lambda state (0 to 1)', fontsize=15)
+
+        plt.show()
+        plt.close()    
 
 
     @property
@@ -257,5 +287,12 @@ class FreeEnergyCalculator(object):
         K = len(complex_DeltaF_ij)
         return complex_DeltaF_ij[0, K-1] - waterbox_DeltaF_ij[0, K-1], waterbox_dDeltaF_ij[0, K-1] + complex_dDeltaF_ij[0, K-1] 
 
+    def show_summary(self):
+        self.plot_complex_free_energy_overlap
+        self.plot_waterbox_free_energy_overlap
+        self.plot_complex_free_energy
+        self.plot_waterbox_free_energy
+        energy_estimate, uncertanty = self.end_state_free_energy_difference
+        print(f"Free energy to common core: {energy_estimate} [kT] with uncertanty: {uncertanty} [kT].")
 
 

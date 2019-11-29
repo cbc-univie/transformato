@@ -21,7 +21,7 @@ init=lig_in_complex
 pstep=lig_in_complex
 istep=lig_in_complex
 
-python -u openmm_run.py -i ${input}.inp -t toppar.str -p ${init}.psf -c ${init}.crd -irst ${pstep}.rst -odcd ${istep}.dcd
+python -u openmm_run.py -i ${input}.inp -t toppar.str -p ${init}.psf -c ${init}.crd -b ${init}.str -orst ${istep}.rst -odcd ${istep}.dcd
 
 
 input=lig_in_waterbox
@@ -29,4 +29,4 @@ init=lig_in_waterbox
 pstep=lig_in_waterbox
 istep=lig_in_waterbox
 
-python -u openmm_run.py -i ${input}.inp -t toppar.str -p ${init}.psf -c ${init}.crd -irst ${pstep}.rst -odcd ${istep}.dcd
+python -u openmm_run.py -i ${input}.inp -t toppar.str -p ${init}.psf -c ${init}.crd -b ${init}.str -orst ${istep}.rst -odcd ${istep}.dcd

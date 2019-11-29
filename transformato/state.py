@@ -93,11 +93,11 @@ class IntermediateStateFactory(object):
             shutil.copyfile(crd_file_source , crd_file_target)
 
 
-        # copy rst files
+        # copy str files for box size (NOTE: base name same as for crd file)
         for env in ['waterbox', 'complex']:
-            rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
-            rst_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
-            shutil.copyfile(rst_file_source , rst_file_target)
+            str_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.str"
+            str_file_target = f"{intermediate_state_file_path}/lig_in_{env}.str"
+            shutil.copyfile(str_file_source, str_file_target)
 
 
         # copy ligand rtf file
@@ -109,8 +109,6 @@ class IntermediateStateFactory(object):
         ligand_prm = f"{basedir}/complex/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm" 
         shutil.copyfile(ligand_prm, toppar_target)
-
-
 
         # copy diverse set of helper functions
         omm_barostat_source = f"{basedir}/complex/openmm/omm_barostat.py"
