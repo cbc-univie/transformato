@@ -10,19 +10,19 @@
 conda activate transformato
 
 config_file=$1
-working_dir=$2
+output_dir=$2
 structure=$3
 conformations=$4
 current_state=$5
 
 hostname
 echo ${config_file}
-echo ${working_dir}
+echo ${output_dir}
 echo ${structure}
 echo ${conformations}
 echo ${current_state}
 
-python  - ${config_file} ${working_dir} ${structure} ${conformations} ${current_state} <<END
+python  - ${config_file} ${output_dir} ${structure} ${conformations} ${current_state} <<END
 
 import transformato
 from simtk.openmm import XmlSerializer
@@ -33,7 +33,7 @@ import sys, os
 import logging
 
 config_file = str(sys.argv[1])
-working_dir = str(sys.argv[2])
+output_dir = str(sys.argv[2])
 structure = str(sys.argv[3])
 conformations = int(sys.argv[4])
 potential = int(sys.argv[5])
@@ -42,7 +42,7 @@ print(structure)
 print(conformations)
 print(potential)
 
-configuration = transformato.load_config_yaml(config=config_file, input_dir='.', output_dir=working_dir)
+configuration = transformato.load_config_yaml(config=config_file, input_dir='.', output_dir=output_dir)
 logging.info('Conformations at state {} are evaluated.'.format(conformations))
 
 results_for_each_env = {}
