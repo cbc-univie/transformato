@@ -93,11 +93,11 @@ class IntermediateStateFactory(object):
             shutil.copyfile(crd_file_source , crd_file_target)
 
 
-        # copy rst files
+        # copy str files for box size (NOTE: base name same as for crd file)
         for env in ['waterbox', 'complex']:
-            rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
-            rst_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
-            shutil.copyfile(rst_file_source , rst_file_target)
+            str_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.rst"
+            str_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
+            shutil.copyfile(str_file_source, str_file_target)
 
 
         # copy ligand rtf file
