@@ -36,6 +36,7 @@ class ProposeMutationRoute(object):
         mol2_name:str = 'm2'
 
         self.mols:dict = {mol1_name : s1.mol, mol2_name : s2.mol}
+        self.graphs:dict = {mol1_name : s1.graph, mol2_name : s2.graph}
         self.psfs:dict = {mol1_name : s1.waterbox_psf[f":{s1.tlc}"], mol2_name : s2.waterbox_psf[f":{s2.tlc}"]}
         self._substructure_match:dict = { mol1_name : [], mol2_name : []}
         self._calculate_common_core(mol1_name, mol2_name)
@@ -257,18 +258,30 @@ class ProposeMutationRoute(object):
                 logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
         
         # scale all EL of all atoms to zero
-        mutations.append(ELtoZeroMutation(atom_idx=atoms_to_be_mutated, nr_of_steps=nr_of_steps_for_el, common_core=cc_idx ))
+        mutations.append(ChargeToZeroMutation(atom_idx=atoms_to_be_mutated, nr_of_steps=nr_of_steps_for_el, common_core=cc_idx ))
         
         # scale LJ
         # start with mutation of LJ of hydrogens
-        mutations.append(LJtoZeroMutation(hydrogens))
+        mutations.append(StericToZeroMutation(hydrogens))
         # continue with scaling of heavy atoms LJ
         for idx in atoms_to_be_mutated:
-            if idx not in hydrogens:
-                mutations.append(LJtoZeroMutation([idx]))
-
- 
+            if idx not in hydrogens: # hydrogens are already mutated
+                mutations.append(StericToZeroMutation([idx]))
+             
         return mutations
+
+    def _find_cliques(self, atoms_idx:list, mol:Chem.Mol)->list:
+        mutation_order = []
+        for atom in atoms_idx:
+            if atom in mutation_order: # already sorted
+                continue
+
+        
+
+        return mutation_order
+
+
+
 
 
 class BondedParameterMutation(object):
@@ -536,7 +549,7 @@ class BaseMutation(object):
         self.nr_of_steps = nr_of_steps
 
 
-class ELMutation(BaseMutation):
+class ChargeMutation(BaseMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int, common_core:list):
         assert(nr_of_steps >= 2)
@@ -564,11 +577,10 @@ class ELMutation(BaseMutation):
             psf[odx].charge += charge_part
 
    
-class LJMutation(BaseMutation):
+class StericMutation(BaseMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int):
         super().__init__(atom_idx, nr_of_steps)
-
 
     def _scale_epsilon(self, atom, multiplicator):
         atom.epsilon = atom.initial_epsilon * multiplicator
@@ -586,7 +598,7 @@ class LJMutation(BaseMutation):
             atom.type = f"DDD{psf.number_of_dummys}"
             psf.number_of_dummys += 1
 
-class ELtoZeroMutation(ELMutation):
+class ChargeToZeroMutation(ChargeMutation):
 
     def __init__(self, atom_idx:list, nr_of_steps:int, common_core:list):
         """
@@ -634,7 +646,7 @@ class ELtoZeroMutation(ELMutation):
                 assert(np.isclose(sum(new_charges), old_total_charge))
             
 
-class LJtoZeroMutation(LJMutation):
+class StericToZeroMutation(StericMutation):
 
     def __init__(self, atom_idx:list):
         """
@@ -647,14 +659,14 @@ class LJtoZeroMutation(LJMutation):
         super().__init__(atom_idx, 1)
     
     def __str__(self):
-        return "LJ to zero mutation"
+        return "Steric to zero mutation"
     def __unicode__(self):
-        return u"LJ to zero mutation"
+        return u"Steric to zero mutation"
 
 
     def mutate(self, psf, tlc:str, current_step:int):
 
-        logger.info('LJ to zero mutation')
+        logger.info('Steric to zero mutation')
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
 
         for i in self.atom_idx:
