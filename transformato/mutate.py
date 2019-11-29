@@ -357,7 +357,6 @@ class BondedParameterMutation(object):
     def _mutate_bonds(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
 
         mod_type = namedtuple('Bond', 'k, req')
-        print(self.atom_names_mapping)
         for cc1_bond in psf.view[f":{tlc}"].bonds:
 
             cc1_a1 = cc1_bond.atom1.name
@@ -368,8 +367,6 @@ class BondedParameterMutation(object):
             if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2]):
                 continue
 
-            print(cc1_bond)
-
             found = False
             for cc2_bond in self.cc2_psf.bonds:
                 cc2_a1 = cc2_bond.atom1.name
@@ -378,11 +375,9 @@ class BondedParameterMutation(object):
                 if not all(elem in self.atom_names_mapping.values() for elem in [cc2_a1, cc2_a2]):
                     continue
                 
-                print(cc2_bond)
                 # match the two bonds
                 if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
                     found = True
-                    print(cc2_bond)
                     # are the bonds different?
                     if sorted([cc1_bond.atom1.type, cc1_bond.atom2.type]) == sorted([cc2_bond.atom1.type, cc2_bond.atom2.type]):
                         continue
@@ -408,7 +403,7 @@ class BondedParameterMutation(object):
                     logger.info(cc1_bond.mod_type)
             
             if not found:
-                print(cc1_bond)
+                logger.critical(cc1_bond)
                 raise RuntimeError('No corresponding bond in cc2 found: {}'.format(cc1_bond))
 
 
@@ -454,6 +449,7 @@ class BondedParameterMutation(object):
                     cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
             
             if not found:
+                logger.critical(cc1_angle)
                 raise RuntimeError('No corresponding angle in cc2 found')
 
     def _mutate_torsions(self, psf:pm.charmm.CharmmPsfFile, tlc:str, scale:float):
@@ -502,6 +498,7 @@ class BondedParameterMutation(object):
                 
                     cc1_torsion.mod_type = mod_types
             if not found:
+                logger.critical(cc1_torsion)
                 raise RuntimeError('No corresponding torsion in cc2 found')
 
     def mutate(self, psf:pm.charmm.CharmmPsfFile, tlc:str, current_step:int):

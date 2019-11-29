@@ -144,11 +144,11 @@ def calculate_energies_with_potential_on_conf(env:str, potential:int, conformati
     
 class FreeEnergyCalculator(object):
     
-    def __init__(self, configuration:dict, structure_name:str):
+    def __init__(self, configuration:dict, structure_name:str, mutation_route:list=[]):
         self.configuration = configuration
         self.nr_of_states = -1
         self.structure_name = structure_name
-        
+        self.mutation_route = mutation_route
         self.waterbox_mbar = None
         self.complex_mbar = None
 
