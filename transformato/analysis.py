@@ -229,8 +229,8 @@ class FreeEnergyCalculator(object):
 
     @property
     def plot_complex_free_energy_overlap(self):
-
-        fig = plt.imshow(self.complex_free_energy_overlap, cmap='Blues')
+        plt.figure(figsize=[8,8], dpi=300)
+        plt.imshow(self.complex_free_energy_overlap, cmap='Blues')
         plt.title('Overlap of lambda states for ligand in complex', fontsize=15)
         plt.xlabel('lambda state (0 to 1)', fontsize=15)
         plt.ylabel('lambda state (0 to 1)', fontsize=15)
@@ -241,7 +241,8 @@ class FreeEnergyCalculator(object):
 
     @property
     def plot_waterbox_free_energy_overlap(self):
-        fig = plt.imshow(self.waterbox_free_energy_overlap, cmap='Blues',)
+        plt.figure(figsize=[8,8], dpi=300)
+        plt.imshow(self.waterbox_free_energy_overlap, cmap='Blues',)
         plt.title('Overlap of lambda states for ligand in waterbox', fontsize=15)
         plt.xlabel('lambda state (0 to 1)', fontsize=15)
         plt.ylabel('lambda state (0 to 1)', fontsize=15)       
@@ -256,7 +257,7 @@ class FreeEnergyCalculator(object):
         y = self.complex_free_energy_differences[0]
         y_error = self.complex_free_energy_difference_uncertainties[0]
 
-        fig = plt.errorbar(x, y, yerr=y_error, label='both limits (default)')
+        plt.errorbar(x, y, yerr=y_error, label='ddG +- stddev [kT]')
         plt.title('Free energy estimate for ligand in complex', fontsize=15)
         plt.xlabel('Free energy estimate in kT')
         plt.ylabel('lambda state (0 to 1)', fontsize=15)       
@@ -269,10 +270,11 @@ class FreeEnergyCalculator(object):
         y = self.waterbox_free_energy_differences[0]
         y_error = self.waterbox_free_energy_difference_uncertainties[0]
 
-        fig = plt.errorbar(x, y, yerr=y_error, label='both limits (default)')
+        plt.errorbar(x, y, yerr=y_error, label='ddG +- stddev [kT]')
         plt.title('Free energy estimate for ligand in waterbox', fontsize=15)
         plt.xlabel('Free energy estimate in kT')
-        plt.ylabel('lambda state (0 to 1)', fontsize=15)       
+        plt.ylabel('lambda state (0 to 1)', fontsize=15)
+
         plt.show()
         plt.close()    
 
