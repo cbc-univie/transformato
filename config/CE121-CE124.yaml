@@ -4,7 +4,7 @@ system:
 ################
   structure1:
     name:
-      'CE105'
+      'CE121'
     tlc:
       'UNK'
     complex:
@@ -36,9 +36,9 @@ system:
 
   structure2:
     name:
-      'CE110'
+      'CE124'
     tlc:
-      'UNL'
+      'UNK'
     complex:
       dirname:
         'complex'
