@@ -150,6 +150,9 @@ class SystemStructure(object):
         ----------
         """
         assert(type(psf) == pm.charmm.CharmmPsfFile)
+        if len(psf.view[f":{self.tlc}"].atoms) < 1:
+            raise RuntimeError(f"No ligand selected for tlc: {self.tlc}")
+
         psf.number_of_dummys = 0
 
         idx_list = []
