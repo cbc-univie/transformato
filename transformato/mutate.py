@@ -264,18 +264,10 @@ class ProposeMutationRoute(object):
         # start with mutation of LJ of hydrogens
         mutations.append(StericToZeroMutation(hydrogens))
         # continue with scaling of heavy atoms LJ
-        heavy_atoms_idx = []
-        for idx in atoms_to_be_mutated:
-            if idx not in hydrogens: # hydrogens are already mutated
-                heavy_atoms_idx.append(idx)
-
-        reordered_heavy_atoms_idx = self._find_cliques(heavy_atoms_idx, mol)
         for idx in atoms_to_be_mutated:
             if idx not in hydrogens: # hydrogens are already mutated
                 mutations.append(StericToZeroMutation([idx]))
-            
-
- 
+             
         return mutations
 
     def _find_cliques(self, atoms_idx:list, mol:Chem.Mol)->list:
