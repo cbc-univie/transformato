@@ -184,7 +184,7 @@ class FreeEnergyCalculator(object):
         r_complex_state = defaultdict(dict)
 
         pathlist = Path(f"{self.configuration['system_dir']}/results/").glob(f"energy_{self.structure_name}*.json")
-
+        logger.info(f"{self.configuration['system_dir']}/results/")
         for file_path in pathlist:
             file_name = file_path.stem
             i = int(str(file_path).split('_')[-2])
