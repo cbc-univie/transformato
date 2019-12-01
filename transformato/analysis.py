@@ -166,7 +166,7 @@ class FreeEnergyCalculator(object):
             file = f"{self.save_results_to_path}/mbar_data_for_{env}.pickle"
             logger.info(f"Saving results: {file}")
             results = {'u_kn' : u_kn, 'N_k' : self.N_k}
-            pickle.dump(results, file)
+            pickle.dump(results, open(file, 'w+'))
 
         return mbar.MBAR(u_kn, self.N_k)
 
