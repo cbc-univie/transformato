@@ -64,8 +64,7 @@ class FreeEnergyCalculator(object):
         else:
             raise RuntimeError(f"Could not finde structure entry for : {self.structure_name}")
 
-        self.base_path = f"{self.configuration['analysis_dir_base']}/{self.structure_name}/"
-
+        self.base_path = f"{self.configuration['system_dir']}/{self.structure_name}/"
         self.structure = structure
         self.waterbox_mbar = None
         self.complex_mbar = None
@@ -74,7 +73,7 @@ class FreeEnergyCalculator(object):
         self.N_k = []
         self.thinning = -1
 
-    def load_trajectories(self, thinning:int=10):
+    def load_trajs(self, thinning:int=10):
         """
         load trajectories, thin trajs and merge themn.
         Also calculate N_k for mbar.
@@ -94,12 +93,13 @@ class FreeEnergyCalculator(object):
         #############
         # set all file paths for potential
         nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
+        logger.info(f"Evaluating {nr_of_states} states.")
         snapshost = {}
         for env in ['waterbox', 'complex']:
             confs = []
             conf_sub = self.configuration['system'][self.structure][env]
             N_k = []
-            for i in range(1, nr_of_states+1):
+            for i in tqdm(range(1, nr_of_states+1)):
                 traj  = mdtraj.load(f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.dcd", 
                                     top=f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.psf")[50::self.thinning] 
                                     # NOTE: removing the first 50 confs and thinning
@@ -117,7 +117,7 @@ class FreeEnergyCalculator(object):
         
         return snapshost, nr_of_states, N_k
 
-    def _analyse_results_using_mbar(self, env:str, snapshots:mdtraj.Trajectory, nr_of_states:int):
+    def _analyse_results_using_mbar(self, env:str, snapshots:mdtraj.Trajectory, nr_of_states:int, save_results:bool):
 
         def _energy_at_ts(simulation:Simulation, coordinates, bxl:unit.Quantity):
             """
@@ -161,27 +161,35 @@ class FreeEnergyCalculator(object):
         u_kn = np.stack(
                 [_evaluated_e_on_all_snapshots(snapshots, i, env) for i in range(1, self.nr_of_states+1)]
                 )
+
+        if save_results:
+            file = f"{self.save_results_to_path}/mbar_data_for_{env}.pickle"
+            logger.info(f"Saving results: {file}")
+            results = {'u_kn' : u_kn, 'N_k' : self.N_k}
+            pickle.dump(results, file)
+
         return mbar.MBAR(u_kn, self.N_k)
 
-    def save_mbar_results(self, file='test.pickle'):
-        r = {}
-        r['waterbox'] = self.waterbox_mbar
-        r['complex'] = self.complex_mbar
-        pickle.dump(r)
 
-
-    def calculate_dG_to_common_core(self, load_date_from_file=None):
+    def calculate_dG_to_common_core(self, save_results=True):
         """
         Calculate mbar results or load save results from a serialized mbar results.
         """
+        if save_results:
+            os.makedirs(f"{self.configuration['system_dir']}/results/", exist_ok=True)
+            self.save_results_to_path = f"{self.configuration['system_dir']}/results/"
+            logger.info(f"Saving results in {self.save_results_to_path}")
 
-        if load_date_from_file:
-            r = pickle.load(load_date_from_file)
-            self.waterbox_mbar =  r['waterbox']
-            self.complex_mbar  =  r['complex']
-        else:
-            self.waterbox_mbar = self._analyse_results_using_mbar('waterbox', self.snapshost['waterbox'], self.nr_of_states)
-            self.complex_mbar =  self._analyse_results_using_mbar('complex', self.snapshost['complex'], self.nr_of_states)
+        logger.info(f"Generating results for waterbox.")
+        self.waterbox_mbar = self._analyse_results_using_mbar('waterbox', self.snapshost['waterbox'], self.nr_of_states, save_results)
+        logger.info(f"Generating results for complex.")
+        self.complex_mbar =  self._analyse_results_using_mbar('complex', self.snapshost['complex'], self.nr_of_states, save_results)
+
+    def load_mbar_resutls(self):
+        for env, ref_to_mbar in zip(['waterbox', 'complex'], [self.waterbox_mbar, self.complex_mbar]):
+            file = f"{self.save_results_to_path}/mbar_data_for_{env}.pickle"
+            results = pickle.load(file)
+            ref_to_mbar = mbar.MBAR(results['u_kn'], results['N_k'])
 
 
     @property
