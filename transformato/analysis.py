@@ -7,11 +7,11 @@ import mdtraj
 import numpy as np
 from pymbar import mbar
 from simtk.openmm.vec3 import Vec3
-import json
 from collections import defaultdict, namedtuple
 import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
+import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -53,12 +53,9 @@ def return_reduced_potential(potential_energy:unit.Quantity, volume:unit.Quantit
     
 class FreeEnergyCalculator(object):
     
-    def __init__(self, configuration:dict, structure_name:str, thinning:int=10, mutation_route:list=[]):
+    def __init__(self, configuration:dict, structure_name:str):
         self.configuration = configuration
         self.structure_name = structure_name
-        assert(type(thinning) == int)
-        self.thinning = thinning
-
         # decide if the name of the system corresponds to structure1 or structure2
         if configuration['system']['structure1']['name'] == self.structure_name:
             structure = 'structure1'
@@ -70,14 +67,29 @@ class FreeEnergyCalculator(object):
         self.base_path = f"{self.configuration['analysis_dir_base']}/{self.structure_name}/"
 
         self.structure = structure
-        self.mutation_route = mutation_route
         self.waterbox_mbar = None
         self.complex_mbar = None
+        self.snapshost = [] 
+        self.nr_of_states = -1
+        self.N_k = []
+        self.thinning = -1
+
+    def load_trajectories(self, thinning:int=10):
+        """
+        load trajectories, thin trajs and merge themn.
+        Also calculate N_k for mbar.
+        """     
+        
+        assert(type(thinning) == int)
+        self.thinning = thinning
         self.snapshost, self.nr_of_states, self.N_k = self._merge_trajs()
-        self._calculate_dG_to_common_core()
 
-    def _merge_trajs(self)->(dict, int):
 
+    def _merge_trajs(self)->(dict, int, list):
+        """
+        load trajectories, thin trajs and merge themn.
+        Also calculate N_k for mbar.
+        """
 
         #############
         # set all file paths for potential
@@ -151,10 +163,25 @@ class FreeEnergyCalculator(object):
                 )
         return mbar.MBAR(u_kn, self.N_k)
 
-    def _calculate_dG_to_common_core(self):
+    def save_mbar_results(self, file='test.pickle'):
+        r = {}
+        r['waterbox'] = self.waterbox_mbar
+        r['complex'] = self.complex_mbar
+        pickle.dump(r)
 
-        self.waterbox_mbar = self._analyse_results_using_mbar('waterbox', self.snapshost['waterbox'], self.nr_of_states)
-        self.complex_mbar =  self._analyse_results_using_mbar('complex', self.snapshost['complex'], self.nr_of_states)
+
+    def calculate_dG_to_common_core(self, load_date_from_file=None):
+        """
+        Calculate mbar results or load save results from a serialized mbar results.
+        """
+
+        if load_date_from_file:
+            r = pickle.load(load_date_from_file)
+            self.waterbox_mbar =  r['waterbox']
+            self.complex_mbar  =  r['complex']
+        else:
+            self.waterbox_mbar = self._analyse_results_using_mbar('waterbox', self.snapshost['waterbox'], self.nr_of_states)
+            self.complex_mbar =  self._analyse_results_using_mbar('complex', self.snapshost['complex'], self.nr_of_states)
 
 
     @property
