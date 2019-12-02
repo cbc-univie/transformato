@@ -7,9 +7,11 @@ import mdtraj
 import numpy as np
 from pymbar import mbar
 from simtk.openmm.vec3 import Vec3
-import json
 from collections import defaultdict, namedtuple
 import matplotlib.pyplot as plt
+import os
+from tqdm import tqdm
+import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -48,154 +50,147 @@ def return_reduced_potential(potential_energy:unit.Quantity, volume:unit.Quantit
         reduced_potential += pressure * volume
     return beta * reduced_potential
 
-
-
-def calculate_energies_with_potential_on_conf(env:str, potential:int, conformations:int, structure_name:str, configuration:dict)->list:
-
-    """
-    Uses the potential defined with the topology and parameters to evaluate 
-    conformations. Returns a list of unitless energies.
-    Parameters
-    ----------
-    env : str
-        either 'complex' or 'waterbox
-    potential : int
-        the intermediate state that defines the potential
-    conformations : int
-        the intermediate state from which the conformations are evaluated
-    structure_name : str
-        the name of the structure that is evaluated as indicated in configuration['system']['structure1']['name']
-    configuration : dict
-        the configuration dict
-    """
-    assert(env == 'waterbox' or env == 'complex')
-    assert(type(conformations) == int)
-
-    def _energy_at_ts(simulation:Simulation, coordinates, bxl:unit.Quantity):
-        """
-        Calculates the potential energy with the correct periodic boundary conditions.
-        """
-        a = Vec3(bxl.value_in_unit(unit.nanometer), 0.0, 0.0)
-        b = Vec3(0.0, bxl.value_in_unit(unit.nanometer), 0.0)
-        c = Vec3(0.0, 0.0, bxl.value_in_unit(unit.nanometer))
-        simulation.context.setPeriodicBoxVectors(a,b,c)
-        simulation.context.setPositions((coordinates))
-        state = simulation.context.getState(getEnergy=True)
-        return state.getPotentialEnergy()
-
-    def _setup_calculation(psf_file_path:str, traj_file_path:str, simulation:Simulation):
-        """
-        Loops over the conformations in the trajectory and evaluates every frame using the 
-        potential energy function defined in the simulation object
-        """
-        list_e = []
-        # load traj
-        traj  = mdtraj.load(traj_file_path, top=psf_file_path)
-        for ts in range(traj.n_frames):
-            # extract the box size at the given ts
-            bxl = traj.unitcell_lengths[ts][0] * (unit.nanometer)
-            # calculate the potential energy 
-            e = _energy_at_ts(simulation, traj.openmm_positions(ts), bxl)
-            # obtain the reduced potential (for NpT)
-            volumn = bxl ** 3
-            red_e = return_reduced_potential(e, volumn, 300 * unit.kelvin)
-            list_e.append(red_e)
-        return list_e
-    
-    # decide if the name of the system corresponds to structure1 or structure2
-    if configuration['system']['structure1']['name'] == structure_name:
-        structure = 'structure1'
-    elif configuration['system']['structure2']['name'] == structure_name:
-        structure = 'structure2'
-    else:
-        raise RuntimeError(f"Could not finde structure entry for : {structure_name}")
-
-
-    #############
-    # set all file paths for potential
-    conf_sub = configuration['system'][structure][env]
-    base = f"{configuration['analysis_dir_base']}/{structure_name}/"
-
-    file_name = f"{base}/intst{potential}/{conf_sub['intermediate-filename']}_system.xml"
-    system  = XmlSerializer.deserialize(open(file_name).read())
-
-    file_name = f"{base}/intst{potential}/{conf_sub['intermediate-filename']}_integrator.xml"
-    integrator  = XmlSerializer.deserialize(open(file_name).read())
-
-    psf_file_path = f"{base}/intst{potential}/{conf_sub['intermediate-filename']}.psf"
-    psf = pm.charmm.CharmmPsfFile(psf_file_path)
-
-    # generate simulations object and set states
-    simulation = Simulation(psf.topology, system, integrator)
-    simulation.context.setState(XmlSerializer.deserialize(open(f"{base}/intst{potential}/{conf_sub['intermediate-filename']}.rst", 'r').read()))
-    
-    # set path to conformations
-    logger.info('#############')
-    logger.info('- Energy evaluation with potential from lambda: {}'.format(str(potential)))
-    logger.info('  - Looking at conformations from lambda: {}'.format(str(conformations)))
-    traj_file_path = f"{base}/intst{conformations}/{conf_sub['intermediate-filename']}.dcd"
-
-    # calculate pot energy using the potential on the conformations
-    energy = _setup_calculation(psf_file_path, traj_file_path, simulation)
-
-    return energy
-
-
     
 class FreeEnergyCalculator(object):
     
-    def __init__(self, configuration:dict, structure_name:str, mutation_route:list=[]):
+    def __init__(self, configuration:dict, structure_name:str):
         self.configuration = configuration
-        self.nr_of_states = -1
         self.structure_name = structure_name
-        self.mutation_route = mutation_route
+        # decide if the name of the system corresponds to structure1 or structure2
+        if configuration['system']['structure1']['name'] == self.structure_name:
+            structure = 'structure1'
+        elif configuration['system']['structure2']['name'] == self.structure_name:
+            structure = 'structure2'
+        else:
+            raise RuntimeError(f"Could not finde structure entry for : {self.structure_name}")
+
+        self.base_path = f"{self.configuration['system_dir']}/{self.structure_name}/"
+        self.structure = structure
         self.waterbox_mbar = None
         self.complex_mbar = None
+        self.snapshost = [] 
+        self.nr_of_states = -1
+        self.N_k = []
+        self.thinning = -1
 
-        self._parse_files()
-        self._calculate_dG_to_common_core()
-
-    def _calculate_dG_to_common_core(self):
-
-        def _analyse_results_using_mbar(results_dict:dict, nr_of_states:int):
-
-            def _return_u_evaluated_on_all_snapshots(results, nr_of_states):
-                snapshots = []
-                for j in range(1, nr_of_states+1):
-                    snapshots.extend(results[j])
-                return snapshots
-
-
-            nr_of_conformations_per_state = int(len(results_dict[1][1])) 
-            N_k = np.full(shape=nr_of_states, fill_value=nr_of_conformations_per_state)
-            u_kn = np.stack(
-                    [_return_u_evaluated_on_all_snapshots(results_dict[i], nr_of_states) for i in range(1, nr_of_states+1)]
-                    )
-            return mbar.MBAR(u_kn, N_k)
-
-
-        self.waterbox_mbar = _analyse_results_using_mbar(self.r_waterbox_state, self.nr_of_states)
-        self.complex_mbar =   _analyse_results_using_mbar(self.r_complex_state, self.nr_of_states)
-
-    def _parse_files(self)->(dict,dict):
-        from pathlib import Path
-
-        r_waterbox_state = defaultdict(dict)
-        r_complex_state = defaultdict(dict)
-
-        pathlist = Path(f"{self.configuration['system_dir']}/results/").glob(f"energy_{self.structure_name}*.json")
-
-        for file_path in pathlist:
-            file_name = file_path.stem
-            i = int(str(file_path).split('_')[-2])
-            j = int(str(file_name).split('_')[-1])
-            r = json.load(open(file_path, 'r'))
-            r_waterbox_state[i][j] = r['waterbox']
-            r_complex_state[i][j] = r['complex']
+    def load_trajs(self, thinning:int=10):
+        """
+        load trajectories, thin trajs and merge themn.
+        Also calculate N_k for mbar.
+        """     
         
-        self.r_waterbox_state = r_waterbox_state
-        self.r_complex_state = r_complex_state
-        self.nr_of_states = len(r_waterbox_state.keys())
+        assert(type(thinning) == int)
+        self.thinning = thinning
+        self.snapshost, self.nr_of_states, self.N_k = self._merge_trajs()
+
+
+    def _merge_trajs(self)->(dict, int, list):
+        """
+        load trajectories, thin trajs and merge themn.
+        Also calculate N_k for mbar.
+        """
+
+        #############
+        # set all file paths for potential
+        nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
+        logger.info(f"Evaluating {nr_of_states} states.")
+        snapshost = {}
+        for env in ['waterbox', 'complex']:
+            confs = []
+            conf_sub = self.configuration['system'][self.structure][env]
+            N_k = []
+            for i in tqdm(range(1, nr_of_states+1)):
+                traj  = mdtraj.load(f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.dcd", 
+                                    top=f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.psf")[50::self.thinning] 
+                                    # NOTE: removing the first 50 confs and thinning
+                
+                if len(traj) < 10:
+                    raise RuntimeError(f"Below 10 conformations per lambda -- decrease the thinning factor (currently: {self.thinning}).")
+                
+                confs.append(traj)
+                logger.info(f"Nr of snapshots: {len(traj)}")
+                N_k.append(len(traj))
+            
+            joined_trajs = mdtraj.join(confs, check_topology=True)
+            logger.info(f"Combined nr of snapshots: {len(joined_trajs)}")
+            snapshost[env] = joined_trajs
+        
+        return snapshost, nr_of_states, N_k
+
+    def _analyse_results_using_mbar(self, env:str, snapshots:mdtraj.Trajectory, nr_of_states:int, save_results:bool):
+
+        def _energy_at_ts(simulation:Simulation, coordinates, bxl:unit.Quantity):
+            """
+            Calculates the potential energy with the correct periodic boundary conditions.
+            """
+            a = Vec3(bxl.value_in_unit(unit.nanometer), 0.0, 0.0)
+            b = Vec3(0.0, bxl.value_in_unit(unit.nanometer), 0.0)
+            c = Vec3(0.0, 0.0, bxl.value_in_unit(unit.nanometer))
+            simulation.context.setPeriodicBoxVectors(a,b,c)
+            simulation.context.setPositions((coordinates))
+            state = simulation.context.getState(getEnergy=True)
+            return state.getPotentialEnergy()
+
+        def _evaluated_e_on_all_snapshots(snapshots, i:int, env:str):
+
+            # read in necessary files
+            conf_sub = self.configuration['system'][self.structure][env]
+            file_name = f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}_system.xml"
+            system  = XmlSerializer.deserialize(open(file_name).read())
+            file_name = f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}_integrator.xml"
+            integrator  = XmlSerializer.deserialize(open(file_name).read())
+            psf_file_path = f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.psf"
+            psf = pm.charmm.CharmmPsfFile(psf_file_path)
+
+            # generate simulations object and set states
+            simulation = Simulation(psf.topology, system, integrator)
+            simulation.context.setState(XmlSerializer.deserialize(open(f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.rst", 'r').read()))      
+
+            energies = []
+            for ts in tqdm(range(snapshots.n_frames)):
+                # extract the box size at the given ts
+                bxl = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
+                # calculate the potential energy 
+                e = _energy_at_ts(simulation, snapshots.openmm_positions(ts), bxl)
+                # obtain the reduced potential (for NpT)
+                volumn = bxl ** 3
+                red_e = return_reduced_potential(e, volumn, 300 * unit.kelvin)
+                energies.append(red_e)
+            return np.array(energies)
+
+        u_kn = np.stack(
+                [_evaluated_e_on_all_snapshots(snapshots, i, env) for i in range(1, self.nr_of_states+1)]
+                )
+
+        if save_results:
+            file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
+            logger.info(f"Saving results: {file}")
+            results = {'u_kn' : u_kn, 'N_k' : self.N_k}
+            pickle.dump(results, open(file, 'wb+'))
+
+        return mbar.MBAR(u_kn, self.N_k)
+
+
+    def calculate_dG_to_common_core(self, save_results=True):
+        """
+        Calculate mbar results or load save results from a serialized mbar results.
+        """
+        if save_results:
+            os.makedirs(f"{self.configuration['system_dir']}/results/", exist_ok=True)
+            self.save_results_to_path = f"{self.configuration['system_dir']}/results/"
+            logger.info(f"Saving results in {self.save_results_to_path}")
+
+        logger.info(f"Generating results for waterbox.")
+        self.waterbox_mbar = self._analyse_results_using_mbar('waterbox', self.snapshost['waterbox'], self.nr_of_states, save_results)
+        logger.info(f"Generating results for complex.")
+        self.complex_mbar =  self._analyse_results_using_mbar('complex', self.snapshost['complex'], self.nr_of_states, save_results)
+
+    def load_mbar_results(self):
+        for env, ref_to_mbar in zip(['waterbox', 'complex'], [self.waterbox_mbar, self.complex_mbar]):
+            file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
+            results = pickle.load(open(file, 'rb'))
+            ref_to_mbar = mbar.MBAR(results['u_kn'], results['N_k'])
+
 
     @property
     def complex_free_energy_differences(self):

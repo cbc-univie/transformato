@@ -19,6 +19,8 @@ dependencies:
   - mdtraj
   - matplotlib
   - networkx
+  - tqdm
+  - pickle
 
     # Testing
   - pytest
