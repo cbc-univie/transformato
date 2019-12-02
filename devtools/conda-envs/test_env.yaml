@@ -20,7 +20,6 @@ dependencies:
   - matplotlib
   - networkx
   - tqdm
-  - pickle
 
     # Testing
   - pytest
