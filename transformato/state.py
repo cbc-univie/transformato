@@ -24,7 +24,7 @@ class IntermediateStateFactory(object):
 
         self.system = system
         self.mutation_list = mutation_list
-        self.path = f"{configuration['analysis_dir_base']}/{self.system.name}"
+        self.path = f"{configuration['system_dir']}/{self.system.name}"
         self._init_base_dir()
         self.configuration = configuration
 
