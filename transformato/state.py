@@ -3,6 +3,7 @@ import os
 import shutil
 from .utils import get_toppar_dir
 import logging
+import parmed as pm
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,15 @@ class IntermediateStateFactory(object):
         output_file_base = self._init_intermediate_state_dir(state)
         logger.info('Writing to {}'.format(output_file_base))
         logger.info('#########################################')
-        for psf, env in zip([self.system.complex_psf, self.system.waterbox_psf], ['complex', 'waterbox']):
+        for env in self.system.envs:
+            if env == 'vacuum':
+                psf = self.system.vacuum_psf
+            elif env == 'waterbox':
+                psf = self.system.waterbox_psf
+            elif env == 'complex':
+                psf = self.system.complex_psf
+            else:
+                raise RuntimeError(f"Unknown system env :{env}")
             mutation.mutate(psf, self.system.tlc, state)
             self._write_psf(psf, output_file_base, env)
 
@@ -42,7 +51,6 @@ class IntermediateStateFactory(object):
         self._write_toppar_str(output_file_base, self.system.tlc)
         self._copy_files(output_file_base)
         return output_file_base
-
 
     
     def generate_intermediate_states(self, strategy='seperate'):
@@ -62,8 +70,6 @@ class IntermediateStateFactory(object):
 
             logger.info(f"Preparing for a total of {nr_of_total_mutations} mutation steps")
             
-
-
             start_step = 0 # get the endstate at 0
             for m in self.mutation_list:
                 for current_step in range(start_step, m.nr_of_steps+1):
@@ -80,87 +86,120 @@ class IntermediateStateFactory(object):
                     self._copy_files(output_file_base)
                     intst_nr += 1
                 start_step = 1 # don't write out the first, unmodified state
-                
+
+    
+    def _copy_files_for_binding_free_energy_calculations(self, basedir, intermediate_state_file_path):
+
+        # parse omm simulation paramter
+        prms = {}
+        for env in self.system.envs:
+            omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}" 
+            omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
+            prms['nsteps'] = self.configuration['simulation']['nsteps']           
+            self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
+
+
+
+    def _copy_files_for_solvation_free_energy_calculations(self, basedir, intermediate_state_file_path):
+
+        # parse omm simulation paramter
+        prms = {}
+        for env in self.system.envs:
+            if env == 'waterbox':
+                omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}" 
+                omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
+                prms['nsteps'] = self.configuration['simulation']['nsteps']           
+                self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
+            else: # vacuum
+                used_env = 'waterbox'
+                omm_simulation_parameter_source = f"{basedir}/{used_env}/openmm/{self.configuration['system'][self.system.structure][used_env]['simulation_parameter']}" 
+                omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][used_env]['intermediate-filename']}"
+                prms['nsteps'] = self.configuration['simulation']['nsteps']
+                prms['coulomb'] = 'NoCutoff'         
+                self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
+
+
     def _copy_files(self, intermediate_state_file_path):
         """
         Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
         """
         # copy crd files
         basedir = self.system.charmm_gui_base
-        for env in ['waterbox', 'complex']:
-            crd_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.crd"
-            crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
-            shutil.copyfile(crd_file_source , crd_file_target)
-
+        
+        if self.configuration['simulation']['free-energy-type'] == 'solvation-free-energy':
+            self._copy_files_for_solvation_free_energy_calculations(basedir, intermediate_state_file_path)
+        elif self.configuration['simulation']['free-energy-type'] == 'binding-free-energy':
+            self._copy_files_for_binding_free_energy_calculations(basedir, intermediate_state_file_path)
+        else:
+            raise RuntimeError(f"Only solvation/binding free energies implemented")
 
         # copy rst files
-        for env in ['waterbox', 'complex']:
+        for env in self.system.envs:
             rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
             rst_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
-            shutil.copyfile(rst_file_source , rst_file_target)
+            try:
+                shutil.copyfile(rst_file_source , rst_file_target)
+            except FileNotFoundError:
+                logger.warning(f"No restart file found for {env} -- starting simulation from crd file.")
 
+        # copy crd files
+        for env in self.system.envs:
+            crd_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.crd"
+            crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
+            try:
+                shutil.copyfile(crd_file_source , crd_file_target)
+            except FileNotFoundError:
+                logger.warning(f"No crd file found for {env} -- using parmed system structure to create crd file.")
+                crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
+                pm.charmm.CharmmCrdFile.write(self.system.psf_mapping[env], crd_file_target)
 
         # copy ligand rtf file
-        ligand_rtf = f"{basedir}/complex/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
+        ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}_g.rtf" 
         shutil.copyfile(ligand_rtf, toppar_target)
 
         # copy ligand prm file
-        ligand_prm = f"{basedir}/complex/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
+        ligand_prm = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm" 
         shutil.copyfile(ligand_prm, toppar_target)
 
         # copy diverse set of helper functions
-        omm_barostat_source = f"{basedir}/complex/openmm/omm_barostat.py"
+        omm_barostat_source = f"{basedir}/waterbox/openmm/omm_barostat.py"
         omm_barostat_target = f"{intermediate_state_file_path}/omm_barostat.py"
         shutil.copyfile(omm_barostat_source, omm_barostat_target)
 
-        omm_readinputs_source = f"{basedir}/complex/openmm//omm_readinputs.py"
+        omm_readinputs_source = f"{basedir}/waterbox/openmm//omm_readinputs.py"
         omm_readinputs_target = f"{intermediate_state_file_path}/omm_readinputs.py"
         shutil.copyfile(omm_readinputs_source, omm_readinputs_target)
 
-        omm_readparams_source = f"{basedir}/complex/openmm/omm_readparams.py"
+        omm_readparams_source = f"{basedir}/waterbox/openmm/omm_readparams.py"
         omm_readparams_target = f"{intermediate_state_file_path}/omm_readparams.py"
         shutil.copyfile(omm_readparams_source, omm_readparams_target)
 
-        omm_restraints_source = f"{basedir}/complex/openmm/omm_restraints.py"
+        omm_restraints_source = f"{basedir}/waterbox/openmm/omm_restraints.py"
         omm_restraints_target = f"{intermediate_state_file_path}/omm_restraints.py"
         shutil.copyfile(omm_restraints_source, omm_restraints_target)
 
-        omm_rewrap_source = f"{basedir}/complex/openmm/omm_rewrap.py"
+        omm_rewrap_source = f"{basedir}/waterbox/openmm/omm_rewrap.py"
         omm_rewrap_target = f"{intermediate_state_file_path}/omm_rewrap.py"
         shutil.copyfile(omm_rewrap_source, omm_rewrap_target)
 
-        omm_vfswitch_source = f"{basedir}/complex/openmm/omm_vfswitch.py"
+        omm_vfswitch_source = f"{basedir}/waterbox/openmm/omm_vfswitch.py"
         omm_vfswitch_target = f"{intermediate_state_file_path}/omm_vfswitch.py"
         shutil.copyfile(omm_vfswitch_source, omm_vfswitch_target)
 
+        # copy toppar folder
+        toppar_dir = get_toppar_dir()
+        toppar_source = f"{toppar_dir}"
+        toppar_target = f"{intermediate_state_file_path}/toppar" 
+        shutil.copytree(toppar_source, toppar_target)
 
-        # parse omm simulation paramter
-        for env in ['waterbox', 'complex']:
-            omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}" 
-            omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-            input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
-            output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
-        
-            for l in input_simulation_parameter.readlines():
-                if l.strip():
-                    t1, t2 = l.split('=')
-                    t1 = t1.strip()
-                    t2, comment = t2.split('#')
-                    t2 = t2.strip()
-                    comment = comment.strip()
-                    if t1 == 'nstep':
-                        t2 = self.configuration['simulation']['nsteps']
-                    output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
-                else:
-                    output_simulation_parameter.write('\n')
-            input_simulation_parameter.close()
-            output_simulation_parameter.close()
-
+        omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation.sh"
+        omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
+        shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)  
 
         # copy omm simulation script
-        omm_simulation_script_source = f"{basedir}/complex/openmm/openmm_run.py"
+        omm_simulation_script_source = f"{basedir}/waterbox/openmm/openmm_run.py"
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
 
@@ -183,19 +222,30 @@ outfile.close()
         )
         f.close()
 
-        # copy toppar folder
-        toppar_dir = get_toppar_dir()
-        toppar_source = f"{toppar_dir}"
-        toppar_target = f"{intermediate_state_file_path}/toppar" 
-        shutil.copytree(toppar_source, toppar_target)
 
-        omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation.sh"
-        omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
-        shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)  
+    def _overwrite_simulation_script_parameters(self, overwrite_parameters, omm_simulation_parameter_source:str, omm_simulation_parameter_target:str):
+
+        input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
+        output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
     
+        for l in input_simulation_parameter.readlines():
+            if l.strip():
+                t1, t2 = l.split('=')
+                t1 = t1.strip()
+                t2, comment = t2.split('#')
+                t2 = t2.strip()
+                comment = comment.strip()
+                if t1 in overwrite_parameters.keys():
+                    t2 = overwrite_parameters[t1]
+                output_simulation_parameter.write(f"{t1:<25} = {t2:<25} # {comment:<30}\n")
+            else:
+                output_simulation_parameter.write('\n')
+        input_simulation_parameter.close()
+        output_simulation_parameter.close()
+
+
     
-    
-    def _write_rtf_file(self, psf, output_file_base, tlc): # NOTE: thisneeds some refactoring!
+    def _write_rtf_file(self, psf, output_file_base, tlc): # NOTE: this needs some refactoring!
         """
         Generates the dummy atom parameter rtf.
         """
@@ -219,8 +269,6 @@ outfile.close()
         rtf_file_handler.close()    
 
 
-
-
     def _write_prm_file(self, psf, output_file_base, tlc):
     
         header_prm = '''* Parameters generated by analogy by
@@ -230,7 +278,7 @@ outfile.close()
 ! from transformato
 '''
 
-        prm_file_handler = open(output_file_base + '/dummy_parameters.prm', 'w')
+        prm_file_handler = open(f"{output_file_base}/dummy_parameters.prm", 'w')
         prm_file_handler.write(header_prm)
         prm_file_handler.write('\nATOMS\n')
 
@@ -376,7 +424,7 @@ dummy_atom_definitions.rtf
 dummy_parameters.prm
 """.format(tlc.lower(), tlc.lower())
         
-        f = open(output_file_base + '/toppar.str', 'w+')
+        f = open(f"{output_file_base}/toppar.str", 'w+')
         f.write(toppar_format)
         f.close()
 
@@ -397,7 +445,7 @@ dummy_parameters.prm
         """
         output_file_base = f"{self.path}/intst{nr}/" 
 
-        logger.info(' - Created directory: - {}'.format(os.path.abspath(output_file_base)))
+        logger.info(f" - Created directory: - {os.path.abspath(output_file_base)}")
         os.makedirs(output_file_base)
-        logger.info(' - Writing in - {}'.format(os.path.abspath(output_file_base)))
+        logger.info(f" - Writing in - {os.path.abspath(output_file_base)}")
         return output_file_base

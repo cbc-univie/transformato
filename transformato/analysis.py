@@ -92,6 +92,7 @@ class FreeEnergyCalculator(object):
 
         #############
         # set all file paths for potential
+        os.path.isdir(f"{self.base_path}")
         nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
         logger.info(f"Evaluating {nr_of_states} states.")
         snapshost = {}

@@ -30,10 +30,14 @@ class SystemStructure(object):
         self.name:str = configuration['system'][structure]['name']
         self.tlc:str = configuration['system'][structure]['tlc']
         self.charmm_gui_base:str = configuration['system'][structure]['charmm_gui_dir']
-
+        self.psf_mapping:dict = {}
+        self.vacuum_psf = None
+        self.waterbox_psf = None
+        self.complex_psf = None
+        
         # running a binding-free energy calculation? 
         if configuration['simulation']['free-energy-type'] == 'binding-free-energy':
-            self.envs:list = ['complex', 'waterbox']
+            self.envs:set = set(['complex', 'waterbox'])
             self.parameter:pm.charmm.CharmmParameterSet = self._read_parameters(configuration, 'complex')
 
             # set up complex objects
@@ -53,9 +57,33 @@ class SystemStructure(object):
             # generate rdkit mol object of small molecule
             self.mol:Chem.Mol = self._generate_rdkit_mol('complex', self.complex_psf[f":{self.tlc}"])
             self.graph:nx.Graph = self._mol_to_nx(self.mol)
+
+        elif configuration['simulation']['free-energy-type'] == 'solvation-free-energy':
+            self.envs:set = set(['waterbox', 'vacuum'])
+            self.parameter:pm.charmm.CharmmParameterSet = self._read_parameters(configuration, 'vacuum')
+            # set up complex objects
+            self.vacuum_psf:pm.charmm.CharmmPsfFile = self._initialize_system(configuration, 'vacuum')
+            # load parameters
+            self.vacuum_psf.load_parameters(self.parameter)
+            # get offset
+            self.vacuum_offset:int = self._determine_offset_and_set_possible_dummy_properties(self.vacuum_psf)
+
+            # set up waterbox objects
+            self.waterbox_psf:pm.charmm.CharmmPsfFile = self._initialize_system(configuration, 'waterbox')
+            # load parameters
+            self.waterbox_psf.load_parameters(self.parameter)
+            # get offset
+            self.waterbox_offset:int = self._determine_offset_and_set_possible_dummy_properties(self.waterbox_psf)
+
+            # generate rdkit mol object of small molecule
+            self.mol:Chem.Mol = self._generate_rdkit_mol('waterbox', self.waterbox_psf[f":{self.tlc}"])
+            self.graph:nx.Graph = self._mol_to_nx(self.mol)
         else:
-            self.envs = ['waterbox', 'vacuum']
-            raise NotImplementedError('solvation free energy not finished yet.')
+            raise NotImplementedError('only binding and solvation free energy implemented.')
+
+        self.psf_mapping = {'complex' : self.complex_psf,
+                            'waterbox': self.waterbox_psf,
+                            'vacuum'  : self.vacuum_psf} 
 
     def _mol_to_nx(self, mol:Chem.Mol):
         G = nx.Graph()
@@ -91,7 +119,11 @@ class SystemStructure(object):
         parameter : pm.charmm.CharmmParameterSet
             parameters obtained from the CHARMM-GUI output dir.      
         """
- 
+
+        # the parameters for the vacuum system is parsed from the waterbox charmm-gui directory
+        if env == 'vacuum':
+            env = 'waterbox'
+
         charmm_gui_env = self.charmm_gui_base + env
         tlc = self.tlc       
         tlc_lower = str(tlc).lower()
@@ -126,14 +158,28 @@ class SystemStructure(object):
         psf : pm.charmm.CharmmPsfFile
         """
         
-        psf_file_name = configuration['system'][self.structure][env]['psf_file_name']
-        crd_file_name = configuration['system'][self.structure][env]['crd_file_name']
+        if env == 'vacuum':
+            # take the structures from the waterbox system and extract only the ligand
+            taken_from = 'waterbox'           
+            psf_file_name = configuration['system'][self.structure][taken_from]['psf_file_name']
+            crd_file_name = configuration['system'][self.structure][taken_from]['crd_file_name']
 
-        psf_file_path = f"{self.charmm_gui_base}/{env}/openmm/{psf_file_name}.psf"
-        crd_file_path = f"{self.charmm_gui_base}/{env}/openmm/{crd_file_name}.crd"
-        psf = pm.charmm.CharmmPsfFile(psf_file_path)
-        coord = pm.charmm.CharmmCrdFile(crd_file_path)
-        psf.coordinates = coord.coordinates
+            psf_file_path = f"{self.charmm_gui_base}/{taken_from}/openmm/{psf_file_name}.psf"
+            crd_file_path = f"{self.charmm_gui_base}/{taken_from}/openmm/{crd_file_name}.crd"
+            psf = pm.charmm.CharmmPsfFile(psf_file_path)
+            coord = pm.charmm.CharmmCrdFile(crd_file_path)
+            psf.coordinates = coord.coordinates
+            # extract only ligand to generate vacuum system
+            psf = psf[f":{self.tlc}"]
+        else:
+            psf_file_name = configuration['system'][self.structure][env]['psf_file_name']
+            crd_file_name = configuration['system'][self.structure][env]['crd_file_name']
+
+            psf_file_path = f"{self.charmm_gui_base}/{env}/openmm/{psf_file_name}.psf"
+            crd_file_path = f"{self.charmm_gui_base}/{env}/openmm/{crd_file_name}.crd"
+            psf = pm.charmm.CharmmPsfFile(psf_file_path)
+            coord = pm.charmm.CharmmCrdFile(crd_file_path)
+            psf.coordinates = coord.coordinates
 
         return psf
 
@@ -185,7 +231,7 @@ class SystemStructure(object):
         tlc_lower = str(tlc).lower()
         sdf_file = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.sdf"        
 
-        
+        print(sdf_file)
         mol = Chem.MolFromMolFile(sdf_file, removeHs=False)
         atom_idx_to_atom_name, _, atom_name_to_atom_type, atom_idx_to_atom_partial_charge = self.generate_atom_tables_from_psf(psf)
 

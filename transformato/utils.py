@@ -22,7 +22,7 @@ def load_config_yaml(config, input_dir, output_dir):
     settingsMap['bin_dir'] = get_bin_dir()
     settingsMap['analysis_dir_base'] = os.path.abspath(f"{output_dir}")
     settingsMap['data_dir_base'] = os.path.abspath(f"{input_dir}")
-    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}"
+    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}-{settingsMap['simulation']['free-energy-type']}"
     settingsMap['system_dir'] = f"{settingsMap['analysis_dir_base']}/{system_name}"
     settingsMap['cluster_dir'] = f"/data/local/{system_name}"
 
