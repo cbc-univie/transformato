@@ -564,11 +564,11 @@ class ChargeMutation(BaseMutation):
     def _compensate_charge(self, psf, offset:int, diff_charge:float, tlc:str):
 
         nr_of_atoms_to_spread_charge = len(self.common_core)
-        print('##############')
-        print('Charge to compensate: {}'.format(diff_charge))
+        logger.info('##############')
+        logger.info(f"Charge to compensate: {diff_charge}")
         charge_part = diff_charge / nr_of_atoms_to_spread_charge
-        print(charge_part)
-        print('##############')
+        logger.info(charge_part)
+        logger.info('##############')
         for idx in self.common_core:
             odx = idx + offset
             psf[odx].charge += charge_part
