@@ -77,11 +77,11 @@ class IntermediateStateFactory(object):
                     output_file_base = self._init_intermediate_state_dir(intst_nr)
                     logger.info('#########################################')
                     logger.info('#########################################')
-                    for psf, env in zip([self.system.complex_psf, self.system.waterbox_psf], ['complex', 'waterbox']):
-                        m.mutate(psf, self.system.tlc, current_step)
-                        self._write_psf(psf, output_file_base, env)
-                    self._write_rtf_file(psf, output_file_base, self.system.tlc)
-                    self._write_prm_file(psf, output_file_base, self.system.tlc)
+                    for env in self.system.envs:
+                        m.mutate(self.system.psf_mapping[env], self.system.tlc, current_step)
+                        self._write_psf(self.system.psf_mapping[env], output_file_base, env)
+                    self._write_rtf_file(self.system.psf_mapping[env], output_file_base, self.system.tlc)
+                    self._write_prm_file(self.system.psf_mapping[env], output_file_base, self.system.tlc)
                     self._write_toppar_str(output_file_base, self.system.tlc)
                     self._copy_files(output_file_base)
                     intst_nr += 1
@@ -95,9 +95,13 @@ class IntermediateStateFactory(object):
         for env in self.system.envs:
             omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}" 
             omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-            prms['nsteps'] = self.configuration['simulation']['nsteps']           
+            prms['nstep'] = self.configuration['simulation']['nstep']
+            prms['nstdcd'] = self.configuration['simulation']['nstdcd']      
             self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
 
+        omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation-binding-free-energy.sh"
+        omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
+        shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)
 
 
     def _copy_files_for_solvation_free_energy_calculations(self, basedir, intermediate_state_file_path):
@@ -108,22 +112,32 @@ class IntermediateStateFactory(object):
             if env == 'waterbox':
                 omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}" 
                 omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-                prms['nsteps'] = self.configuration['simulation']['nsteps']           
+                prms['nstep'] = self.configuration['simulation']['nstep']
+                prms['nstdcd'] = self.configuration['simulation']['nstdcd']
                 self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
             else: # vacuum
                 used_env = 'waterbox'
                 omm_simulation_parameter_source = f"{basedir}/{used_env}/openmm/{self.configuration['system'][self.system.structure][used_env]['simulation_parameter']}" 
-                omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][used_env]['intermediate-filename']}"
-                prms['nsteps'] = self.configuration['simulation']['nsteps']
+                omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
+                prms['nstep'] = self.configuration['simulation']['nstep']
+                prms['nstdcd'] = self.configuration['simulation']['nstdcd']
                 prms['coulomb'] = 'NoCutoff'         
                 self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
+        
+        omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation-solvation-free-energy.sh"
+        omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
+        shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)
+
+        omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
+        omm_simulation_submit_script_target = f"{intermediate_state_file_path}/openmm_run_vacuum.py"
+        shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)
 
 
     def _copy_files(self, intermediate_state_file_path):
         """
         Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
         """
-        # copy crd files
+
         basedir = self.system.charmm_gui_base
         
         if self.configuration['simulation']['free-energy-type'] == 'solvation-free-energy':
@@ -194,14 +208,12 @@ class IntermediateStateFactory(object):
         toppar_target = f"{intermediate_state_file_path}/toppar" 
         shutil.copytree(toppar_source, toppar_target)
 
-        omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation.sh"
-        omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
-        shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)  
 
         # copy omm simulation script
         omm_simulation_script_source = f"{basedir}/waterbox/openmm/openmm_run.py"
-        omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
-        shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
+        omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"      
+        shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)  
+
 
         # adding serializer functions
         f = open(omm_simulation_script_target, 'a')
@@ -368,7 +380,6 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5''')
                     prm_file_handler.write('{:7} {:6} {:9.5f} {:9.5f}\n'.format(atom.type, 0.0, 
                                             atom.epsilon, 
                                             atom.rmin))
-
 
         prm_file_handler.write('\n')
         prm_file_handler.write('END')
