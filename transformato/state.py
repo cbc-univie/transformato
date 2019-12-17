@@ -91,13 +91,10 @@ class IntermediateStateFactory(object):
     def _copy_files_for_binding_free_energy_calculations(self, basedir, intermediate_state_file_path):
 
         # parse omm simulation paramter
-        prms = {}
         for env in self.system.envs:
             omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}" 
             omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-            prms['nstep'] = self.configuration['simulation']['nstep']
-            prms['nstdcd'] = self.configuration['simulation']['nstdcd']      
-            self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
+            self._overwrite_simulation_script_parameters(omm_simulation_parameter_source, omm_simulation_parameter_target)
 
         omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation-binding-free-energy.sh"
         omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
@@ -107,22 +104,16 @@ class IntermediateStateFactory(object):
     def _copy_files_for_solvation_free_energy_calculations(self, basedir, intermediate_state_file_path):
 
         # parse omm simulation paramter
-        prms = {}
         for env in self.system.envs:
             if env == 'waterbox':
                 omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}" 
                 omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-                prms['nstep'] = self.configuration['simulation']['nstep']
-                prms['nstdcd'] = self.configuration['simulation']['nstdcd']
-                self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
+                self._overwrite_simulation_script_parameters(omm_simulation_parameter_source, omm_simulation_parameter_target)
             else: # vacuum
                 used_env = 'waterbox'
                 omm_simulation_parameter_source = f"{basedir}/{used_env}/openmm/{self.configuration['system'][self.system.structure][used_env]['simulation_parameter']}" 
                 omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-                prms['nstep'] = self.configuration['simulation']['nstep']
-                prms['nstdcd'] = self.configuration['simulation']['nstdcd']
-                prms['coulomb'] = 'NoCutoff'         
-                self._overwrite_simulation_script_parameters(prms, omm_simulation_parameter_source, omm_simulation_parameter_target)
+                self._overwrite_simulation_script_parameters(omm_simulation_parameter_source, omm_simulation_parameter_target)
         
         omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation-solvation-free-energy.sh"
         omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
@@ -132,6 +123,11 @@ class IntermediateStateFactory(object):
         omm_simulation_submit_script_target = f"{intermediate_state_file_path}/openmm_run_vacuum.py"
         shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)
 
+    def _get_simulations_parameters(self):
+        prms = {}
+        for key in self.configuration['simulation']['parameters']:
+            prms[key] = self.configuration['simulation']['parameters'][key]
+        return prms
 
     def _copy_files(self, intermediate_state_file_path):
         """
@@ -235,7 +231,9 @@ outfile.close()
         f.close()
 
 
-    def _overwrite_simulation_script_parameters(self, overwrite_parameters, omm_simulation_parameter_source:str, omm_simulation_parameter_target:str):
+    def _overwrite_simulation_script_parameters(self, omm_simulation_parameter_source:str, omm_simulation_parameter_target:str):
+
+        overwrite_parameters = self._get_simulations_parameters()
 
         input_simulation_parameter = open(omm_simulation_parameter_source, 'r')
         output_simulation_parameter = open(omm_simulation_parameter_target + '.inp', 'w+')
