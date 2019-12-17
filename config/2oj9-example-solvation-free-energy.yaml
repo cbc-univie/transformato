@@ -69,8 +69,12 @@ system:
 ################
 simulation:
 ################
-  nsteps:
-    '500000'
+  nstep:
+    10000
+  nstdcd:
+    100
+  nstout:
+    100
   free-energy-type:
     'solvation-free-energy'
 ################

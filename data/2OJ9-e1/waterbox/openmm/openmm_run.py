@@ -64,11 +64,12 @@ if inputs.rest == 'yes':         system = restraints(system, crd, inputs)
 integrator = LangevinIntegrator(inputs.temp*kelvin, inputs.fric_coeff/picosecond, inputs.dt*picoseconds)
 
 # Set platform
-platform = Platform.getPlatformByName('CUDA')
-prop = dict(CudaPrecision='single')
+platform = Platform.getPlatformByName('CPU')
+#prop = dict(CudaPrecision='single')
 
 # Build simulation context
-simulation = Simulation(psf.topology, system, integrator, platform, prop)
+#simulation = Simulation(psf.topology, system, integrator, platform, prop)
+simulation = Simulation(psf.topology, system, integrator, platform)
 simulation.context.setPositions(crd.positions)
 if args.icrst:
     charmm_rst = read_charmm_rst(args.icrst)
