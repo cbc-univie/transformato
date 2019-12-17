@@ -185,42 +185,49 @@ class FreeEnergyCalculator(object):
         logger.info(f"Generating results for complex.")
         self.complex_mbar =  self._analyse_results_using_mbar('complex', self.snapshost['complex'], self.nr_of_states, save_results)
 
-    def load_mbar_results(self):
-        for env, ref_to_mbar in zip(['waterbox', 'complex'], [self.waterbox_mbar, self.complex_mbar]):
-            file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
-            results = pickle.load(open(file, 'rb'))
-            ref_to_mbar = mbar.MBAR(results['u_kn'], results['N_k'])
+    def load_waterbox_results(self, file):
+        self.waterbox_mbar = self._load_mbar_results(file)
+
+    def load_complex_results(self, file):
+        self.complex_mbar = self._load_mbar_results(file)
+
+    def load_vacuum_results(self, file):
+        self.vacuum_mbar = self._load_mbar_results(file)
+
+    def _load_mbar_results(self, file):
+        results = pickle.load(open(file, 'rb'))
+        return mbar.MBAR(results['u_kn'], results['N_k'])
 
 
     @property
     def complex_free_energy_differences(self):
         """matrix of free energy differences"""
-        return self.complex_mbar.getFreeEnergyDifferences()[0]
+        return self.complex_mbar.getFreeEnergyDifferences(return_dict=True)['Delta_f']
     
     @property
     def complex_free_energy_overlap(self):
         """overlap of lambda states"""
-        return self.complex_mbar.computeOverlap()[-1]
+        return self.complex_mbar.computeOverlap(return_dict=True)['matrix']
 
     @property
     def complex_free_energy_difference_uncertainties(self):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
-        return self.complex_mbar.getFreeEnergyDifferences()[1]
+        return self.complex_mbar.getFreeEnergyDifferences(return_dict=True)['dDelta_f']
     
     @property
     def waterbox_free_energy_differences(self):
         """matrix of free energy differences"""
-        return self.waterbox_mbar.getFreeEnergyDifferences()[0]
+        return self.waterbox_mbar.getFreeEnergyDifferences(return_dict=True)['Delta_f']
 
     @property
     def waterbox_free_energy_overlap(self):
         """overlap of lambda states"""
-        return self.waterbox_mbar.computeOverlap()[-1]
+        return self.waterbox_mbar.computeOverlap(return_dict=True)['matrix']
     
     @property
     def waterbox_free_energy_difference_uncertainties(self):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
-        return self.waterbox_mbar.getFreeEnergyDifferences()[1]
+        return self.waterbox_mbar.getFreeEnergyDifferences(return_dict=True)['dDelta_f']
 
     @property
     def plot_complex_free_energy_overlap(self):
@@ -277,10 +284,9 @@ class FreeEnergyCalculator(object):
     @property
     def end_state_free_energy_difference(self):
         """DeltaF[lambda=1 --> lambda=0]"""
-        waterbox_DeltaF_ij, waterbox_dDeltaF_ij, _ = self.waterbox_mbar.getFreeEnergyDifferences()
-        complex_DeltaF_ij, complex_dDeltaF_ij, _ = self.complex_mbar.getFreeEnergyDifferences()
-        K = len(complex_DeltaF_ij)
-        return complex_DeltaF_ij[0, K-1] - waterbox_DeltaF_ij[0, K-1], waterbox_dDeltaF_ij[0, K-1] + complex_dDeltaF_ij[0, K-1] 
+        K = len(self.waterbox_free_energy_differences)
+        return (self.complex_free_energy_differences[0, K-1] - self.waterbox_free_energy_differences[0, K-1], 
+                self.waterbox_free_energy_difference_uncertainties[0, K-1] + self.complex_free_energy_difference_uncertainties[0, K-1]) 
 
     def show_summary(self):
         self.plot_complex_free_energy_overlap
