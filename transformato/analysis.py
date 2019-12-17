@@ -186,12 +186,18 @@ class FreeEnergyCalculator(object):
         logger.info(f"Generating results for complex.")
         self.complex_mbar =  self._analyse_results_using_mbar('complex', self.snapshost['complex'], self.nr_of_states, save_results)
 
-    def load_mbar_results(self):
-        for env, ref_to_mbar in zip(['waterbox', 'complex'], [self.waterbox_mbar, self.complex_mbar]):
-            file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
-            results = pickle.load(open(file, 'rb'))
-            ref_to_mbar = mbar.MBAR(results['u_kn'], results['N_k'])
+    def load_waterbox_results(self, file):
+        self.waterbox_mbar = self._load_mbar_results(file)
 
+    def load_complex_results(self, file):
+        self.complex_mbar = self._load_mbar_results(file)
+
+    def load_vacuum_results(self, file):
+        self.vacuum_mbar = self._load_mbar_results(file)
+
+    def _load_mbar_results(self, file):
+        results = pickle.load(open(file, 'rb'))
+        return mbar.MBAR(results['u_kn'], results['N_k'])
 
     @property
     def complex_free_energy_differences(self):
