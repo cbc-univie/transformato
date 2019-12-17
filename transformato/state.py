@@ -97,7 +97,10 @@ class IntermediateStateFactory(object):
         for env in ['waterbox', 'complex']:
             rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
             rst_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
-            shutil.copyfile(rst_file_source , rst_file_target)
+            try:
+                shutil.copyfile(rst_file_source , rst_file_target)
+            except FileNotFoundError:
+                logger.warning(f"No restart file found for {env} -- starting simulation from crd file.")
 
 
         # copy ligand rtf file
