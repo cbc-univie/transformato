@@ -721,10 +721,10 @@ class TransformChargesToTargetCharge():
     def _compensate_charge(self, psf, diff_charge:float, total_charge):
 
         nr_of_atoms_to_spread_charge = len(self.cc2_idx)
-        print('##############')
-        print('Charge to compensate: {}'.format(diff_charge))
+        logger.info('##############')
+        logger.info(f"Charge to compensate: {diff_charge}")
         charge_part = diff_charge / nr_of_atoms_to_spread_charge
-        print('##############')
+        logger.info('##############')
         for idx in self.cc2_idx:
             psf[idx].charge += charge_part
 

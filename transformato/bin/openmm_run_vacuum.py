@@ -40,3 +40,9 @@ simulation.reporters.append(
                       remainingTime=True, speed=True, totalSteps=inputs.nstep, separator='\t')
 )
 simulation.step(inputs.nstep)
+
+if not (args.orst): args.orst = 'output.rst'
+if args.orst:
+    state = simulation.context.getState( getPositions=True, getVelocities=True )
+    with open(args.orst, 'w') as f:
+        f.write(XmlSerializer.serialize(state))
