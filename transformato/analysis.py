@@ -40,13 +40,11 @@ def return_reduced_potential(potential_energy:unit.Quantity, volume:unit.Quantit
     """
 
     assert(type(temperature) == unit.Quantity)
-    assert(type(volume) == unit.Quantity)
-
     pressure = 1.0 * unit.atmosphere # atm      
 
     beta = 1.0 / (unit.BOLTZMANN_CONSTANT_kB * temperature)
     reduced_potential = potential_energy / unit.AVOGADRO_CONSTANT_NA
-    if pressure is not None:
+    if volume is not None:
         reduced_potential += pressure * volume
     return beta * reduced_potential
 
@@ -56,6 +54,7 @@ class FreeEnergyCalculator(object):
     def __init__(self, configuration:dict, structure_name:str):
         self.configuration = configuration
         self.structure_name = structure_name
+        self.envs:set = ()
         # decide if the name of the system corresponds to structure1 or structure2
         if configuration['system']['structure1']['name'] == self.structure_name:
             structure = 'structure1'
@@ -64,10 +63,21 @@ class FreeEnergyCalculator(object):
         else:
             raise RuntimeError(f"Could not finde structure entry for : {self.structure_name}")
 
+        if configuration['simulation']['free-energy-type'] == 'solvation-free-energy':
+            self.envs = ('vacuum', 'waterbox')
+            self.mbar_results = {'waterbox' : None, 'vacuum' : None}
+
+        elif configuration['simulation']['free-energy-type'] == 'binding-free-energy':
+            self.envs = ('complex', 'waterbox')
+            self.mbar_results = {'waterbox' : None, 'complex' : None}
+        else:
+            raise RuntimeError(f"Either binding or solvation free energy.")
+
+
+
         self.base_path = f"{self.configuration['system_dir']}/{self.structure_name}/"
         self.structure = structure
-        self.waterbox_mbar = None
-        self.complex_mbar = None
+        self.mbar_results = {'waterbox' : None, 'vacuum' : None, 'complex' : None}
         self.snapshost = [] 
         self.nr_of_states = -1
         self.N_k = []
@@ -97,17 +107,19 @@ class FreeEnergyCalculator(object):
 
         logger.info(f"Evaluating {nr_of_states} states.")
         snapshost = {}
-        for env in ['waterbox', 'complex']:
+        for env in self.envs:
             confs = []
             conf_sub = self.configuration['system'][self.structure][env]
             N_k = []
             for i in tqdm(range(1, nr_of_states+1)):
                 traj  = mdtraj.load(f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.dcd", 
-                                    top=f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.psf")[50::self.thinning] 
-                                    # NOTE: removing the first 50 confs and thinning
-                
+                                    top=f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.psf")
+
+                # NOTE: removing the first 20% confs and thinning                    
+                start = int(len(traj)/20)
+                traj = traj[start::self.thinning] 
                 if len(traj) < 10:
-                    raise RuntimeError(f"Below 10 conformations per lambda -- decrease the thinning factor (currently: {self.thinning}).")
+                    raise RuntimeError(f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning}).")
                 
                 confs.append(traj)
                 logger.info(f"Nr of snapshots: {len(traj)}")
@@ -121,14 +133,15 @@ class FreeEnergyCalculator(object):
 
     def _analyse_results_using_mbar(self, env:str, snapshots:mdtraj.Trajectory, nr_of_states:int, save_results:bool):
 
-        def _energy_at_ts(simulation:Simulation, coordinates, bxl:unit.Quantity):
+        def _energy_at_ts(simulation:Simulation, coordinates, bxl):
             """
             Calculates the potential energy with the correct periodic boundary conditions.
             """
-            a = Vec3(bxl.value_in_unit(unit.nanometer), 0.0, 0.0)
-            b = Vec3(0.0, bxl.value_in_unit(unit.nanometer), 0.0)
-            c = Vec3(0.0, 0.0, bxl.value_in_unit(unit.nanometer))
-            simulation.context.setPeriodicBoxVectors(a,b,c)
+            if bxl:
+                a = Vec3(bxl.value_in_unit(unit.nanometer), 0.0, 0.0)
+                b = Vec3(0.0, bxl.value_in_unit(unit.nanometer), 0.0)
+                c = Vec3(0.0, 0.0, bxl.value_in_unit(unit.nanometer))
+                simulation.context.setPeriodicBoxVectors(a,b,c)
             simulation.context.setPositions((coordinates))
             state = simulation.context.getState(getEnergy=True)
             return state.getPotentialEnergy()
@@ -150,12 +163,16 @@ class FreeEnergyCalculator(object):
 
             energies = []
             for ts in tqdm(range(snapshots.n_frames)):
-                # extract the box size at the given ts
-                bxl = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
-                # calculate the potential energy 
+                if env != 'vacuum':
+                    # extract the box size at the given ts
+                    bxl = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
+                    volumn = bxl ** 3
+                else: 
+                    bxl = None
+                    volumn = None
+                # calculate the potential energy
                 e = _energy_at_ts(simulation, snapshots.openmm_positions(ts), bxl)
                 # obtain the reduced potential (for NpT)
-                volumn = bxl ** 3
                 red_e = return_reduced_potential(e, volumn, 300 * unit.kelvin)
                 energies.append(red_e)
             return np.array(energies)
@@ -182,59 +199,108 @@ class FreeEnergyCalculator(object):
             self.save_results_to_path = f"{self.configuration['system_dir']}/results/"
             logger.info(f"Saving results in {self.save_results_to_path}")
 
-        logger.info(f"Generating results for waterbox.")
-        self.waterbox_mbar = self._analyse_results_using_mbar('waterbox', self.snapshost['waterbox'], self.nr_of_states, save_results)
-        logger.info(f"Generating results for complex.")
-        self.complex_mbar =  self._analyse_results_using_mbar('complex', self.snapshost['complex'], self.nr_of_states, save_results)
+        for env in self.envs:
+            logger.info(f"Generating results for {env}.")
+            self.mbar_results[env] = self._analyse_results_using_mbar(env, self.snapshost[env], self.nr_of_states, save_results)
 
     def load_waterbox_results(self, file):
-        self.waterbox_mbar = self._load_mbar_results(file)
+        self.mbar_results['waterbox'] = self._load_mbar_results(file)
 
     def load_complex_results(self, file):
-        self.complex_mbar = self._load_mbar_results(file)
+        self.mbar_results['complex'] = self._load_mbar_results(file)
 
     def load_vacuum_results(self, file):
-        self.vacuum_mbar = self._load_mbar_results(file)
+        self.mbar_results['vacuum'] = self._load_mbar_results(file)
 
     def _load_mbar_results(self, file):
         results = pickle.load(open(file, 'rb'))
         return mbar.MBAR(results['u_kn'], results['N_k'])
 
 
-    @property
-    def complex_free_energy_differences(self):
+    def free_energy_differences(self, env='vacuum'):
         """matrix of free energy differences"""
-        return self.complex_mbar.getFreeEnergyDifferences(return_dict=True)['Delta_f']
+        try:
+            r = self.mbar_results[env].getFreeEnergyDifferences(return_dict=True)['Delta_f']
+        except KeyError:
+            raise KeyError(f"Free energy difference not obtained for : {env}")
+        return r
     
-    @property
-    def complex_free_energy_overlap(self):
+    def free_energy_overlap(self, env='vacuum'):
         """overlap of lambda states"""
-        return self.complex_mbar.computeOverlap(return_dict=True)['matrix']
+        try:
+            r= self.mbar_results[env].computeOverlap(return_dict=True)['matrix']
+        except KeyError:
+            raise KeyError(f"Free energy overlap not obtained for : {env}")
 
-    @property
-    def complex_free_energy_difference_uncertainties(self):
+        return r
+
+    def free_energy_difference_uncertainties(self, env='vacuum'):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
-        return self.complex_mbar.getFreeEnergyDifferences(return_dict=True)['dDelta_f']
+        try:
+            r= self.mbar_results[env].getFreeEnergyDifferences(return_dict=True)['dDelta_f']
+        except KeyError:
+            raise KeyError(f"Free energy uncertanties not obtained for : {env}")
+        return r
     
     @property
     def waterbox_free_energy_differences(self):
         """matrix of free energy differences"""
-        return self.waterbox_mbar.getFreeEnergyDifferences(return_dict=True)['Delta_f']
+        return self.free_energy_differences(env='waterbox')
 
     @property
-    def waterbox_free_energy_overlap(self):
-        """overlap of lambda states"""
-        return self.waterbox_mbar.computeOverlap(return_dict=True)['matrix']
-    
-    @property
-    def waterbox_free_energy_difference_uncertainties(self):
-        """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
-        return self.waterbox_mbar.getFreeEnergyDifferences(return_dict=True)['dDelta_f']
+    def complex_free_energy_differences(self):
+        """matrix of free energy differences"""
+        return self.free_energy_differences(env='complex')
 
     @property
+    def vacuum_free_energy_differences(self):
+        """matrix of free energy differences"""
+        return self.free_energy_differences(env='vacuum')
+
+    @property
+    def waterbox_free_energy_difference_uncertanties(self):
+        """matrix of free energy differences"""
+        return self.free_energy_difference_uncertainties(env='waterbox')
+
+    @property
+    def complex_free_energy_difference_uncertanties(self):
+        """matrix of free energy differences"""
+        return self.free_energy_difference_uncertainties(env='complex')
+
+    @property
+    def vacuum_free_energy_difference_uncertanties(self):
+        """matrix of free energy differences"""
+        return self.free_energy_difference_uncertainties(env='vacuum')
+
+    @property
+    def waterbox_free_energy_difference_overlap(self):
+        """matrix of free energy differences"""
+        return self.free_energy_overlap(env='waterbox')
+
+    @property
+    def complex_free_energy_difference_overlap(self):
+        """matrix of free energy differences"""
+        return self.free_energy_overlap(env='complex')
+
+    @property
+    def vacuum_free_energy_difference_overlap(self):
+        """matrix of free energy differences"""
+        return self.free_energy_overlap(env='vacuum')
+
+    def plot_vacuum_free_energy_overlap(self):
+        plt.figure(figsize=[8,8], dpi=300)
+        plt.imshow(self.vacuum_free_energy_difference_overlap, cmap='Blues')
+        plt.title('Overlap of lambda states for ligand in vacuum', fontsize=15)
+        plt.xlabel('lambda state (0 to 1)', fontsize=15)
+        plt.ylabel('lambda state (0 to 1)', fontsize=15)
+        plt.legend()
+        plt.colorbar()
+        plt.show()
+        plt.close()    
+
     def plot_complex_free_energy_overlap(self):
         plt.figure(figsize=[8,8], dpi=300)
-        plt.imshow(self.complex_free_energy_overlap, cmap='Blues')
+        plt.imshow(self.complex_free_energy_difference_overlap, cmap='Blues')
         plt.title('Overlap of lambda states for ligand in complex', fontsize=15)
         plt.xlabel('lambda state (0 to 1)', fontsize=15)
         plt.ylabel('lambda state (0 to 1)', fontsize=15)
@@ -243,10 +309,9 @@ class FreeEnergyCalculator(object):
         plt.show()
         plt.close()    
 
-    @property
     def plot_waterbox_free_energy_overlap(self):
         plt.figure(figsize=[8,8], dpi=300)
-        plt.imshow(self.waterbox_free_energy_overlap, cmap='Blues',)
+        plt.imshow(self.waterbox_free_energy_difference_overlap, cmap='Blues',)
         plt.title('Overlap of lambda states for ligand in waterbox', fontsize=15)
         plt.xlabel('lambda state (0 to 1)', fontsize=15)
         plt.ylabel('lambda state (0 to 1)', fontsize=15)       
@@ -255,11 +320,10 @@ class FreeEnergyCalculator(object):
         plt.show()
         plt.close()    
 
-    @property
-    def plot_complex_free_energy(self):
-        x = [a for a in range(1, len(self.complex_free_energy_differences[0])+1)]
-        y = self.complex_free_energy_differences[0]
-        y_error = self.complex_free_energy_difference_uncertainties[0]
+    def plot_vacuum_free_energy(self):
+        x = [a for a in range(1, len(self.vacuum_free_energy_differences[0])+1)]
+        y = self.vacuum_free_energy_differences[0]
+        y_error = self.vacuum_free_energy_difference_uncertanties[0]
 
         plt.errorbar(x, y, yerr=y_error, label='ddG +- stddev [kT]')
         plt.title('Free energy estimate for ligand in complex', fontsize=15)
@@ -268,11 +332,22 @@ class FreeEnergyCalculator(object):
         plt.show()
         plt.close()    
 
-    @property
+    def plot_complex_free_energy(self):
+        x = [a for a in range(1, len(self.complex_free_energy_differences[0])+1)]
+        y = self.complex_free_energy_differences[0]
+        y_error = self.complex_free_energy_difference_uncertanties[0]
+
+        plt.errorbar(x, y, yerr=y_error, label='ddG +- stddev [kT]')
+        plt.title('Free energy estimate for ligand in complex', fontsize=15)
+        plt.xlabel('Free energy estimate in kT')
+        plt.ylabel('lambda state (0 to 1)', fontsize=15)       
+        plt.show()
+        plt.close()    
+
     def plot_waterbox_free_energy(self):
         x = [a for a in range(1, len(self.waterbox_free_energy_differences[0])+1)]
         y = self.waterbox_free_energy_differences[0]
-        y_error = self.waterbox_free_energy_difference_uncertainties[0]
+        y_error = self.waterbox_free_energy_difference_uncertanties[0]
 
         plt.errorbar(x, y, yerr=y_error, label='ddG +- stddev [kT]')
         plt.title('Free energy estimate for ligand in waterbox', fontsize=15)
@@ -287,8 +362,16 @@ class FreeEnergyCalculator(object):
     def end_state_free_energy_difference(self):
         """DeltaF[lambda=1 --> lambda=0]"""
         K = len(self.waterbox_free_energy_differences)
-        return (self.complex_free_energy_differences[0, K-1] - self.waterbox_free_energy_differences[0, K-1], 
-                self.waterbox_free_energy_difference_uncertainties[0, K-1] + self.complex_free_energy_difference_uncertainties[0, K-1]) 
+        if self.configuration['simulation']['free-energy-type'] == 'solvation-free-energy':
+            return (self.waterbox_free_energy_differences[0, K-1] - self.vacuum_free_energy_differences[0, K-1], 
+                    self.waterbox_free_energy_difference_uncertanties[0, K-1] + self.vacuum_free_energy_difference_uncertanties[0, K-1]) 
+
+        elif self.configuration['simulation']['free-energy-type'] == 'binding-free-energy':
+            return (self.complex_free_energy_differences[0, K-1] - self.waterbox_free_energy_differences[0, K-1], 
+                    self.complex_free_energy_difference_uncertanties[0, K-1] + self.waterbox_free_energy_difference_uncertanties[0, K-1]) 
+        else:
+            raise RuntimeError()
+
 
     def show_summary(self):
         self.plot_complex_free_energy_overlap

@@ -87,6 +87,26 @@ class IntermediateStateFactory(object):
                     intst_nr += 1
                 start_step = 1 # don't write out the first, unmodified state
 
+    def _add_serializer(self, file):
+                # adding serializer functions
+        f = open(file, 'a')
+        f.write(
+'''
+# mw: adding xml serializer to the simulation script
+file_name = str(args.psffile).replace('.psf', '')
+print(file_name)
+serialized_integrator = XmlSerializer.serialize(integrator)
+outfile = open(file_name + '_integrator.xml','w')
+outfile.write(serialized_integrator)
+outfile.close()
+serialized_system = XmlSerializer.serialize(system)
+outfile = open(file_name + '_system.xml','w')
+outfile.write(serialized_system)
+outfile.close()
+'''
+        )
+        f.close()
+
     
     def _copy_files_for_binding_free_energy_calculations(self, basedir, intermediate_state_file_path):
 
@@ -99,6 +119,7 @@ class IntermediateStateFactory(object):
         omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation-binding-free-energy.sh"
         omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
         shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)
+
 
 
     def _copy_files_for_solvation_free_energy_calculations(self, basedir, intermediate_state_file_path):
@@ -119,9 +140,10 @@ class IntermediateStateFactory(object):
         omm_simulation_submit_script_target = f"{intermediate_state_file_path}/simulation.sh"
         shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)
 
-        omm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
-        omm_simulation_submit_script_target = f"{intermediate_state_file_path}/openmm_run_vacuum.py"
-        shutil.copyfile(omm_simulation_submit_script_source, omm_simulation_submit_script_target)
+        omm_simulation_script_source = f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
+        omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run_vacuum.py"
+        shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
+        self._add_serializer(omm_simulation_script_target)
 
     def _get_simulations_parameters(self):
         prms = {}
@@ -210,25 +232,8 @@ class IntermediateStateFactory(object):
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"      
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)  
 
-
-        # adding serializer functions
-        f = open(omm_simulation_script_target, 'a')
-        f.write(
-'''
-# mw: adding xml serializer to the simulation script
-file_name = str(args.psffile).replace('.psf', '')
-print(file_name)
-serialized_integrator = XmlSerializer.serialize(integrator)
-outfile = open(file_name + '_integrator.xml','w')
-outfile.write(serialized_integrator)
-outfile.close()
-serialized_system = XmlSerializer.serialize(system)
-outfile = open(file_name + '_system.xml','w')
-outfile.write(serialized_system)
-outfile.close()
-'''
-        )
-        f.close()
+        # add serialization
+        self._add_serializer(omm_simulation_script_target)
 
 
     def _overwrite_simulation_script_parameters(self, omm_simulation_parameter_source:str, omm_simulation_parameter_target:str):

@@ -462,7 +462,6 @@ def test_run_example_systems_solvation_free_energy():
         # write intermediate states
         i = IntermediateStateFactory(system=s2, mutation_list=mutation_list, configuration=configuration)
         i.generate_intermediate_states()
-        #shutil.rmtree(pathlib.Path(i.path).parent)
 
         paths = pathlib.Path(i.path).glob('**/*.sh')
         for path in sorted(paths):
@@ -478,10 +477,17 @@ def test_run_example_systems_solvation_free_energy():
         f= FreeEnergyCalculator(configuration, '2OJ9-e1')
         f.load_trajs(thinning=1)
         f.calculate_dG_to_common_core()
+        ddG, dddG = f.end_state_free_energy_difference
+        print(f"Free energy difference: {ddG}")
+        print(f"Uncertanty: {dddG}")
+        #assert(ddG == 10.0)
+        
         f.show_summary()
 
         f= FreeEnergyCalculator(configuration, '2OJ9-e2')
         f.load_trajs(thinning=1)
         f.calculate_dG_to_common_core()
+
         f.show_summary()
+        shutil.rmtree(pathlib.Path(i.path).parent)
 
