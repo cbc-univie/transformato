@@ -5,7 +5,7 @@ Unit and regression test for the transformato package.
 # Import package, test suite, and other packages as needed
 import transformato
 import pytest
-import sys
+import sys, os
 import logging
 import shutil
 import pathlib
@@ -272,6 +272,7 @@ def test_vdw_mutation():
             shutil.rmtree(output_file_base) 
 
 
+@pytest.mark.slowtest
 def test_bonded_mutation():
 
     for conf in ['config/2oj9-test-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
@@ -404,7 +405,7 @@ def test_bonded_mutation():
 
         shutil.rmtree(output_file_base) 
 
-
+@pytest.mark.slowtest
 def test_run_test_systems():
     for conf in ['config/2oj9-test-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
@@ -429,7 +430,10 @@ def test_run_test_systems():
         #shutil.rmtree(pathlib.Path(i.path).parent)
         print(pathlib.Path(i.path).parent) 
 
-
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
 def test_run_example_systems_solvation_free_energy():
     from transformato import FreeEnergyCalculator
     for conf in ['config/2oj9-example-solvation-free-energy.yaml']:
