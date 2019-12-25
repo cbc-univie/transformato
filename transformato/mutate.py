@@ -1,19 +1,18 @@
-import parmed as pm
+import io
 import logging
-from simtk import unit
-from rdkit import Chem
-import rdkit
-import os, io
-from copy import deepcopy   
-from rdkit.Chem import rdFMCS
-from rdkit.Chem.Draw import rdMolDraw2D
-from rdkit.Chem import Draw
-from rdkit.Chem import AllChem
-from rdkit.Chem.Draw import IPythonConsole
-from IPython.core.display import display
-from transformato import state
+import os
 from collections import namedtuple
+from copy import deepcopy
+
 import numpy as np
+import parmed as pm
+import rdkit
+from IPython.core.display import display
+from rdkit import Chem
+from rdkit.Chem import AllChem, Draw, rdFMCS
+from rdkit.Chem.Draw import IPythonConsole, rdMolDraw2D
+from simtk import unit
+from transformato import state
 
 logger = logging.getLogger(__name__)
 
@@ -807,7 +806,3 @@ class TransformChargesToTargetCharge():
         #     elif torsion.improper_present_in == 'cc2':
         #         # scale the new torsinos up
         #         torsion.type.psi_k = torsion.initial_psi_k * max((scale -0.5) * 2, 0.0)
-
-
-
-

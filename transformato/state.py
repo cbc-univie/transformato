@@ -1,9 +1,11 @@
-import transformato
+import logging
 import os
 import shutil
-from .utils import get_toppar_dir
-import logging
+
 import parmed as pm
+import transformato
+
+from .utils import get_toppar_dir
 
 logger = logging.getLogger(__name__)
 

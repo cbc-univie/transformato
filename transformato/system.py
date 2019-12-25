@@ -1,12 +1,15 @@
-import parmed as pm
+import io
 import logging
-from simtk import unit
-from rdkit import Chem
-import rdkit
-import os, io
-from .utils import get_toppar_dir
+import os
 from collections import namedtuple
+
 import networkx as nx
+import parmed as pm
+import rdkit
+from rdkit import Chem
+from simtk import unit
+
+from .utils import get_toppar_dir
 
 logger = logging.getLogger(__name__)
 
@@ -279,5 +282,3 @@ class SystemStructure(object):
             atom_idx_to_atom_partial_charge[atom_index] = atom_charge
 
         return (atom_idx_to_atom_name, atom_name_to_atom_idx, atom_name_to_atom_type, atom_idx_to_atom_partial_charge)
-
-

@@ -1,17 +1,18 @@
 import logging
-from simtk import unit
-import parmed as pm
-from simtk.openmm import XmlSerializer, System
-from simtk.openmm.app import Simulation
+import os
+import pickle
+from collections import defaultdict, namedtuple
+
+import matplotlib.pyplot as plt
 import mdtraj
 import numpy as np
+import parmed as pm
 from pymbar import mbar
+from simtk import unit
+from simtk.openmm import System, XmlSerializer
+from simtk.openmm.app import Simulation
 from simtk.openmm.vec3 import Vec3
-from collections import defaultdict, namedtuple
-import matplotlib.pyplot as plt
-import os
 from tqdm import tqdm
-import pickle
 
 logger = logging.getLogger(__name__)
 
@@ -380,5 +381,3 @@ class FreeEnergyCalculator(object):
         self.plot_waterbox_free_energy
         energy_estimate, uncertanty = self.end_state_free_energy_difference
         print(f"Free energy to common core: {energy_estimate} [kT] with uncertanty: {uncertanty} [kT].")
-
-
