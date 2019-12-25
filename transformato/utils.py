@@ -1,6 +1,8 @@
 import os
-import yaml
+
 import parmed as pm
+import yaml
+
 
 def get_bin_dir():
     """Returns the bin directory of this package"""
@@ -30,4 +32,3 @@ def load_config_yaml(config, input_dir, output_dir):
     settingsMap['system']['structure2']['charmm_gui_dir'] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure2']['name']}/"
     settingsMap['system']['name'] = system_name
     return settingsMap
-
