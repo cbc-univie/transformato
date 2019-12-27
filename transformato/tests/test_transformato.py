@@ -456,7 +456,10 @@ def test_run_example_systems_solvation_free_energy():
             # because path is object not string
             print(f"Start sampling for: {path}")
             print(f"In directory: {run_dir}")
-            exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True,text=True)
+            try:
+                exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True,text=True)
+            except TypeError:
+                exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             print(exe.stdout)
             print('Capture stderr')
             print(exe.stderr)
@@ -473,7 +476,10 @@ def test_run_example_systems_solvation_free_energy():
             # because path is object not string
             print(f"Start sampling for: {path}")
             print(f"In directory: {run_dir}")
-            exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True,text=True)
+            try:
+                exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True,text=True)
+            except TypeError:
+                exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             print(exe.stdout)
             print('Capture stderr')
             print(exe.stderr)

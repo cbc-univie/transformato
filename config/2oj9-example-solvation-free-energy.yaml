@@ -71,9 +71,9 @@ simulation:
 ################
   parameters:
     nstep:
-      1000
+      2000
     nstdcd:
-      25
+      50
     nstout:
       50
   free-energy-type:
