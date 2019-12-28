@@ -434,7 +434,7 @@ def test_run_test_systems():
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_example_systems_solvation_free_energy():
+def test_run_example1_systems_solvation_free_energy():
     from transformato import FreeEnergyCalculator
     for conf in ['config/2oj9-example-solvation-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
@@ -501,3 +501,73 @@ def test_run_example_systems_solvation_free_energy():
         f.show_summary()
         shutil.rmtree(pathlib.Path(i.path).parent)
 
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    )
+def test_run_example2_systems_solvation_free_energy():
+    from transformato import FreeEnergyCalculator
+    for conf in ['config/ethane-ethanol-solvation-free-energy.yaml']:
+        configuration = load_config_yaml(config=conf,
+                        input_dir='data/', output_dir='data/')
+
+        # load systems
+        s1 = SystemStructure(configuration, 'structure1')
+        s2 = SystemStructure(configuration, 'structure2')
+        a = ProposeMutationRoute(s1, s2)
+
+        # generate mutation route
+        mutation_list = a.generate_mutations_to_common_core_for_mol1(nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5)
+        # write intermediate states for systems
+        i = IntermediateStateFactory(system=s1, mutation_list=mutation_list, configuration=configuration)
+        i.generate_intermediate_states()
+        paths = pathlib.Path(i.path).glob('**/*.sh')
+        for path in sorted(paths):
+            run_dir = path.parent
+            # because path is object not string
+            print(f"Start sampling for: {path}")
+            print(f"In directory: {run_dir}")
+            try:
+                exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True,text=True)
+            except TypeError:
+                exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            print(exe.stdout)
+            print('Capture stderr')
+            print(exe.stderr)
+
+        # generate mutation route
+        mutation_list = a.generate_mutations_to_common_core_for_mol2(nr_of_steps_for_el=5)
+        # write intermediate states
+        i = IntermediateStateFactory(system=s2, mutation_list=mutation_list, configuration=configuration)
+        i.generate_intermediate_states()
+
+        paths = pathlib.Path(i.path).glob('**/*.sh')
+        for path in sorted(paths):
+            run_dir = path.parent
+            # because path is object not string
+            print(f"Start sampling for: {path}")
+            print(f"In directory: {run_dir}")
+            try:
+                exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True,text=True)
+            except TypeError:
+                exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            print(exe.stdout)
+            print('Capture stderr')
+            print(exe.stderr)
+
+        f= FreeEnergyCalculator(configuration, 'ethane')
+        f.load_trajs(thinning=1)
+        f.calculate_dG_to_common_core()
+        ddG, dddG = f.end_state_free_energy_difference
+        print(f"Free energy difference: {ddG}")
+        print(f"Uncertanty: {dddG}")
+        #assert(ddG == 10.0)
+        
+        f.show_summary()
+
+        f= FreeEnergyCalculator(configuration, 'ethanol')
+        f.load_trajs(thinning=1)
+        f.calculate_dG_to_common_core()
+
+        f.show_summary()
+        shutil.rmtree(pathlib.Path(i.path).parent)
