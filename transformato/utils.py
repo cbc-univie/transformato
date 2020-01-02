@@ -8,9 +8,11 @@ def get_bin_dir():
     """Returns the bin directory of this package"""
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'bin'))
 
+
 def get_toppar_dir():
     """Returns the bin directory of this package"""
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'toppar'))
+
 
 def load_config_yaml(config, input_dir, output_dir):
 

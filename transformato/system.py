@@ -227,15 +227,26 @@ class SystemStructure(object):
         ----------
         mol: rdkit.Chem.mol
         """
-
+        from itertools import product
+        
         assert(type(psf) == pm.charmm.CharmmPsfFile)
         charmm_gui_env = self.charmm_gui_base + env
-        tlc = self.tlc       
-        tlc_lower = str(tlc).lower()
-        sdf_file = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.sdf"        
+        tlc = self.tlc
 
-        print(sdf_file)
-        mol = Chem.MolFromMolFile(sdf_file, removeHs=False)
+        filenames_name = [str(tlc), str(tlc).lower(), str(tlc).upper()]        
+        filenames_suffix = ['.mol2', '.mol', '.sdf']
+
+        for name in product(filenames_name, filenames_suffix):
+            try:
+                file = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.sdf"  # NOTE: maybe also tlc and tlc_lower for dir?      
+
+                mol = Chem.MolFromMolFile(name, removeHs=False)
+                break
+            except IOError:
+                pass
+        else:
+            raise
+
         atom_idx_to_atom_name, _, atom_name_to_atom_type, atom_idx_to_atom_partial_charge = self.generate_atom_tables_from_psf(psf)
 
         for atom in mol.GetAtoms():
