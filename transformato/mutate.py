@@ -43,13 +43,18 @@ class ProposeMutationRoute(object):
         self.s1_tlc = s1.tlc
         self.s2_tlc = s2.tlc
 
-    def add_common_core_atom_to_mol1(self, idx: int):
+    def add_idx_to_common_core_of_mol1(self, idx: int):
         self._add_common_core_atom('m1', idx)
+        print(a.get_common_core_idx_mol1())
 
-    def add_common_core_atom_to_mol2(self, idx: int):
+    def add_idx_to_common_core_of_mol2(self, idx: int):
         self._add_common_core_atom('m2', idx)
+        print(a.get_common_core_idx_mol2())
 
     def _add_common_core_atom(self, name, idx):
+        if idx in self.added_indeces[name] or idx in self._get_common_core(name):
+            print(f"Idx: {idx} already in common core.")
+            pass
         self.added_indeces[name].append(idx)
 
     def get_common_core_idx_mol1(self) -> list:
@@ -70,7 +75,7 @@ class ProposeMutationRoute(object):
         Returns the common core.
         """
         keep_idx = []
-        for idx in self._substructure_match[name]:  # BEWARE: the ordering is important - don't cast set!
+        for idx in self._substructure_match[name] + self.added_indeces[name]:  # BEWARE: the ordering is important - don't cast set!
             if idx not in self.removed_indeces[name]:
                 keep_idx.append(idx)
         return keep_idx
@@ -108,8 +113,8 @@ class ProposeMutationRoute(object):
         logger.info('Substructere match idx: {}'.format(s2))
         self._display_mol(m2)
 
-        self._substructure_match[mol1_name] = s1
-        self._substructure_match[mol2_name] = s2
+        self._substructure_match[mol1_name] = list(s1)
+        self._substructure_match[mol2_name] = list(s2)
 
     def _display_mol(self, mol: Chem.Mol):
         """
