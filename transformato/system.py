@@ -233,19 +233,28 @@ class SystemStructure(object):
         charmm_gui_env = self.charmm_gui_base + env
         tlc = self.tlc
 
-        filenames_name = [str(tlc), str(tlc).lower(), str(tlc).upper()]        
-        filenames_suffix = ['.mol2', '.mol', '.sdf']
+        filenames = [str(tlc), str(tlc).lower(), str(tlc).upper()]
+        dir_names = [str(tlc), str(tlc).lower(), str(tlc).upper()]
 
-        for name in product(filenames_name, filenames_suffix):
-            try:
-                file = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.sdf"  # NOTE: maybe also tlc and tlc_lower for dir?      
+        for name in filenames:
+            for dir_name in dir_names:
+                try:
+                    file = f"{charmm_gui_env}/{dir_name}/{name}.sdf"  # NOTE: maybe also tlc and tlc_lower for dir?      
+                    suppl = Chem.SDMolSupplier(file, removeHs=False)
+                    mol = next(suppl)
+                    break
+                except IOError:
+                    logger.info(f"SDF file not found: {file}")
+                    pass
 
-                mol = Chem.MolFromMolFile(name, removeHs=False)
-                break
-            except IOError:
-                pass
-        else:
-            raise
+                # try:
+                #     file = f"{charmm_gui_env}/{dir_name}/{name}.mol2"  # NOTE: maybe also tlc and tlc_lower for dir?      
+                #     mol = Chem.MolFromMol2File(file, removeHs=False)
+                #     break
+                # except IOError:
+                #     logger.info(f"MOL file not found: {file}")
+                #     pass
+
 
         atom_idx_to_atom_name, _, atom_name_to_atom_type, atom_idx_to_atom_partial_charge = self.generate_atom_tables_from_psf(psf)
 
