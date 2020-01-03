@@ -532,6 +532,10 @@ def test_run_example2_systems_solvation_free_energy():
         s2 = SystemStructure(configuration, 'structure2')
         a = ProposeMutationRoute(s1, s2)
 
+        # manually matching Oxygen (0) with Hydrogen (4) 
+        a.add_idx_to_common_core_of_mol1(4)
+        a.add_idx_to_common_core_of_mol2(0)
+
         # generate mutation route
         mutation_list = a.generate_mutations_to_common_core_for_mol1(
             nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5)
