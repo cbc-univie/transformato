@@ -45,11 +45,11 @@ class ProposeMutationRoute(object):
 
     def add_idx_to_common_core_of_mol1(self, idx: int):
         self._add_common_core_atom('m1', idx)
-        print(a.get_common_core_idx_mol1())
+        print(self.get_common_core_idx_mol1())
 
     def add_idx_to_common_core_of_mol2(self, idx: int):
         self._add_common_core_atom('m2', idx)
-        print(a.get_common_core_idx_mol2())
+        print(self.get_common_core_idx_mol2())
 
     def _add_common_core_atom(self, name, idx):
         if idx in self.added_indeces[name] or idx in self._get_common_core(name):
