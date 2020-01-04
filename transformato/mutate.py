@@ -749,7 +749,7 @@ class TransformChargesToTargetCharge():
             atom.charge = new_charge
         return cc2_scaled_psf_ligand, diff_charge
 
-    def _mutate_charge(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: f;pat):
+    def _mutate_charge(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
         """ mutate charges of cc1 to cc2"""
 
         total_charge = round(sum([a.charge for a in self.cc2_psf[f":{self.tlc_cc2.upper()}"].atoms]))
