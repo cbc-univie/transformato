@@ -257,7 +257,7 @@ class ProposeMutationRoute(object):
                 if atom.GetSymbol() == 'H':
                     hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
-                logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
+                logger.debug('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
 
         # scale all EL of all atoms to zero
         mutations.append(ChargeToZeroMutation(atom_idx=atoms_to_be_mutated,
@@ -334,18 +334,18 @@ class BondedParameterMutation(object):
                     # are the atoms different?
                     if cc1_atom.type != cc2_atom.type:
                         self._modify_type(cc1_atom, psf)
-                        logging.info(f"Modifying atom: {cc1_atom}")
-                        logging.info(f"Template atom: {cc2_atom}")
+                        logger.debug(f"Modifying atom: {cc1_atom}")
+                        logger.debug(f"Template atom: {cc2_atom}")
 
                         # scale epsilon
-                        logging.info(f"Real epsilon: {cc1_atom.epsilon}")
+                        logger.debug(f"Real epsilon: {cc1_atom.epsilon}")
                         modified_epsilon = (1.0 - scale) * cc1_atom.epsilon + scale * cc2_atom.epsilon
-                        logging.info(f"New epsilon: {modified_epsilon}")
+                        logger.debug(f"New epsilon: {modified_epsilon}")
 
                         # scale rmin
-                        logging.info(f"Real rmin: {cc1_atom.rmin}")
+                        logger.debug(f"Real rmin: {cc1_atom.rmin}")
                         modified_rmin = (1.0 - scale) * cc1_atom.rmin + scale * cc2_atom.rmin
-                        logging.info(f"New rmin: {modified_rmin}")
+                        logger.debug(f"New rmin: {modified_rmin}")
 
                         cc1_atom.mod_type = mod_type(modified_epsilon, modified_rmin)
             if not found:
@@ -378,26 +378,26 @@ class BondedParameterMutation(object):
                     # are the bonds different?
                     if sorted([cc1_bond.atom1.type, cc1_bond.atom2.type]) == sorted([cc2_bond.atom1.type, cc2_bond.atom2.type]):
                         continue
-                    logging.info('##############################')
-                    logging.info(scale)
-                    logging.info(f"Modifying bond: {cc1_bond}")
+                    logger.debug('##############################')
+                    logger.debug(scale)
+                    logger.debug(f"Modifying bond: {cc1_bond}")
 
-                    logging.info(f"Template bond: {cc2_bond}")
-                    logging.info('Original value for k: {}'.format(cc1_bond.type.k))
-                    logging.info(f"Target k: {cc2_bond.type.k}")
+                    logger.debug(f"Template bond: {cc2_bond}")
+                    logger.debug('Original value for k: {}'.format(cc1_bond.type.k))
+                    logger.debug(f"Target k: {cc2_bond.type.k}")
                     new_k = ((1.0 - scale) * cc1_bond.type.k) + (scale * cc2_bond.type.k)
-                    logging.info(new_k)
+                    logger.debug(new_k)
 
                     modified_k = new_k
 
-                    logging.info(f"New k: {modified_k}")
+                    logger.debug(f"New k: {modified_k}")
 
-                    logging.info(f"Old req: {cc1_bond.type.req}")
+                    logger.debug(f"Old req: {cc1_bond.type.req}")
                     modified_req = ((1.0 - scale) * cc1_bond.type.req) + (scale * cc2_bond.type.req)
-                    logging.info(f"Modified bond: {cc1_bond}")
+                    logger.debug(f"Modified bond: {cc1_bond}")
 
                     cc1_bond.mod_type = mod_type(modified_k, modified_req)
-                    logger.info(cc1_bond.mod_type)
+                    logger.debug(cc1_bond.mod_type)
 
             if not found:
                 logger.critical(cc1_bond)
@@ -430,17 +430,17 @@ class BondedParameterMutation(object):
                             sorted([cc2_angle.atom1.type, cc2_angle.atom2.type, cc2_angle.atom3.type]):
                         continue
 
-                    logging.info(f"Modifying angle: {cc1_angle}")
-                    logging.info(f"Template bond: {cc2_angle}")
-                    logging.info('Scaling k and theteq')
+                    logger.debug(f"Modifying angle: {cc1_angle}")
+                    logger.debug(f"Template bond: {cc2_angle}")
+                    logger.debug('Scaling k and theteq')
 
-                    logging.info(f"Old k: {cc1_angle.type.k}")
+                    logger.debug(f"Old k: {cc1_angle.type.k}")
                     modified_k = (1.0 - scale) * cc1_angle.type.k + scale * cc2_angle.type.k
-                    logging.info(f"New k: {modified_k}")
+                    logger.debug(f"New k: {modified_k}")
 
-                    logging.info(f"Old k: {cc1_angle.type.theteq}")
+                    logger.debug(f"Old k: {cc1_angle.type.theteq}")
                     modified_theteq = (1.0 - scale) * cc1_angle.type.theteq + scale * cc2_angle.type.theteq
-                    logging.info(f"New k: {modified_theteq}")
+                    logging.debug(f"New k: {modified_theteq}")
 
                     cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
 
@@ -510,8 +510,9 @@ class BondedParameterMutation(object):
         """
 
         assert(type(psf) == pm.charmm.CharmmPsfFile)
-
         scale = current_step/(self.nr_of_steps)
+        logger.info(f" -- Bonded parameters from cc1 are transformed to cc2.")
+        logger.info(f"Scaling factor:{scale}")
         # scale atoms
         self._mutate_atoms(psf, tlc, scale)
         # scale bonds
@@ -527,7 +528,7 @@ class BondedParameterMutation(object):
             # only change parameters
             pass
         else:
-            logging.info(f"Setting RRR atomtype for atom: {atom}.")
+            logger.info(f"Setting RRR atomtype for atom: {atom}.")
             atom.type = f"RRR{psf.number_of_dummys}"
             atom.initial_type = atom.type
             psf.number_of_dummys += 1
@@ -613,12 +614,17 @@ class ChargeToZeroMutation(ChargeMutation):
         return u"charges to zero mutation"
 
     def mutate(self, psf: pm.charmm.CharmmPsfFile, tlc: str, current_step: int):
-        logger.info('Charges to zero mutation')
+
+        """ Performs the mutation """
 
         old_total_charge = round(sum([a.charge for a in psf[f":{tlc.upper()}"].atoms]))
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
         diff_charge = 0
         multiplicator = 1 - (current_step / (self.nr_of_steps))
+
+        logger.info(f" -- Charge to zero mutation.")
+        logger.info(f"Scaling factor: {multiplicator}")
+
         for idx in self.atom_idx:
             odx = idx + offset
             atom = psf[odx]
@@ -643,7 +649,7 @@ class StericToZeroMutation(StericMutation):
 
     def __init__(self, atom_idx: list):
         """
-        Set the LJ terms of atoms specified in the atom_idx list to zero.
+        Set the steric terms of atoms specified in the atom_idx list to zero.
         Parameters
         ----------
         atom_list : list
@@ -659,7 +665,10 @@ class StericToZeroMutation(StericMutation):
 
     def mutate(self, psf, tlc: str, current_step: int):
 
-        logger.info('Steric to zero mutation')
+        """ Performs the actual mutation """
+
+        logger.info(f" -- Steric interactions to zero mutation.")
+        logger.info(f"Acting on atoms: {self.atom_idx}")
         offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
 
         for i in self.atom_idx:
@@ -718,10 +727,10 @@ class TransformChargesToTargetCharge():
     def _compensate_charge(self, psf, diff_charge: float, total_charge):
 
         nr_of_atoms_to_spread_charge = len(self.cc2_idx)
-        logger.info('##############')
-        logger.info(f"Charge to compensate: {diff_charge}")
+        logger.debug('##############')
+        logger.debug(f"Charge to compensate: {diff_charge}")
         charge_part = diff_charge / nr_of_atoms_to_spread_charge
-        logger.info('##############')
+        logger.debug('##############')
         for idx in self.cc2_idx:
             psf[idx].charge += charge_part
 
@@ -740,10 +749,9 @@ class TransformChargesToTargetCharge():
             atom.charge = new_charge
         return cc2_scaled_psf_ligand, diff_charge
 
-    def _mutate_charge(self, psf: pm.charmm.CharmmPsfFile, tlc: str, current_step: int):
+    def _mutate_charge(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: f;pat):
         """ mutate charges of cc1 to cc2"""
 
-        scale = (current_step / (self.nr_of_steps))
         total_charge = round(sum([a.charge for a in self.cc2_psf[f":{self.tlc_cc2.upper()}"].atoms]))
         cc2_scaled_psf_ligand, diff_charge = self._scale_cc2_charges()
         cc2_psf = self._compensate_charge(cc2_scaled_psf_ligand, diff_charge, total_charge)
@@ -752,20 +760,20 @@ class TransformChargesToTargetCharge():
             if cc1_atom.name not in self.atom_names_mapping:
                 continue
 
-            logging.info(f"Scale charge for atom: {cc1_atom}")
+            logger.debug(f"Scale charge for atom: {cc1_atom}")
 
             for cc2_atom in cc2_psf:
                 if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
                     break
 
-            logging.info(f"Template atom: {cc2_atom}")
+            logger.debug(f"Template atom: {cc2_atom}")
             # scale charge # NOTE: Charges are scaled directly
-            logging.info(f"Old charge: {cc1_atom.charge}")
+            logger.debug(f"Old charge: {cc1_atom.charge}")
 
             modified_charge = (1.0 - scale) * cc1_atom.initial_charge + scale * cc2_atom.charge
 
             cc1_atom.charge = modified_charge
-            logging.info(f"New charge: {cc1_atom.charge}")
+            logger.debug(f"New charge: {cc1_atom.charge}")
 
     def mutate(self, psf: pm.charmm.CharmmPsfFile, tlc: str, current_step: int):
         """
@@ -780,7 +788,10 @@ class TransformChargesToTargetCharge():
         assert(type(psf) == pm.charmm.CharmmPsfFile)
 
         # mutate charge
-        self._mutate_charge(psf, tlc, current_step)
+        scale = (current_step / (self.nr_of_steps))
+        logger.info(f" -- Mutates charges from cc1 to cc2 .")
+        logger.info(f"Scaling factor: {scale}")
+        self._mutate_charge(psf, tlc, scale)
 
 
 # TODO: RemoveImproperMutation()

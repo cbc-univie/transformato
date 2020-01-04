@@ -276,10 +276,10 @@ outfile.close()
         rtf_file_handler.write(header_rtf)
         for atom in psf.view[f":{tlc}"].atoms:            
             if hasattr(atom, 'initial_type'):
-                logging.info('- Setting dummy parameters ...')
-                logging.info(f"  + Atom-Name: {atom.name}")
-                logging.info(f"  + Atom-Type: {atom.initial_type}")
-                logging.info(f"  + Atom Dummy Type: {atom.type}")
+                logger.debug('- Setting dummy parameters ...')
+                logger.debug(f"  + Atom-Name: {atom.name}")
+                logger.debug(f"  + Atom-Type: {atom.initial_type}")
+                logger.debug(f"  + Atom Dummy Type: {atom.type}")
 
                 rtf_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', '-1', atom.type, atom.mass))
             
@@ -303,10 +303,10 @@ outfile.close()
         # writing atom parameters
         for atom in view.atoms:
             if hasattr(atom, 'initial_type'):
-                logging.info('- Setting dummy parameters ...')
-                logging.info(f"  + Atom-Name: {atom.name}")
-                logging.info(f"  + Atom-Type: {atom.initial_type}")
-                logging.info(f"  + Atom Dummy Type: {atom.type}")
+                logger.debug('- Setting dummy parameters ...')
+                logger.debug(f"  + Atom-Name: {atom.name}")
+                logger.debug(f"  + Atom-Type: {atom.initial_type}")
+                logger.debug(f"  + Atom Dummy Type: {atom.type}")
                 prm_file_handler.write('{:7} {:6} {:6} {:9.5f}\n'.format('MASS', '-1', atom.type, atom.mass))
             
         prm_file_handler.write('\n\n')
@@ -320,12 +320,12 @@ outfile.close()
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
             if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2]):
-                logger.info(' >> Setting dummy bond parameters for: {} - {}'.format(str(atom1.type),str(atom2.type)))
+                logger.debug(' >> Setting dummy bond parameters for: {} - {}'.format(str(atom1.type),str(atom2.type)))
                 try:
-                    logger.info('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.mod_type.k ,bond.mod_type.req))
+                    logger.debug('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.mod_type.k ,bond.mod_type.req))
                     prm_file_handler.write('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.mod_type.k ,bond.mod_type.req))
                 except AttributeError:
-                    logger.info('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
+                    logger.debug('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
                     prm_file_handler.write('{:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), bond.type.k ,bond.type.req))
 
         #################################################################
@@ -334,13 +334,13 @@ outfile.close()
         for angle in view.angles:
             atom1, atom2, atom3 = angle.atom1, angle.atom2, angle.atom3
             if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2, atom3]):            
-                logger.info(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
+                logger.debug(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
                 try:
                     prm_file_handler.write('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.mod_type.k , angle.mod_type.theteq))
-                    logger.info('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.mod_type.k , angle.mod_type.theteq))
+                    logger.debug('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.mod_type.k , angle.mod_type.theteq))
                 except AttributeError:
                     prm_file_handler.write('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
-                    logger.info('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
+                    logger.debug('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.type.k , angle.type.theteq))
                     
 
 
@@ -350,7 +350,7 @@ outfile.close()
         for dihedral in view.dihedrals:
             atom1, atom2, atom3, atom4 = dihedral.atom1, dihedral.atom2, dihedral.atom3, dihedral.atom4
             if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2, atom3, atom4]):            
-                logger.info(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
+                logger.debug(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
                 try:
                     for dihedral_type in dihedral.mod_type:
                         prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral_type.phi_k ,dihedral_type.per, dihedral_type.phase))
