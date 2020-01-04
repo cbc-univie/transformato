@@ -628,7 +628,10 @@ class ChargeToZeroMutation(ChargeMutation):
         for idx in self.atom_idx:
             odx = idx + offset
             atom = psf[odx]
+            logger.info(f"Scale charge on {atom}")
+            logger.info(f"Old charge: {atom.initial_charge}")
             new_charge = float(np.round(atom.initial_charge * multiplicator, 4))
+            logger.info(f"New charge: {new_charge}")
             diff_charge += self._scale_charge(atom, new_charge)
 
         if multiplicator != 1:

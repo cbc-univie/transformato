@@ -75,10 +75,10 @@ class IntermediateStateFactory(object):
             start_step = 0 # get the endstate at 0
             for m in self.mutation_list:
                 for current_step in range(start_step, m.nr_of_steps+1):
+                    logger.info('#########################################')
+                    logger.info('#########################################')
                     logger.info('Current step: {}'.format(current_step))
                     output_file_base = self._init_intermediate_state_dir(intst_nr)
-                    logger.info('#########################################')
-                    logger.info('#########################################')
                     for env in self.system.envs:
                         m.mutate(self.system.psf_mapping[env], self.system.tlc, current_step)
                         self._write_psf(self.system.psf_mapping[env], output_file_base, env)
