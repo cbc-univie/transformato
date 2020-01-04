@@ -552,7 +552,7 @@ def test_run_example2_systems_solvation_free_energy():
                 exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True, text=True)
             except TypeError:
                 exe = subprocess.run(['bash', str(path), str(run_dir)], check=True,
-                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             print(exe.stdout)
             print('Capture stderr')
             print(exe.stderr)
@@ -573,7 +573,7 @@ def test_run_example2_systems_solvation_free_energy():
                 exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True, text=True)
             except TypeError:
                 exe = subprocess.run(['bash', str(path), str(run_dir)], check=True,
-                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             print(exe.stdout)
             print('Capture stderr')
             print(exe.stderr)
