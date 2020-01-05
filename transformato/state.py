@@ -64,30 +64,40 @@ class IntermediateStateFactory(object):
         if strategy == 'seperate':
             # no mixing of the different mutation states - first electrostatics is turend off,
             # then VdW and the the bonded terms are transformed
-            nr_of_total_mutations = 0
-            start_step = 0 # get the endstate at 0
+            nr_of_total_mutations = 1 # include the endstate at 0
+            start_step = 1 
             for m in self.mutation_list:
                 for current_step in range(start_step, m.nr_of_steps+1):
                     nr_of_total_mutations += 1
 
+            logger.info('#########################################')
+            logger.info('#########################################')
             logger.info(f"Preparing for a total of {nr_of_total_mutations} mutation steps")
-            
-            start_step = 0 # get the endstate at 0
+            logger.info(f"Writing endstate")
+            self._write_state(None, current_step=0, intst_nr=intst_nr, mutate=False)            
+            intst_nr += 1
             for m in self.mutation_list:
-                for current_step in range(start_step, m.nr_of_steps+1):
-                    logger.info('#########################################')
-                    logger.info('#########################################')
-                    logger.info('Current step: {}'.format(current_step))
-                    output_file_base = self._init_intermediate_state_dir(intst_nr)
-                    for env in self.system.envs:
-                        m.mutate(self.system.psf_mapping[env], self.system.tlc, current_step)
-                        self._write_psf(self.system.psf_mapping[env], output_file_base, env)
-                    self._write_rtf_file(self.system.psf_mapping[env], output_file_base, self.system.tlc)
-                    self._write_prm_file(self.system.psf_mapping[env], output_file_base, self.system.tlc)
-                    self._write_toppar_str(output_file_base, self.system.tlc)
-                    self._copy_files(output_file_base)
-                    intst_nr += 1
                 start_step = 1 # don't write out the first, unmodified state
+                for current_step in range(start_step, m.nr_of_steps+1):
+                    self._write_state(m, current_step, intst_nr, mutate=True)
+                    intst_nr += 1
+
+    def _write_state(self, mutation, current_step:int, intst_nr:int, mutate:bool=True):
+        
+        logger.info('#########################################')
+        logger.info('#########################################')
+        logger.info('Current step: {}'.format(current_step))
+        output_file_base = self._init_intermediate_state_dir(intst_nr)
+        for env in self.system.envs:
+            if mutate:
+                mutation.mutate(self.system.psf_mapping[env], self.system.tlc, current_step)
+            self._write_psf(self.system.psf_mapping[env], output_file_base, env)
+        self._write_rtf_file(self.system.psf_mapping[env], output_file_base, self.system.tlc)
+        self._write_prm_file(self.system.psf_mapping[env], output_file_base, self.system.tlc)
+        self._write_toppar_str(output_file_base, self.system.tlc)
+        self._copy_files(output_file_base)
+
+
 
     def _add_serializer(self, file):
                 # adding serializer functions
