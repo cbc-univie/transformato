@@ -257,20 +257,22 @@ class ProposeMutationRoute(object):
                 if atom.GetSymbol() == 'H':
                     hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
-                logger.debug('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
+                logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
 
-        # scale all EL of all atoms to zero
-        mutations.append(ChargeToZeroMutation(atom_idx=atoms_to_be_mutated,
-                                              nr_of_steps=nr_of_steps_for_el, common_core=cc_idx))
+        if atoms_to_be_mutated:
+            # scale all EL of all atoms to zero
+            mutations.append(ChargeToZeroMutation(atom_idx=atoms_to_be_mutated,
+                                                nr_of_steps=nr_of_steps_for_el, common_core=cc_idx))
 
-        # scale LJ
-        # start with mutation of LJ of hydrogens
-        mutations.append(StericToZeroMutation(hydrogens))
-        # continue with scaling of heavy atoms LJ
-        for idx in atoms_to_be_mutated:
-            if idx not in hydrogens:  # hydrogens are already mutated
-                mutations.append(StericToZeroMutation([idx]))
-
+            # scale LJ
+            # start with mutation of LJ of hydrogens
+            mutations.append(StericToZeroMutation(hydrogens))
+            # continue with scaling of heavy atoms LJ
+            for idx in atoms_to_be_mutated:
+                if idx not in hydrogens:  # hydrogens are already mutated
+                    mutations.append(StericToZeroMutation([idx]))
+        else:
+            logger.debug("No atoms will be decoupled.")
         return mutations
 
     def _find_cliques(self, atoms_idx: list, mol: Chem.Mol) -> list:
@@ -624,6 +626,8 @@ class ChargeToZeroMutation(ChargeMutation):
 
         logger.info(f" -- Charge to zero mutation.")
         logger.info(f"Scaling factor: {multiplicator}")
+
+        print(self.atom_idx)
 
         for idx in self.atom_idx:
             odx = idx + offset
