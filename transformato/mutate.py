@@ -513,7 +513,7 @@ class BondedParameterMutation(object):
 
         assert(type(psf) == pm.charmm.CharmmPsfFile)
         scale = current_step/(self.nr_of_steps)
-        logger.info(f" -- Bonded parameters from cc1 are transformed to cc2.")
+        logger.info(f" -- Atom/Bond/Angle/Torsion parameters from cc1 are transformed to cc2.")
         logger.info(f"Scaling factor:{scale}")
         # scale atoms
         self._mutate_atoms(psf, tlc, scale)
@@ -626,8 +626,6 @@ class ChargeToZeroMutation(ChargeMutation):
 
         logger.info(f" -- Charge to zero mutation.")
         logger.info(f"Scaling factor: {multiplicator}")
-
-        print(self.atom_idx)
 
         for idx in self.atom_idx:
             odx = idx + offset
