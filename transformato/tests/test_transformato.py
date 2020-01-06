@@ -313,8 +313,8 @@ def test_bonded_mutation():
             i = IntermediateStateFactory(system=system, mutation_list=mutation_list, configuration=configuration)
 
             print(mutation_list)
-            # we select the bonded mutation which should be at postition [-2]
-            m1 = mutation_list[-2]
+            # we select the bonded mutation which should be at postition [-1]
+            m1 = mutation_list[-1]
             assert(type(m1) == transformato.mutate.BondedParameterMutation)
             current_step = 1
             output_file_base = i.generate_specific_intermediate_state(m1, current_step)
@@ -356,6 +356,7 @@ def test_bonded_mutation():
                                       new_psf[cc1_oidx].epsilon))
                     assert(np.isclose((1.0 - scale) * cc1_a.sigma + scale * cc2_a.sigma,
                                       new_psf[cc1_oidx].sigma, rtol=1e-03))
+                  
 
                 # get mapping between original/new and template psf
                 for cc1_bond, new_bond in zip(original_psf[env].view[f":{m1.tlc_cc1.upper()}"].bonds,
@@ -413,6 +414,101 @@ def test_bonded_mutation():
                             assert(np.isclose(scaled, new_angle.type.k))
 
         shutil.rmtree(output_file_base)
+
+@pytest.mark.slowtest
+def test_charge_cc1_to_cc2_transformation1():
+    from parmed.charmm.psf import CharmmPsfFile
+
+    for conf in ['config/ethane-ethanol-solvation-free-energy.yaml']:
+        configuration = load_config_yaml(config=conf,
+                                        input_dir='data/', output_dir='data')
+
+        # load systems
+        s1 = SystemStructure(configuration, 'structure1')
+        s2 = SystemStructure(configuration, 'structure2')
+        a = ProposeMutationRoute(s1, s2)
+
+        # manually matching Oxygen (0) with Hydrogen (4) 
+        a.add_idx_to_common_core_of_mol1(4)
+        a.add_idx_to_common_core_of_mol2(0)
+
+        # generate mutation route
+        mutation_list = a.generate_mutations_to_common_core_for_mol1(
+            nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5)
+        # write intermediate states for systems
+        cc1_i = IntermediateStateFactory(system=s1, mutation_list=mutation_list, configuration=configuration)
+        cc1_i.generate_intermediate_states()
+
+        # generate mutation route
+        mutation_list = a.generate_mutations_to_common_core_for_mol2(nr_of_steps_for_el=5)
+        # write intermediate states
+        cc2_i = IntermediateStateFactory(system=s2, mutation_list=mutation_list, configuration=configuration)
+        cc2_i.generate_intermediate_states()
+
+        for env in s1.envs:
+            print('Env : {}'.format(env))
+
+            cc_ethane = CharmmPsfFile(f"{cc1_i.path}/intst6/lig_in_{env}.psf")
+            cc_ethanol = CharmmPsfFile(f"{cc2_i.path}/intst7/lig_in_{env}.psf")
+            cc1_offset = min([atom.idx for atom in cc_ethane.view[f":{a.s1_tlc.upper()}"].atoms])
+            cc2_offset = min([atom.idx for atom in cc_ethanol.view[f":{a.s2_tlc.upper()}"].atoms])
+
+            # test atom parameters
+            for cc1, cc2 in zip(list(a.get_common_core_idx_mol1()), list(a.get_common_core_idx_mol2())):
+                # did atom type change? if not continue
+                cc1_oidx = cc1 + cc1_offset
+                cc2_oidx = cc2 + cc2_offset
+                assert(np.isclose(cc_ethane[cc1_oidx].charge, cc_ethanol[cc2_oidx].charge, rtol=1e-03))
+
+        shutil.rmtree(cc1_i.path)
+        shutil.rmtree(cc2_i.path)
+
+
+@pytest.mark.slowtest
+def test_charge_cc1_to_cc2_transformation2():
+    from parmed.charmm.psf import CharmmPsfFile
+
+    for conf in ['config/ethane-ethanol-solvation-free-energy.yaml']:
+        configuration = load_config_yaml(config=conf,
+                                        input_dir='data/', output_dir='data')
+
+        # load systems
+        s1 = SystemStructure(configuration, 'structure1')
+        s2 = SystemStructure(configuration, 'structure2')
+        a = ProposeMutationRoute(s1, s2)
+
+        # generate mutation route
+        mutation_list = a.generate_mutations_to_common_core_for_mol1(
+            nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5)
+        # write intermediate states for systems
+        cc1_i = IntermediateStateFactory(system=s1, mutation_list=mutation_list, configuration=configuration)
+        cc1_i.generate_intermediate_states()
+
+        # generate mutation route
+        mutation_list = a.generate_mutations_to_common_core_for_mol2(nr_of_steps_for_el=5)
+        # write intermediate states
+        cc2_i = IntermediateStateFactory(system=s2, mutation_list=mutation_list, configuration=configuration)
+        cc2_i.generate_intermediate_states()
+
+        for env in s1.envs:
+            print('Env : {}'.format(env))
+
+            cc_ethane = CharmmPsfFile(f"{cc1_i.path}/intst12/lig_in_{env}.psf")
+            cc_ethanol = CharmmPsfFile(f"{cc2_i.path}/intst8/lig_in_{env}.psf")
+            cc1_offset = min([atom.idx for atom in cc_ethane.view[f":{a.s1_tlc.upper()}"].atoms])
+            cc2_offset = min([atom.idx for atom in cc_ethanol.view[f":{a.s2_tlc.upper()}"].atoms])
+
+            # test atom parameters
+            for cc1, cc2 in zip(list(a.get_common_core_idx_mol1()), list(a.get_common_core_idx_mol2())):
+                # did atom type change? if not continue
+                cc1_oidx = cc1 + cc1_offset
+                cc2_oidx = cc2 + cc2_offset
+                assert(np.isclose(cc_ethane[cc1_oidx].charge, cc_ethanol[cc2_oidx].charge, rtol=1e-03))
+
+        shutil.rmtree(cc1_i.path)
+        shutil.rmtree(cc2_i.path)
+
+
 
 
 @pytest.mark.slowtest
