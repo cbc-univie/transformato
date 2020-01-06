@@ -297,7 +297,7 @@ class FreeEnergyCalculator(object):
             plt.imshow(self.complex_free_energy_difference_overlap, cmap='Blues')
         else:
             raise RuntimeError()
-        plt.title('Overlap of lambda states for ligand in vacuum', fontsize=15)
+        plt.title(f"Overlap of lambda states for ligand in {env}", fontsize=15)
         plt.xlabel('lambda state (0 to 1)', fontsize=15)
         plt.ylabel('lambda state (0 to 1)', fontsize=15)
         plt.legend()
