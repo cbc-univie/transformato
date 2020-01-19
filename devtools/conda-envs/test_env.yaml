@@ -19,6 +19,7 @@ dependencies:
   - mdtraj
   - matplotlib
   - networkx
+  - tqdm
 
     # Testing
   - pytest
