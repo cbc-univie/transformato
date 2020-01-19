@@ -78,7 +78,6 @@ simulation:
       100
   free-energy-type:
     'binding-free-energy'
-    #'solvation-free-energy'
 ################
 solvation:
 ################
