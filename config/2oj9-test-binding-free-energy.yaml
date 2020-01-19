@@ -4,9 +4,9 @@ system:
 ################
   structure1:
     name:
-      '2OJ9-e1'
+      '2OJ9-test1'
     tlc:
-      '1OL'
+      'BMI'
     complex:
       dirname:
         'complex'
@@ -36,9 +36,9 @@ system:
 
   structure2:
     name:
-      '2OJ9-e2'
+      '2OJ9-test2'
     tlc:
-      '1KE'
+      'UNK'
     complex:
       dirname:
         'complex'
@@ -69,10 +69,12 @@ system:
 ################
 simulation:
 ################
-  nsteps:
-    '1000000'
+  parameters:
+    nstep:
+      '500000'
   free-energy-type:
     'binding-free-energy'
+    #'solvation-free-energy'
 ################
 solvation:
 ################

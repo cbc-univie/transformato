@@ -1,14 +1,18 @@
 import os
-import yaml
+
 import parmed as pm
+import yaml
+
 
 def get_bin_dir():
     """Returns the bin directory of this package"""
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'bin'))
 
+
 def get_toppar_dir():
     """Returns the bin directory of this package"""
     return os.path.abspath(os.path.join(os.path.dirname(__file__), 'toppar'))
+
 
 def load_config_yaml(config, input_dir, output_dir):
 
@@ -22,7 +26,7 @@ def load_config_yaml(config, input_dir, output_dir):
     settingsMap['bin_dir'] = get_bin_dir()
     settingsMap['analysis_dir_base'] = os.path.abspath(f"{output_dir}")
     settingsMap['data_dir_base'] = os.path.abspath(f"{input_dir}")
-    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}"
+    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}-{settingsMap['simulation']['free-energy-type']}"
     settingsMap['system_dir'] = f"{settingsMap['analysis_dir_base']}/{system_name}"
     settingsMap['cluster_dir'] = f"/data/local/{system_name}"
 
@@ -30,4 +34,3 @@ def load_config_yaml(config, input_dir, output_dir):
     settingsMap['system']['structure2']['charmm_gui_dir'] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure2']['name']}/"
     settingsMap['system']['name'] = system_name
     return settingsMap
-
