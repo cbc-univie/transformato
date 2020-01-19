@@ -10,7 +10,7 @@ Transformato is a package that helps to set up an equilibrium sampling protocol 
 
 The thermodynamic cycle used by Transformto is shown below:
 
-![bitmap](https://user-images.githubusercontent.com/31651017/68591079-33dacb00-0490-11ea-9ca7-9c885b6f6b3f.png)
+![drawing-1](https://user-images.githubusercontent.com/31651017/72672192-dc8c4480-3a56-11ea-9906-67bd27810c9e.png)
 
 The strategy is to turn atoms of two molecules to dummy atoms (shown in green) to obtain a common core (cc) between the two molecules (in this case a CH3 group) and subsequently mutate the common core of molecule 1 (cc1) to the common core of molecule 2 (cc2) to obtain equivalen states. This closes the thermodynamic cycle. 
 In the depicted example the additional step from cc1 to cc2 might not be necessary since both cc1-CH3 and cc2-CH3 might be equivalent in their bonded and non-bonded terms, but this is a special case. For more general mutations the change in bonded and non-bonded terms will be necessary. The mutation strategy used by Transformato can deal with changes in bonded and non-bonded parameters of the common core.   
