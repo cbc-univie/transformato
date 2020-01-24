@@ -2,7 +2,7 @@ import argparse
 
 from omm_readinputs import *
 from omm_readparams import *
-
+from omm_vfswitch import *
 from simtk.unit import *
 from simtk.openmm import *
 from simtk.openmm.app import *
@@ -23,9 +23,13 @@ psf = read_psf(args.psffile)
 crd = read_crd(args.crdfile)
 
 # Build system
-integrator = LangevinIntegrator(inputs.temp*kelvin, inputs.fric_coeff/picosecond, inputs.dt*picoseconds)
+integrator = LangevinIntegrator(inputs.temp*kelvin, 
+                                inputs.fric_coeff / picosecond,
+                                inputs.dt*picoseconds)
 
-system = psf.createSystem(params, nonbondedMethod=NoCutoff)
+system = psf.createSystem(params, nonbondedMethod=NoCutoff, constraints=inputs.cons)
+if inputs.vdw == 'Force-switch': system = vfswitch(system, psf, inputs)
+
 simulation = Simulation(psf.topology, system, integrator)
 simulation.context.setPositions(crd.positions)
 
