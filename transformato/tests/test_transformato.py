@@ -53,6 +53,7 @@ def test_transformato_imported():
 
 
 def test_read_yaml():
+    """Sample test, will check ability to read yaml files"""
     settingsMap = load_config_yaml(config='config/2oj9-test-solvation-free-energy.yaml',
                                    input_dir='.', output_dir='data/')
 
