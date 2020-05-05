@@ -22,6 +22,9 @@ def load_config_yaml(config, input_dir, output_dir):
         except yaml.YAMLError as exc:
             print(exc)
 
+    if settingsMap['simulation']['parameters']['nstep']/settingsMap['simulation']['parameters']['nstdcd'] < 20:
+        raise Exception('nsteps size and nstdcd size in config file does not match')
+
     # set the bin, data and analysis dir
     settingsMap['bin_dir'] = get_bin_dir()
     settingsMap['analysis_dir_base'] = os.path.abspath(f"{output_dir}")
