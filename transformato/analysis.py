@@ -16,7 +16,6 @@ from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
-
 def return_reduced_potential(potential_energy: unit.Quantity, volume: unit.Quantity, temperature: unit.Quantity):
     """Retrieve the reduced potential for a given context.
     The reduced potential is defined as in Ref. [1]
@@ -308,15 +307,15 @@ class FreeEnergyCalculator(object):
     def plot_free_energy(self, env):
 
         if env == 'vacuum':
-            x = [a for a in range(1, len(self.vacuum_free_energy_differences[0])+1)]
+            x = [a for a in np.linspace(0, 1, len(self.vacuum_free_energy_differences[0]))]
             y = self.vacuum_free_energy_differences[0]
             y_error = self.vacuum_free_energy_difference_uncertanties[0]
         elif env == 'waterbox':
-            x = [a for a in range(1, len(self.waterbox_free_energy_differences[0])+1)]
+            x = [a for a in np.linspace(0, 1, len(self.waterbox_free_energy_differences[0]))]
             y = self.waterbox_free_energy_differences[0]
             y_error = self.waterbox_free_energy_difference_uncertanties[0]
         elif env == 'complex':
-            x = [a for a in range(1, len(self.complex_free_energy_differences[0])+1)]
+            x = [a for a in np.linspace(0, 1, len(self.complex_free_energy_differences[0]))]
             y = self.complex_free_energy_differences[0]
             y_error = self.complex_free_energy_difference_uncertanties[0]
         else:
@@ -324,8 +323,8 @@ class FreeEnergyCalculator(object):
 
         plt.errorbar(x, y, yerr=y_error, label='ddG +- stddev [kT]')
         plt.title(f"Free energy estimate for ligand in {env}", fontsize=15)
-        plt.xlabel('Free energy estimate in kT')
-        plt.ylabel('lambda state (0 to 1)', fontsize=15)
+        plt.ylabel('Free energy estimate in kT', fontsize=15)
+        plt.xlabel('lambda state (0 to 1)', fontsize=15)
         plt.show()
         plt.close()
 
