@@ -9,13 +9,16 @@ import copy
 import numpy as np
 # read in specific topology with parameters
 import subprocess
+from datetime import datetime
 
 
-def benchmark_simulation(steps_map,path,i):
-    conf = path + 'output/' + i + '/input.yaml'
+def benchmark_simulation(steps_map,input_path,i):
+    conf = input_path + 'output/' + i + '/input.yaml'
     configuration = load_config_yaml(config=conf,
-                                    input_dir=path, 
-                                    output_dir=path + 'output/' + i) #user_input 
+                                    input_dir=input_path, 
+                                    output_dir=input_path + 'output/' + i) #user_input 
+
+    startTime = datetime.now()
 
     for i in steps_map:
         configuration['simulation']['parameters']['nstep'] = i[0]
@@ -79,7 +82,7 @@ def benchmark_simulation(steps_map,path,i):
                 print(exe.stderr)
             
     
-        f = FreeEnergyCalculator(configuration, 'ethane')
+        f = FreeEnergyCalculator(configuration, configuration['system']['structure1']['name'])
         f.load_trajs(thinning=1)
         f.calculate_dG_to_common_core()
         ddG, dddG = f.end_state_free_energy_difference
@@ -88,10 +91,12 @@ def benchmark_simulation(steps_map,path,i):
 
         f.show_summary()
     
-        f = FreeEnergyCalculator(configuration, 'methanol')
+        f = FreeEnergyCalculator(configuration, configuration['system']['structure2']['name'])
         f.load_trajs(thinning=1)
         f.calculate_dG_to_common_core()
         print(f"Free energy difference: {ddG}")
         print(f"Uncertanty: {dddG}")
 
         f.show_summary()
+
+        runTime = datetime.now() - startTime
