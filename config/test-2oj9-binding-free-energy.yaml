@@ -7,9 +7,9 @@ system:
       '2OJ9-test1'
     tlc:
       'BMI'
-    vacuum:
+    complex:
       dirname:
-        'vacuum'
+        'complex'
       psf_file_name:
         'step3_charmm2omm'
       crd_file_name:
@@ -19,7 +19,7 @@ system:
       simulation_parameter:
         'step5_production.inp'
       intermediate-filename:
-        'lig_in_vacuum'
+        'lig_in_complex'
     waterbox:
       dirname:
         'waterbox'
@@ -39,9 +39,9 @@ system:
       '2OJ9-test2'
     tlc:
       'UNK'
-    vacuum:
+    complex:
       dirname:
-        'vacuum'
+        'complex'
       psf_file_name:
         'step3_charmm2omm'
       crd_file_name:
@@ -51,7 +51,7 @@ system:
       simulation_parameter:
         'step5_production.inp'
       intermediate-filename:
-        'lig_in_vacuum'
+        'lig_in_complex'
     waterbox:
       dirname:
         'waterbox'
@@ -71,11 +71,18 @@ simulation:
 ################
   parameters:
     nstep:
-      500000
+      5000
     nstdcd:
-      10000
+      50
+    nstout:
+      50
+    cons:
+      None
+    dt:
+      0.002
   free-energy-type:
-    'solvation-free-energy'
+    'binding-free-energy'
+    #'solvation-free-energy'
 ################
 solvation:
 ################
