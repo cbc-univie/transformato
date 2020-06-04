@@ -1,4 +1,4 @@
-from utils import loader,load_param_yaml, createList, createMap, createStepsMap, targetList, create_input_yaml, check_folder
+from utils import loader,load_param_yaml, createList, createMap, createStepsMap, targetList, create_input_yaml, check_folder, output_yaml
 from simulation import benchmark_simulation
 import os
 
@@ -18,8 +18,13 @@ create_input_yaml(path,molecule_pairs)
 
 systems = next(os.walk(path + 'output'))[1]
 
+output_dict = {}
+
 for i in systems:
-    benchmark_simulation(steps_map,path,i)
+    runTime, ddG, dddG = benchmark_simulation(steps_map,path,i)
+    output_dict = {i : {'runtime': runTime, 'ddG': ddG, 'dddG':dddG}}
+
+output_yaml(path,output_dict)
 
 
 

@@ -139,6 +139,14 @@ def create_input_yaml(path,pairs):
             except yaml.YAMLError as exc:
                 print(exc)
 
+def output_yaml(path,input_dict):
+    with open(f"{path + '/output/output.yaml'}", 'w') as file:
+            try:
+                yaml.dump(input_dict, file)
+            except yaml.YAMLError as exc:
+                print(exc)
+
+
 def reverse(tuples): 
     new_tup = tuples[::-1] 
     return new_tup 

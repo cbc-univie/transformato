@@ -10,13 +10,16 @@ import numpy as np
 # read in specific topology with parameters
 import subprocess
 from datetime import datetime
+import pickle
 
 
-def benchmark_simulation(steps_map,input_path,i):
-    conf = input_path + 'output/' + i + '/input.yaml'
+
+def benchmark_simulation(steps_map,input_path,system):
+    conf = input_path + 'output/' + system + '/input.yaml'
+    output_dir = input_path + 'output/' + system
     configuration = load_config_yaml(config=conf,
                                     input_dir=input_path, 
-                                    output_dir=input_path + 'output/' + i) #user_input 
+                                    output_dir=output_dir) #user_input 
 
     startTime = datetime.now()
 
@@ -51,16 +54,16 @@ def benchmark_simulation(steps_map,input_path,i):
             
             for path in sorted(paths):
                 run_dir = path.parent
-                print(f"Start sampling for: {path}")
-                print(f"In directory: {run_dir}")
+                #print(f"Start sampling for: {path}")
+                #print(f"In directory: {run_dir}")
                 try:
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True, text=True)
                 except TypeError:
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True,
                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 #print(exe.stdout)
-                print('Capture stderr')
-                print(exe.stderr)
+                #print('Capture stderr')
+                #print(exe.stderr)
             
         
             # write intermediate states
@@ -70,33 +73,39 @@ def benchmark_simulation(steps_map,input_path,i):
             paths = pathlib.Path(i.path).glob('**/*.sh')
             for path in sorted(paths):
                 run_dir = path.parent
-                print(f"Start sampling for: {path}")
-                print(f"In directory: {run_dir}")
+                #print(f"Start sampling for: {path}")
+                #print(f"In directory: {run_dir}")
                 try:
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True, text=True)
                 except TypeError:
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True,
                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 #print(exe.stdout)
-                print('Capture stderr')
-                print(exe.stderr)
+                #print('Capture stderr')
+                #print(exe.stderr)
             
     
         f = FreeEnergyCalculator(configuration, configuration['system']['structure1']['name'])
         f.load_trajs(thinning=1)
         f.calculate_dG_to_common_core()
-        ddG, dddG = f.end_state_free_energy_difference
-        print(f"Free energy difference: {ddG}")
-        print(f"Uncertanty: {dddG}")
+        ddG1, dddG1 = f.end_state_free_energy_difference
+        #print(f"Free energy difference: {ddG}")
+        #print(f"Uncertanty: {dddG}")
 
-        f.show_summary()
+        pickle.dump(f, open(output_dir + '/' + configuration['system']['structure1']['name'] + '_output.p', 'wb'))
     
         f = FreeEnergyCalculator(configuration, configuration['system']['structure2']['name'])
         f.load_trajs(thinning=1)
         f.calculate_dG_to_common_core()
-        print(f"Free energy difference: {ddG}")
-        print(f"Uncertanty: {dddG}")
+        ddG2, dddG2 = f.end_state_free_energy_difference
+        #print(f"Free energy difference: {ddG}")
+        #print(f"Uncertanty: {dddG}")
 
-        f.show_summary()
+        pickle.dump(f, open(output_dir + '/' + configuration['system']['structure2']['name'] + '_output.p', 'wb'))
+
+        ddG = ddG1-ddG2
+        dddG = dddG1 + dddG2
 
         runTime = datetime.now() - startTime
+        
+    return runTime, ddG, dddG
