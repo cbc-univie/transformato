@@ -4,12 +4,12 @@ system:
 ################
   structure1:
     name:
-      '2OJ9-test1'
+      'toluene'
     tlc:
-      'BMI'
-    complex:
+      'UNL'
+    vacuum:
       dirname:
-        'complex'
+        'vacuum'
       psf_file_name:
         'step3_charmm2omm'
       crd_file_name:
@@ -19,7 +19,7 @@ system:
       simulation_parameter:
         'step5_production.inp'
       intermediate-filename:
-        'lig_in_complex'
+        'lig_in_vacuum'
     waterbox:
       dirname:
         'waterbox'
@@ -36,12 +36,12 @@ system:
 
   structure2:
     name:
-      '2OJ9-test2'
+      'methane'
     tlc:
-      'UNK'
-    complex:
+      'LIG'
+    vacuum:
       dirname:
-        'complex'
+        'vacuum'
       psf_file_name:
         'step3_charmm2omm'
       crd_file_name:
@@ -51,7 +51,7 @@ system:
       simulation_parameter:
         'step5_production.inp'
       intermediate-filename:
-        'lig_in_complex'
+        'lig_in_vacuum'
     waterbox:
       dirname:
         'waterbox'
@@ -71,12 +71,13 @@ simulation:
 ################
   parameters:
     nstep:
-      500000
+      250000
     nstdcd:
-      10000
+      5000
+    nstout:
+      5000
   free-energy-type:
-    'binding-free-energy'
-    #'solvation-free-energy'
+    'solvation-free-energy'
 ################
 solvation:
 ################

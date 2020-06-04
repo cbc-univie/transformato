@@ -54,14 +54,14 @@ def test_transformato_imported():
 
 def test_read_yaml():
     """Sample test, will check ability to read yaml files"""
-    settingsMap = load_config_yaml(config='config/2oj9-test-solvation-free-energy.yaml',
+    settingsMap = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
                                    input_dir='.', output_dir='data/')
 
     assert(settingsMap['system']['name'] == '2OJ9-test1-2OJ9-test2-solvation-free-energy')
 
 
 def test_initialize_systems():
-    configuration = load_config_yaml(config='config/2oj9-test-solvation-free-energy.yaml',
+    configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
                                      input_dir='data/', output_dir='.')
 
     s1 = SystemStructure(configuration, 'structure1')
@@ -75,7 +75,7 @@ def test_initialize_systems():
     assert('vacuum' in s1.envs and 'vacuum' in s2.envs)
     assert('waterbox' in s1.envs and 'waterbox' in s2.envs)
 
-    configuration = load_config_yaml(config='config/2oj9-test-binding-free-energy.yaml',
+    configuration = load_config_yaml(config='config/test-2oj9-binding-free-energy.yaml',
                                      input_dir='data/', output_dir='.')
 
     s1 = SystemStructure(configuration, 'structure1')
@@ -91,7 +91,7 @@ def test_initialize_systems():
 
 
 def test_proposed_mutation():
-    for conf in ['config/2oj9-test-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
@@ -110,7 +110,7 @@ def test_proposed_mutation():
 
 def test_endpoint():
 
-    for conf in ['config/2oj9-test-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
@@ -158,7 +158,7 @@ def test_endpoint():
 
 def test_charge_mutation():
 
-    for conf in ['config/2oj9-test-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
@@ -223,7 +223,7 @@ def test_charge_mutation():
 
 def test_vdw_mutation():
 
-    for conf in ['config/2oj9-test-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
@@ -291,7 +291,7 @@ def test_vdw_mutation():
 @pytest.mark.slowtest
 def test_bonded_mutation():
 
-    for conf in ['config/2oj9-test-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
@@ -420,7 +420,7 @@ def test_bonded_mutation():
 def test_charge_cc1_to_cc2_transformation1():
     from parmed.charmm.psf import CharmmPsfFile
 
-    for conf in ['config/ethane-ethanol-solvation-free-energy.yaml']:
+    for conf in ['config/test-ethane-ethanol-solvation-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                         input_dir='data/', output_dir='data')
 
@@ -469,7 +469,7 @@ def test_charge_cc1_to_cc2_transformation1():
 def test_charge_cc1_to_cc2_transformation2():
     from parmed.charmm.psf import CharmmPsfFile
 
-    for conf in ['config/ethane-ethanol-solvation-free-energy.yaml']:
+    for conf in ['config/test-ethane-ethanol-solvation-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                         input_dir='data/', output_dir='data')
 
@@ -514,7 +514,7 @@ def test_charge_cc1_to_cc2_transformation2():
 
 @pytest.mark.slowtest
 def test_run_test_systems():
-    for conf in ['config/2oj9-test-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='data/')
 
@@ -545,7 +545,7 @@ def test_run_test_systems():
 )
 def test_run_example1_systems_solvation_free_energy():
     from transformato import FreeEnergyCalculator
-    for conf in ['config/2oj9-example-solvation-free-energy.yaml']:
+    for conf in ['config/test-2oj9-example-solvation-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='data/')
 
@@ -620,7 +620,7 @@ def test_run_example1_systems_solvation_free_energy():
 )
 def test_run_example2_systems_solvation_free_energy():
     from transformato import FreeEnergyCalculator
-    for conf in ['config/ethane-ethanol-solvation-free-energy.yaml']:
+    for conf in ['config/test-ethane-ethanol-solvation-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='data/')
 

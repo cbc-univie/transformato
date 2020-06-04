@@ -167,7 +167,7 @@ outfile.close()
         """
         Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
         """
-
+        
         basedir = self.system.charmm_gui_base
         
         if self.configuration['simulation']['free-energy-type'] == 'solvation-free-energy':
@@ -208,36 +208,21 @@ outfile.close()
         shutil.copyfile(ligand_prm, toppar_target)
 
         # copy diverse set of helper functions
-        omm_barostat_source = f"{basedir}/waterbox/openmm/omm_barostat.py"
-        omm_barostat_target = f"{intermediate_state_file_path}/omm_barostat.py"
-        shutil.copyfile(omm_barostat_source, omm_barostat_target)
-
-        omm_readinputs_source = f"{basedir}/waterbox/openmm//omm_readinputs.py"
-        omm_readinputs_target = f"{intermediate_state_file_path}/omm_readinputs.py"
-        shutil.copyfile(omm_readinputs_source, omm_readinputs_target)
-
-        omm_readparams_source = f"{basedir}/waterbox/openmm/omm_readparams.py"
-        omm_readparams_target = f"{intermediate_state_file_path}/omm_readparams.py"
-        shutil.copyfile(omm_readparams_source, omm_readparams_target)
-
-        omm_restraints_source = f"{basedir}/waterbox/openmm/omm_restraints.py"
-        omm_restraints_target = f"{intermediate_state_file_path}/omm_restraints.py"
-        shutil.copyfile(omm_restraints_source, omm_restraints_target)
-
-        omm_rewrap_source = f"{basedir}/waterbox/openmm/omm_rewrap.py"
-        omm_rewrap_target = f"{intermediate_state_file_path}/omm_rewrap.py"
-        shutil.copyfile(omm_rewrap_source, omm_rewrap_target)
-
-        omm_vfswitch_source = f"{basedir}/waterbox/openmm/omm_vfswitch.py"
-        omm_vfswitch_target = f"{intermediate_state_file_path}/omm_vfswitch.py"
-        shutil.copyfile(omm_vfswitch_source, omm_vfswitch_target)
+        FILES = ['omm_barostat.py', 'omm_readinputs.py', 'omm_readparams.py', 'omm_restraints.py', 'omm_rewrap.py', 'omm_vfswitch.py']
+        for f in FILES:
+            try:
+                path.exists(omm_source)
+                omm_source = f"{basedir}/waterbox/openmm/{f}"
+                omm_target = f"{intermediate_state_file_path}/{f}"
+                shutil.copyfile(omm_source, omm_target)
+            except OSError:
+                logger.debug(f'Could not finde file: {f}')
 
         # copy toppar folder
         toppar_dir = get_toppar_dir()
         toppar_source = f"{toppar_dir}"
         toppar_target = f"{intermediate_state_file_path}/toppar" 
         shutil.copytree(toppar_source, toppar_target)
-
 
         # copy omm simulation script
         omm_simulation_script_source = f"{basedir}/waterbox/openmm/openmm_run.py"
