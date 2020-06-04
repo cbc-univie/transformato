@@ -223,7 +223,7 @@ def test_charge_mutation():
 
 def test_vdw_mutation():
 
-    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
@@ -514,7 +514,7 @@ def test_charge_cc1_to_cc2_transformation2():
 
 @pytest.mark.slowtest
 def test_run_test_systems():
-    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/2oj9-test-binding-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='data/')
 
