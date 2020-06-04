@@ -13,6 +13,7 @@ from simtk.openmm import System, XmlSerializer
 from simtk.openmm.app import Simulation
 from simtk.openmm.vec3 import Vec3
 from tqdm import tqdm
+import seaborn as sns
 
 logger = logging.getLogger(__name__)
 
@@ -289,11 +290,11 @@ class FreeEnergyCalculator(object):
     def plot_free_energy_overlap(self, env):
         plt.figure(figsize=[8, 8], dpi=300)
         if env == 'vacuum':
-            plt.imshow(self.vacuum_free_energy_difference_overlap, cmap='Blues')
+            ax = sns.heatmap(self.vacuum_free_energy_difference_overlap, cmap='Blues', linewidth=0.5)
         elif env == 'waterbox':
-            plt.imshow(self.waterbox_free_energy_difference_overlap, cmap='Blues')
+            ax = sns.heatmap(self.waterbox_free_energy_difference_overlap, cmap='Blues', linewidth=0.5)
         elif env == 'complex':
-            plt.imshow(self.complex_free_energy_difference_overlap, cmap='Blues')
+            ax = sns.heatmap(self.complex_free_energy_difference_overlap, cmap='Blues', linewidth=0.5)
         else:
             raise RuntimeError()
         plt.title(f"Overlap of lambda states for ligand in {env}", fontsize=15)

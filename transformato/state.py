@@ -208,15 +208,14 @@ outfile.close()
         shutil.copyfile(ligand_prm, toppar_target)
 
         # copy diverse set of helper functions
-        FILES = ['omm_barostat.py', 'omm_readinputs.py', 'omm_readparams.py', 'omm_restraints.py', 'omm_rewrap.py', 'omm_vfswitch.py']
+        FILES = ['omm_barostat.py', 'omm_readinputs.py', 'omm_readparams.py', 'omm_restraints.py', 'omm_rewrap.py', 'omm_vfswitch.py', 'omm_hmr.py']
         for f in FILES:
             try:
-                path.exists(omm_source)
                 omm_source = f"{basedir}/waterbox/openmm/{f}"
                 omm_target = f"{intermediate_state_file_path}/{f}"
                 shutil.copyfile(omm_source, omm_target)
             except OSError:
-                logger.debug(f'Could not finde file: {f}')
+                logger.debug(f'Could not find file: {f}')
 
         # copy toppar folder
         toppar_dir = get_toppar_dir()
