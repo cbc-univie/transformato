@@ -301,7 +301,6 @@ class FreeEnergyCalculator(object):
         plt.xlabel('lambda state (0 to 1)', fontsize=15)
         plt.ylabel('lambda state (0 to 1)', fontsize=15)
         plt.legend()
-        plt.colorbar()
         plt.show()
         plt.close()
 
