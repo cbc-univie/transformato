@@ -333,6 +333,7 @@ class ProposeMutationRoute(object):
                 raise RuntimeError('There are atoms missing in the steric mutation step ')
         else:
             logger.info("No atoms will be decoupled.")
+            mutations = []
         return mutations
 
     def _find_cliques(self, atoms_idx: list, mol: Chem.Mol) -> list:
