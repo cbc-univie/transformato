@@ -96,7 +96,7 @@ class ProposeMutationRoute(object):
         for m in [m1, m2]:
             logger.info('Mol in SMILES format: {}.'.format(Chem.MolToSmiles(m, True)))
 
-        # make copy of mols and write atom type in isotope propertie
+        # make copy of mols
         changed_mols = [Chem.Mol(x) for x in [m1, m2]]
 
         # find substructure match (ignore bond order but enforce element matching)
@@ -323,6 +323,15 @@ class ProposeMutationRoute(object):
             # TODO: test that all mutations are covered
             
             mutations = charge_mutations + lj_mutations + lj_terminal_mutations
+
+            for m in mutations:
+                if type(m) == ChargeMutation:
+                    logger.debug(f"charge mutation on: {str(m.atom_idx)}")
+                elif type(m) == StericMutation:
+                    logger.debug(f"steric mutation on: {str(m.atom_idx)}")
+                else:
+                    logger.debug(f"mutation on: {str(m.atom_idx)}")
+                    
             nr_of_lj_mutations = len(lj_mutations) + len(lj_terminal_mutations)
             if nr_of_lj_mutations != len(atoms_to_be_mutated) - len(hydrogens) + 1:
                 # test if we have a single mutation for every heavy atom and a mutation for all hydrogens

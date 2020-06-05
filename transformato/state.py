@@ -82,6 +82,8 @@ class IntermediateStateFactory(object):
                     self._write_state(m, current_step, intst_nr, mutate=True)
                     intst_nr += 1
 
+
+
     def _write_state(self, mutation, current_step:int, intst_nr:int, mutate:bool=True):
         
         logger.info('#########################################')

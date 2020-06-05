@@ -565,7 +565,7 @@ def test_run_test_systems():
 )
 def test_run_example1_systems_solvation_free_energy():
     from transformato import FreeEnergyCalculator
-    for conf in ['config/test-2oj9-example-solvation-free-energy.yaml']:
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='data/')
 
@@ -701,19 +701,21 @@ def test_run_example2_systems_solvation_free_energy():
                 print(exe.stderr)
 
             f = FreeEnergyCalculator(configuration, 'ethane')
-            f.load_trajs(thinning=1)
+            f.load_trajs(thinning=2)
             f.calculate_dG_to_common_core()
             ddG, dddG = f.end_state_free_energy_difference
             print(f"Free energy difference: {ddG}")
             print(f"Uncertanty: {dddG}")
             #assert(ddG == 10.0)
-
             f.show_summary()
 
             f = FreeEnergyCalculator(configuration, 'ethanol')
-            f.load_trajs(thinning=1)
+            f.load_trajs(thinning=2)
             f.calculate_dG_to_common_core()
-
+            ddG, dddG = f.end_state_free_energy_difference
+            print(f"Free energy difference: {ddG}")
+            print(f"Uncertanty: {dddG}")
             f.show_summary()
         finally:
-            shutil.rmtree(pathlib.Path(i.path).parent)
+            pass
+            #shutil.rmtree(pathlib.Path(i.path).parent)
