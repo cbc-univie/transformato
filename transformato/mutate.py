@@ -13,6 +13,7 @@ from rdkit.Chem import AllChem, Draw, rdFMCS
 from rdkit.Chem.Draw import IPythonConsole, rdMolDraw2D
 from simtk import unit
 from transformato import state
+import networkx as nx 
 
 logger = logging.getLogger(__name__)
 
@@ -260,17 +261,32 @@ class ProposeMutationRoute(object):
                 logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
 
         if atoms_to_be_mutated:
+            ######################
             # scale all EL of all atoms to zero
             mutations.append(ChargeToZeroMutation(atom_idx=atoms_to_be_mutated,
                                                 nr_of_steps=nr_of_steps_for_el, common_core=cc_idx))
 
+            
+            ######################
             # scale LJ
             # start with mutation of LJ of hydrogens
             mutations.append(StericToZeroMutation(hydrogens))
+            alreaady_mutated = [] 
             # continue with scaling of heavy atoms LJ
-            for idx in atoms_to_be_mutated:
-                if idx not in hydrogens:  # hydrogens are already mutated
-                    mutations.append(StericToZeroMutation([idx]))
+            l = []
+            for n in nx.dfs_edges(self.graphs['name']):
+                logger.debug(n)
+                l.append(n)
+            
+            for idx1, idx2 in l:
+                if idx1 in atoms_to_be_mutated and idx1 not in hydrogens and idx1 not in alreaady_mutated:
+                    mutations.append(StericToZeroMutation([idx1]))
+                    alreaady_mutated.append(idx1)
+
+                if idx2 in atoms_to_be_mutated and idx2 not in hydrogens and idx2 not in alreaady_mutated:
+                    mutations.append(StericToZeroMutation([idx2]))
+                    alreaady_mutated.append(idx2)
+            logger.debug(mutations)
         else:
             logger.info("No atoms will be decoupled.")
         return mutations
@@ -661,9 +677,6 @@ class ChargeToZeroMutation(ChargeMutation):
 
     def __str__(self):
         return "charges to zero mutation"
-
-    def __unicode__(self):
-        return u"charges to zero mutation"
 
     def mutate(self, psf: pm.charmm.CharmmPsfFile, tlc: str, current_step: int):
 
