@@ -6,6 +6,14 @@ from zipfile import ZipFile
 
 
 def loader(input_location):
+    """ Downloads benchmark systems from https://github.com/wiederm/transformato-systems to input_location
+
+    Args:
+        input_location (string): path to the working and saving directory
+
+    Returns:
+        [list]: benchmark system names
+    """
     try:
         os.makedirs(input_location)
         print ('Directory ' , input_location ,  ' Created')
@@ -35,18 +43,57 @@ def loader(input_location):
     return targets
 
 def createList(r1,r2,d):
+    """creates a list in range r1 to r2 with distance d between every entry
+
+    Args:
+        r1 (int): startpoint
+        r2 (int): endpoint
+        d (int): steps size
+
+    Returns:
+        [list]: list of integers
+    """
     return arange(r1,r2+1,d)
 
 def createMap(nsteps_list,nstdcd_list):
+    """Creates a list of tuples
+
+    Args:
+        nsteps_list (list): values for nsteps
+        nstdcd_list (list): values for nstdcd
+
+    Returns:
+        [list]: all possible pairs as tuples for nsteps_list and nstdcd_list
+    """
     return [(x,y) for x in nsteps_list for y in nstdcd_list]
 
 def createStepsMap(param1,param2):
+    """Function to create a parameter map with all possible pairs for the range given in the parameter.yaml
+
+    Args:
+        param1 (list): startpoint, endpoint, steps size for nsteps
+        param2 (list): startpoint, endpoint, steps size for nstdcd
+
+    Returns:
+        [list]: list of tuples
+    """
     nsteps_list = createList(param1[0],param1[1],param1[2])
     nstdcd_list = createList(param2[0],param2[1],param2[2])
     steps_map = createMap(nsteps_list,nstdcd_list)
     return steps_map
 
 def load_param_yaml(parameter):
+    """[summary]
+
+    Args:
+        parameter (string): path to parameter.yaml
+
+    Raises:
+        KeyError: Yaml Error
+
+    Returns:
+        [dictionary]: Benchmarking parameters
+    """
 
     with open(f"{parameter}", 'r') as stream:
         try:
@@ -60,6 +107,14 @@ def load_param_yaml(parameter):
     return settingsMap
 
 def check_folder(path):
+    """checks for folder Lig, Unk, Unl
+
+    Args:
+        path (string): input path
+
+    Returns:
+        [string]: existing folder name
+    """
     dir_list =  [x[0] for x in os.walk(path)]
 
     for dir in dir_list:
@@ -73,7 +128,13 @@ def check_folder(path):
     return tlc
 
 
-def create_input_yaml(path,pairs):
+def create_input_yaml(path,pairs): 
+    """creates input.yaml for given system to a given path
+
+    Args:
+        path (string): location path
+        pairs (string): benchmarking systems
+    """
 
     for pair in pairs:
 
@@ -140,6 +201,12 @@ def create_input_yaml(path,pairs):
                 print(exc)
 
 def output_yaml(path,input_dict):
+    """Creates an output yaml file 
+
+    Args:
+        path (string): path to save the file to
+        input_dict (dictionary): otput dictionary
+    """
     with open(f"{path + '/output/output.yaml'}", 'w') as file:
             try:
                 yaml.dump(input_dict, file)
@@ -148,11 +215,27 @@ def output_yaml(path,input_dict):
 
 
 def reverse(tuples): 
+    """reverses a tuple
+
+    Args:
+        tuples (tuple): input tuple (2)
+
+    Returns:
+        [tuple]: output tuple (2)
+    """
     new_tup = tuples[::-1] 
     return new_tup 
 
 
 def targetList(input_location):
+    """Creating a list of targets and removing double or reverse entries
+
+    Args:
+        input_location (string): path
+
+    Returns:
+        [list]: list of strings
+    """
     targets = next(os.walk(input_location))[1]
 
     try:
