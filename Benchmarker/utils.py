@@ -65,7 +65,13 @@ def createMap(nsteps_list,nstdcd_list):
     Returns:
         [list]: all possible pairs as tuples for nsteps_list and nstdcd_list
     """
-    return [(x,y) for x in nsteps_list for y in nstdcd_list]
+    map = [(x,y) for x in nsteps_list for y in nstdcd_list]
+
+    for pair in map:
+        if pair[0]/pair[1] < 20:    
+            map.remove(pair)
+
+    return map
 
 def createStepsMap(param1,param2):
     """Function to create a parameter map with all possible pairs for the range given in the parameter.yaml
