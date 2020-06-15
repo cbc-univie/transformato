@@ -77,7 +77,7 @@ def benchmark_simulation(steps_map,input_path,system):
                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 #print(exe.stdout)
                 #print('Capture stderr')
-                #print(exe.stderr)
+                print(exe.stderr)
             
         
             # write intermediate states
@@ -96,7 +96,7 @@ def benchmark_simulation(steps_map,input_path,system):
                                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 #print(exe.stdout)
                 #print('Capture stderr')
-                #print(exe.stderr)
+                print(exe.stderr)
             
     
             f = FreeEnergyCalculator(configuration, configuration['system']['structure1']['name'])
