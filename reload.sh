@@ -1,9 +1,9 @@
 #!/bin/bash
 
-git checkout dev-bb
-git pull origin dev-bb
+conda activate openmm
 
-conda activate transformato
-conda env update -n transformato --file devtools/conda-envs/test_env.yaml
+cd devtools/conda-envs/
+conda env update -n openmm --file test_env.yaml
+cd ../../
 
 python setup.py install
