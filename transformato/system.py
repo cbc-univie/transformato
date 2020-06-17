@@ -139,7 +139,7 @@ class SystemStructure(object):
         parameter_files =  parameter_files + (f"{toppar_dir}/top_all36_cgenff.rtf",) 
         parameter_files =  parameter_files + (f"{toppar_dir}/par_all36_cgenff.prm",)
         parameter_files =  parameter_files + (f"{toppar_dir}/par_all36_lipid.prm",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/par_all36_na.prm",)
+        #parameter_files =  parameter_files + (f"{toppar_dir}/par_all36_na.prm",) //Double
         parameter_files =  parameter_files + (f"{toppar_dir}/top_all36_lipid.rtf",)
         parameter_files =  parameter_files + (f"{toppar_dir}/toppar_water_ions.str",)
             
