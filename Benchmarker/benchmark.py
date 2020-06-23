@@ -3,12 +3,13 @@ from simulation import benchmark_simulation
 import os
 
 
-user_input = input("Enter the path to destination folder: ")
-#input = '/home/master/Master/benchmarker/test/input'
+#user_input = input("Enter the path to destination folder: ")
+user_input = '/home/bene/test'
 
 loader(user_input)
 path = user_input + '/transformato-systems-master/'
 parameter = load_param_yaml(parameter=path + 'parameter.yaml') 
+#print (parameter)
 steps_map = createStepsMap(parameter['simulation']['parameters']['nstep'],parameter['simulation']['parameters']['nstdcd'])
 molecule_pairs = targetList(path)
 create_input_yaml(path,molecule_pairs)

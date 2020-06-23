@@ -22,7 +22,7 @@ def loader(input_location):
         pass
     
     print ("Downloading benchmark molecules...")
-    url = 'https://github.com/wiederm/transformato-systems/archive/master.zip'
+    url = 'https://github.com/bbraunsfeld/transformato-systems/archive/master.zip' #'https://github.com/wiederm/transformato-systems/archive/master.zip'
     dest_file = os.path.join(input_location, 'transformato-systems-master.zip')
     urlretrieve(url, dest_file)
     
@@ -65,11 +65,19 @@ def createMap(nsteps_list,nstdcd_list):
     Returns:
         [list]: all possible pairs as tuples for nsteps_list and nstdcd_list
     """
-    map = [(x,y) for x in nsteps_list for y in nstdcd_list]
+    print (nsteps_list)
 
+    print (nstdcd_list)
+
+    map = [(x,y) for x in nsteps_list for y in nstdcd_list]
+    #print (map)
     for pair in map:
-        if pair[0]/pair[1] < 20:    
-            map.remove(pair)
+        #print (pair)
+        if type(pair[0]) == int and type(pair[1]) == int:
+            if pair[0]/pair[1] < 20:    
+                map.remove(pair)
+        else:
+            break
 
     return map
 
@@ -84,7 +92,9 @@ def createStepsMap(param1,param2):
         [list]: list of tuples
     """
     nsteps_list = createList(param1[0],param1[1],param1[2])
+    #print (nsteps_list)
     nstdcd_list = createList(param2[0],param2[1],param2[2])
+    #print (nstdcd_list)
     steps_map = createMap(nsteps_list,nstdcd_list)
     return steps_map
 
