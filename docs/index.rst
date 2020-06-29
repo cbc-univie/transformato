@@ -12,6 +12,7 @@ Welcome to transformato's documentation!
 
    getting_started
    api
+   test
 
 
 
