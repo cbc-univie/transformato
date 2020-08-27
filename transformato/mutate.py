@@ -273,15 +273,16 @@ class ProposeMutationRoute(object):
         # NOTE: this is a strong indicator, but not necessarily true! There might be charge equality after the charge transformation
         # NOTE: To solve this correctly, we need to first see how charges are after the mutation on common core 2
         
+        terminal_atoms_cc1, real_atoms_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
+        terminal_atoms_cc2, real_atoms_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
+
+        real_atom_cc1 = real_atoms_cc1[0]
+        real_atom_cc2 = real_atoms_cc2[0]       
+        
         # if necessary transform bonded parameters
         if bonded_mutations_necessary:
             logger.info('Bonded parameters need to be transformed for the cc1 topology.')
             # ugh
-            terminal_atoms_cc1, real_atoms_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
-            terminal_atoms_cc2, real_atoms_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
-
-            real_atom_cc1 = real_atoms_cc1[0]
-            real_atom_cc2 = real_atoms_cc2[0]
 
             t = BondedParameterMutation(
                 self.get_common_core_idx_mol1(),
