@@ -278,6 +278,7 @@ outfile.close()
                 logger.debug(f"  + Atom Dummy Type: {atom.type}")
 
                 rtf_file_handler.write('{:7} {:6} {:6} {:6}\n'.format('MASS', '-1', atom.type, atom.mass))
+                # TODO: check the  rtf_file_handler.write vs 
             
         rtf_file_handler.close()    
 
@@ -327,10 +328,15 @@ outfile.close()
         #################################################################
         prm_file_handler.write('\n\n')
         prm_file_handler.write('ANGLES\n')
+
         for angle in view.angles:
             atom1, atom2, atom3 = angle.atom1, angle.atom2, angle.atom3
+            # TODO: 
             if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2, atom3]):            
-                logger.debug(' >> Setting dummy angle parameters for: {}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type)))
+                logger.debug('############################################')
+                logger.debug('Printing angle atoms which at least one dummy atom.')
+                logger.debug(angle.atom1, angle.atom2, angle.atom3)
+                logger.debug(f' >> Setting dummy angle parameters for: {atom1.type}-{atom2.type}-{atom3.type}')
                 try:
                     prm_file_handler.write('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.mod_type.k , angle.mod_type.theteq))
                     logger.debug('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.mod_type.k , angle.mod_type.theteq))
@@ -346,7 +352,7 @@ outfile.close()
         for dihedral in view.dihedrals:
             atom1, atom2, atom3, atom4 = dihedral.atom1, dihedral.atom2, dihedral.atom3, dihedral.atom4
             if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2, atom3, atom4]):            
-                logger.debug(' >> Setting dummy dihedral parameters for: {}-{}-{}-{}'.format(str(atom1.type),str(atom2.type),str(atom3.type),str(atom4.type)))
+                logger.debug(f' >> Setting dummy dihedral parameters for: {atom1.type}-{atom2.type}-{atom3.type}-{atom4.type}')
                 try:
                     for dihedral_type in dihedral.mod_type:
                         prm_file_handler.write('{:7} {:7} {:7} {:7} {:6.5f} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), str(atom4.type), dihedral_type.phi_k ,dihedral_type.per, dihedral_type.phase))

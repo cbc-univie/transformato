@@ -130,18 +130,29 @@ class SystemStructure(object):
         charmm_gui_env = self.charmm_gui_base + env
         tlc = self.tlc       
         tlc_lower = str(tlc).lower()
-        parameter_files = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.rtf", f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.prm"         
         toppar_dir = get_toppar_dir()
-        parameter_files =  parameter_files + (f"{toppar_dir}/top_all36_prot.rtf",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/par_all36m_prot.prm",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/par_all36_na.prm",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/top_all36_na.rtf",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/top_all36_cgenff.rtf",) 
-        parameter_files =  parameter_files + (f"{toppar_dir}/par_all36_cgenff.prm",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/par_all36_lipid.prm",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/par_all36_na.prm",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/top_all36_lipid.rtf",)
-        parameter_files =  parameter_files + (f"{toppar_dir}/toppar_water_ions.str",)
+        
+        # if custom parameter are added they are located in l1,l2
+        parameter_files = tuple()
+        l1 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.rtf"
+        l2 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.prm"
+        
+        for file_path in [l1, l2]:
+            if os.path.isfile(file_path):
+                parameter_files += (file_path,)
+            else:
+                logger.debug(f'Custom ligand parameters are not present in {file_path}')
+                  
+        
+        parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
+        parameter_files += (f"{toppar_dir}/par_all36m_prot.prm",)
+        parameter_files += (f"{toppar_dir}/par_all36_na.prm",)
+        parameter_files += (f"{toppar_dir}/top_all36_na.rtf",)
+        parameter_files += (f"{toppar_dir}/top_all36_cgenff.rtf",) 
+        parameter_files += (f"{toppar_dir}/par_all36_cgenff.prm",)
+        parameter_files += (f"{toppar_dir}/par_all36_lipid.prm",)
+        parameter_files += (f"{toppar_dir}/top_all36_lipid.rtf",)
+        parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
             
         # set up parameter objec
         parameter = pm.charmm.CharmmParameterSet(*parameter_files)
@@ -246,15 +257,6 @@ class SystemStructure(object):
                 except IOError:
                     logger.info(f"SDF file not found: {file}")
                     pass
-
-                # try:
-                #     file = f"{charmm_gui_env}/{dir_name}/{name}.mol2"  # NOTE: maybe also tlc and tlc_lower for dir?      
-                #     mol = Chem.MolFromMol2File(file, removeHs=False)
-                #     break
-                # except IOError:
-                #     logger.info(f"MOL file not found: {file}")
-                #     pass
-
 
         atom_idx_to_atom_name, _, atom_name_to_atom_type, atom_idx_to_atom_partial_charge = self.generate_atom_tables_from_psf(psf)
 
