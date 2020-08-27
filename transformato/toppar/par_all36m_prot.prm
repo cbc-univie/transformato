@@ -371,6 +371,10 @@ NH2  CT1  C     50.000    107.00              ! From ALA Dipep. NH1-CT2-C
 NH2  CT1  CD    50.000    107.00              ! From ALA Dipep. NH1-CT2-C
 NH2  CT2  C     50.000    107.00              ! From ALA Dipep. NH1-CT2-C, Neutral Gly Nterminus
 NH2  CT2  CD    50.000    107.00              ! From ALA Dipep. NH1-CT2-C, Neutral Gly Nterminus
+HB2  CT1  HB2   36.000    115.00              ! from HB2  CT2  HB2
+HB2  CT1  CD    50.000    109.50              ! from HB2  CT2  CD
+NH1  CT1  HB2   48.000    108.00              ! from NH1  CT2  HB2
+
 !
 !Indole/Tryptophan
 CAI  CAI  CA    40.000    120.00   35.00   2.41620 ! from CA CA CA

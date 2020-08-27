@@ -10,7 +10,7 @@ import parmed as pm
 from pymbar import mbar
 from simtk import unit
 from simtk.openmm import System, XmlSerializer
-from simtk.openmm.app import Simulation
+from simtk.openmm.app import Simulation, CharmmPsfFile
 from simtk.openmm.vec3 import Vec3
 from tqdm import tqdm
 import seaborn as sns
@@ -25,7 +25,6 @@ def return_reduced_potential(potential_energy: unit.Quantity, volume: unit.Quant
     where the thermodynamic parameters are
     \beta = 1/(kB T) is the inverse temperature
     p is the pressure
-    and the configurational properties are
     x the atomic positions
     U(x) is the potential energy
     V(x) is the instantaneous box volume
@@ -102,7 +101,9 @@ class FreeEnergyCalculator(object):
 
         #############
         # set all file paths for potential
-        assert(os.path.isdir(f"{self.base_path}"))
+        if not os.path.isdir(f"{self.base_path}"):
+            raise RuntimeError(f'{self.base_path} does not exist. Aborting.')
+
         nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
 
         logger.info(f"Evaluating {nr_of_states} states.")
@@ -156,7 +157,7 @@ class FreeEnergyCalculator(object):
             file_name = f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}_integrator.xml"
             integrator = XmlSerializer.deserialize(open(file_name).read())
             psf_file_path = f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.psf"
-            psf = pm.charmm.CharmmPsfFile(psf_file_path)
+            psf = CharmmPsfFile(psf_file_path)
 
             # generate simulations object and set states
             simulation = Simulation(psf.topology, system, integrator)

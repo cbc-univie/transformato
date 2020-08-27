@@ -26,7 +26,7 @@ integrator = LangevinIntegrator(inputs.temp*kelvin,
                                 inputs.fric_coeff / picosecond,
                                 inputs.dt*picoseconds)
 
-system = psf.createSystem(params, nonbondedMethod=NoCutoff, constraints=inputs.cons)
+system = psf.createSystem(params, nonbondedMethod=NoCutoff)
 
 simulation = Simulation(psf.topology, system, integrator)
 simulation.context.setPositions(crd.positions)
