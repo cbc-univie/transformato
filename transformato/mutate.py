@@ -52,7 +52,7 @@ class ProposeMutationRoute(object):
         self.real_atom_cc2 = real_atoms_cc2[0]       
         self.terminal_atom_cc1 = terminal_atoms_cc1[0]
         self.terminal_atom_cc2 = terminal_atoms_cc2[0]
-        self.charge_compensated_cc2_psf = self._prepare_cc2_psf_for_charge_transfer()
+        self.charge_compensated_cc1_psf, self.charge_compensated_cc2_psf = self._prepare_cc_for_charge_transfer()
 
 
     def _redo(self):
@@ -65,33 +65,40 @@ class ProposeMutationRoute(object):
         self.real_atom_cc2 = real_atoms_cc2[0]       
         self.terminal_atom_cc1 = terminal_atoms_cc1[0]
         self.terminal_atom_cc2 = terminal_atoms_cc2[0]
-        self.charge_compensated_cc2_psf = self._prepare_cc2_psf_for_charge_transfer()
+        self.charge_compensated_cc1_psf, self.charge_compensated_cc2_psf = self._prepare_cc_for_charge_transfer()
 
-    def _prepare_cc2_psf_for_charge_transfer(self):
+    def _prepare_cc_for_charge_transfer(self):
         # we have to run the same charge mutation that will be run on cc2 to get the 
         # charge distribution AFTER the full mutation
 
         # mare a copy of the psf
         m2_psf = self.psfs['m2'][:,:,:]
-        # set `initial_charge` parameter for ChargeToZeroMutation
-        for atom in m2_psf.view[f":{self.s2_tlc.upper()}"].atoms:           
-            # charge, epsilon and rmin are directly modiefied
-            atom.initial_charge = atom.charge
+        m1_psf = self.psfs['m1'][:,:,:]
+        charge_transformed_psfs = []
+        for psf, tlc, cc_idx, real_atom in zip([m1_psf, m2_psf], 
+                                               [self.s1_tlc, self.s2_tlc], 
+                                               [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
+                                               [self.real_atom_cc1, self.real_atom_cc2]):
+            # set `initial_charge` parameter for ChargeToZeroMutation
+            for atom in psf.view[f":{tlc.upper()}"].atoms:           
+                # charge, epsilon and rmin are directly modiefied
+                atom.initial_charge = atom.charge
 
-        offset = min([atom.idx for atom in m2_psf.view[f":{self.s2_tlc.upper()}"].atoms])
-        
-        # getting copy of the atoms
-        atoms_to_be_mutated = []
-        for atom in m2_psf.view[f":{self.s2_tlc.upper()}"].atoms:
-            idx = atom.idx - offset
-            if idx not in self.get_common_core_idx_mol2():
-                atoms_to_be_mutated.append(idx)
-        logger.info('############################')
-        logger.info('Preparing cc2 for charge transfer')
-        logger.info(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
-        m = ChargeToZeroMutation(atoms_to_be_mutated, 1, self.get_common_core_idx_mol2(), self.real_atom_cc2)
-        m.mutate(m2_psf, self.s2_tlc, 1)
-        return m2_psf
+            offset = min([atom.idx for atom in psf.view[f":{self.tlc.upper()}"].atoms])
+            
+            # getting copy of the atoms
+            atoms_to_be_mutated = []
+            for atom in psf.view[f":{self.tlc.upper()}"].atoms:
+                idx = atom.idx - offset
+                if idx not in cc_idx:
+                    atoms_to_be_mutated.append(idx)
+            logger.info('############################')
+            logger.info('Preparing cc2 for charge transfer')
+            logger.info(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
+            m = ChargeToZeroMutation(atoms_to_be_mutated, 1, cc_idx, real_atom)
+            m.mutate(psf, tlc, 1)
+            charge_transformed_psfs.append(psf)
+        return charge_transformed_psfs[0], charge_transformed_psfs[1]
 
 
     def generate_mutation_list(self):
@@ -303,8 +310,7 @@ class ProposeMutationRoute(object):
                 bonded_terms_mutation = True
         
         for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
-            # did charges change?
-            atom1 = self.psfs['m1'][cc1]
+            atom1 = self.charge_compensated_cc1_psf[cc1]
             atom2 = self.charge_compensated_cc2_psf[cc2]
             if atom1.charge != atom2.charge:
                 logger.info('##############################')
