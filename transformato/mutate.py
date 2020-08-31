@@ -84,11 +84,11 @@ class ProposeMutationRoute(object):
                 # charge, epsilon and rmin are directly modiefied
                 atom.initial_charge = atom.charge
 
-            offset = min([atom.idx for atom in psf.view[f":{self.tlc.upper()}"].atoms])
+            offset = min([atom.idx for atom in psf.view[f":{tlc.upper()}"].atoms])
             
             # getting copy of the atoms
             atoms_to_be_mutated = []
-            for atom in psf.view[f":{self.tlc.upper()}"].atoms:
+            for atom in psf.view[f":{tlc.upper()}"].atoms:
                 idx = atom.idx - offset
                 if idx not in cc_idx:
                     atoms_to_be_mutated.append(idx)
