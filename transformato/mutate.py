@@ -44,20 +44,63 @@ class ProposeMutationRoute(object):
         self.added_indeces: dict = {mol1_name: [], mol2_name: []}
         self.s1_tlc = s1.tlc
         self.s2_tlc = s2.tlc
+
+        terminal_atoms_cc1, real_atoms_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
+        terminal_atoms_cc2, real_atoms_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
+
+        self.real_atom_cc1 = real_atoms_cc1[0]
+        self.real_atom_cc2 = real_atoms_cc2[0]       
+        self.terminal_atom_cc1 = terminal_atoms_cc1[0]
+        self.terminal_atom_cc2 = terminal_atoms_cc2[0]
+        self.charge_compensated_cc2_psf = self._prepare_cc2_psf_for_charge_transfer()
+
+
+    def _redo(self):
+        # these need to be recomputed when changing the common core idxs
         
+        terminal_atoms_cc1, real_atoms_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
+        terminal_atoms_cc2, real_atoms_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
+
+        self.real_atom_cc1 = real_atoms_cc1[0]
+        self.real_atom_cc2 = real_atoms_cc2[0]       
+        self.terminal_atom_cc1 = terminal_atoms_cc1[0]
+        self.terminal_atom_cc2 = terminal_atoms_cc2[0]
+        self.charge_compensated_cc2_psf = self._prepare_cc2_psf_for_charge_transfer()
+
+    def _prepare_cc2_psf_for_charge_transfer(self):
+        # we have to run the same charge mutation that will be run on cc2 to get the 
+        # charge distribution AFTER the full mutation
+
+        # mare a copy of the psf
+        m2_psf = self.psfs['m2'][:,:,:]
+        # set `initial_charge` parameter for ChargeToZeroMutation
+        for atom in m2_psf.view[f":{self.s2_tlc.upper()}"].atoms:           
+            # charge, epsilon and rmin are directly modiefied
+            atom.initial_charge = atom.charge
+
+        offset = min([atom.idx for atom in m2_psf.view[f":{self.s2_tlc.upper()}"].atoms])
         
+        # getting copy of the atoms
+        atoms_to_be_mutated = []
+        for atom in m2_psf.view[f":{self.s2_tlc.upper()}"].atoms:
+            idx = atom.idx - offset
+            if idx not in self.get_common_core_idx_mol2():
+                atoms_to_be_mutated.append(idx)
+        logger.info('############################')
+        logger.info('Preparing cc2 for charge transfer')
+        logger.info(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
+        m = ChargeToZeroMutation(atoms_to_be_mutated, 1, self.get_common_core_idx_mol2(), self.real_atom_cc2)
+        m.mutate(m2_psf, self.s2_tlc, 1)
+        return m2_psf
+
 
     def generate_mutation_list(self):
         
         # there are three obvious cases that we want to distinquish:
         # 1) mol1 is in mol2 (Methane -- Ethane)
         
-         
-        
-        
-        
         mutation_list = self.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=2)
+            nr_of_steps_for_el=5, nr_of_steps_for_cc_transformation=2)
         # write intermediate states for systems
         intermediate_state = IntermediateStateFactory(system=self.system['system1'], mutation_list=mutation_list, configuration=configuration)
         intermediate_state.generate_intermediate_states()
@@ -72,10 +115,12 @@ class ProposeMutationRoute(object):
 
     def add_idx_to_common_core_of_mol1(self, idx: int):
         self._add_common_core_atom('m1', idx)
+        self._redo()
         print(self.get_common_core_idx_mol1())
 
     def add_idx_to_common_core_of_mol2(self, idx: int):
         self._add_common_core_atom('m2', idx)
+        self._redo()
         print(self.get_common_core_idx_mol2())
 
     def _add_common_core_atom(self, name, idx):
@@ -198,7 +243,7 @@ class ProposeMutationRoute(object):
         svg = drawer.GetDrawingText().replace('svg:', '')
         return(svg)
 
-    def generate_mutations_to_common_core_for_mol1(self, nr_of_steps_for_el: int, nr_of_steps_for_bonded_parameters: int) -> list:
+    def generate_mutations_to_common_core_for_mol1(self, nr_of_steps_for_el: int, nr_of_steps_for_cc_transformation: int) -> list:
         """
         Generates the mutation route to the common fore for mol1.
         Parameters
@@ -213,7 +258,7 @@ class ProposeMutationRoute(object):
 
         """
         m = self._mutate_to_common_core('m1', self.get_common_core_idx_mol1(), nr_of_steps_for_el)
-        t = self._transform_common_core(nr_of_steps_for_bonded_parameters)
+        t = self._transform_common_core(nr_of_steps_for_cc_transformation)
 
         return m + t
 
@@ -229,7 +274,7 @@ class ProposeMutationRoute(object):
         m = self._mutate_to_common_core('m2', self.get_common_core_idx_mol2(), nr_of_steps_for_el)
         return m
 
-    def _transform_common_core(self, nr_of_steps_for_bonded_parameters: int) -> list:
+    def _transform_common_core(self, nr_of_steps_for_cc_transformation: int) -> list:
         """
         Common Core 1 is transformed to Common core 2. Bonded parameters and charges are adjusted. 
         """
@@ -242,8 +287,8 @@ class ProposeMutationRoute(object):
         logger.info('##############################')
 
         # test if bonded mutations are necessary
-        bonded_mutations_necessary = False
-        commom_core_charge_mutations_necessary = False
+        bonded_terms_mutation = False
+        charge_mutation = False
         for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
             # did atom type change? if not don't add BondedMutations
             atom1 = self.psfs['m1'][cc1]
@@ -255,12 +300,12 @@ class ProposeMutationRoute(object):
                 logger.info(f'Atom type of atom in cc1: {atom1.type}.')
                 logger.info(f'Template atom: {atom2}.')
                 logger.info(f'Atom type of atom in cc2: {atom2.type}.')
-                bonded_mutations_necessary = True
+                bonded_terms_mutation = True
         
         for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
-            # did atom type change? if not don't add BondedMutations
+            # did charges change?
             atom1 = self.psfs['m1'][cc1]
-            atom2 = self.psfs['m2'][cc2]
+            atom2 = self.charge_compensated_cc2_psf[cc2]
             if atom1.charge != atom2.charge:
                 logger.info('##############################')
                 logger.info('Charge transformation')
@@ -269,49 +314,27 @@ class ProposeMutationRoute(object):
                 logger.info(f'Atom charge of atom in cc1: {atom1.charge}.')
                 logger.info(f'Template atom: {atom2}.')
                 logger.info(f'Atom charge of atom in cc2: {atom2.charge}.')
-                commom_core_charge_mutations_necessary = True 
-        # NOTE: this is a strong indicator, but not necessarily true! There might be charge equality after the charge transformation
-        # NOTE: To solve this correctly, we need to first see how charges are after the mutation on common core 2
+                charge_mutation = True 
         
-        terminal_atoms_cc1, real_atoms_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
-        terminal_atoms_cc2, real_atoms_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
-
-        real_atom_cc1 = real_atoms_cc1[0]
-        real_atom_cc2 = real_atoms_cc2[0]       
         
         # if necessary transform bonded parameters
-        if bonded_mutations_necessary:
-            logger.info('Bonded parameters need to be transformed for the cc1 topology.')
-            # ugh
+        if bonded_terms_mutation or charge_mutation:
+            logger.info(f'Bonded parameters mutation: {bonded_terms_mutation}.')
+            logger.info(f'Charge parameters mutation: {charge_mutation}.')
 
             t = BondedParameterMutation(
                 self.get_common_core_idx_mol1(),
                 self.get_common_core_idx_mol2(), 
                 self.psfs['m1'], 
                 self.psfs['m2'],
-                nr_of_steps_for_bonded_parameters, 
+                nr_of_steps_for_cc_transformation, 
                 self.s1_tlc, 
                 self.s2_tlc, 
-                real_atom_cc1, 
-                real_atom_cc2,
-                only_charge=False)
+                self.charge_compensated_cc2_psf[cc2],
+                charge_mutation=charge_mutation,
+                bonded_terms_mutation=bonded_terms_mutation)
             transformations.append(t)
-        elif commom_core_charge_mutations_necessary:
-            # Only Charge transformation
-            logger.info('Charges at commen core need to be transformed')
-            t = BondedParameterMutation(
-                self.get_common_core_idx_mol1(),
-                self.get_common_core_idx_mol2(), 
-                self.psfs['m1'], 
-                self.psfs['m2'],
-                nr_of_steps_for_bonded_parameters, 
-                self.s1_tlc, 
-                self.s2_tlc,                 
-                real_atom_cc1, 
-                real_atom_cc2,
-                only_charge=True)
-            transformations.append(t)
-        else :
+        else:
             transformations = []
 
         return transformations
@@ -421,9 +444,6 @@ class ProposeMutationRoute(object):
                     logger.debug(f"steric mutation on: {str(m.atom_idx)}")
                 else:
                     logger.debug(f"mutation on: {str(m.atom_idx)}")
-                    
-            nr_of_lj_mutations = len(lj_mutations) + len(lj_terminal_mutations)
-            
         else:
             logger.info("No atoms will be decoupled.")
             mutations = []
@@ -432,16 +452,17 @@ class ProposeMutationRoute(object):
 class BondedParameterMutation(object):
 
     def __init__(self, 
-                 cc1_idx: list, 
-                 cc2_idx: list, 
-                 cc1_psf: pm.charmm.CharmmPsfFile, 
-                 cc2_psf: pm.charmm.CharmmPsfFile, 
-                 nr_of_steps: int, 
-                 tlc_cc1: str, 
-                 tlc_cc2: str, 
-                 real_atom_cc1:int,
-                 real_atom_cc2:int, 
-                 only_charge: bool=False):
+                cc1_idx: list, 
+                cc2_idx: list, 
+                cc1_psf: pm.charmm.CharmmPsfFile, 
+                cc2_psf: pm.charmm.CharmmPsfFile, 
+                nr_of_steps: int, 
+                tlc_cc1: str, 
+                tlc_cc2: str,
+                charge_compensated_cc2_psf: pm.charmm.CharmmPsfFile,
+                charge_mutation:bool,
+                bonded_terms_mutation:bool
+                ):
         """
         Scale the bonded parameters inside the common core.
         Parameters
@@ -468,26 +489,13 @@ class BondedParameterMutation(object):
         self.tlc_cc1 = tlc_cc1
         self.tlc_cc2 = tlc_cc2
         self.atom_names_mapping = self._get_atom_mapping()
-        self._prepare_cc2_psf_for_charge_transfer(real_atom_cc2)
-        self.only_charge = only_charge
-        self.last_real_atom_cc1 = real_atom_cc1
-        self.last_real_atom_cc2 = real_atom_cc2
+        self.charge_mutation = charge_mutation
+        self.bonded_terms_mutation = bonded_terms_mutation
+        self.charge_compensated_cc2_psf = charge_compensated_cc2_psf
+        
+        logger.info(f'Bonded terms mutation: {bonded_terms_mutation}')
+        logger.info(f'Charge mutation: {charge_mutation}')
 
-    def _prepare_cc2_psf_for_charge_transfer(self, last_real_atom:int):
-        # we have to run the same charge mutation that will be run on cc2 to get the 
-        # charge distribution AFTER the full mutation
-        offset = min([atom.idx for atom in self.cc2_psf.view[f":{self.tlc_cc2.upper()}"].atoms])
-        atoms_to_be_mutated = []
-        for atom in self.cc2_psf.view[f":{self.tlc_cc2.upper()}"].atoms:
-            atom.initial_charge = atom.charge
-            idx = atom.idx - offset
-            if idx not in self.cc2_idx:
-                atoms_to_be_mutated.append(idx)
-        logger.info('############################')
-        logger.info('Preparing cc2 for charge transfer')
-        logger.info(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
-        m = ChargeToZeroMutation(atoms_to_be_mutated, 1, self.cc2_idx, last_real_atom)
-        m.mutate(self.cc2_psf, self.tlc_cc2, 1)
 
     def _get_atom_mapping(self):
         match_atom_names_cc1_to_cc2 = {}
@@ -500,11 +508,14 @@ class BondedParameterMutation(object):
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
 
+        # common core of psf 1 is transformed to psf 2
         for cc1_atom in psf.view[f":{tlc}"]:
             if cc1_atom.name not in self.atom_names_mapping:
                 continue
             found = False
-            for cc2_atom in self.cc2_psf:
+            
+            # compare to charge compenstated psf 2
+            for cc2_atom in self.charge_compensated_cc2_psf:
                 if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
                     found = True
                     # are the atoms different?
@@ -714,16 +725,14 @@ class BondedParameterMutation(object):
 
         assert(type(psf) == pm.charmm.CharmmPsfFile)
         scale = current_step / (self.nr_of_steps)
-        if self.only_charge:
+        if self.charge_mutation:
             logger.info(f" -- Charge parameters from cc1 are transformed to cc2.")
             logger.info(f"Scaling factor:{scale}")
             # scale charge
             self._mutate_charges(psf, tlc, scale)
-        else:
-            logger.info(f" -- Charge/Atom/Bond/Angle/Torsion parameters from cc1 are transformed to cc2.")
+        elif self.bonded_terms_mutation:
+            logger.info(f" -- Atom/Bond/Angle/Torsion parameters from cc1 are transformed to cc2.")
             logger.info(f"Scaling factor:{scale}")
-            # scale charge
-            self._mutate_charges(psf, tlc, scale)
             # scale atoms
             self._mutate_atoms(psf, tlc, scale)
             # scale bonds
@@ -732,6 +741,8 @@ class BondedParameterMutation(object):
             self._mutate_angles(psf, tlc, scale)
             # scale torsions
             self._mutate_torsions(psf, tlc, scale)
+        else:
+            logger.critical('Nothing to do. Is there someting wrong?')
 
     def _modify_type(self, atom: pm.Atom, psf: pm.charmm.CharmmPsfFile):
 
