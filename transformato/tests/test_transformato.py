@@ -17,9 +17,51 @@ import pytest
 import transformato
 # read in specific topology with parameters
 from parmed.charmm.parameters import CharmmParameterSet
+import transformato
 from transformato import (IntermediateStateFactory, ProposeMutationRoute,
-                          SystemStructure, load_config_yaml)
+                          SystemStructure, load_config_yaml, get_bin_dir, get_toppar_dir, canvas)
 
+
+#############################
+######### NEW TESTS #########
+#############################
+
+def test_canvas(): #transformato/trasnformato/transformato.py
+    """Sample test, citation"""
+    assert canvas(with_attribution=False) == "The code is but a canvas to our imagination."
+    assert canvas(with_attribution=True) == "The code is but a canvas to our imagination." + "\n\t- Adapted from Henry David Thoreau"
+
+###### IMPORT FUNCTION ######
+
+def test_transformato_imported(): 
+    """Sample test, will always pass so long as import statement worked"""
+    assert "transformato" in sys.modules
+
+
+def test_get_bin_dir(): #transformato/transformato/utils.py
+    """"Sample test, will check ability to return the bin directory of this package"""
+    assert get_bin_dir() == os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , 'bin')) 
+
+def test_get_toppar_dir(): #transformato/transformato/utils.py
+    """"Sample test, will check ability to return the toppar directory of this package"""
+    assert get_toppar_dir() == os.path.abspath(os.path.join(os.path.dirname(__file__), '..' , 'toppar'))
+
+
+def test_read_yaml(): #transformato/transformato/utils.py
+    """Sample test, will check ability to read yaml files"""
+    settingsMap = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
+                                   input_dir='.', output_dir='data/')
+
+    assert(settingsMap['system']['name'] == '2OJ9-test1-2OJ9-test2-solvation-free-energy')
+
+###### EXPORT FUNCTION ######
+
+
+
+
+#############################
+######### OLD TESTS #########
+#############################
 
 def read_params(output_file_base):
     extlist = ['rtf', 'prm', 'str']
@@ -47,17 +89,17 @@ def generate_psf(output_file_base, env):
     return target_psf
 
 
-def test_transformato_imported():
-    """Sample test, will always pass so long as import statement worked"""
-    assert "transformato" in sys.modules
+#def test_transformato_imported():
+ #   """Sample test, will always pass so long as import statement worked"""
+  #  assert "transformato" in sys.modules
 
 
-def test_read_yaml():
-    """Sample test, will check ability to read yaml files"""
-    settingsMap = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
-                                   input_dir='.', output_dir='data/')
+#def test_read_yaml():
+ #   """Sample test, will check ability to read yaml files"""
+  #  settingsMap = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
+   #                                input_dir='.', output_dir='data/')
 
-    assert(settingsMap['system']['name'] == '2OJ9-test1-2OJ9-test2-solvation-free-energy')
+    #assert(settingsMap['system']['name'] == '2OJ9-test1-2OJ9-test2-solvation-free-energy')
 
 
 def test_initialize_systems():
