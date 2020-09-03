@@ -330,7 +330,7 @@ class ProposeMutationRoute(object):
             logger.info(f'Bonded parameters mutation: {bonded_terms_mutation}.')
             logger.info(f'Charge parameters mutation: {charge_mutation}.')
 
-            t = BondedParameterMutation(
+            t = CommonCoreTransformation(
                 self.get_common_core_idx_mol1(),
                 self.get_common_core_idx_mol2(), 
                 self.psfs['m1'], 
@@ -338,6 +338,8 @@ class ProposeMutationRoute(object):
                 nr_of_steps_for_cc_transformation, 
                 self.s1_tlc, 
                 self.s2_tlc, 
+                self.terminal_atom_cc1,
+                self.terminal_atom_cc2,
                 self.charge_compensated_cc2_psf[cc2],
                 charge_mutation=charge_mutation,
                 bonded_terms_mutation=bonded_terms_mutation)
@@ -460,7 +462,8 @@ class ProposeMutationRoute(object):
             mutations = []
         return mutations
 
-class BondedParameterMutation(object):
+
+class CommonCoreTransformation(object):
 
     def __init__(self, 
                 cc1_idx: list, 
@@ -470,6 +473,8 @@ class BondedParameterMutation(object):
                 nr_of_steps: int, 
                 tlc_cc1: str, 
                 tlc_cc2: str,
+                terminal_atom_idx_cc1: int,
+                terminal_atom_idx_cc2: int,
                 charge_compensated_cc2_psf: pm.charmm.CharmmPsfFile,
                 charge_mutation:bool,
                 bonded_terms_mutation:bool
@@ -499,7 +504,10 @@ class BondedParameterMutation(object):
         assert(self.nr_of_steps >= 2)
         self.tlc_cc1 = tlc_cc1
         self.tlc_cc2 = tlc_cc2
-        self.atom_names_mapping = self._get_atom_mapping()
+        self.terminal_atom_idx_cc1 = terminal_atom_idx_cc1
+        self.terminal_atom_idx_cc2 = terminal_atom_idx_cc2
+        self.atom_names_mapping, self.terminal_names_mapping = self._get_atom_mapping()
+        self.atom_names_mapping_for_bonded_terms = self.atom_names_mapping.update(self.terminal_names_mapping)
         self.charge_mutation = charge_mutation
         self.bonded_terms_mutation = bonded_terms_mutation
         self.charge_compensated_cc2_psf = charge_compensated_cc2_psf
@@ -509,13 +517,21 @@ class BondedParameterMutation(object):
 
 
     def _get_atom_mapping(self):
+        """
+        _get_atom_mapping -- match the atom names of the common cores
+
+        Returns
+        -------
+        [dict]
+            matched common core atom names
+        """
         match_atom_names_cc1_to_cc2 = {}
         for cc1, cc2 in zip(self.cc1_idx, self.cc2_idx):
             cc1_a = self.cc1_psf[cc1]
             cc2_a = self.cc2_psf[cc2]
             match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
 
-        return match_atom_names_cc1_to_cc2
+        return match_atom_names_cc1_to_cc2, {self.cc1_psf[self.terminal_atom_idx_cc1] : self.cc2_psf[self.terminal_atom_idx_cc2]}
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
 
@@ -544,14 +560,29 @@ class BondedParameterMutation(object):
 
 
     def _mutate_atoms(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
+        
+        """
+        mutate atom types. 
+
+        Raises
+        ------
+        RuntimeError
+            if common core atoms can not be matched
+        """
+        # what will be changed
         mod_type = namedtuple('Atom', 'epsilon, rmin')
+        
+        # iterate through the atoms of the ligand of system1
         for cc1_atom in psf.view[f":{tlc}"]:
-            if cc1_atom.name not in self.atom_names_mapping:
+            # continue if not in atom_names_mapping
+            if cc1_atom.name not in self.atom_names_mapping_for_bonded_terms:
                 continue
 
             found = False
+            #iterate through the atoms the ligand of system2
             for cc2_atom in self.cc2_psf:
-                if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
+                # is there a match up?
+                if self.atom_names_mapping_for_bonded_terms[cc1_atom.name] == cc2_atom.name:
                     found = True
                     # are the atoms different?
                     if cc1_atom.type != cc2_atom.type:
@@ -584,7 +615,7 @@ class BondedParameterMutation(object):
             # all atoms of the bond must be in cc
             # everything outside the cc are bonded terms between dummies or
             # between real atoms and dummies and we can ignore them for now
-            if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2]):
+            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [cc1_a1, cc1_a2]):
                 continue
 
             found = False
@@ -592,11 +623,11 @@ class BondedParameterMutation(object):
                 cc2_a1 = cc2_bond.atom1.name
                 cc2_a2 = cc2_bond.atom2.name
                 # all atoms of the bond must be in cc
-                if not all(elem in self.atom_names_mapping.values() for elem in [cc2_a1, cc2_a2]):
+                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [cc2_a1, cc2_a2]):
                     continue
 
                 # match the two bonds
-                if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
+                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
                     found = True
                     # are the bonds different?
                     if sorted([cc1_bond.atom1.type, cc1_bond.atom2.type]) == sorted([cc2_bond.atom1.type, cc2_bond.atom2.type]):
@@ -635,7 +666,7 @@ class BondedParameterMutation(object):
             cc1_a3 = cc1_angle.atom3.name
 
             # only angles in cc
-            if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2, cc1_a3]):
+            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [cc1_a1, cc1_a2, cc1_a3]):
                 continue
 
             found = False
@@ -644,10 +675,10 @@ class BondedParameterMutation(object):
                 cc2_a2 = cc2_angle.atom2.name
                 cc2_a3 = cc2_angle.atom3.name
                 # only angles in cc
-                if not all(elem in self.atom_names_mapping.values() for elem in [cc2_a1, cc2_a2, cc2_a3]):
+                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [cc2_a1, cc2_a2, cc2_a3]):
                     continue
 
-                if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2, cc1_a3]]) == sorted([cc2_a1, cc2_a2, cc2_a3]):
+                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [cc1_a1, cc1_a2, cc1_a3]]) == sorted([cc2_a1, cc2_a2, cc2_a3]):
                     found = True
                     if sorted([cc1_angle.atom1.type, cc1_angle.atom2.type, cc1_angle.atom3.type]) == \
                             sorted([cc2_angle.atom1.type, cc2_angle.atom2.type, cc2_angle.atom3.type]):
@@ -682,7 +713,7 @@ class BondedParameterMutation(object):
             cc1_a3 = cc1_torsion.atom3.name
             cc1_a4 = cc1_torsion.atom4.name
             # all atoms must be in the cc
-            if not all(elem in self.atom_names_mapping for elem in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]):
+            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]):
                 continue
 
             # get corresponding torsion types in the new topology
@@ -692,10 +723,10 @@ class BondedParameterMutation(object):
                 cc2_a3 = cc2_torsion.atom3.name
                 cc2_a4 = cc2_torsion.atom4.name
                 # only torsion in cc
-                if not all(elem in self.atom_names_mapping.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
                     continue
 
-                if sorted([self.atom_names_mapping[e] for e in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
                     found = True
                     if sorted([cc1_torsion.atom1.type, cc1_torsion.atom2.type, cc1_torsion.atom3.type, cc1_torsion.atom3.type]) == \
                             sorted([cc2_torsion.atom1.type, cc2_torsion.atom2.type, cc2_torsion.atom3.type, cc2_torsion.atom4.type]):
