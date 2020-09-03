@@ -296,10 +296,12 @@ class ProposeMutationRoute(object):
         # test if bonded mutations are necessary
         bonded_terms_mutation = False
         charge_mutation = False
-        for cc1, cc2 in zip(self.get_common_core_idx_mol1() + self.terminal_atom_cc1, self.get_common_core_idx_mol2() + self.terminal_atom_cc2):
+        for cc1, cc2 in zip(self.get_common_core_idx_mol1() + [self.terminal_atom_cc1], self.get_common_core_idx_mol2() + [self.terminal_atom_cc2]):
             # did atom type change? if not don't add BondedMutations
             atom1 = self.psfs['m1'][cc1]
+            print(atom1, atom1.type)
             atom2 = self.psfs['m2'][cc2]
+            print(atom2, atom2.type)
             if atom1.type != atom2.type:
                 logger.info('##############################')
                 logger.info('Atom type transformation')
@@ -718,7 +720,7 @@ class BondedParameterMutation(object):
                 logger.critical(cc1_torsion)
                 raise RuntimeError('No corresponding torsion in cc2 found')
 
-    def mutate(self, psf: pm.charmm.CharmmPsfFile, tlc: str, current_step: int):
+    def mutate(self, psf: pm.charmm.CharmmPsfFile, tlc: str, current_step: int, verbose:int=0):
         """
         Mutates the bonded parameters of cc1 to cc2.
         Parameters
