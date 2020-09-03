@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 
+
 import numpy as np
 import parmed as pm
 import pytest
@@ -17,7 +18,7 @@ import pytest
 import transformato
 # read in specific topology with parameters
 from parmed.charmm.parameters import CharmmParameterSet
-import transformato
+#import transformato
 from transformato import (IntermediateStateFactory, ProposeMutationRoute,
                           SystemStructure, load_config_yaml, get_bin_dir, get_toppar_dir, canvas)
 
@@ -56,8 +57,39 @@ def test_read_yaml(): #transformato/transformato/utils.py
 
 ###### EXPORT FUNCTION ######
 
+########## System ###########
 
+class TestSystemStructure:
 
+    def test_initialize_solvation_free_energy_system(self):
+        configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
+                                    input_dir='data/', output_dir='.')
+
+        s1 = SystemStructure(configuration, 'structure1')
+        assert(int(s1.waterbox_offset) == 0)
+        assert(int(s1.vacuum_offset) == 0)
+
+        s2 = SystemStructure(configuration, 'structure2')
+        assert(int(s2.waterbox_offset) == 0)
+        assert(int(s2.vacuum_offset) == 0)
+
+        assert('vacuum' in s1.envs and 'vacuum' in s2.envs)
+        assert('waterbox' in s1.envs and 'waterbox' in s2.envs)
+
+    def test_initialize_binding_free_energy_system(self):
+        configuration = load_config_yaml(config='config/test-2oj9-binding-free-energy.yaml',
+                                input_dir='data/', output_dir='.')
+
+        s1 = SystemStructure(configuration, 'structure1')
+        assert(int(s1.waterbox_offset) == 0)
+        assert(int(s1.complex_offset) == 4811)
+
+        s2 = SystemStructure(configuration, 'structure2')
+        assert(int(s2.waterbox_offset) == 0)
+        assert(int(s2.complex_offset) == 4692)
+
+        assert('complex' in s1.envs and 'complex' in s2.envs)
+        assert ('waterbox' in s1.envs and 'waterbox' in s2.envs)
 
 #############################
 ######### OLD TESTS #########
