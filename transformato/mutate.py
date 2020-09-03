@@ -296,7 +296,7 @@ class ProposeMutationRoute(object):
         # test if bonded mutations are necessary
         bonded_terms_mutation = False
         charge_mutation = False
-        for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
+        for cc1, cc2 in zip(self.get_common_core_idx_mol1() + self.terminal_atom_cc1, self.get_common_core_idx_mol2() + self.terminal_atom_cc2):
             # did atom type change? if not don't add BondedMutations
             atom1 = self.psfs['m1'][cc1]
             atom2 = self.psfs['m2'][cc2]
@@ -341,6 +341,9 @@ class ProposeMutationRoute(object):
                 bonded_terms_mutation=bonded_terms_mutation)
             transformations.append(t)
         else:
+            logger.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            logger.info('No transformations needed.')
+            logger.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             transformations = []
 
         return transformations
