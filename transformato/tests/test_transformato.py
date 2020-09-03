@@ -324,7 +324,7 @@ def test_bonded_mutation():
             print(mutation_list)
             # we select the bonded mutation which should be at postition [-1]
             m1 = mutation_list[-1]
-            assert(type(m1) == transformato.mutate.BondedParameterMutation)
+            assert(type(m1) == transformato.mutate.CommonCoreTransformation)
             current_step = 1
             try:
                 output_file_base = i.generate_specific_intermediate_state(m1, current_step)
@@ -449,7 +449,7 @@ def test_charge_cc1_to_cc2_transformation1():
             nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5)
 
         assert (len(mutation_list) == 1)
-        assert (type(mutation_list[0]) == transformato.mutate.BondedParameterMutation)
+        assert (type(mutation_list[0]) == transformato.mutate.CommonCoreTransformation)
         assert (mutation_list[0].nr_of_steps == 5)
         
         try:
