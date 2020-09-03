@@ -507,7 +507,7 @@ class CommonCoreTransformation(object):
         self.terminal_atom_idx_cc1 = terminal_atom_idx_cc1
         self.terminal_atom_idx_cc2 = terminal_atom_idx_cc2
         self.atom_names_mapping, self.terminal_names_mapping = self._get_atom_mapping()
-        self.atom_names_mapping_for_bonded_terms = self.atom_names_mapping.update(self.terminal_names_mapping)
+        self.atom_names_mapping_for_bonded_terms = {**self.atom_names_mapping, **self.terminal_names_mapping}
         self.charge_mutation = charge_mutation
         self.bonded_terms_mutation = bonded_terms_mutation
         self.charge_compensated_cc2_psf = charge_compensated_cc2_psf
