@@ -59,9 +59,9 @@ def test_read_yaml(): #transformato/transformato/utils.py
 
 ########## System ###########
 
-class TestSystemStructure:
+class TestSystemStructure: #transformato/transformato/system.py
 
-    def test_initialize_solvation_free_energy_system(self):
+    def test_initialize_solvation_free_energy_system(self): 
         configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
                                     input_dir='data/', output_dir='.')
 
@@ -75,6 +75,15 @@ class TestSystemStructure:
 
         assert('vacuum' in s1.envs and 'vacuum' in s2.envs)
         assert('waterbox' in s1.envs and 'waterbox' in s2.envs)
+
+
+        # full assertion of every parameter
+
+        assert(s1.name == '2OJ9-test1')
+        assert(s1.tlc == 'BMI')
+        assert(configuration['data_dir_base'] == os.path.abspath('data/'))
+        assert(s1.charmm_gui_base ==  os.path.abspath('data/') + '/2OJ9-test1/')  #f"{configuration['data_dir_base']}/{configuration['system']['structure1']['name']}/")
+        
 
     def test_initialize_binding_free_energy_system(self):
         configuration = load_config_yaml(config='config/test-2oj9-binding-free-energy.yaml',
@@ -90,6 +99,13 @@ class TestSystemStructure:
 
         assert('complex' in s1.envs and 'complex' in s2.envs)
         assert ('waterbox' in s1.envs and 'waterbox' in s2.envs)
+
+        assert(s2.name == '2OJ9-test2')
+        assert(s2.tlc == 'UNK')
+        assert(configuration['data_dir_base'] == os.path.abspath('data/'))
+        assert(s2.charmm_gui_base ==  os.path.abspath('data/') + '/2OJ9-test2/')  #f"{configuration['data_dir_base']}/{configuration['system']['structure1']['name']}/")
+
+    
 
 #############################
 ######### OLD TESTS #########
