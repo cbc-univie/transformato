@@ -395,24 +395,35 @@ class ProposeMutationRoute(object):
         terminal_atoms, last_real_atom = self._find_terminal_atom(cc_idx, mol)
         last_real_atom = last_real_atom[0]
         
+        # iterate through atoms and select atoms that need to be mutated 
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             if idx not in cc_idx:
+                # 
                 if atom.GetSymbol() == 'H' and idx not in terminal_atoms:
                     hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
                 logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
 
         if atoms_to_be_mutated:
-            ######################
-            # scale all EL of all atoms to zero
+            ############################################
+            ############################################
+            # scale all charges of all atoms to zero
             charge_mutations.append(ChargeToZeroMutation(atom_idx=atoms_to_be_mutated,
                                                 nr_of_steps=nr_of_steps_for_el, common_core=cc_idx, last_real_atom=last_real_atom))
 
+            ############################################
+            ############################################
+            # finished with charge mutation
+            ############################################
+            ############################################
             
-            ######################
+            ############################################
+            ############################################
             # scale LJ
-            # here we save the last mutation steps
+            ############################################
+            ############################################
+            # save the last mutation steps
             lj_terminal_mutations = []
 
             # start with mutation of LJ of hydrogens
@@ -421,22 +432,23 @@ class ProposeMutationRoute(object):
                 lj_mutations.append(StericToZeroMutation(hydrogens))
             already_mutated = [] 
             # continue with scaling of heavy atoms LJ
-            l = []
+            all_bonds = []
             
             # get all bonds
-            for n in nx.dfs_edges(self.graphs[name]):
-                logger.debug(n)
-                l.append(n)
+            for bond in nx.dfs_edges(self.graphs[name]):
+                logger.debug(bond)
+                all_bonds.append(bond)
             
-            for idx1, idx2 in l:
+            for idx1, idx2 in all_bonds:
+                # continue if atom is not a hydrogen/already mutated and in the list of to be mutated atoms 
                 if idx1 in atoms_to_be_mutated and idx1 not in hydrogens and idx1 not in already_mutated:
-                    
+                    # is it a terminal atom?
                     if idx1 in terminal_atoms:
                         lj_terminal_mutations.append(StericToDefaultMutation([idx1]))
                     else:
                         lj_mutations.append(StericToZeroMutation([idx1]))
                     already_mutated.append(idx1)
-
+                # continue if atom is not a hydrogen/already mutated and in the list of to be mutated atoms 
                 if idx2 in atoms_to_be_mutated and idx2 not in hydrogens and idx2 not in already_mutated:
                     if idx2 in terminal_atoms:
                         lj_terminal_mutations.append(StericToDefaultMutation([idx2]))
@@ -572,17 +584,18 @@ class CommonCoreTransformation(object):
         # what will be changed
         mod_type = namedtuple('Atom', 'epsilon, rmin')
         
+
         # iterate through the atoms of the ligand of system1
         for cc1_atom in psf.view[f":{tlc}"]:
             # continue if not in atom_names_mapping
-            if cc1_atom.name not in self.atom_names_mapping_for_bonded_terms:
+            if cc1_atom.name not in self.atom_names_mapping:
                 continue
 
             found = False
             #iterate through the atoms the ligand of system2
             for cc2_atom in self.cc2_psf:
                 # is there a match up?
-                if self.atom_names_mapping_for_bonded_terms[cc1_atom.name] == cc2_atom.name:
+                if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
                     found = True
                     # are the atoms different?
                     if cc1_atom.type != cc2_atom.type:
@@ -929,6 +942,17 @@ class StericToDefaultMutation(StericMutation):
 
     def __unicode__(self):
         return u"Steric to zero mutation"
+
+    def _modify_type(self, atom, psf):
+
+        if (hasattr(atom, 'initial_type')):
+            # only change parameters
+            pass
+        else:
+            atom.initial_type = atom.type
+            atom.type = f"DXX0"
+            psf.number_of_dummys += 1
+
 
     def mutate(self, psf, tlc: str, current_step: int):
 
