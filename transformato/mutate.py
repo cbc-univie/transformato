@@ -537,13 +537,17 @@ class CommonCoreTransformation(object):
         [dict]
             matched common core atom names
         """
+        # match atomes in common cores
         match_atom_names_cc1_to_cc2 = {}
         for cc1_idx, cc2_idx in zip(self.cc1_indicies, self.cc2_indicies):
             ligand1_atom = self.ligand1_psf[cc1_idx]
             ligand2_atom = self.ligand2_psf[cc2_idx]
             match_atom_names_cc1_to_cc2[ligand1_atom.name] = ligand2_atom.name
 
-        return match_atom_names_cc1_to_cc2, {self.ligand1_psf[self.terminal_atom_idx_cc1] : self.ligand2_psf[self.terminal_atom_idx_cc2]}
+        # match terminal atoms
+        match_terminal_atoms_cc1_to_cc2 = {self.ligand1_psf[self.terminal_atom_idx_cc1].name : self.ligand2_psf[self.terminal_atom_idx_cc2].name}
+        
+        return match_atom_names_cc1_to_cc2, match_terminal_atoms_cc1_to_cc2
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
 
