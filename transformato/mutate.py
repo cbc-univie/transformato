@@ -650,7 +650,7 @@ class CommonCoreTransformation(object):
                     logger.debug(f"Modifying bond: {cc1_bond}")
 
                     logger.debug(f"Template bond: {cc2_bond}")
-                    logger.debug('Original value for k: {}'.format(cc1_bond.type.k))
+                    logger.debug(f'Original value for k: {cc1_bond.type.k}')
                     logger.debug(f"Target k: {cc2_bond.type.k}")
                     new_k = ((1.0 - scale) * cc1_bond.type.k) + (scale * cc2_bond.type.k)
                     logger.debug(new_k)
