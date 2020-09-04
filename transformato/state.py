@@ -335,7 +335,7 @@ outfile.close()
             if any(hasattr(atom, 'initial_type') for atom in [atom1, atom2, atom3]):            
                 logger.debug('############################################')
                 logger.debug('Printing angle atoms which at least one dummy atom.')
-                logger.debug(angle.atom1, angle.atom2, angle.atom3)
+                logger.debug(f'{angle.atom1}, {angle.atom2}, {angle.atom3}')
                 logger.debug(f' >> Setting dummy angle parameters for: {atom1.type}-{atom2.type}-{atom3.type}')
                 try:
                     prm_file_handler.write('{:7} {:7} {:7} {:9.5f} {:9.5f} \n'.format(str(atom1.type), str(atom2.type), str(atom3.type), angle.mod_type.k , angle.mod_type.theteq))
