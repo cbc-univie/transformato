@@ -353,7 +353,7 @@ def test_bonded_mutation():
                     scale = current_step/(m1.nr_of_steps)
 
                     # test atom parameters
-                    for cc1, cc2 in zip(m1.cc1_idx, m1.cc2_idx):
+                    for cc1, cc2 in zip(m1.cc1_indicies, m1.cc2_indicies):
                         # did atom type change? if not continue
 
                         cc1_oidx = cc1 + cc1_offset
@@ -369,57 +369,57 @@ def test_bonded_mutation():
                     
 
                     # get mapping between original/new and template psf
-                    for cc1_bond, new_bond in zip(original_psf[env].view[f":{m1.tlc_cc1.upper()}"].bonds,
+                    for ligand1_bond, new_bond in zip(original_psf[env].view[f":{m1.tlc_cc1.upper()}"].bonds,
                                                 new_psf.view[f":{m1.tlc_cc1.upper()}"].bonds):
-                        cc1_a1 = cc1_bond.atom1.name
-                        cc1_a2 = cc1_bond.atom2.name
+                        ligand1_atom1_name = ligand1_bond.atom1.name
+                        cc1_a2 = ligand1_bond.atom2.name
                         # all atoms of the bond must be in cc
                         # everything outside the cc are bonded terms between dummies or
                         # between real atoms and dummies and we can ignore them for now
-                        if not all(elem in match_atom_names_cc1_to_cc2 for elem in [cc1_a1, cc1_a2]):
-                            assert(np.isclose(cc1_bond.type.k, new_bond.type.k))
+                        if not all(elem in match_atom_names_cc1_to_cc2 for elem in [ligand1_atom1_name, cc1_a2]):
+                            assert(np.isclose(ligand1_bond.type.k, new_bond.type.k))
                             continue
 
-                        for cc2_bond in template_psf[env].view[f":{m1.tlc_cc2.upper()}"].bonds:
-                            cc2_a1 = cc2_bond.atom1.name
-                            cc2_a2 = cc2_bond.atom2.name
+                        for ligand2_bond in template_psf[env].view[f":{m1.tlc_cc2.upper()}"].bonds:
+                            ligand2_atom1_name = ligand2_bond.atom1.name
+                            ligand2_atom2_name = ligand2_bond.atom2.name
                             # all atoms of the bond must be in cc
-                            if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2]):
+                            if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [ligand2_atom1_name, ligand2_atom2_name]):
                                 continue
 
                             # match the two bonds
-                            if sorted([match_atom_names_cc1_to_cc2[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
-                                scaled = (1.0 - scale) * cc1_bond.type.k + scale * cc2_bond.type.k
+                            if sorted([match_atom_names_cc1_to_cc2[e] for e in [ligand1_atom1_name, cc1_a2]]) == sorted([ligand2_atom1_name, ligand2_atom2_name]):
+                                scaled = (1.0 - scale) * ligand1_bond.type.k + scale * ligand2_bond.type.k
                                 assert(np.isclose(scaled, new_bond.type.k))
 
                     # make sure everything else in not changed
-                    for cc1_bond, new_bond in zip(original_psf[env].view[f"!:{m1.tlc_cc1.upper()}"].bonds,
+                    for ligand1_bond, new_bond in zip(original_psf[env].view[f"!:{m1.tlc_cc1.upper()}"].bonds,
                                                 new_psf.view[f"!:{m1.tlc_cc1.upper()}"].bonds):
-                        assert(np.isclose(cc1_bond.type.k, new_bond.type.k))
+                        assert(np.isclose(ligand1_bond.type.k, new_bond.type.k))
 
                     # get mapping between original/new and template psf
                     for cc1_angle, new_angle in zip(original_psf[env].view[f":{m1.tlc_cc1.upper()}"].angles,
                                                     new_psf.view[f":{m1.tlc_cc1.upper()}"].angles):
-                        cc1_a1 = cc1_angle.atom1.name
+                        ligand1_atom1_name = cc1_angle.atom1.name
                         cc1_a2 = cc1_angle.atom2.name
                         cc1_a3 = cc1_angle.atom3.name
                         # all atoms of the bond must be in cc
                         # everything outside the cc are bonded terms between dummies or
                         # between real atoms and dummies and we can ignore them for now
-                        if not all(elem in match_atom_names_cc1_to_cc2 for elem in [cc1_a1, cc1_a2, cc1_a3]):
+                        if not all(elem in match_atom_names_cc1_to_cc2 for elem in [ligand1_atom1_name, cc1_a2, cc1_a3]):
                             assert(np.isclose(cc1_angle.type.k, new_angle.type.k))
                             continue
 
                         for cc2_angle in template_psf[env].view[f":{m1.tlc_cc2.upper()}"].angles:
-                            cc2_a1 = cc2_angle.atom1.name
-                            cc2_a2 = cc2_angle.atom2.name
+                            ligand2_atom1_name = cc2_angle.atom1.name
+                            ligand2_atom2_name = cc2_angle.atom2.name
                             cc2_a3 = cc2_angle.atom3.name
                             # all atoms of the bond must be in cc
-                            if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [cc2_a1, cc2_a2, cc2_a3]):
+                            if not all(elem in match_atom_names_cc1_to_cc2.values() for elem in [ligand2_atom1_name, ligand2_atom2_name, cc2_a3]):
                                 continue
 
                             # match the two bonds
-                            if sorted([match_atom_names_cc1_to_cc2[e] for e in [cc1_a1, cc1_a2, cc1_a3]]) == sorted([cc2_a1, cc2_a2, cc2_a3]):
+                            if sorted([match_atom_names_cc1_to_cc2[e] for e in [ligand1_atom1_name, cc1_a2, cc1_a3]]) == sorted([ligand2_atom1_name, ligand2_atom2_name, cc2_a3]):
                                 scaled = (1.0 - scale) * cc1_angle.type.k + scale * cc2_angle.type.k
                                 assert (np.isclose(scaled, new_angle.type.k))
                                 

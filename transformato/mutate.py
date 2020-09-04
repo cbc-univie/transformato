@@ -52,7 +52,7 @@ class ProposeMutationRoute(object):
         self.real_atom_cc2 = real_atoms_cc2[0]       
         self.terminal_atom_cc1 = terminal_atoms_cc1[0]
         self.terminal_atom_cc2 = terminal_atoms_cc2[0]
-        self.charge_compensated_cc1_psf, self.charge_compensated_cc2_psf = self._prepare_cc_for_charge_transfer()
+        self.charge_compensated_ligand1_psf, self.charge_compensated_ligand2_psf = self._prepare_cc_for_charge_transfer()
 
 
     def _redo(self):
@@ -65,7 +65,7 @@ class ProposeMutationRoute(object):
         self.real_atom_cc2 = real_atoms_cc2[0]       
         self.terminal_atom_cc1 = terminal_atoms_cc1[0]
         self.terminal_atom_cc2 = terminal_atoms_cc2[0]
-        self.charge_compensated_cc1_psf, self.charge_compensated_cc2_psf = self._prepare_cc_for_charge_transfer()
+        self.charge_compensated_ligand1_psf, self.charge_compensated_ligand2_psf = self._prepare_cc_for_charge_transfer()
 
     def _prepare_cc_for_charge_transfer(self):
         # we have to run the same charge mutation that will be run on cc2 to get the 
@@ -312,8 +312,8 @@ class ProposeMutationRoute(object):
                 bonded_terms_mutation = True
         
         for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
-            atom1 = self.charge_compensated_cc1_psf[cc1]
-            atom2 = self.charge_compensated_cc2_psf[cc2]
+            atom1 = self.charge_compensated_ligand1_psf[cc1]
+            atom2 = self.charge_compensated_ligand2_psf[cc2]
             if atom1.charge != atom2.charge:
                 logger.info('##############################')
                 logger.info('Charge transformation')
@@ -340,7 +340,7 @@ class ProposeMutationRoute(object):
                 self.s2_tlc, 
                 self.terminal_atom_cc1,
                 self.terminal_atom_cc2,
-                self.charge_compensated_cc2_psf[cc2],
+                self.charge_compensated_ligand2_psf[cc2],
                 charge_mutation=charge_mutation,
                 bonded_terms_mutation=bonded_terms_mutation)
             transformations.append(t)
@@ -478,16 +478,16 @@ class ProposeMutationRoute(object):
 class CommonCoreTransformation(object):
 
     def __init__(self, 
-                cc1_idx: list, 
-                cc2_idx: list, 
-                cc1_psf: pm.charmm.CharmmPsfFile, 
-                cc2_psf: pm.charmm.CharmmPsfFile, 
+                cc1_indicies: list, 
+                cc2_indicies: list, 
+                ligand1_psf: pm.charmm.CharmmPsfFile, 
+                ligand2_psf: pm.charmm.CharmmPsfFile, 
                 nr_of_steps: int, 
                 tlc_cc1: str, 
                 tlc_cc2: str,
                 terminal_atom_idx_cc1: int,
                 terminal_atom_idx_cc2: int,
-                charge_compensated_cc2_psf: pm.charmm.CharmmPsfFile,
+                charge_compensated_ligand2_psf: pm.charmm.CharmmPsfFile,
                 charge_mutation:bool,
                 bonded_terms_mutation:bool
                 ):
@@ -495,12 +495,12 @@ class CommonCoreTransformation(object):
         Scale the bonded parameters inside the common core.
         Parameters
         ----------
-        cc1_idx : list
+        cc1_indicies : list
             indices of cc1
-        cc2_idx : list
+        cc2_indicies : list
             indices of cc2 (in the same order as cc1)
-        cc1_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
-        cc2_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
+        ligand1_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
+        ligand2_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
             the target psf that is used to generate the new bonded parmaeters
         nr_of_steps : int
         tlc_cc1 : str
@@ -508,10 +508,10 @@ class CommonCoreTransformation(object):
         tlc_cc2 : str
             three letter code of ligand in cc2
         """
-        self.cc1_idx = cc1_idx
-        self.cc2_idx = cc2_idx
-        self.cc2_psf = cc2_psf
-        self.cc1_psf = cc1_psf
+        self.cc1_indicies = cc1_indicies
+        self.cc2_indicies = cc2_indicies
+        self.ligand2_psf = ligand2_psf
+        self.ligand1_psf = ligand1_psf
         self.nr_of_steps = nr_of_steps
         assert(self.nr_of_steps >= 2)
         self.tlc_cc1 = tlc_cc1
@@ -522,7 +522,7 @@ class CommonCoreTransformation(object):
         self.atom_names_mapping_for_bonded_terms = {**self.atom_names_mapping, **self.terminal_names_mapping}
         self.charge_mutation = charge_mutation
         self.bonded_terms_mutation = bonded_terms_mutation
-        self.charge_compensated_cc2_psf = charge_compensated_cc2_psf
+        self.charge_compensated_ligand2_psf = charge_compensated_ligand2_psf
         
         logger.info(f'Bonded terms mutation: {bonded_terms_mutation}')
         logger.info(f'Charge mutation: {charge_mutation}')
@@ -538,34 +538,34 @@ class CommonCoreTransformation(object):
             matched common core atom names
         """
         match_atom_names_cc1_to_cc2 = {}
-        for cc1, cc2 in zip(self.cc1_idx, self.cc2_idx):
-            cc1_a = self.cc1_psf[cc1]
-            cc2_a = self.cc2_psf[cc2]
-            match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
+        for cc1_idx, cc2_idx in zip(self.cc1_indicies, self.cc2_indicies):
+            ligand1_atom = self.ligand1_psf[cc1_idx]
+            ligand2_atom = self.ligand2_psf[cc2_idx]
+            match_atom_names_cc1_to_cc2[ligand1_atom.name] = ligand2_atom.name
 
-        return match_atom_names_cc1_to_cc2, {self.cc1_psf[self.terminal_atom_idx_cc1] : self.cc2_psf[self.terminal_atom_idx_cc2]}
+        return match_atom_names_cc1_to_cc2, {self.ligand1_psf[self.terminal_atom_idx_cc1] : self.ligand2_psf[self.terminal_atom_idx_cc2]}
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
 
         # common core of psf 1 is transformed to psf 2
-        for cc1_atom in psf.view[f":{tlc}"]:
-            if cc1_atom.name not in self.atom_names_mapping:
+        for ligand1_atom in psf.view[f":{tlc}"]:
+            if ligand1_atom.name not in self.atom_names_mapping:
                 continue
             found = False
             
             # compare to charge compenstated psf 2
-            for cc2_atom in self.charge_compensated_cc2_psf:
-                if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
+            for ligand2_atom in self.charge_compensated_ligand2_psf:
+                if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name:
                     found = True
                     # are the atoms different?
-                    logger.debug(f"Modifying atom: {cc1_atom}")
-                    logger.debug(f"Template atom: {cc2_atom}")
+                    logger.debug(f"Modifying atom: {ligand1_atom}")
+                    logger.debug(f"Template atom: {ligand2_atom}")
 
                     # scale epsilon
-                    logger.debug(f"Real charge: {cc1_atom.charge}")
-                    modified_charge = (1.0 - scale) * cc1_atom.initial_charge + scale * cc2_atom.charge
+                    logger.debug(f"Real charge: {ligand1_atom.charge}")
+                    modified_charge = (1.0 - scale) * ligand1_atom.initial_charge + scale * ligand2_atom.charge
                     logger.debug(f"New epsilon: {modified_charge}")
-                    cc1_atom.charge = modified_charge
+                    ligand1_atom.charge = modified_charge
 
             if not found:
                 raise RuntimeError('No corresponding atom in cc2 found')
@@ -583,115 +583,117 @@ class CommonCoreTransformation(object):
         """
         # what will be changed
         mod_type = namedtuple('Atom', 'epsilon, rmin')
-        
+        logger.debug('#######################')
+        logger.debug('mutate_atoms')
 
         # iterate through the atoms of the ligand of system1
-        for cc1_atom in psf.view[f":{tlc}"]:
+        for ligand1_atom in psf.view[f":{tlc}"]:
             # continue if not in atom_names_mapping
-            if cc1_atom.name not in self.atom_names_mapping:
+            if ligand1_atom.name not in self.atom_names_mapping:
                 continue
 
             found = False
             #iterate through the atoms the ligand of system2
-            for cc2_atom in self.cc2_psf:
+            for ligand2_atom in self.ligand2_psf:
                 # is there a match up?
-                if self.atom_names_mapping[cc1_atom.name] == cc2_atom.name:
+                if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name:
                     found = True
                     # are the atoms different?
-                    if cc1_atom.type != cc2_atom.type:
-                        self._modify_type(cc1_atom, psf)
-                        logger.debug(f"Modifying atom: {cc1_atom}")
-                        logger.debug(f"Template atom: {cc2_atom}")
+                    if ligand1_atom.type != ligand2_atom.type:
+                        self._modify_type(ligand1_atom, psf)
+                        logger.debug(f"Modifying atom: {ligand1_atom}")
+                        logger.debug(f"Template atom: {ligand2_atom}")
 
                         # scale epsilon
-                        logger.debug(f"Real epsilon: {cc1_atom.epsilon}")
-                        modified_epsilon = (1.0 - scale) * cc1_atom.epsilon + scale * cc2_atom.epsilon
+                        logger.debug(f"Real epsilon: {ligand1_atom.epsilon}")
+                        modified_epsilon = (1.0 - scale) * ligand1_atom.epsilon + scale * ligand2_atom.epsilon
                         logger.debug(f"New epsilon: {modified_epsilon}")
 
                         # scale rmin
-                        logger.debug(f"Real rmin: {cc1_atom.rmin}")
-                        modified_rmin = (1.0 - scale) * cc1_atom.rmin + scale * cc2_atom.rmin
+                        logger.debug(f"Real rmin: {ligand1_atom.rmin}")
+                        modified_rmin = (1.0 - scale) * ligand1_atom.rmin + scale * ligand2_atom.rmin
                         logger.debug(f"New rmin: {modified_rmin}")
 
-                        cc1_atom.mod_type = mod_type(modified_epsilon, modified_rmin)
+                        ligand1_atom.mod_type = mod_type(modified_epsilon, modified_rmin)
 
             if not found:
                 raise RuntimeError('No corresponding atom in cc2 found')
 
     def _mutate_bonds(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
 
-        mod_type = namedtuple('Bond', 'k, req')
-        for cc1_bond in psf.view[f":{tlc}"].bonds:
+        logger.debug('#######################')
+        logger.debug('mutate_bonds')
 
-            cc1_a1 = cc1_bond.atom1.name
-            cc1_a2 = cc1_bond.atom2.name
+        mod_type = namedtuple('Bond', 'k, req')
+        for ligand1_bond in psf.view[f":{tlc}"].bonds:
+
+            ligand1_atom1_name = ligand1_bond.atom1.name
+            ligand1_atom2_name = ligand1_bond.atom2.name
             # all atoms of the bond must be in cc
             # everything outside the cc are bonded terms between dummies or
             # between real atoms and dummies and we can ignore them for now
-            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [cc1_a1, cc1_a2]):
+            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [ligand1_atom1_name, ligand1_atom2_name]):
                 continue
 
             found = False
-            for cc2_bond in self.cc2_psf.bonds:
-                cc2_a1 = cc2_bond.atom1.name
-                cc2_a2 = cc2_bond.atom2.name
+            for ligand2_bond in self.ligand2_psf.bonds:
+                ligand2_atom1_name = ligand2_bond.atom1.name
+                ligand2_atom2_name = ligand2_bond.atom2.name
                 # all atoms of the bond must be in cc
-                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [cc2_a1, cc2_a2]):
+                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [ligand2_atom1_name, ligand2_atom2_name]):
                     continue
 
                 # match the two bonds
-                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [cc1_a1, cc1_a2]]) == sorted([cc2_a1, cc2_a2]):
+                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [ligand1_atom1_name, ligand1_atom2_name]]) == sorted([ligand2_atom1_name, ligand2_atom2_name]):
                     found = True
                     # are the bonds different?
-                    if sorted([cc1_bond.atom1.type, cc1_bond.atom2.type]) == sorted([cc2_bond.atom1.type, cc2_bond.atom2.type]):
+                    if sorted([ligand1_bond.atom1.type, ligand1_bond.atom2.type]) == sorted([ligand2_bond.atom1.type, ligand2_bond.atom2.type]):
                         continue
-                    logger.debug('##############################')
-                    logger.debug(scale)
-                    logger.debug(f"Modifying bond: {cc1_bond}")
+                    logger.debug(f"Modifying bond: {ligand1_bond}")
 
-                    logger.debug(f"Template bond: {cc2_bond}")
-                    logger.debug(f'Original value for k: {cc1_bond.type.k}')
-                    logger.debug(f"Target k: {cc2_bond.type.k}")
-                    new_k = ((1.0 - scale) * cc1_bond.type.k) + (scale * cc2_bond.type.k)
+                    logger.debug(f"Template bond: {ligand2_bond}")
+                    logger.debug(f'Original value for k: {ligand1_bond.type.k}')
+                    logger.debug(f"Target k: {ligand2_bond.type.k}")
+                    new_k = ((1.0 - scale) * ligand1_bond.type.k) + (scale * ligand2_bond.type.k)
                     logger.debug(new_k)
 
                     modified_k = new_k
 
                     logger.debug(f"New k: {modified_k}")
 
-                    logger.debug(f"Old req: {cc1_bond.type.req}")
-                    modified_req = ((1.0 - scale) * cc1_bond.type.req) + (scale * cc2_bond.type.req)
-                    logger.debug(f"Modified bond: {cc1_bond}")
+                    logger.debug(f"Old req: {ligand1_bond.type.req}")
+                    modified_req = ((1.0 - scale) * ligand1_bond.type.req) + (scale * ligand2_bond.type.req)
+                    logger.debug(f"Modified bond: {ligand1_bond}")
 
-                    cc1_bond.mod_type = mod_type(modified_k, modified_req)
-                    logger.debug(cc1_bond.mod_type)
+                    ligand1_bond.mod_type = mod_type(modified_k, modified_req)
+                    logger.debug(ligand1_bond.mod_type)
 
             if not found:
-                logger.critical(cc1_bond)
-                raise RuntimeError('No corresponding bond in cc2 found: {}'.format(cc1_bond))
+                logger.critical(ligand1_bond)
+                raise RuntimeError('No corresponding bond in cc2 found: {}'.format(ligand1_bond))
 
     def _mutate_angles(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
 
         mod_type = namedtuple('Angle', 'k, theteq')
         for cc1_angle in psf.view[f":{tlc}"].angles:
-            cc1_a1 = cc1_angle.atom1.name
-            cc1_a2 = cc1_angle.atom2.name
+            ligand1_atom1_name = cc1_angle.atom1.name
+            ligand1_atom2_name = cc1_angle.atom2.name
             cc1_a3 = cc1_angle.atom3.name
 
             # only angles in cc
-            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [cc1_a1, cc1_a2, cc1_a3]):
+            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [ligand1_atom1_name, ligand1_atom2_name, cc1_a3]):
                 continue
 
             found = False
-            for cc2_angle in self.cc2_psf.angles:
-                cc2_a1 = cc2_angle.atom1.name
-                cc2_a2 = cc2_angle.atom2.name
+            for cc2_angle in self.ligand2_psf.angles:
+                ligand2_atom1_name = cc2_angle.atom1.name
+                ligand2_atom2_name = cc2_angle.atom2.name
                 cc2_a3 = cc2_angle.atom3.name
                 # only angles in cc
-                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [cc2_a1, cc2_a2, cc2_a3]):
+                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [ligand2_atom1_name, ligand2_atom2_name, cc2_a3]):
                     continue
 
-                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [cc1_a1, cc1_a2, cc1_a3]]) == sorted([cc2_a1, cc2_a2, cc2_a3]):
+                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [ligand1_atom1_name, ligand1_atom2_name, cc1_a3]]) == sorted([ligand2_atom1_name, ligand2_atom2_name, cc2_a3]):
                     found = True
                     if sorted([cc1_angle.atom1.type, cc1_angle.atom2.type, cc1_angle.atom3.type]) == \
                             sorted([cc2_angle.atom1.type, cc2_angle.atom2.type, cc2_angle.atom3.type]):
@@ -721,25 +723,25 @@ class CommonCoreTransformation(object):
 
         # get all torsions present in initial topology
         for cc1_torsion in psf.view[f":{tlc}"].dihedrals:
-            cc1_a1 = cc1_torsion.atom1.name
-            cc1_a2 = cc1_torsion.atom2.name
+            ligand1_atom1_name = cc1_torsion.atom1.name
+            ligand1_atom2_name = cc1_torsion.atom2.name
             cc1_a3 = cc1_torsion.atom3.name
             cc1_a4 = cc1_torsion.atom4.name
             # all atoms must be in the cc
-            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]):
+            if not all(elem in self.atom_names_mapping_for_bonded_terms for elem in [ligand1_atom1_name, ligand1_atom2_name, cc1_a3, cc1_a4]):
                 continue
 
             # get corresponding torsion types in the new topology
-            for cc2_torsion in self.cc2_psf.dihedrals:
-                cc2_a1 = cc2_torsion.atom1.name
-                cc2_a2 = cc2_torsion.atom2.name
+            for cc2_torsion in self.ligand2_psf.dihedrals:
+                ligand2_atom1_name = cc2_torsion.atom1.name
+                ligand2_atom2_name = cc2_torsion.atom2.name
                 cc2_a3 = cc2_torsion.atom3.name
                 cc2_a4 = cc2_torsion.atom4.name
                 # only torsion in cc
-                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                if not all(elem in self.atom_names_mapping_for_bonded_terms.values() for elem in [ligand2_atom1_name, ligand2_atom2_name, cc2_a3, cc2_a4]):
                     continue
 
-                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [cc1_a1, cc1_a2, cc1_a3, cc1_a4]]) == sorted([cc2_a1, cc2_a2, cc2_a3, cc2_a4]):
+                if sorted([self.atom_names_mapping_for_bonded_terms[e] for e in [ligand1_atom1_name, ligand1_atom2_name, cc1_a3, cc1_a4]]) == sorted([ligand2_atom1_name, ligand2_atom2_name, cc2_a3, cc2_a4]):
                     found = True
                     if sorted([cc1_torsion.atom1.type, cc1_torsion.atom2.type, cc1_torsion.atom3.type, cc1_torsion.atom3.type]) == \
                             sorted([cc2_torsion.atom1.type, cc2_torsion.atom2.type, cc2_torsion.atom3.type, cc2_torsion.atom4.type]):
