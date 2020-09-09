@@ -21,7 +21,10 @@ logger = logging.getLogger(__name__)
 
 class ProposeMutationRoute(object):
 
-    def __init__(self, s1: SystemStructure, s2: SystemStructure):
+    def __init__(self, 
+                 s1: SystemStructure, 
+                 s2: SystemStructure,
+                 ):
         """
         A class that proposes the mutation route between two molecules with a 
         common core (same atom types) based on two mols and generates the mutation 
@@ -172,7 +175,13 @@ class ProposeMutationRoute(object):
                 keep_idx.append(idx)
         return keep_idx
 
-    def _calculate_common_core(self, mol1_name: str, mol2_name: str):
+    def _calculate_common_core(self, 
+                               mol1_name: str, 
+                               mol2_name: str,
+                               maximizeBonds: bool = True,
+                               matchValences: bool = False,
+                               completeRingsOnly: bool = True
+                               ):
         """
         A class that proposes the mutation route between two molecules with a 
         common core (same atom types) based on two mols and generates the mutation 
@@ -191,8 +200,14 @@ class ProposeMutationRoute(object):
         changed_mols = [Chem.Mol(x) for x in [m1, m2]]
 
         # find substructure match (ignore bond order but enforce element matching)
-        mcs = rdFMCS.FindMCS(changed_mols, bondCompare=rdFMCS.BondCompare.CompareOrder,
-                             timeout=120, atomCompare=rdFMCS.AtomCompare.CompareElements)
+        mcs = rdFMCS.FindMCS(changed_mols, 
+                             bondCompare=rdFMCS.BondCompare.CompareOrder,
+                             timeout=120, 
+                             atomCompare=rdFMCS.AtomCompare.CompareElements,
+                             maximizeBonds=maximizeBonds,
+                             matchValences=matchValences,
+                             completeRingsOnly=completeRingsOnly                             
+                             )
         logger.info('Substructure match: {}'.format(mcs.smartsString))
 
         # convert from SMARTS
