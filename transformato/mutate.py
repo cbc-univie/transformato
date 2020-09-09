@@ -118,7 +118,19 @@ class ProposeMutationRoute(object):
         intermediate_state = IntermediateStateFactory(system=self.system['system2'], mutation_list=mutation_list, configuration=configuration)
         intermediate_state.generate_intermediate_states()
     
+    def remove_idx_from_common_core_of_mol1(self, idx:int):
+        self._remove_idx_from_common_core('m1', idx)
+    
 
+    def remove_idx_from_common_core_of_mol2(self, idx:int):
+        self._remove_idx_from_common_core('m2', idx)
+
+
+    def _remove_idx_from_common_core(self, name:str, idx: int):
+        if idx in self.added_indeces[name] or idx in self._get_common_core(name):
+            self.removed_indeces[name].append(idx)
+        else:
+            print(f"Idx: {idx} not in common core.")
 
     def add_idx_to_common_core_of_mol1(self, idx: int):
         self._add_common_core_atom('m1', idx)
@@ -130,7 +142,7 @@ class ProposeMutationRoute(object):
         self._redo()
         print(self.get_common_core_idx_mol2())
 
-    def _add_common_core_atom(self, name, idx):
+    def _add_common_core_atom(self, name: str , idx: int):
         if idx in self.added_indeces[name] or idx in self._get_common_core(name):
             print(f"Idx: {idx} already in common core.")
             pass
@@ -459,7 +471,6 @@ class ProposeMutationRoute(object):
             
             # test that all mutations are included
             # TODO: test that all mutations are covered
-            
             mutations = charge_mutations + lj_mutations + lj_terminal_mutations
 
             for m in mutations:
