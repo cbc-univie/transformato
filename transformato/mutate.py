@@ -180,7 +180,9 @@ class ProposeMutationRoute(object):
                                mol2_name: str,
                                maximizeBonds: bool = True,
                                matchValences: bool = False,
-                               completeRingsOnly: bool = True
+                               completeRingsOnly: bool = False,
+                               ringMatchesRingOnly: bool = True
+                               
                                ):
         """
         A class that proposes the mutation route between two molecules with a 
