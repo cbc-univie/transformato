@@ -208,7 +208,8 @@ class ProposeMutationRoute(object):
                              atomCompare=rdFMCS.AtomCompare.CompareElements,
                              maximizeBonds=maximizeBonds,
                              matchValences=matchValences,
-                             completeRingsOnly=completeRingsOnly                             
+                             completeRingsOnly=completeRingsOnly,
+                             ringMatchesRingOnly=ringMatchesRingOnly                           
                              )
         logger.info('Substructure match: {}'.format(mcs.smartsString))
 
