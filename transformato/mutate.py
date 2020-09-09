@@ -129,6 +129,7 @@ class ProposeMutationRoute(object):
     def _remove_idx_from_common_core(self, name:str, idx: int):
         if idx in self.added_indeces[name] or idx in self._get_common_core(name):
             self.removed_indeces[name].append(idx)
+            self._redo()
         else:
             print(f"Idx: {idx} not in common core.")
 
