@@ -353,7 +353,7 @@ class ProposeMutationRoute(object):
                 self.s2_tlc, 
                 self.terminal_atom_cc1,
                 self.terminal_atom_cc2,
-                self.charge_compensated_ligand2_psf[cc2],
+                self.charge_compensated_ligand2_psf,
                 charge_mutation=charge_mutation,
                 bonded_terms_mutation=bonded_terms_mutation)
             transformations.append(t)
