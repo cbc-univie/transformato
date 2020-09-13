@@ -155,7 +155,7 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
         assert(match_terminal_atoms_cc2[15] == set([39]))
 
 
-def test_endpoint():
+def test_endpoint_first_step():
 
     for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
