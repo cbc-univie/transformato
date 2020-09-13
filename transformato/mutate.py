@@ -458,30 +458,30 @@ class ProposeMutationRoute(object):
     @staticmethod
     def _find_terminal_atom(cc_idx: list, mol: Chem.Mol):
         """
-        Find atoms that connect the rest of the molecule to the common core.
+        Find atoms that connect the  the molecule to the common core.
 
         Args:
             cc_idx (list): common core index atoms
             mol ([type]): rdkit mol object
         """
-        terminal_atoms = []
-        last_real_atoms = []
+        terminal_dummy_atoms = []
+        terminal_real_atoms = []
 
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             if idx not in cc_idx:
                 neighbors = [x.GetIdx() for x in atom.GetNeighbors()]
                 if any([n in cc_idx for n in neighbors]):
-                    terminal_atoms.append(idx)
+                    terminal_dummy_atoms.append(idx)
             if idx in cc_idx:
                 neighbors = [x.GetIdx() for x in atom.GetNeighbors()]
                 if any([n not in cc_idx for n in neighbors]):
-                    last_real_atoms.append(idx)
+                    terminal_real_atoms.append(idx)
 
-        logger.info(f"Terminal atoms: {str(list(set(terminal_atoms)))}")
-        logger.info(f"Last real atoms: {str(list(set(last_real_atoms)))}")
+        logger.info(f"Terminal dummy atoms: {str(list(set(terminal_dummy_atoms)))}")
+        logger.info(f"Terminal real atoms: {str(list(set(terminal_real_atoms)))}")
 
-        return (list(set(terminal_atoms)), list(set(last_real_atoms)))
+        return (list(set(terminal_dummy_atoms)), list(set(terminal_real_atoms)))
 
     # def _match_terminal_dummy_and_real_atoms
 
@@ -497,15 +497,15 @@ class ProposeMutationRoute(object):
         atoms_to_be_mutated = []
 
         # find the atom that connects the common core to the dummy regiom
-        terminal_atoms, last_real_atom = self._find_terminal_atom(cc_idx, mol)
-        last_real_atom = last_real_atom[0]
+        terminal_dummy_atoms, terminal_real_atoms = self._find_terminal_atom(cc_idx, mol)
+        terminal_real_atoms = terminal_real_atoms[0]
 
         # iterate through atoms and select atoms that need to be mutated
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             if idx not in cc_idx:
                 #
-                if atom.GetSymbol() == 'H' and idx not in terminal_atoms:
+                if atom.GetSymbol() == 'H' and idx not in terminal_dummy_atoms:
                     hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
                 logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
@@ -515,7 +515,7 @@ class ProposeMutationRoute(object):
             ############################################
             # scale all charges of all atoms to zero
             charge_mutations.append(ChargeToZeroMutation(atom_idx=atoms_to_be_mutated,
-                                                         nr_of_steps=nr_of_steps_for_el, common_core=cc_idx, last_real_atom=last_real_atom))
+                                                         nr_of_steps=nr_of_steps_for_el, common_core=cc_idx, terminal_real_atoms=terminal_real_atoms))
 
             ############################################
             ############################################
@@ -548,14 +548,14 @@ class ProposeMutationRoute(object):
                 # continue if atom is not a hydrogen/already mutated and in the list of to be mutated atoms
                 if idx1 in atoms_to_be_mutated and idx1 not in hydrogens and idx1 not in already_mutated:
                     # is it a terminal atom?
-                    if idx1 in terminal_atoms:
+                    if idx1 in terminal_dummy_atoms:
                         lj_terminal_mutations.append(StericToDefaultMutation([idx1]))
                     else:
                         lj_mutations.append(StericToZeroMutation([idx1]))
                     already_mutated.append(idx1)
                 # continue if atom is not a hydrogen/already mutated and in the list of to be mutated atoms
                 if idx2 in atoms_to_be_mutated and idx2 not in hydrogens and idx2 not in already_mutated:
-                    if idx2 in terminal_atoms:
+                    if idx2 in terminal_dummy_atoms:
                         lj_terminal_mutations.append(StericToDefaultMutation([idx2]))
                     else:
                         lj_mutations.append(StericToZeroMutation([idx2]))
@@ -940,7 +940,7 @@ class ChargeMutation(BaseMutation):
         """
         atom.charge = new_charge
 
-    def _compensate_charge(self, psf, tlc: str, old_total_charge: int, last_real_atom: int):
+    def _compensate_charge(self, psf, tlc: str, old_total_charge: int, terminal_real_atoms: int):
         """Compensate charge change .
 
         Args:
@@ -949,10 +949,10 @@ class ChargeMutation(BaseMutation):
         new_charge = round(sum([a.charge for a in psf[f":{tlc.upper()}"].atoms]), 8)
         logger.info('##############')
         logger.info(f"Charge to compensate: {old_total_charge-new_charge}")
-        logger.info(f"Adding to atom idx: {psf[last_real_atom]}")
+        logger.info(f"Adding to atom idx: {psf[terminal_real_atoms]}")
         logger.info('##############')
 
-        psf[last_real_atom].charge = psf[last_real_atom].charge + (old_total_charge-new_charge)
+        psf[terminal_real_atoms].charge = psf[terminal_real_atoms].charge + (old_total_charge-new_charge)
         new_charge = round(sum([a.charge for a in psf[f":{tlc.upper()}"].atoms]), 8)
 
         if not (np.isclose(new_charge, old_total_charge, rtol=1e-4)):
@@ -987,7 +987,7 @@ class StericMutation(BaseMutation):
 
 class ChargeToZeroMutation(ChargeMutation):
 
-    def __init__(self, atom_idx: list, nr_of_steps: int, common_core: list, last_real_atom: int):
+    def __init__(self, atom_idx: list, nr_of_steps: int, common_core: list, terminal_real_atoms: int):
         """
         Scale the electrostatics of atoms specified in the atom_idx list to zero.
         Parameters
@@ -999,7 +999,7 @@ class ChargeToZeroMutation(ChargeMutation):
         common_core : list
         """
         super().__init__(atom_idx, nr_of_steps, common_core)
-        self.last_real_atom = last_real_atom
+        self.terminal_real_atoms = terminal_real_atoms
 
     def __str__(self):
         return "charges to zero mutation"
@@ -1026,7 +1026,7 @@ class ChargeToZeroMutation(ChargeMutation):
 
         if multiplicator != 1:
             # compensate for the total change in charge the terminal atom
-            self._compensate_charge(psf, tlc, old_total_charge, self.last_real_atom + offset)
+            self._compensate_charge(psf, tlc, old_total_charge, self.terminal_real_atoms + offset)
 
 
 class StericToDefaultMutation(StericMutation):
