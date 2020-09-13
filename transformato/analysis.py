@@ -7,16 +7,17 @@ import matplotlib.pyplot as plt
 import mdtraj
 import numpy as np
 import parmed as pm
+import seaborn as sns
 from pymbar import mbar
 from simtk import unit
 from simtk.openmm import System, XmlSerializer
-from simtk.openmm.app import Simulation, CharmmPsfFile
+from simtk.openmm.app import CharmmPsfFile, Simulation
 from simtk.openmm.vec3 import Vec3
 from tqdm import tqdm
-import seaborn as sns
 
 logger = logging.getLogger(__name__)
-kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA 
+kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
+
 
 def return_reduced_potential(potential_energy: unit.Quantity, volume: unit.Quantity, temperature: unit.Quantity):
     """Retrieve the reduced potential for a given context.
@@ -180,8 +181,7 @@ class FreeEnergyCalculator(object):
                 energies.append(red_e)
             return np.array(energies)
 
-
-        ##### main
+        # main
         u_kn = np.stack(
             [_evaluated_e_on_all_snapshots(snapshots, i, env) for i in range(1, self.nr_of_states+1)]
         )
