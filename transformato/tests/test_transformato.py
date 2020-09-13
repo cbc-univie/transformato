@@ -90,7 +90,10 @@ def test_initialize_systems():
     assert ('waterbox' in s1.envs and 'waterbox' in s2.envs)
 
 
-def test_proposed_mutation():
+def test_proposed_mutation_mcs():
+
+    from rdkit.Chem import rdFMCS
+
     for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='.')
@@ -98,14 +101,58 @@ def test_proposed_mutation():
         s2 = SystemStructure(configuration, 'structure2')
 
         a = ProposeMutationRoute(s1, s2)
-        cc1 = set([0, 3, 6, 5, 4, 14, 24, 23, 26, 22, 25, 17, 16, 28, 27, 29, 46, 47, 48, 45,
-                   41, 44, 2, 7, 11, 9, 8, 10, 13, 12, 39, 38, 36, 37, 34, 35, 30, 32, 33, 31])
-        assert(set(a.get_common_core_idx_mol1()) == cc1)
-        cc2 = set([0, 3, 6, 5, 4, 14, 19, 18, 21, 17, 20, 16, 15, 23, 22, 24, 43, 44, 45, 42,
-                   40, 41, 2, 7, 11, 9, 8, 10, 13, 12, 38, 37, 35, 36, 33, 34, 29, 31, 32, 30])
-        assert(set(a.get_common_core_idx_mol2()) == cc2)
+        # find mcs
+        a._find_mcs('m1', 'm2')
+
         assert(str(a.s1_tlc) == 'BMI')
         assert(str(a.s2_tlc) == 'UNK')
+
+        cc1 = set([0, 3, 6, 5, 4, 14, 24, 23, 26, 22, 25, 17, 16, 28, 27, 29, 46, 47, 48, 45,
+                   41, 44, 2, 7, 11, 9, 8, 10, 13, 12, 39, 38, 36, 37, 34, 35, 30, 32, 33, 31])
+        cc2 = set([0, 3, 6, 5, 4, 14, 19, 18, 21, 17, 20, 16, 15, 23, 22, 24, 43, 44, 45, 42,
+                   40, 41, 2, 7, 11, 9, 8, 10, 13, 12, 38, 37, 35, 36, 33, 34, 29, 31, 32, 30])
+        assert(set(a.get_common_core_idx_mol1()) == cc1)
+        assert(set(a.get_common_core_idx_mol2()) == cc2)
+
+        a.bondCompare = rdFMCS.BondCompare.CompareOrder
+        # find mcs
+        a._find_mcs('m1', 'm2')
+
+        cc1 = set([0, 3, 6, 33, 31, 14, 24, 23, 26, 22, 25, 17, 16, 28, 27, 29, 46, 47, 48, 45, 41, 44])
+        assert(set(a.get_common_core_idx_mol1()) == cc1)
+        cc2 = set([0, 3, 6, 32, 30, 14, 19, 18, 21, 17, 20, 16, 15, 23, 22, 24, 43, 44, 45, 42, 40, 41])
+        assert(set(a.get_common_core_idx_mol2()) == cc2)
+
+
+def test_proposed_mutation_terminal_dummy_real_atom_match():
+
+    from rdkit.Chem import rdFMCS
+
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
+        configuration = load_config_yaml(config=conf,
+                                         input_dir='data/', output_dir='.')
+        s1 = SystemStructure(configuration, 'structure1')
+        s2 = SystemStructure(configuration, 'structure2')
+
+        a = ProposeMutationRoute(s1, s2)
+        # find mcs
+        a._find_mcs('m1', 'm2')
+        # find terminal dummy/real atoms
+        a._set_common_core_parameters()
+        # match terminal real/dummy atoms
+        assert(set(a.terminal_real_atom_cc1) == set([0, 16]))
+        assert(set(a.terminal_dummy_atom_cc1) == set([1, 18]))
+        assert(set(a.terminal_real_atom_cc2) == set([0, 15]))
+        assert(set(a.terminal_dummy_atom_cc2) == set([1, 25, 39]))
+
+        match_terminal_atoms_cc1 = a._match_terminal_real_and_dummy_atoms_for_mol1()
+        match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
+
+        assert(match_terminal_atoms_cc1[0] == set([1]))
+        assert(match_terminal_atoms_cc2[0] == set([1, 25]))
+
+        assert(match_terminal_atoms_cc1[16] == set([18]))
+        assert(match_terminal_atoms_cc2[15] == set([39]))
 
 
 def test_endpoint():
@@ -120,7 +167,25 @@ def test_endpoint():
         s2_to_s1 = ProposeMutationRoute(s2, s1)
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
             mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_el=3, nr_of_steps_for_bonded_parameters=3)
+                nr_of_steps_for_el=3, nr_of_steps_for_cc_transformation=3)
+            i = IntermediateStateFactory(system=system, mutation_list=mutation_list, configuration=configuration)
+            # extract first mutation
+            m = mutation_list[0]
+
+
+def test_endpoint():
+
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
+        configuration = load_config_yaml(config=conf,
+                                         input_dir='data/', output_dir='.')
+        s1 = SystemStructure(configuration, 'structure1')
+        s2 = SystemStructure(configuration, 'structure2')
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        s2_to_s1 = ProposeMutationRoute(s2, s1)
+        for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
+            mutation_list = a.generate_mutations_to_common_core_for_mol1(
+                nr_of_steps_for_el=3, nr_of_steps_for_cc_transformation=3)
             i = IntermediateStateFactory(system=system, mutation_list=mutation_list, configuration=configuration)
             # extract first mutation
             m = mutation_list[0]
@@ -160,7 +225,7 @@ def test_charge_mutation():
 
     for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
-                                        input_dir='data/', output_dir='.')
+                                         input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
         s2 = SystemStructure(configuration, 'structure2')
 
@@ -188,8 +253,9 @@ def test_charge_mutation():
                     scale = current_step/(m.nr_of_steps)
                     for idx in m.atom_idx:
                         assert(np.isclose(original_psf[env].atoms[idx+offset].charge *
-                                        (1 - scale), new_psf.atoms[idx+offset].charge))
-                        assert(np.isclose(original_psf[env].atoms[idx+offset].charge, new_psf.atoms[idx+offset].charge))
+                                          (1 - scale), new_psf.atoms[idx+offset].charge))
+                        assert(np.isclose(original_psf[env].atoms[idx+offset].charge,
+                                          new_psf.atoms[idx+offset].charge))
             finally:
                 shutil.rmtree(output_file_base)
 
@@ -204,7 +270,7 @@ def test_charge_mutation():
                     print('Scaling charges with: {}'.format((1 - scale)))
                     for idx in m.atom_idx:
                         assert(np.isclose(original_psf[env].atoms[idx+offset].charge *
-                                        (1 - scale), new_psf.atoms[idx+offset].charge, rtol=1e-03))
+                                          (1 - scale), new_psf.atoms[idx+offset].charge, rtol=1e-03))
             finally:
                 shutil.rmtree(output_file_base)
 
@@ -220,7 +286,7 @@ def test_charge_mutation():
                     for idx in m.atom_idx:
                         idxo = idx+offset
                         assert(np.isclose(original_psf[env].atoms[idxo].charge *
-                                        (1 - scale), new_psf.atoms[idxo].charge, rtol=1e-03))
+                                          (1 - scale), new_psf.atoms[idxo].charge, rtol=1e-03))
                         assert(np.isclose(0.0, new_psf.atoms[idxo].charge))
             finally:
                 shutil.rmtree(output_file_base)
@@ -230,7 +296,7 @@ def test_vdw_mutation():
 
     for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
-                                        input_dir='data/', output_dir='.')
+                                         input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
         s2 = SystemStructure(configuration, 'structure2')
 
@@ -301,7 +367,7 @@ def test_bonded_mutation():
 
     for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
-                                        input_dir='data/', output_dir='.')
+                                         input_dir='data/', output_dir='.')
         s1 = SystemStructure(configuration, 'structure1')
         s2 = SystemStructure(configuration, 'structure2')
 
@@ -309,7 +375,7 @@ def test_bonded_mutation():
         s2_to_s1 = ProposeMutationRoute(s2, s1)
 
         for a, system, template in zip([s1_to_s2, s2_to_s1], [SystemStructure(configuration, 'structure1'), SystemStructure(configuration, 'structure2')],
-                                    [SystemStructure(configuration, 'structure2'), SystemStructure(configuration, 'structure1')]):
+                                       [SystemStructure(configuration, 'structure2'), SystemStructure(configuration, 'structure1')]):
 
             original_psf = {}
             template_psf = {}
@@ -363,14 +429,13 @@ def test_bonded_mutation():
                         match_atom_names_cc1_to_cc2[cc1_a.name] = cc2_a.name
 
                         assert(np.isclose((1.0 - scale) * cc1_a.epsilon + scale * cc2_a.epsilon,
-                                        new_psf[cc1_oidx].epsilon))
+                                          new_psf[cc1_oidx].epsilon))
                         assert(np.isclose((1.0 - scale) * cc1_a.sigma + scale * cc2_a.sigma,
-                                        new_psf[cc1_oidx].sigma, rtol=1e-03))
-                    
+                                          new_psf[cc1_oidx].sigma, rtol=1e-03))
 
                     # get mapping between original/new and template psf
                     for ligand1_bond, new_bond in zip(original_psf[env].view[f":{m1.tlc_cc1.upper()}"].bonds,
-                                                new_psf.view[f":{m1.tlc_cc1.upper()}"].bonds):
+                                                      new_psf.view[f":{m1.tlc_cc1.upper()}"].bonds):
                         ligand1_atom1_name = ligand1_bond.atom1.name
                         cc1_a2 = ligand1_bond.atom2.name
                         # all atoms of the bond must be in cc
@@ -394,7 +459,7 @@ def test_bonded_mutation():
 
                     # make sure everything else in not changed
                     for ligand1_bond, new_bond in zip(original_psf[env].view[f"!:{m1.tlc_cc1.upper()}"].bonds,
-                                                new_psf.view[f"!:{m1.tlc_cc1.upper()}"].bonds):
+                                                      new_psf.view[f"!:{m1.tlc_cc1.upper()}"].bonds):
                         assert(np.isclose(ligand1_bond.type.k, new_bond.type.k))
 
                     # get mapping between original/new and template psf
@@ -422,7 +487,7 @@ def test_bonded_mutation():
                             if sorted([match_atom_names_cc1_to_cc2[e] for e in [ligand1_atom1_name, cc1_a2, cc1_a3]]) == sorted([ligand2_atom1_name, ligand2_atom2_name, cc2_a3]):
                                 scaled = (1.0 - scale) * cc1_angle.type.k + scale * cc2_angle.type.k
                                 assert (np.isclose(scaled, new_angle.type.k))
-                                
+
             finally:
                 shutil.rmtree(output_file_base)
 
@@ -433,14 +498,14 @@ def test_charge_cc1_to_cc2_transformation1():
 
     for conf in ['config/test-ethane-ethanol-solvation-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
-                                        input_dir='data/', output_dir='data')
+                                         input_dir='data/', output_dir='data')
 
         # load systems
         s1 = SystemStructure(configuration, 'structure1')
         s2 = SystemStructure(configuration, 'structure2')
         a = ProposeMutationRoute(s1, s2)
 
-        # manually matching Oxygen (0) with Hydrogen (4) 
+        # manually matching Oxygen (0) with Hydrogen (4)
         a.add_idx_to_common_core_of_mol1(4)
         a.add_idx_to_common_core_of_mol2(0)
 
@@ -451,7 +516,7 @@ def test_charge_cc1_to_cc2_transformation1():
         assert (len(mutation_list) == 1)
         assert (type(mutation_list[0]) == transformato.mutate.CommonCoreTransformation)
         assert (mutation_list[0].nr_of_steps == 5)
-        
+
         try:
             # write intermediate states for systems
             cc1_i = IntermediateStateFactory(system=s1, mutation_list=mutation_list, configuration=configuration)
@@ -487,7 +552,7 @@ def test_charge_cc1_to_cc2_transformation2():
     from parmed.charmm.psf import CharmmPsfFile
     for conf in ['config/test-ethane-ethanol-solvation-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
-                                        input_dir='data/', output_dir='data')
+                                         input_dir='data/', output_dir='data')
 
         # load systems
         s1 = SystemStructure(configuration, 'structure1')
@@ -526,8 +591,6 @@ def test_charge_cc1_to_cc2_transformation2():
         finally:
             shutil.rmtree(cc1_i.path)
             shutil.rmtree(cc2_i.path)
-
-
 
 
 @pytest.mark.slowtest
@@ -592,7 +655,7 @@ def test_run_example1_systems_solvation_free_energy():
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True, text=True)
                 except TypeError:
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True,
-                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                 print(exe.stdout)
                 print('Capture stderr')
                 print(exe.stderr)
@@ -613,7 +676,7 @@ def test_run_example1_systems_solvation_free_energy():
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True, text=True)
                 except TypeError:
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True,
-                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
                 print(exe.stdout)
                 print('Capture stderr')
                 print(exe.stderr)
@@ -652,7 +715,7 @@ def test_run_example2_systems_solvation_free_energy():
         s2 = SystemStructure(configuration, 'structure2')
         a = ProposeMutationRoute(s1, s2)
 
-        # manually matching Oxygen (0) with Hydrogen (4) 
+        # manually matching Oxygen (0) with Hydrogen (4)
         a.add_idx_to_common_core_of_mol1(4)
         a.add_idx_to_common_core_of_mol2(0)
 
@@ -674,7 +737,7 @@ def test_run_example2_systems_solvation_free_energy():
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True, text=True)
                 except TypeError:
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True,
-                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 print(exe.stdout)
                 print('Capture stderr')
                 print(exe.stderr)
@@ -695,7 +758,7 @@ def test_run_example2_systems_solvation_free_energy():
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True, capture_output=True, text=True)
                 except TypeError:
                     exe = subprocess.run(['bash', str(path), str(run_dir)], check=True,
-                                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 print(exe.stdout)
                 print('Capture stderr')
                 print(exe.stderr)
@@ -718,4 +781,4 @@ def test_run_example2_systems_solvation_free_energy():
             f.show_summary()
         finally:
             pass
-            #shutil.rmtree(pathlib.Path(i.path).parent)
+            # shutil.rmtree(pathlib.Path(i.path).parent)
