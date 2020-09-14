@@ -209,6 +209,7 @@ class SystemStructure(object):
             raise RuntimeError(f"No ligand selected for tlc: {self.tlc}")
 
         psf.number_of_dummys = 0
+        psf.mutations_to_default = 0
 
         idx_list = []
         for atom in psf.view[f":{self.tlc}"].atoms:

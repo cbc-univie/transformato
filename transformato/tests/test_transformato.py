@@ -126,8 +126,6 @@ def test_proposed_mutation_mcs():
 
 def test_proposed_mutation_terminal_dummy_real_atom_match():
 
-    from rdkit.Chem import rdFMCS
-
     for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
         configuration = load_config_yaml(config=conf,
                                          input_dir='data/', output_dir='.')
@@ -155,6 +153,52 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
         assert(match_terminal_atoms_cc2[15] == set([39]))
 
 
+def test_find_connected_dummy_regions():
+    
+    conf = 'config/test-2oj9-solvation-free-energy.yaml'
+    configuration = load_config_yaml(config=conf,
+                                         input_dir='data/', output_dir='.')
+    s1 = SystemStructure(configuration, 'structure1')
+    s2 = SystemStructure(configuration, 'structure2')
+
+    a = ProposeMutationRoute(s1, s2)
+    # find mcs
+    a._find_mcs('m1', 'm2')
+    a._set_common_core_parameters()
+    # match the real/dummy atoms
+    match_terminal_atoms_cc1 = a._match_terminal_real_and_dummy_atoms_for_mol1()
+    match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
+
+    connected_dummy_regions_cc1 = a._find_connected_dummy_regions('m1', match_terminal_atoms_cc1)
+    dummy_region_m1 = transformato.mutate.DummyRegion('m1', match_terminal_atoms_cc1, connected_dummy_regions_cc1)
+
+    print(connected_dummy_regions_cc1)
+
+    connected_dummy_regions_cc2 = a._find_connected_dummy_regions('m2', match_terminal_atoms_cc2)
+    dummy_region_m2 = transformato.mutate.DummyRegion('m2', match_terminal_atoms_cc2, connected_dummy_regions_cc2)
+
+    print(connected_dummy_regions_cc2)
+
+    assert(dummy_region_m1.connected_dummy_regions[0] == {40, 42, 43, 15, 18, 19, 20, 21})
+    assert(dummy_region_m1.connected_dummy_regions[1] == {1})
+
+    assert(dummy_region_m2.connected_dummy_regions[0] == {1, 26, 27, 28})
+    assert(dummy_region_m2.connected_dummy_regions[1] == {25})
+    assert(dummy_region_m2.connected_dummy_regions[2] == {39})
+
+
+def test_common_core():
+
+    for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
+        configuration = load_config_yaml(config=conf,
+                                         input_dir='data/', output_dir='.')
+        s1 = SystemStructure(configuration, 'structure1')
+        s2 = SystemStructure(configuration, 'structure2')
+
+        a = ProposeMutationRoute(s1, s2)
+        # find mcs, find terminal dummy/real atoms, generate charge compensated psfs
+        a.calculate_common_core()
+
 def test_endpoint_first_step():
 
     for conf in ['config/test-2oj9-solvation-free-energy.yaml', 'config/test-2oj9-binding-free-energy.yaml']:
@@ -166,6 +210,7 @@ def test_endpoint_first_step():
         s1_to_s2 = ProposeMutationRoute(s1, s2)
         s2_to_s1 = ProposeMutationRoute(s2, s1)
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
+            a.calculate_common_core()
             mutation_list = a.generate_mutations_to_common_core_for_mol1(
                 nr_of_steps_for_el=3, nr_of_steps_for_cc_transformation=3)
             i = IntermediateStateFactory(system=system, mutation_list=mutation_list, configuration=configuration)

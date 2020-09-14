@@ -3,6 +3,7 @@ import logging
 import os
 from collections import namedtuple
 from copy import deepcopy
+from dataclasses import dataclass
 
 import networkx as nx
 import numpy as np
@@ -18,6 +19,14 @@ from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class DummyRegion:
+    mol_name: str
+    match_termin_real_and_dummy_atoms: dict
+    connected_dummy_regions: list
+    
 
 
 class ProposeMutationRoute(object):
@@ -94,7 +103,7 @@ class ProposeMutationRoute(object):
         [type]
             [description]
         """
-        
+
         from collections import defaultdict
 
         real_atom_match_dummy_atom = defaultdict(set)
@@ -125,23 +134,34 @@ class ProposeMutationRoute(object):
         # set the teriminal real/dummy atom indices
         self._set_common_core_parameters()
         # match the real/dummy atoms
-        self.match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol2()
-        self.match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol1()
+        match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol2()
+        connected_dummy_regions_cc1 = self._find_connected_dummy_regions(mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
+        dummy_region_m1 = DummyRegion('m1', match_terminal_atoms_cc1, connected_dummy_regions_cc1)
+
+        match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol1()
+        connected_dummy_regions_cc2 = self._find_connected_dummy_regions(mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
+        dummy_region_m1 = DummyRegion('m2', match_terminal_atoms_cc2, connected_dummy_regions_cc2)
+
+        # define connected dummy regions
         # generate charge compmensated psfs
-        self.charge_compensated_ligand1_psf, self.charge_compensated_ligand2_psf = self._prepare_cc_for_charge_transfer()
+        psf1, psf2 = self._prepare_cc_for_charge_transfer()
+        self.charge_compensated_ligand1_psf = psf1
+        self.charge_compensated_ligand2_psf = psf2
 
     def _prepare_cc_for_charge_transfer(self):
         # we have to run the same charge mutation that will be run on cc2 to get the
         # charge distribution AFTER the full mutation
 
-        # mare a copy of the psf
+        # make a copy of the full psf
         m2_psf = self.psfs['m2'][:, :, :]
         m1_psf = self.psfs['m1'][:, :, :]
         charge_transformed_psfs = []
-        for psf, tlc, cc_idx, real_atom in zip([m1_psf, m2_psf],
-                                               [self.s1_tlc, self.s2_tlc],
-                                               [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
-                                               [self.terminal_real_atom_cc1, self.terminal_real_atom_cc2]):
+
+        for psf, tlc, cc_idx, terminal_real_atom in zip([m1_psf, m2_psf],
+                                                        [self.s1_tlc, self.s2_tlc],
+                                                        [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
+                                                        [self.terminal_real_atom_cc1, self.terminal_real_atom_cc2]):
+
             # set `initial_charge` parameter for ChargeToZeroMutation
             for atom in psf.view[f":{tlc.upper()}"].atoms:
                 # charge, epsilon and rmin are directly modiefied
@@ -158,7 +178,7 @@ class ProposeMutationRoute(object):
             logger.info('############################')
             logger.info('Preparing cc2 for charge transfer')
             logger.info(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
-            m = ChargeToZeroMutation(atoms_to_be_mutated, 1, cc_idx, real_atom)
+            m = ChargeToZeroMutation(atoms_to_be_mutated, 1, cc_idx, terminal_real_atom)
             m.mutate(psf, tlc, 1)
             charge_transformed_psfs.append(psf)
         return charge_transformed_psfs[0], charge_transformed_psfs[1]
@@ -294,6 +314,61 @@ class ProposeMutationRoute(object):
 
         self._substructure_match[mol1_name] = list(s1)
         self._substructure_match[mol2_name] = list(s2)
+
+    def _return_atom_idx_from_bond_idx(self, mol: Chem.Mol, bond_idx: int):
+        return mol.GetBondWithIdx(bond_idx).GetBeginAtomIdx(), mol.GetBondWithIdx(bond_idx).GetEndAtomIdx()
+
+    def _find_connected_dummy_regions(self, mol_name: str, match_terminal_atoms_cc: dict):
+
+        from itertools import chain
+
+        sub = self._substructure_match[mol_name]
+
+        #############################
+        # start
+        #############################
+        mol = self.mols[mol_name]
+        # find all dummy atoms
+        dummy_list_mol = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetIdx() not in sub]
+        nr_of_dummy_atoms_mol = len(dummy_list_mol)
+        # add all unique subgraphs here
+        unique_subgraphs = []
+
+        # iterate over dummy regions
+        for real_atom in match_terminal_atoms_cc:
+            logger.debug(f'real atom: {real_atom}')
+            set_of_terminal_dummy_atoms = match_terminal_atoms_cc[real_atom]
+            for terminal_dummy_atom in set_of_terminal_dummy_atoms:
+                logger.debug(f'terminal_dummy_atom: {terminal_dummy_atom}')
+                # start with biggest possible subgraph at final dummy atom
+                for i in range(nr_of_dummy_atoms_mol, -1, -1):
+                    subgraphs_of_length_i = []
+                    logger.debug(f'Length: {i}')
+                    all_subgraphs = Chem.FindUniqueSubgraphsOfLengthN(
+                        mol=mol, length=i, useHs=True, useBO=False, rootedAtAtom=terminal_dummy_atom)
+                    for subgraphs in all_subgraphs:
+                        subgraphs = set(chain.from_iterable(
+                            [self._return_atom_idx_from_bond_idx(mol=mol, bond_idx=e) for e in subgraphs]))
+                        # test that only dummy atoms are in subgraph
+                        if any([real_atom in subgraphs for real_atom in sub]):
+                            pass
+                        else:
+                            subgraphs_of_length_i.append(set(subgraphs))
+
+                    # test that new subgraphs are not already contained in bigger subgraphs
+                    for subgraphs in subgraphs_of_length_i:
+                        if any([subgraphs.issubset(old_subgraph) for old_subgraph in unique_subgraphs]):
+                            # not new set
+                            pass
+                        else:
+                            unique_subgraphs.append(set(subgraphs))
+                            logger.debug(subgraphs)
+
+        for dummy_atom in dummy_list_mol:
+            if dummy_atom not in list(chain.from_iterable(unique_subgraphs)):
+                unique_subgraphs.append(set([dummy_atom]))
+        logger.debug(unique_subgraphs)
+        return unique_subgraphs
 
     def _display_mol(self, mol: Chem.Mol):
         """
@@ -918,102 +993,27 @@ class CommonCoreTransformation(object):
             psf.number_of_dummys += 1
 
 
-class BaseMutation(object):
+class Mutation(object):
 
-    def __init__(self, atom_idx: list, nr_of_steps: int):
+    def __init__(self, tlc: str,
+                 atom_idx: list,
+                 common_core: list,
+                 nr_of_steps: int,
+                 terminal_real_and_dummy_atoms: dict):
+
         assert(type(atom_idx) == list)
         self.atom_idx = atom_idx
         self.nr_of_steps = nr_of_steps
+        self.terminal_real_and_dummy_atoms = terminal_real_and_dummy_atoms
+        self.tlc = tlc
 
+    def _mutate_charge(self,
+                       psf: pm.charmm.CharmmPsfFile,
+                       multiplicator: float,
+                       offset: int
+                       ):
 
-class ChargeMutation(BaseMutation):
-
-    def __init__(self, atom_idx: list, nr_of_steps: int, common_core: list):
-        if (nr_of_steps <= 2):
-            logger.warning('Rapid charge change detected. Proceed with caution.')
-        super().__init__(atom_idx, nr_of_steps)
-        self.common_core = common_core
-
-    def _scale_charge(self, atom, new_charge):
-        """
-        Scale atom with charge and compensate the charge change.
-        """
-        atom.charge = new_charge
-
-    def _compensate_charge(self, psf, tlc: str, old_total_charge: int, terminal_real_atoms: int):
-        """Compensate charge change .
-
-        Args:
-        """
-
-        new_charge = round(sum([a.charge for a in psf[f":{tlc.upper()}"].atoms]), 8)
-        logger.info('##############')
-        logger.info(f"Charge to compensate: {old_total_charge-new_charge}")
-        logger.info(f"Adding to atom idx: {psf[terminal_real_atoms]}")
-        logger.info('##############')
-
-        psf[terminal_real_atoms].charge = psf[terminal_real_atoms].charge + (old_total_charge-new_charge)
-        new_charge = round(sum([a.charge for a in psf[f":{tlc.upper()}"].atoms]), 8)
-
-        if not (np.isclose(new_charge, old_total_charge, rtol=1e-4)):
-            raise RuntimeError(f'Charge compensation failed. Introducing non integer total charge: {new_charge}.')
-
-
-class StericMutation(BaseMutation):
-
-    def __init__(self, atom_idx: list, nr_of_steps: int):
-        super().__init__(atom_idx, nr_of_steps)
-
-    def _scale_epsilon(self, atom, multiplicator):
-        logger.debug(atom)
-        logger.debug(atom.initial_epsilon)
-        atom.epsilon = atom.initial_epsilon * multiplicator
-
-    def _scale_rmin(self, atom, multiplicator):
-        logger.debug(atom)
-        logger.debug(atom.initial_rmin)
-        atom.rmin = atom.initial_rmin * multiplicator
-
-    def _modify_type(self, atom, psf):
-
-        if (hasattr(atom, 'initial_type')):
-            # only change parameters
-            pass
-        else:
-            atom.initial_type = atom.type
-            atom.type = f"DDD{psf.number_of_dummys}"
-            psf.number_of_dummys += 1
-
-
-class ChargeToZeroMutation(ChargeMutation):
-
-    def __init__(self, atom_idx: list, nr_of_steps: int, common_core: list, terminal_real_atoms: int):
-        """
-        Scale the electrostatics of atoms specified in the atom_idx list to zero.
-        Parameters
-        ----------
-        atom_idx : list
-            atoms for which charges are scaled to zero
-        mr_of_steps : int
-            determines the scaling factor : multiplicator = 1 - (current_step / (nr_of_steps))
-        common_core : list
-        """
-        super().__init__(atom_idx, nr_of_steps, common_core)
-        self.terminal_real_atoms = terminal_real_atoms
-
-    def __str__(self):
-        return "charges to zero mutation"
-
-    def mutate(self, psf: pm.charmm.CharmmPsfFile, tlc: str, current_step: int):
-        """ Performs the mutation """
-
-        old_total_charge = int(round(sum([a.charge for a in psf[f":{tlc.upper()}"].atoms])))
-        offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
-        multiplicator = 1 - (current_step / (self.nr_of_steps))
-
-        logger.info(f" -- Charge to zero mutation.")
-        logger.info(f"Scaling factor: {multiplicator}")
-
+        total_charge = int(round(sum([a.charge for a in psf[f":{self.tlc.upper()}"].atoms])))
         # scale the charge of all atoms
         for idx in self.atom_idx:
             odx = idx + offset
@@ -1026,97 +1026,87 @@ class ChargeToZeroMutation(ChargeMutation):
 
         if multiplicator != 1:
             # compensate for the total change in charge the terminal atom
-            self._compensate_charge(psf, tlc, old_total_charge, self.terminal_real_atoms + offset)
+            self._compensate_charge(psf, total_charge, offset)
 
+    def _mutate_vdw(self,
+                    psf: pm.charmm.CharmmPsfFile,
+                    multiplicator: float,
+                    offset: int,
+                    to_default: bool
+                    ):
 
-class StericToDefaultMutation(StericMutation):
+        logger.info(f"Acting on atoms: {self.atom_idx}")
+        offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
 
-    def __init__(self, atom_idx: list):
+        for i in self.atom_idx:
+            atom = psf[i + offset]
+            if to_default:
+                psf.mutations_to_default += 1
+                atom_type = f'DDX{psf.mutations_to_default}'
+                atom.rmin = 1.5
+                atom.epsilon = -0.15
+            else:
+                psf.number_of_dummys += 1
+                atom_type = f"DDD{psf.number_of_dummys}"
+                self._scale_epsilon(atom, multiplicator)
+                self._scale_rmin(atom, multiplicator)
+
+            self._modify_type(atom, psf, atom_type)
+
+    def mutate(self,
+               psf: pm.charmm.CharmmPsfFile,
+               current_step: int,
+               charge_mutation: bool,
+               steric_mutation: bool,
+               common_core_mutation: bool,
+               steric_mutation_to_default: bool):
+        """ Performs the mutation """
+
+        offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
+        multiplicator = 1 - (current_step / (self.nr_of_steps))
+
+        logger.info(f"Scaling factor: {multiplicator}")
+
+        if charge_mutation:
+            self._mutate_charge(psf, multiplicator, offset)
+
+        if steric_mutation:
+            self._mutate_vdw(psf, multiplicator, offset, steric_mutation_to_default)
+
+    def _compensate_charge(self, psf: pm.charmm.CharmmPsfFile, total_charge: int, offset: int):
+        """Compensate charge change .
+
+        Args:
         """
-        Set the steric terms of atoms specified in the atom_idx list to zero.
-        Parameters
-        ----------
-        atom_list : list
-            atoms for which charges are scaled to zero
-        """
-        super().__init__(atom_idx, 1)
 
-    def __str__(self):
-        return "Steric to zero mutation"
+        new_charge = round(sum([a.charge for a in psf[f":{self.tlc.upper()}"].atoms]), 8)
+        logger.info('##############')
+        logger.info(f"Charge to compensate: {old_total_charge-new_charge}")
+        logger.info(f"Adding to atom idx: {psf[terminal_real_atoms]}")
+        logger.info('##############')
 
-    def __unicode__(self):
-        return u"Steric to zero mutation"
+        psf[terminal_real_atoms].charge = psf[terminal_real_atoms].charge + (old_total_charge-new_charge)
+        new_charge = round(sum([a.charge for a in psf[f":{self.tlc.upper()}"].atoms]), 8)
 
-    def _modify_type(self, atom, psf):
+        if not (np.isclose(new_charge, old_total_charge, rtol=1e-4)):
+            raise RuntimeError(f'Charge compensation failed. Introducing non integer total charge: {new_charge}.')
+
+    def _scale_epsilon(self, atom, multiplicator):
+        logger.debug(atom)
+        logger.debug(atom.initial_epsilon)
+        atom.epsilon = atom.initial_epsilon * multiplicator
+
+    def _scale_rmin(self, atom, multiplicator):
+        logger.debug(atom)
+        logger.debug(atom.initial_rmin)
+        atom.rmin = atom.initial_rmin * multiplicator
+
+    def _modify_type(self, atom, psf, new_type: str):
 
         if (hasattr(atom, 'initial_type')):
             # only change parameters
             pass
         else:
             atom.initial_type = atom.type
-            atom.type = f"DXX0"
+            atom.type = new_type
             psf.number_of_dummys += 1
-
-    def mutate(self, psf, tlc: str, current_step: int):
-        """ Performs the actual mutation """
-
-        logger.info(f" -- Steric interactions to default mutation.")
-        logger.info(f"Acting on atoms: {self.atom_idx}")
-        offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
-
-        for i in self.atom_idx:
-            atom = psf[i + offset]
-            self._modify_type(atom, psf)
-            atom.rmin = 1.5
-            atom.epsilon = -0.15
-
-
-class StericToZeroMutation(StericMutation):
-
-    def __init__(self, atom_idx: list):
-        """
-        Set the steric terms of atoms specified in the atom_idx list to zero.
-        Parameters
-        ----------
-        atom_list : list
-            atoms for which charges are scaled to zero
-        """
-        super().__init__(atom_idx, 1)
-
-    def __str__(self):
-        return "Steric to zero mutation"
-
-    def __unicode__(self):
-        return u"Steric to zero mutation"
-
-    def mutate(self, psf, tlc: str, current_step: int):
-        """ Performs the actual mutation """
-
-        logger.info(f" -- Steric interactions to zero mutation.")
-        logger.info(f"Acting on atoms: {self.atom_idx}")
-        offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
-
-        for i in self.atom_idx:
-            atom = psf[i + offset]
-            multiplicator = 0
-            self._modify_type(atom, psf)
-            self._scale_epsilon(atom, multiplicator)
-            self._scale_rmin(atom, multiplicator)
-
-# TODO: we still don't have any implementation for improper torsions!
-# TODO: RemoveImproperMutation()
-
-        # # scale improper
-        # for torsion in psf.impropers:
-        #     # test if one of the torsions that needs to change
-        #     if not hasattr(torsion, 'improper_present_in'):
-        #         continue
-
-        #     # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2
-        #     if torsion.improper_present_in == 'cc1':
-        #         # scale the initial torsions down
-        #         torsion.type.psi_k = torsion.initial_psi_k * max(((1.0 - scale * 2)), 0.0)
-        #     # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2
-        #     elif torsion.improper_present_in == 'cc2':
-        #         # scale the new torsinos up
-        #         torsion.type.psi_k = torsion.initial_psi_k * max((scale -0.5) * 2, 0.0)
