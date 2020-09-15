@@ -146,11 +146,19 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
         match_terminal_atoms_cc1 = a._match_terminal_real_and_dummy_atoms_for_mol1()
         match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
 
+        # are the correct terminal common core atoms identified?
         assert(match_terminal_atoms_cc1[0] == set([1]))
         assert(match_terminal_atoms_cc2[0] == set([1, 25]))
 
         assert(match_terminal_atoms_cc1[16] == set([18]))
         assert(match_terminal_atoms_cc2[15] == set([39]))
+
+        # terminal atoms match between the two common cores 
+        assert(a.matching_terminal_atoms_betwee_cc[0] == (0,0))
+        assert(a.matching_terminal_atoms_betwee_cc[1] == (16,15))
+        #INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 0 : cc2: 0
+        #INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 16 : cc2: 15
+
 
 
 def test_find_connected_dummy_regions():
