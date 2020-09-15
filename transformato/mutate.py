@@ -27,7 +27,18 @@ class DummyRegion:
     match_termin_real_and_dummy_atoms: dict
     connected_dummy_regions: list
 
+    def return_connecting_real_atom(self, dummy_atoms:list):
 
+        for real_atom in self.match_termin_real_and_dummy_atoms:
+            for dummy_atom in self.match_termin_real_and_dummy_atoms[real_atom]:
+                if dummy_atom in dummy_atoms:
+                    logger.debug(f'Connecting real atom: {real_atom}')
+                    return real_atom 
+
+        logger.critical('No connecting real atom was found!')
+        return None
+    
+    
 class ProposeMutationRoute(object):
 
     def __init__(self,
@@ -68,8 +79,8 @@ class ProposeMutationRoute(object):
         self.completeRingsOnly = False
         self.ringMatchesRingOnly = True
 
-        self.match_terminal_atoms_cc1 = None
-        self.match_terminal_atoms_cc2 = None
+        self.dummy_region_cc1 = None
+        self.dummy_region_cc2 = None
 
 
     def _match_terminal_real_and_dummy_atoms_for_mol1(self):
@@ -151,16 +162,16 @@ class ProposeMutationRoute(object):
         # set the teriminal real/dummy atom indices
         self._set_common_core_parameters()
         # match the real/dummy atoms
-        match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol2()
+        match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol1()
         # define connected dummy regions
         connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
             mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
-        dummy_region_m1 = DummyRegion('m1', match_terminal_atoms_cc1, connected_dummy_regions_cc1)
+        self.dummy_region_cc1 = DummyRegion('m1', match_terminal_atoms_cc1, connected_dummy_regions_cc1)
 
-        match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol1()
+        match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol2()
         connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
-            mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
-        dummy_region_m1 = DummyRegion('m2', match_terminal_atoms_cc2, connected_dummy_regions_cc2)        
+            mol_name='m2', match_terminal_atoms_cc=match_terminal_atoms_cc2)
+        self.dummy_region_cc2 = DummyRegion('m2', match_terminal_atoms_cc2, connected_dummy_regions_cc2)        
         
         # generate charge compmensated psfs
         psf1, psf2 = self._prepare_cc_for_charge_transfer()
@@ -176,29 +187,32 @@ class ProposeMutationRoute(object):
         m1_psf = self.psfs['m1'][:, :, :]
         charge_transformed_psfs = []
 
-        for psf, tlc, cc_idx, terminal_real_atom in zip([m1_psf, m2_psf],
-                                                        [self.s1_tlc, self.s2_tlc],
-                                                        [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
-                                                        [self.terminal_real_atom_cc1, self.terminal_real_atom_cc2]):
+        for psf, tlc, cc_idx, dummy_region in zip([m1_psf, m2_psf],
+                                    [self.s1_tlc, self.s2_tlc],
+                                    [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
+                                    [self.dummy_region_cc1, self.dummy_region_cc2]):
 
-            # set `initial_charge` parameter for ChargeToZeroMutation
-            for atom in psf.view[f":{tlc.upper()}"].atoms:
+            # set `initial_charge` parameter for Mutation
+            for atom in psf.view[f":{tlc}"].atoms:
                 # charge, epsilon and rmin are directly modiefied
                 atom.initial_charge = atom.charge
-
-            offset = min([atom.idx for atom in psf.view[f":{tlc.upper()}"].atoms])
+    
+            offset = min([atom.idx for atom in psf.view[f":{tlc}"].atoms])
 
             # getting copy of the atoms
             atoms_to_be_mutated = []
-            for atom in psf.view[f":{tlc.upper()}"].atoms:
+            for atom in psf.view[f":{tlc}"].atoms:
                 idx = atom.idx - offset
                 if idx not in cc_idx:
                     atoms_to_be_mutated.append(idx)
-            logger.info('############################')
-            logger.info('Preparing cc2 for charge transfer')
-            logger.info(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
-            m = ChargeToZeroMutation(atoms_to_be_mutated, 1, cc_idx, terminal_real_atom)
-            m.mutate(psf, tlc, 1)
+
+            logger.debug('############################')
+            logger.debug('Preparing cc2 for charge transfer')
+            logger.debug(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
+            logger.debug('############################')
+            
+            m = Mutation(tlc=tlc,atom_idx=atoms_to_be_mutated, common_core=cc_idx, dummy_region=dummy_region)
+            m.mutate(psf, lambda_value_lj=0.0)
             charge_transformed_psfs.append(psf)
         return charge_transformed_psfs[0], charge_transformed_psfs[1]
 
@@ -1014,50 +1028,53 @@ class CommonCoreTransformation(object):
 
 class Mutation(object):
 
-    def __init__(self, tlc: str,
+    def __init__(self, 
+                 tlc: str,
                  atom_idx: list,
                  common_core: list,
-                 nr_of_steps: int,
-                 terminal_real_and_dummy_atoms: dict):
+                 dummy_region: DummyRegion):
 
         assert(type(atom_idx) == list)
         self.atom_idx = atom_idx
-        self.nr_of_steps = nr_of_steps
-        self.terminal_real_and_dummy_atoms = terminal_real_and_dummy_atoms
+        self.dummy_region = dummy_region
         self.tlc = tlc
 
     def _mutate_charge(self,
                        psf: pm.charmm.CharmmPsfFile,
-                       multiplicator: float,
+                       lambda_value: float,
                        offset: int
                        ):
 
-        total_charge = int(round(sum([a.charge for a in psf[f":{self.tlc.upper()}"].atoms])))
+        total_charge = int(round(sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms])))
         # scale the charge of all atoms
         for idx in self.atom_idx:
             odx = idx + offset
             atom = psf[odx]
-            logger.info(f"Scale charge on {atom}")
-            logger.info(f"Old charge: {atom.initial_charge}")
-            new_charge = float(np.round(atom.initial_charge * multiplicator, 4))
-            logger.info(f"New charge: {new_charge}")
+            logger.debug(f"Scale charge on {atom}")
+            logger.debug(f"Old charge: {atom.charge}")
+            new_charge = float(np.round(atom.initial_charge * lambda_value, 4))
             atom.charge = new_charge
+            logger.debug(f"New charge: {atom.charge}")
 
-        if multiplicator != 1:
+        if lambda_value != 1:
             # compensate for the total change in charge the terminal atom
             self._compensate_charge(psf, total_charge, offset)
 
     def _mutate_vdw(self,
                     psf: pm.charmm.CharmmPsfFile,
-                    multiplicator: float,
+                    lambda_value: float,
+                    vdw_atom_idx:list, 
                     offset: int,
                     to_default: bool
                     ):
+        
+        if vdw_atom_idx not in self.atom_idx:
+            raise RuntimeError(f'Specified atom {vdw_atom_idx} is not in atom_idx list {self.atom_idx}. Aborting.')
 
-        logger.info(f"Acting on atoms: {self.atom_idx}")
-        offset = min([a.idx for a in psf.view[f":{tlc.upper()}"].atoms])
+        logger.debug(f"Acting on atoms: {self.atom_idx}")
+        offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
 
-        for i in self.atom_idx:
+        for i in vdw_atom_idx:
             atom = psf[i + offset]
             if to_default:
                 psf.mutations_to_default += 1
@@ -1067,58 +1084,92 @@ class Mutation(object):
             else:
                 psf.number_of_dummys += 1
                 atom_type = f"DDD{psf.number_of_dummys}"
-                self._scale_epsilon(atom, multiplicator)
-                self._scale_rmin(atom, multiplicator)
-
-            self._modify_type(atom, psf, atom_type)
+                self._scale_epsilon(atom, lambda_value)
+                self._scale_rmin(atom, lambda_value)
+                self._modify_type(atom, psf, atom_type)
 
     def mutate(self,
                psf: pm.charmm.CharmmPsfFile,
-               current_step: int,
-               charge_mutation: bool,
-               steric_mutation: bool,
-               common_core_mutation: bool,
-               steric_mutation_to_default: bool):
+               lambda_value_lj: float = 1.0,
+               lambda_value_vdw: float = 1.0,
+               vdw_atom_idx: list = [],
+               steric_mutation_to_default: bool = False):
         """ Performs the mutation """
 
+        if lambda_value_lj < 0.0 or lambda_value_lj > 1.0:
+            raise RuntimeError('Lambda value for LJ needs to be between 0.0 and 1.0.')
+        
+        if lambda_value_vdw < 0.0 or lambda_value_vdw > 1.0:
+            raise RuntimeError('Lambda value for vdw needs to be between 0.0 and 1.0.')
+        
+        logger.debug(f"LJ scaling factor: {lambda_value_lj}")
+        logger.debug(f"VDW scaling factor: {lambda_value_vdw}")
+
         offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
-        multiplicator = 1 - (current_step / (self.nr_of_steps))
 
-        logger.info(f"Scaling factor: {multiplicator}")
+        if lambda_value_lj < 1.0:
+            self._mutate_charge(psf, lambda_value_lj, offset)
 
-        if charge_mutation:
-            self._mutate_charge(psf, multiplicator, offset)
+        if lambda_value_vdw < 1.0:
+            self._mutate_vdw(psf, lambda_value_vdw, vdw_atom_idx, offset, steric_mutation_to_default)
 
-        if steric_mutation:
-            self._mutate_vdw(psf, multiplicator, offset, steric_mutation_to_default)
 
     def _compensate_charge(self, psf: pm.charmm.CharmmPsfFile, total_charge: int, offset: int):
-        """Compensate charge change .
-
-        Args:
         """
+        _compensate_charge This function compensates the charge changes of a dummy region on the terminal real atom
+        that connects the specific dummy group to the real region. 
 
-        new_charge = round(sum([a.charge for a in psf[f":{self.tlc.upper()}"].atoms]), 8)
-        logger.info('##############')
-        logger.info(f"Charge to compensate: {old_total_charge-new_charge}")
-        logger.info(f"Adding to atom idx: {psf[terminal_real_atoms]}")
-        logger.info('##############')
+        Parameters
+        ----------
+        psf : pm.charmm.CharmmPsfFile
+            [description]
+        total_charge : int
+            [description]
+        offset : int
+            [description]
 
-        psf[terminal_real_atoms].charge = psf[terminal_real_atoms].charge + (old_total_charge-new_charge)
-        new_charge = round(sum([a.charge for a in psf[f":{self.tlc.upper()}"].atoms]), 8)
+        Raises
+        ------
+        RuntimeError
+            [description]
+        """
+        # get current charge
+        new_charge = round(sum([a.charge for a in psf.view[f":{self.tlc.upper()}"].atoms]), 8)
+        # get dummy retions
+        connected_dummy_regions = self.dummy_region.connected_dummy_regions
+        
+        # check for each dummy region how much charge has changed and compensate on atom that connects 
+        # the real region with specific dummy regions
+        for dummy_idx in connected_dummy_regions:
+            logger.debug(f'Dummy idx region: {dummy_idx}')
+            connecting_real_atom_for_this_dummy_region = self.dummy_region.return_connecting_real_atom(dummy_idx)
+            logger.debug(f'Connecting atom: {connecting_real_atom_for_this_dummy_region}')
+        
+            if connecting_real_atom_for_this_dummy_region is None:
+                raise RuntimeError('Something went wrong with the charge compensation. Aborting.')
+            charge_to_compenstate_for_region = 0.0
+            for atom_idx in dummy_idx:
+                charge_to_compenstate_for_region += psf[atom_idx+offset].initial_charge - psf[atom_idx+offset].charge 
+            
+            logger.info(f'Charge to compensate: {charge_to_compenstate_for_region}')
+            psf[connecting_real_atom_for_this_dummy_region+offset].charge += charge_to_compenstate_for_region 
+            
+            
+        # check if rest charge is missing        
+        new_charge = round(sum([atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]), 8)
 
-        if not (np.isclose(new_charge, old_total_charge, rtol=1e-4)):
+        if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
             raise RuntimeError(f'Charge compensation failed. Introducing non integer total charge: {new_charge}.')
 
-    def _scale_epsilon(self, atom, multiplicator):
+    def _scale_epsilon(self, atom, lambda_value):
         logger.debug(atom)
         logger.debug(atom.initial_epsilon)
-        atom.epsilon = atom.initial_epsilon * multiplicator
+        atom.epsilon = atom.initial_epsilon * lambda_value
 
-    def _scale_rmin(self, atom, multiplicator):
+    def _scale_rmin(self, atom, lambda_value):
         logger.debug(atom)
         logger.debug(atom.initial_rmin)
-        atom.rmin = atom.initial_rmin * multiplicator
+        atom.rmin = atom.initial_rmin * lambda_value
 
     def _modify_type(self, atom, psf, new_type: str):
 
