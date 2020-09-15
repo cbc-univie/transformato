@@ -16,6 +16,7 @@ import parmed as pm
 import pytest
 # Import package, test suite, and other packages as needed
 import transformato
+import networkx as nx
 # read in specific topology with parameters
 from parmed.charmm.parameters import CharmmParameterSet
 #import transformato
@@ -57,11 +58,12 @@ def test_read_yaml(): #transformato/transformato/utils.py
 
 ###### EXPORT FUNCTION ######
 
-########## System ###########
+######### system.py #########
 
 class TestSystemStructure: #transformato/transformato/system.py
 
-    def test_initialize_solvation_free_energy_system(self): 
+
+    def test_configuration_solvation_free_energy_system(self): 
         configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
                                     input_dir='data/', output_dir='.')
 
@@ -85,7 +87,8 @@ class TestSystemStructure: #transformato/transformato/system.py
         assert(s1.charmm_gui_base ==  os.path.abspath('data/') + '/2OJ9-test1/')  #f"{configuration['data_dir_base']}/{configuration['system']['structure1']['name']}/")
         
 
-    def test_initialize_binding_free_energy_system(self):
+    def test_configuration_binding_free_energy_system(self):
+    
         configuration = load_config_yaml(config='config/test-2oj9-binding-free-energy.yaml',
                                 input_dir='data/', output_dir='.')
 
@@ -100,12 +103,39 @@ class TestSystemStructure: #transformato/transformato/system.py
         assert('complex' in s1.envs and 'complex' in s2.envs)
         assert ('waterbox' in s1.envs and 'waterbox' in s2.envs)
 
-        assert(s2.name == '2OJ9-test2')
-        assert(s2.tlc == 'UNK')
-        assert(configuration['data_dir_base'] == os.path.abspath('data/'))
-        assert(s2.charmm_gui_base ==  os.path.abspath('data/') + '/2OJ9-test2/')  #f"{configuration['data_dir_base']}/{configuration['system']['structure1']['name']}/")
+    def test_mol_nxgraph(self):
+        configuration = load_config_yaml(config='config/ethane-ethanol-solvation-free-energy.yaml',
+                                    input_dir='data/', output_dir='.')
 
-    
+        s1 = SystemStructure(configuration, 'structure1')
+
+        G = nx.Graph()
+
+        for atom in s1.mol.GetAtoms():
+            G.add_node(atom.GetIdx(),
+                    atomic_num=atom.GetAtomicNum(),
+                    formal_charge=atom.GetFormalCharge(),
+                    chiral_tag=atom.GetChiralTag(),
+                    hybridization=atom.GetHybridization(),
+                    num_explicit_hs=atom.GetNumExplicitHs(),
+                    is_aromatic=atom.GetIsAromatic())
+        
+        for bond in s1.mol.GetBonds():
+            G.add_edge(bond.GetBeginAtomIdx(),
+                    bond.GetEndAtomIdx(),
+                    bond_type=bond.GetBondType())
+
+        dist = nx.graph_edit_distance(s1.graph, G)
+        assert(type(s1.graph) == type(G))
+        assert(dist == 0.0)
+
+    #def _read_parameters(self):
+        #configuration = load_config_yaml(config='config/ethane-ethanol-solvation-free-energy.yaml',
+                                    #input_dir='data/', output_dir='.')
+
+        
+        
+
 
 #############################
 ######### OLD TESTS #########
