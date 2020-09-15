@@ -26,7 +26,6 @@ class DummyRegion:
     mol_name: str
     match_termin_real_and_dummy_atoms: dict
     connected_dummy_regions: list
-    
 
 
 class ProposeMutationRoute(object):
@@ -68,6 +67,10 @@ class ProposeMutationRoute(object):
         self.matchValences = False
         self.completeRingsOnly = False
         self.ringMatchesRingOnly = True
+
+        self.match_terminal_atoms_cc1 = None
+        self.match_terminal_atoms_cc2 = None
+
 
     def _match_terminal_real_and_dummy_atoms_for_mol1(self):
         """
@@ -117,16 +120,30 @@ class ProposeMutationRoute(object):
         return real_atom_match_dummy_atom
 
     def _set_common_core_parameters(self):
-        terminal_atoms_cc1, real_atoms_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
-        terminal_atoms_cc2, real_atoms_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
+        # find terminal atoms
+        terminal_atoms_cc1, terminal_real_atoms_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
+        terminal_atoms_cc2, terminal_real_atoms_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
 
-        self.terminal_real_atom_cc1 = real_atoms_cc1
-        self.terminal_real_atom_cc2 = real_atoms_cc2
+        self.terminal_real_atom_cc1 = terminal_real_atoms_cc1
+        self.terminal_real_atom_cc2 = terminal_real_atoms_cc2
         self.terminal_dummy_atom_cc1 = terminal_atoms_cc1
         self.terminal_dummy_atom_cc2 = terminal_atoms_cc2
-        self.match_terminal_atoms_cc1 = None
-        self.match_terminal_atoms_cc2 = None
 
+        # match terminal real atoms between cc1 and cc2
+        cc_idx_mol1 = self.get_common_core_idx_mol1()
+        cc_idx_mol2 = self.get_common_core_idx_mol2()
+        matching_terminal_atoms_betwee_cc = list()
+        
+        for cc1_idx, cc2_idx in zip(cc_idx_mol1, cc_idx_mol2):
+            if cc1_idx in terminal_real_atoms_cc1 and cc2_idx in terminal_real_atoms_cc2:
+                logger.info(f'Matching terminal atoms from cc1 to cc2. cc1: {cc1_idx} : cc2: {cc2_idx}') 
+                matching_terminal_atoms_betwee_cc.append((cc1_idx, cc2_idx))
+                
+        if not matching_terminal_atoms_betwee_cc:
+            raise RuntimeError('No terminal real atoms were matched between the common cores. Aborting.')
+        
+        self.matching_terminal_atoms_betwee_cc = matching_terminal_atoms_betwee_cc
+         
     def calculate_common_core(self):
 
         # Calculate the MCS of m1 on m2
@@ -135,14 +152,16 @@ class ProposeMutationRoute(object):
         self._set_common_core_parameters()
         # match the real/dummy atoms
         match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol2()
-        connected_dummy_regions_cc1 = self._find_connected_dummy_regions(mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
+        # define connected dummy regions
+        connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
+            mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
         dummy_region_m1 = DummyRegion('m1', match_terminal_atoms_cc1, connected_dummy_regions_cc1)
 
         match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol1()
-        connected_dummy_regions_cc2 = self._find_connected_dummy_regions(mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
-        dummy_region_m1 = DummyRegion('m2', match_terminal_atoms_cc2, connected_dummy_regions_cc2)
-
-        # define connected dummy regions
+        connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
+            mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
+        dummy_region_m1 = DummyRegion('m2', match_terminal_atoms_cc2, connected_dummy_regions_cc2)        
+        
         # generate charge compmensated psfs
         psf1, psf2 = self._prepare_cc_for_charge_transfer()
         self.charge_compensated_ligand1_psf = psf1
