@@ -407,8 +407,9 @@ def test_charge_mutation():
         s1_to_s2 = ProposeMutationRoute(s1, s2)
         s2_to_s1 = ProposeMutationRoute(s2, s1)
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
+            a.calculate_common_core()
             mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_el=4, nr_of_steps_for_bonded_parameters=4
+                nr_of_steps_for_electrostatic=4, nr_of_steps_for_cc_transformation=4
             )
             i = IntermediateStateFactory(
                 system=system, mutation_list=mutation_list, configuration=configuration
@@ -521,7 +522,7 @@ def test_vdw_mutation():
         s2_to_s1 = ProposeMutationRoute(s2, s1)
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
             mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_el=4, nr_of_steps_for_bonded_parameters=4
+                nr_of_steps_for_electrostatic=4, nr_of_steps_for_cc_transformation=4
             )
             i = IntermediateStateFactory(
                 system=system, mutation_list=mutation_list, configuration=configuration
@@ -624,21 +625,6 @@ def test_vdw_mutation():
                 shutil.rmtree(output_file_base)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def test_endpoint_first_step():
 
     for conf in [
@@ -654,7 +640,7 @@ def test_endpoint_first_step():
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
             a.calculate_common_core()
             mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_el=3, nr_of_steps_for_cc_transformation=3
+                nr_of_steps_for_electrostatic=3, nr_of_steps_for_cc_transformation=3
             )
             i = IntermediateStateFactory(
                 system=system, mutation_list=mutation_list, configuration=configuration
@@ -677,7 +663,7 @@ def test_endpoint():
         s2_to_s1 = ProposeMutationRoute(s2, s1)
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
             mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_el=3, nr_of_steps_for_cc_transformation=3
+                nr_of_steps_for_electrostatic=3, nr_of_steps_for_cc_transformation=3
             )
             i = IntermediateStateFactory(
                 system=system, mutation_list=mutation_list, configuration=configuration
@@ -740,8 +726,6 @@ def test_endpoint():
                 shutil.rmtree(output_file_base)
 
 
-
-
 @pytest.mark.slowtest
 def test_bonded_mutation():
 
@@ -775,7 +759,7 @@ def test_bonded_mutation():
                 template_psf[env] = copy.deepcopy(template.psf_mapping[env])
 
             mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_el=4, nr_of_steps_for_bonded_parameters=4
+                nr_of_steps_for_electrostatic=4, nr_of_steps_for_cc_transformation=4
             )
             i = IntermediateStateFactory(
                 system=system, mutation_list=mutation_list, configuration=configuration
@@ -974,7 +958,7 @@ def test_charge_cc1_to_cc2_transformation1():
 
         # generate mutation route
         mutation_list = a.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5
+            nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
         )
 
         assert len(mutation_list) == 1
@@ -990,7 +974,7 @@ def test_charge_cc1_to_cc2_transformation1():
 
             # generate mutation route
             mutation_list = a.generate_mutations_to_common_core_for_mol2(
-                nr_of_steps_for_el=5
+                nr_of_steps_for_electrostatic=5
             )
             # write intermediate states
             cc2_i = IntermediateStateFactory(
@@ -1044,7 +1028,7 @@ def test_charge_cc1_to_cc2_transformation2():
 
         # generate mutation route
         mutation_list = a.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5
+            nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
         )
 
         try:
@@ -1056,7 +1040,7 @@ def test_charge_cc1_to_cc2_transformation2():
 
             # generate mutation route
             mutation_list = a.generate_mutations_to_common_core_for_mol2(
-                nr_of_steps_for_el=5
+                nr_of_steps_for_electrostatic=5
             )
             # write intermediate states
             cc2_i = IntermediateStateFactory(
@@ -1111,7 +1095,7 @@ def test_run_test_systems():
 
         # generate mutation route
         mutation_list = a.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5
+            nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
         )
         # write intermediate states for systems
         i = IntermediateStateFactory(
@@ -1121,7 +1105,7 @@ def test_run_test_systems():
 
         # generate mutation route
         mutation_list = a.generate_mutations_to_common_core_for_mol2(
-            nr_of_steps_for_el=5
+            nr_of_steps_for_electrostatic=5
         )
         # write intermediate states
         i = IntermediateStateFactory(
@@ -1153,7 +1137,7 @@ def test_run_example1_systems_solvation_free_energy():
 
         # generate mutation route
         mutation_list = a.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5
+            nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
         )
 
         try:
@@ -1189,7 +1173,7 @@ def test_run_example1_systems_solvation_free_energy():
 
             # generate mutation route
             mutation_list = a.generate_mutations_to_common_core_for_mol2(
-                nr_of_steps_for_el=5
+                nr_of_steps_for_electrostatic=5
             )
             # write intermediate states
             i = IntermediateStateFactory(
@@ -1264,7 +1248,7 @@ def test_run_example2_systems_solvation_free_energy():
 
         # generate mutation route
         mutation_list = a.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_el=5, nr_of_steps_for_bonded_parameters=5
+            nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
         )
 
         try:
@@ -1299,7 +1283,7 @@ def test_run_example2_systems_solvation_free_energy():
 
             # generate mutation route
             mutation_list = a.generate_mutations_to_common_core_for_mol2(
-                nr_of_steps_for_el=5
+                nr_of_steps_for_electrostatic=5
             )
             # write intermediate states
             i = IntermediateStateFactory(

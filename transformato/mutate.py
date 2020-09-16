@@ -26,6 +26,7 @@ class DummyRegion:
     mol_name: str
     match_termin_real_and_dummy_atoms: dict
     connected_dummy_regions: list
+    tlc: str
 
     def return_connecting_real_atom(self, dummy_atoms:list):
 
@@ -38,6 +39,16 @@ class DummyRegion:
         logger.critical('No connecting real atom was found!')
         return None
     
+@dataclass
+class MutationDefinition:
+    atoms_to_be_mutated: list
+    common_core: list
+    dummy_region: DummyRegion
+    lambda_value_electrostatic : float
+    lambda_value_vdw: float
+    vdw_atom_idx: list
+    steric_mutation_to_default: bool
+
     
 class ProposeMutationRoute(object):
 
@@ -165,13 +176,23 @@ class ProposeMutationRoute(object):
         match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol1()
         # define connected dummy regions
         connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
-            mol_name='m1', match_terminal_atoms_cc=match_terminal_atoms_cc1)
-        self.dummy_region_cc1 = DummyRegion('m1', match_terminal_atoms_cc1, connected_dummy_regions_cc1)
+            mol_name='m1', 
+            match_terminal_atoms_cc=match_terminal_atoms_cc1)
+        
+        self.dummy_region_cc1 = DummyRegion(mol_name='m1', 
+                                            tlc=self.s1_tlc,
+                                            match_termin_real_and_dummy_atoms=match_terminal_atoms_cc1, 
+                                            connected_dummy_regions=connected_dummy_regions_cc1)
 
         match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol2()
         connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
-            mol_name='m2', match_terminal_atoms_cc=match_terminal_atoms_cc2)
-        self.dummy_region_cc2 = DummyRegion('m2', match_terminal_atoms_cc2, connected_dummy_regions_cc2)        
+            mol_name='m2', 
+            match_terminal_atoms_cc=match_terminal_atoms_cc2)
+        
+        self.dummy_region_cc2 = DummyRegion(mol_name='m2', 
+                                            tlc=self.s2_tlc,                                           
+                                            match_termin_real_and_dummy_atoms=match_terminal_atoms_cc2, 
+                                            connected_dummy_regions=connected_dummy_regions_cc2)        
         
         # generate charge compmensated psfs
         psf1, psf2 = self._prepare_cc_for_charge_transfer()
@@ -211,8 +232,8 @@ class ProposeMutationRoute(object):
             logger.debug(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
             logger.debug('############################')
             
-            m = Mutation(tlc=tlc,atom_idx=atoms_to_be_mutated, common_core=cc_idx, dummy_region=dummy_region)
-            m.mutate(psf, lambda_value_lj=0.0)
+            m = Mutation(tlc=tlc, atoms_to_be_mutated=atoms_to_be_mutated, common_core=cc_idx, dummy_region=dummy_region)
+            m.mutate(psf, lambda_value_electrostatic=0.0)
             charge_transformed_psfs.append(psf)
         return charge_transformed_psfs[0], charge_transformed_psfs[1]
 
@@ -222,14 +243,14 @@ class ProposeMutationRoute(object):
         # 1) mol1 is in mol2 (Methane -- Ethane)
 
         mutation_list = self.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_el=5, nr_of_steps_for_cc_transformation=2)
+            nr_of_steps_for_electrostaticectrostatic=5, nr_of_steps_for_cc_transformation=2)
         # write intermediate states for systems
         intermediate_state = IntermediateStateFactory(
             system=self.system['system1'], mutation_list=mutation_list, configuration=configuration)
         intermediate_state.generate_intermediate_states()
 
         # generate mutation route
-        mutation_list = self.generate_mutations_to_common_core_for_mol2(nr_of_steps_for_el=5)
+        mutation_list = self.generate_mutations_to_common_core_for_mol2(nr_of_steps_for_electrostaticectrostatic=5)
         # write intermediate states
         intermediate_state = IntermediateStateFactory(
             system=self.system['system2'], mutation_list=mutation_list, configuration=configuration)
@@ -458,14 +479,14 @@ class ProposeMutationRoute(object):
         svg = drawer.GetDrawingText().replace('svg:', '')
         return(svg)
 
-    def generate_mutations_to_common_core_for_mol1(self, nr_of_steps_for_el: int, nr_of_steps_for_cc_transformation: int) -> list:
+    def generate_mutations_to_common_core_for_mol1(self, nr_of_steps_for_electrostatic: int, nr_of_steps_for_cc_transformation: int) -> list:
         """
         Generates the mutation route to the common fore for mol1.
         Parameters
         ----------
-        nr_of_steps_for_el : int
+        nr_of_steps_for_electrostatic : int
             nr of steps used for linearly scaling the charges to zero
-        nr_of_steps_for_bonded_parameters : int
+        nr_of_steps_for_cc_transformation : int
         Returns
         ----------
         mutations: list
@@ -473,13 +494,15 @@ class ProposeMutationRoute(object):
 
         """
         if self.terminal_real_atom_cc1 == -1:
-            raise RuntimeError('First generate the MCS')
-        m = self._mutate_to_common_core('m1', self.get_common_core_idx_mol1(), nr_of_steps_for_el)
+            raise RuntimeError('First generate the MCS. Aborting.')
+        
+      
+        m = self._mutate_to_common_core('m1', self.dummy_region_cc1, self.get_common_core_idx_mol1(), nr_of_steps_for_electrostatic)
         t = self._transform_common_core(nr_of_steps_for_cc_transformation)
 
         return m + t
 
-    def generate_mutations_to_common_core_for_mol2(self, nr_of_steps_for_el: int) -> list:
+    def generate_mutations_to_common_core_for_mol2(self, nr_of_steps_for_electrostaticectrostatic: int) -> list:
         """
         Generates the mutation route to the common fore for mol2.
         Returns
@@ -490,7 +513,7 @@ class ProposeMutationRoute(object):
         if self.terminal_real_atom_cc1 == -1:
             raise RuntimeError('First generate the MCS')
 
-        m = self._mutate_to_common_core('m2', self.get_common_core_idx_mol2(), nr_of_steps_for_el)
+        m = self._mutate_to_common_core('m2', self.get_common_core_idx_mol2(), nr_of_steps_for_electrostaticectrostatic)
         return m
 
     def _transform_common_core(self, nr_of_steps_for_cc_transformation: int) -> list:
@@ -593,47 +616,58 @@ class ProposeMutationRoute(object):
 
     # def _match_terminal_dummy_and_real_atoms
 
-    def _mutate_to_common_core(self, name: str, cc_idx: list, nr_of_steps_for_el: int) -> list:
+    def _mutate_to_common_core(self, dummy_region: DummyRegion, cc_idx: list, nr_of_steps_for_electrostatic: int) -> list:
         """
         Helper function - do not call directly.
         Generates the mutation route to the common fore for mol.
         """
+        
+        name = dummy_region.mol_name
+        tlc = dummy_region.tlc
+        
         mol = self.mols[name]
-        hydrogens = []
         charge_mutations = []
         lj_mutations = []
-        atoms_to_be_mutated = []
-
-        # find the atom that connects the common core to the dummy regiom
-        terminal_dummy_atoms, terminal_real_atoms = self._find_terminal_atom(cc_idx, mol)
-        terminal_real_atoms = terminal_real_atoms[0]
+        
+        # get the atom that connects the common core to the dummy regiom
+        match_termin_real_and_dummy_atoms = dummy_region.match_termin_real_and_dummy_atoms
 
         # iterate through atoms and select atoms that need to be mutated
+        atoms_to_be_mutated = []
+        hydrogens = []
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             if idx not in cc_idx:
-                #
-                if atom.GetSymbol() == 'H' and idx not in terminal_dummy_atoms:
+                # hydrogens are collected seperatly IF they are not terminal dummy atoms
+                if atom.GetSymbol() == 'H' and idx not in match_termin_real_and_dummy_atoms.values():
                     hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
                 logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
 
+
         if atoms_to_be_mutated:
             ############################################
             ############################################
-            # scale all charges of all atoms to zero
-            charge_mutations.append(ChargeToZeroMutation(atom_idx=atoms_to_be_mutated,
-                                                         nr_of_steps=nr_of_steps_for_el, common_core=cc_idx, terminal_real_atoms=terminal_real_atoms))
-
+            # charge mutation
             ############################################
             ############################################
-            # finished with charge mutation
+            
+            for step in range(0, nr_of_steps_for_electrostatic):
+                lambda_value_electrostatic = 1- ((1/(nr_of_steps_for_electrostatic - 1)) * step) # NOTE nr_of_steps_for_electrostatic - 1!
+                print(lambda_value_electrostatic)
+                m = MutationDefinition(atoms_to_be_mutated=atoms_to_be_mutated, 
+                                   common_core=cc_idx, 
+                                   dummy_region=dummy_region,
+                                   lambda_value_electrostatic = lambda_value_electrostatic,
+                                   lambda_value_vdw = 1.0,
+                                   vdw_atom_idx = [],
+                                   steric_mutation_to_default = False)
+            
+                charge_mutations.append(m)
+                
             ############################################
             ############################################
-
-            ############################################
-            ############################################
-            # scale LJ
+            # LJ mutation
             ############################################
             ############################################
             # save the last mutation steps
@@ -642,7 +676,15 @@ class ProposeMutationRoute(object):
             # start with mutation of LJ of hydrogens
             # Only take hydrogens that are not terminal hydrogens
             if hydrogens:
-                lj_mutations.append(StericToZeroMutation(hydrogens))
+                m = MutationDefinition(atoms_to_be_mutated=atoms_to_be_mutated, 
+                                        common_core=cc_idx, 
+                                        dummy_region=dummy_region,
+                                        lambda_value_electrostatic = 1.0,
+                                        lambda_value_vdw = 0.0,
+                                        vdw_atom_idx = hydrogens,
+                                        steric_mutation_to_default = False)
+
+                lj_mutations.append(m)
             already_mutated = []
             # continue with scaling of heavy atoms LJ
             all_bonds = []
@@ -1029,15 +1071,14 @@ class CommonCoreTransformation(object):
 class Mutation(object):
 
     def __init__(self, 
-                 tlc: str,
-                 atom_idx: list,
+                 atoms_to_be_mutated: list,
                  common_core: list,
                  dummy_region: DummyRegion):
 
-        assert(type(atom_idx) == list)
-        self.atom_idx = atom_idx
+        assert(type(atoms_to_be_mutated) == list)
+        self.atoms_to_be_mutated = atoms_to_be_mutated
         self.dummy_region = dummy_region
-        self.tlc = tlc
+        self.tlc = dummy_region.tlc
 
     def _mutate_charge(self,
                        psf: pm.charmm.CharmmPsfFile,
@@ -1047,7 +1088,7 @@ class Mutation(object):
 
         total_charge = int(round(sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms])))
         # scale the charge of all atoms
-        for idx in self.atom_idx:
+        for idx in self.atoms_to_be_mutated:
             odx = idx + offset
             atom = psf[odx]
             logger.debug(f"Scale charge on {atom}")
@@ -1068,10 +1109,10 @@ class Mutation(object):
                     to_default: bool
                     ):
         
-        if vdw_atom_idx not in self.atom_idx:
-            raise RuntimeError(f'Specified atom {vdw_atom_idx} is not in atom_idx list {self.atom_idx}. Aborting.')
+        if vdw_atom_idx not in self.atoms_to_be_mutated:
+            raise RuntimeError(f'Specified atom {vdw_atom_idx} is not in atom_idx list {self.atoms_to_be_mutated}. Aborting.')
 
-        logger.debug(f"Acting on atoms: {self.atom_idx}")
+        logger.debug(f"Acting on atoms: {vdw_atom_idx}")
         offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
 
         for i in vdw_atom_idx:
@@ -1090,25 +1131,25 @@ class Mutation(object):
 
     def mutate(self,
                psf: pm.charmm.CharmmPsfFile,
-               lambda_value_lj: float = 1.0,
+               lambda_value_electrostatic: float = 1.0,
                lambda_value_vdw: float = 1.0,
                vdw_atom_idx: list = [],
                steric_mutation_to_default: bool = False):
         """ Performs the mutation """
 
-        if lambda_value_lj < 0.0 or lambda_value_lj > 1.0:
+        if lambda_value_electrostatic < 0.0 or lambda_value_electrostatic > 1.0:
             raise RuntimeError('Lambda value for LJ needs to be between 0.0 and 1.0.')
         
         if lambda_value_vdw < 0.0 or lambda_value_vdw > 1.0:
             raise RuntimeError('Lambda value for vdw needs to be between 0.0 and 1.0.')
         
-        logger.debug(f"LJ scaling factor: {lambda_value_lj}")
+        logger.debug(f"LJ scaling factor: {lambda_value_electrostatic}")
         logger.debug(f"VDW scaling factor: {lambda_value_vdw}")
 
         offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
 
-        if lambda_value_lj < 1.0:
-            self._mutate_charge(psf, lambda_value_lj, offset)
+        if lambda_value_electrostatic < 1.0:
+            self._mutate_charge(psf, lambda_value_electrostatic, offset)
 
         if lambda_value_vdw < 1.0:
             self._mutate_vdw(psf, lambda_value_vdw, vdw_atom_idx, offset, steric_mutation_to_default)
