@@ -27,6 +27,7 @@ class DummyRegion:
     match_termin_real_and_dummy_atoms: dict
     connected_dummy_regions: list
     tlc: str
+    lj_default: list
 
     def return_connecting_real_atom(self, dummy_atoms:list):
 
@@ -154,18 +155,56 @@ class ProposeMutationRoute(object):
         # match terminal real atoms between cc1 and cc2
         cc_idx_mol1 = self.get_common_core_idx_mol1()
         cc_idx_mol2 = self.get_common_core_idx_mol2()
-        matching_terminal_atoms_betwee_cc = list()
+        matching_terminal_atoms_between_cc = list()
         
         for cc1_idx, cc2_idx in zip(cc_idx_mol1, cc_idx_mol2):
             if cc1_idx in terminal_real_atoms_cc1 and cc2_idx in terminal_real_atoms_cc2:
                 logger.info(f'Matching terminal atoms from cc1 to cc2. cc1: {cc1_idx} : cc2: {cc2_idx}') 
-                matching_terminal_atoms_betwee_cc.append((cc1_idx, cc2_idx))
+                matching_terminal_atoms_between_cc.append((cc1_idx, cc2_idx))
                 
-        if not matching_terminal_atoms_betwee_cc:
+        if not matching_terminal_atoms_between_cc:
             raise RuntimeError('No terminal real atoms were matched between the common cores. Aborting.')
         
-        self.matching_terminal_atoms_betwee_cc = matching_terminal_atoms_betwee_cc
-         
+        self.matching_terminal_atoms_between_cc = matching_terminal_atoms_between_cc
+
+    def _match_terminal_dummy_atoms_between_common_cores(self, 
+                                                         match_terminal_atoms_cc1:list, 
+                                                         match_terminal_atoms_cc2:list,
+                                                         connected_dummy_regions_cc1:list,
+                                                         connected_dummy_regions_cc2:list) -> (list, list):
+        
+        cc1_idx = self._substructure_match['m1']
+        cc2_idx = self._substructure_match['m2']
+        
+        lj_default_cc1 = []
+        lj_default_cc2 = []
+        
+        for idx1, idx2 in zip(cc1_idx, cc2_idx):
+            if idx1 in match_terminal_atoms_cc1.keys() and idx2 in match_terminal_atoms_cc2.keys():
+                
+                connected_dummy_cc1 =  list(match_terminal_atoms_cc1[idx1])
+                connected_dummy_cc2 =  list(match_terminal_atoms_cc2[idx2])
+                
+                # multiple, possible dummy regions
+                if len(connected_dummy_cc1) > 1 or len(connected_dummy_cc2) > 1:
+                    logger.critical('There is a dual junction. Be careful.')
+                    # NOTE: For now we are just taking the non hydrogen atom
+                    for atom_idx in connected_dummy_cc1:
+                        if self.mols['m1'].GetAtomWithIdx(atom_idx).GetSymbol() != 'H':
+                            connected_dummy_cc1 = [atom_idx]
+                            break        
+                    for atom_idx in connected_dummy_cc2:
+                        if self.mols['m2'].GetAtomWithIdx(atom_idx).GetSymbol() != 'H':
+                            connected_dummy_cc2 = [atom_idx]
+                            break        
+                    
+                lj_default_cc1.append(connected_dummy_cc1[0])
+                lj_default_cc2.append(connected_dummy_cc2[0])                
+                
+        return (lj_default_cc1, lj_default_cc2)
+  
+
+        
     def calculate_common_core(self):
 
         # Calculate the MCS of m1 on m2
@@ -174,25 +213,34 @@ class ProposeMutationRoute(object):
         self._set_common_core_parameters()
         # match the real/dummy atoms
         match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol1()
+        match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol2()
         # define connected dummy regions
         connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
             mol_name='m1', 
             match_terminal_atoms_cc=match_terminal_atoms_cc1)
-        
-        self.dummy_region_cc1 = DummyRegion(mol_name='m1', 
-                                            tlc=self.s1_tlc,
-                                            match_termin_real_and_dummy_atoms=match_terminal_atoms_cc1, 
-                                            connected_dummy_regions=connected_dummy_regions_cc1)
-
-        match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol2()
         connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
             mol_name='m2', 
             match_terminal_atoms_cc=match_terminal_atoms_cc2)
+
+        # find the atoms from dummy_region in s1 that needs to become lj default
+        lj_default_cc1, lj_default_cc2 = self._match_terminal_dummy_atoms_between_common_cores(
+                                                             match_terminal_atoms_cc1, 
+                                                              match_terminal_atoms_cc2, 
+                                                              connected_dummy_regions_cc1, 
+                                                              connected_dummy_regions_cc2)
+
+        self.dummy_region_cc1 = DummyRegion(mol_name='m1', 
+                                            tlc=self.s1_tlc,
+                                            match_termin_real_and_dummy_atoms=match_terminal_atoms_cc1, 
+                                            connected_dummy_regions=connected_dummy_regions_cc1,
+                                            lj_default=lj_default_cc1)
+
         
         self.dummy_region_cc2 = DummyRegion(mol_name='m2', 
                                             tlc=self.s2_tlc,                                           
                                             match_termin_real_and_dummy_atoms=match_terminal_atoms_cc2, 
-                                            connected_dummy_regions=connected_dummy_regions_cc2)        
+                                            connected_dummy_regions=connected_dummy_regions_cc2,
+                                            lj_default=lj_default_cc2)        
         
         # generate charge compmensated psfs
         psf1, psf2 = self._prepare_cc_for_charge_transfer()
@@ -232,7 +280,7 @@ class ProposeMutationRoute(object):
             logger.debug(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
             logger.debug('############################')
             
-            m = Mutation(tlc=tlc, atoms_to_be_mutated=atoms_to_be_mutated, common_core=cc_idx, dummy_region=dummy_region)
+            m = Mutation(atoms_to_be_mutated=atoms_to_be_mutated, common_core=cc_idx, dummy_region=dummy_region)
             m.mutate(psf, lambda_value_electrostatic=0.0)
             charge_transformed_psfs.append(psf)
         return charge_transformed_psfs[0], charge_transformed_psfs[1]
@@ -479,7 +527,9 @@ class ProposeMutationRoute(object):
         svg = drawer.GetDrawingText().replace('svg:', '')
         return(svg)
 
-    def generate_mutations_to_common_core_for_mol1(self, nr_of_steps_for_electrostatic: int, nr_of_steps_for_cc_transformation: int) -> list:
+    def generate_mutations_to_common_core_for_mol1(self, 
+                                                   nr_of_steps_for_electrostatic: int, 
+                                                   nr_of_steps_for_cc_transformation: int) -> dict:
         """
         Generates the mutation route to the common fore for mol1.
         Parameters
@@ -497,12 +547,12 @@ class ProposeMutationRoute(object):
             raise RuntimeError('First generate the MCS. Aborting.')
         
       
-        m = self._mutate_to_common_core('m1', self.dummy_region_cc1, self.get_common_core_idx_mol1(), nr_of_steps_for_electrostatic)
-        t = self._transform_common_core(nr_of_steps_for_cc_transformation)
+        m = self._mutate_to_common_core(self.dummy_region_cc1, self.get_common_core_idx_mol1(), nr_of_steps_for_electrostatic)
+        m['transform'] = self._transform_common_core(nr_of_steps_for_cc_transformation)
 
-        return m + t
+        return m
 
-    def generate_mutations_to_common_core_for_mol2(self, nr_of_steps_for_electrostaticectrostatic: int) -> list:
+    def generate_mutations_to_common_core_for_mol2(self, nr_of_steps_for_electrostaticectrostatic: int) -> dict:
         """
         Generates the mutation route to the common fore for mol2.
         Returns
@@ -531,49 +581,48 @@ class ProposeMutationRoute(object):
         # test if bonded mutations are necessary
         bonded_terms_mutation = False
         charge_mutation = False
-        for cc1, cc2 in zip(self.get_common_core_idx_mol1() + [self.terminal_dummy_atom_cc1], self.get_common_core_idx_mol2() + [self.terminal_dummy_atom_cc2]):
-            # did atom type change? if not don't add BondedMutations
+        
+        for cc1, cc2 in zip(self.get_common_core_idx_mol1() + self.dummy_region_cc1.lj_default, 
+                            self.get_common_core_idx_mol2() + self.dummy_region_cc2.lj_default):
+            
+            # did atom type change? if not don't add BondedMutations           
             atom1 = self.psfs['m1'][cc1]
-            print(atom1, atom1.type)
             atom2 = self.psfs['m2'][cc2]
-            print(atom2, atom2.type)
             if atom1.type != atom2.type:
-                logger.info('##############################')
-                logger.info('Atom type transformation')
-                logger.info(f'Atom that needs to be transformed: {atom1}.')
-                logger.info(f'Atom type of atom in cc1: {atom1.type}.')
-                logger.info(f'Template atom: {atom2}.')
-                logger.info(f'Atom type of atom in cc2: {atom2.type}.')
+                logger.debug('##############################')
+                logger.debug('Atom type transformation')
+                logger.debug(f'Atom that needs to be transformed: {atom1}.')
+                logger.debug(f'Atom type of atom in cc1: {atom1.type}.')
+                logger.debug(f'Template atom: {atom2}.')
+                logger.debug(f'Atom type of atom in cc2: {atom2.type}.')
                 bonded_terms_mutation = True
 
         for cc1, cc2 in zip(self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()):
             atom1 = self.charge_compensated_ligand1_psf[cc1]
             atom2 = self.charge_compensated_ligand2_psf[cc2]
             if atom1.charge != atom2.charge:
-                logger.info('##############################')
-                logger.info('Charge transformation')
-                logger.info('Charge needs to be transformed on common core')
-                logger.info(f'Atom that needs to be transformed: {atom1}.')
-                logger.info(f'Atom charge of atom in cc1: {atom1.charge}.')
-                logger.info(f'Template atom: {atom2}.')
-                logger.info(f'Atom charge of atom in cc2: {atom2.charge}.')
+                logger.debug('##############################')
+                logger.debug('Charge transformation')
+                logger.debug('Charge needs to be transformed on common core')
+                logger.debug(f'Atom that needs to be transformed: {atom1}.')
+                logger.debug(f'Atom charge of atom in cc1: {atom1.charge}.')
+                logger.debug(f'Template atom: {atom2}.')
+                logger.debug(f'Atom charge of atom in cc2: {atom2.charge}.')
                 charge_mutation = True
 
         # if necessary transform bonded parameters
         if bonded_terms_mutation or charge_mutation:
-            logger.info(f'Bonded parameters mutation: {bonded_terms_mutation}.')
-            logger.info(f'Charge parameters mutation: {charge_mutation}.')
+            logger.debug(f'Bonded parameters mutation: {bonded_terms_mutation}.')
+            logger.debug(f'Charge parameters mutation: {charge_mutation}.')
 
             t = CommonCoreTransformation(
-                self.get_common_core_idx_mol1(),
-                self.get_common_core_idx_mol2(),
+                self.get_common_core_idx_mol1() + self.dummy_region_cc1.lj_default,
+                self.get_common_core_idx_mol2() + self.dummy_region_cc2.lj_default,
                 self.psfs['m1'],
                 self.psfs['m2'],
                 nr_of_steps_for_cc_transformation,
                 self.s1_tlc,
                 self.s2_tlc,
-                self.terminal_dummy_atom_cc1,
-                self.terminal_dummy_atom_cc2,
                 self.charge_compensated_ligand2_psf,
                 charge_mutation=charge_mutation,
                 bonded_terms_mutation=bonded_terms_mutation)
@@ -614,21 +663,18 @@ class ProposeMutationRoute(object):
 
         return (list(set(terminal_dummy_atoms)), list(set(terminal_real_atoms)))
 
-    # def _match_terminal_dummy_and_real_atoms
-
     def _mutate_to_common_core(self, dummy_region: DummyRegion, cc_idx: list, nr_of_steps_for_electrostatic: int) -> list:
         """
         Helper function - do not call directly.
         Generates the mutation route to the common fore for mol.
         """
         
+        from collections import defaultdict
         name = dummy_region.mol_name
-        tlc = dummy_region.tlc
         
         mol = self.mols[name]
-        charge_mutations = []
-        lj_mutations = []
-        
+        mutations = defaultdict(list)
+
         # get the atom that connects the common core to the dummy regiom
         match_termin_real_and_dummy_atoms = dummy_region.match_termin_real_and_dummy_atoms
 
@@ -663,15 +709,13 @@ class ProposeMutationRoute(object):
                                    vdw_atom_idx = [],
                                    steric_mutation_to_default = False)
             
-                charge_mutations.append(m)
+                mutations['charge'].append(m)
                 
             ############################################
             ############################################
             # LJ mutation
             ############################################
             ############################################
-            # save the last mutation steps
-            lj_terminal_mutations = []
 
             # start with mutation of LJ of hydrogens
             # Only take hydrogens that are not terminal hydrogens
@@ -684,46 +728,37 @@ class ProposeMutationRoute(object):
                                         vdw_atom_idx = hydrogens,
                                         steric_mutation_to_default = False)
 
-                lj_mutations.append(m)
-            already_mutated = []
-            # continue with scaling of heavy atoms LJ
-            all_bonds = []
+                mutations['hydrogen-lj'].append(m)
+            
+            
+            for region in dummy_region.connected_dummy_regions:          
+                for atom_idx in region:
+                    # test if atom is a terminal atom and there is a corresponding atom on the other cc
+                    if atom_idx in dummy_region.match_termin_real_and_dummy_atoms.values():
+                        m = MutationDefinition(atoms_to_be_mutated=atoms_to_be_mutated, 
+                            common_core=cc_idx, 
+                            dummy_region=dummy_region,
+                            lambda_value_electrostatic = 1.0,
+                            lambda_value_vdw = 0.0,
+                            vdw_atom_idx = atom_idx,
+                            steric_mutation_to_default = True)
 
-            # get all bonds
-            for bond in nx.dfs_edges(self.graphs[name]):
-                logger.debug(bond)
-                all_bonds.append(bond)
-
-            for idx1, idx2 in all_bonds:
-                # continue if atom is not a hydrogen/already mutated and in the list of to be mutated atoms
-                if idx1 in atoms_to_be_mutated and idx1 not in hydrogens and idx1 not in already_mutated:
-                    # is it a terminal atom?
-                    if idx1 in terminal_dummy_atoms:
-                        lj_terminal_mutations.append(StericToDefaultMutation([idx1]))
+                        mutations['terminal-lj'].append(m)
+                    elif atom_idx in hydrogens:
+                        # already mutated
+                        continue
                     else:
-                        lj_mutations.append(StericToZeroMutation([idx1]))
-                    already_mutated.append(idx1)
-                # continue if atom is not a hydrogen/already mutated and in the list of to be mutated atoms
-                if idx2 in atoms_to_be_mutated and idx2 not in hydrogens and idx2 not in already_mutated:
-                    if idx2 in terminal_dummy_atoms:
-                        lj_terminal_mutations.append(StericToDefaultMutation([idx2]))
-                    else:
-                        lj_mutations.append(StericToZeroMutation([idx2]))
-                    already_mutated.append(idx2)
-
-            # test that all mutations are included
-            # TODO: test that all mutations are covered
-            mutations = charge_mutations + lj_mutations + lj_terminal_mutations
-
-            for m in mutations:
-                if type(m) == ChargeMutation:
-                    logger.debug(f"charge mutation on: {str(m.atom_idx)}")
-                elif type(m) == StericMutation:
-                    logger.debug(f"steric mutation on: {str(m.atom_idx)}")
-                else:
-                    logger.debug(f"mutation on: {str(m.atom_idx)}")
+                        m = MutationDefinition(atoms_to_be_mutated=atoms_to_be_mutated, 
+                            common_core=cc_idx, 
+                            dummy_region=dummy_region,
+                            lambda_value_electrostatic = 1.0,
+                            lambda_value_vdw = 0.0,
+                            vdw_atom_idx = atom_idx,
+                            steric_mutation_to_default = False)      
+                        mutations['lj'].append(m)                                        
+                        
         else:
-            logger.info("No atoms will be decoupled.")
+            logger.critical("No atoms will be decoupled.")
             mutations = []
         return mutations
 
@@ -738,8 +773,6 @@ class CommonCoreTransformation(object):
                  nr_of_steps: int,
                  tlc_cc1: str,
                  tlc_cc2: str,
-                 terminal_atom_idx_cc1: int,
-                 terminal_atom_idx_cc2: int,
                  charge_compensated_ligand2_psf: pm.charmm.CharmmPsfFile,
                  charge_mutation: bool,
                  bonded_terms_mutation: bool
@@ -769,10 +802,7 @@ class CommonCoreTransformation(object):
         assert(self.nr_of_steps >= 2)
         self.tlc_cc1 = tlc_cc1
         self.tlc_cc2 = tlc_cc2
-        self.terminal_atom_idx_cc1 = terminal_atom_idx_cc1
-        self.terminal_atom_idx_cc2 = terminal_atom_idx_cc2
-        self.atom_names_mapping, self.terminal_names_mapping = self._get_atom_mapping()
-        self.atom_names_mapping_for_bonded_terms = {**self.atom_names_mapping, **self.terminal_names_mapping}
+        self.atom_names_mapping  = self._get_atom_mapping()
         self.charge_mutation = charge_mutation
         self.bonded_terms_mutation = bonded_terms_mutation
         self.charge_compensated_ligand2_psf = charge_compensated_ligand2_psf
@@ -780,7 +810,7 @@ class CommonCoreTransformation(object):
         logger.info(f'Bonded terms mutation: {bonded_terms_mutation}')
         logger.info(f'Charge mutation: {charge_mutation}')
 
-    def _get_atom_mapping(self):
+    def _get_atom_mapping(self)->list:
         """
         _get_atom_mapping -- match the atom names of the common cores
 
@@ -796,11 +826,7 @@ class CommonCoreTransformation(object):
             ligand2_atom = self.ligand2_psf[cc2_idx]
             match_atom_names_cc1_to_cc2[ligand1_atom.name] = ligand2_atom.name
 
-        # match terminal atoms
-        match_terminal_atoms_cc1_to_cc2 = {
-            self.ligand1_psf[self.terminal_atom_idx_cc1].name: self.ligand2_psf[self.terminal_atom_idx_cc2].name}
-
-        return match_atom_names_cc1_to_cc2, match_terminal_atoms_cc1_to_cc2
+        return match_atom_names_cc1_to_cc2
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, tlc: str, scale: float):
 

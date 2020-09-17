@@ -330,24 +330,42 @@ def test_find_connected_dummy_regions():
     match_terminal_atoms_cc1 = a._match_terminal_real_and_dummy_atoms_for_mol1()
     match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
 
+    # find connected dummy regions
     connected_dummy_regions_cc1 = a._find_connected_dummy_regions(
         "m1", match_terminal_atoms_cc1
     )
+    connected_dummy_regions_cc2 = a._find_connected_dummy_regions(
+        "m2", match_terminal_atoms_cc2
+    )
+
+    lj_default_cc1, lj_default_cc2 = a._match_terminal_dummy_atoms_between_common_cores(
+        match_terminal_atoms_cc1,
+        match_terminal_atoms_cc2,
+        connected_dummy_regions_cc1,
+        connected_dummy_regions_cc2,
+    )
+
     dummy_region_m1 = transformato.mutate.DummyRegion(
-        "m1", match_terminal_atoms_cc1, connected_dummy_regions_cc1
+        "m1",
+        match_terminal_atoms_cc1,
+        connected_dummy_regions_cc1,
+        s1.tlc,
+        lj_default=lj_default_cc1,
     )
 
     print(connected_dummy_regions_cc1)
 
-    connected_dummy_regions_cc2 = a._find_connected_dummy_regions(
-        "m2", match_terminal_atoms_cc2
-    )
     dummy_region_m2 = transformato.mutate.DummyRegion(
-        "m2", match_terminal_atoms_cc2, connected_dummy_regions_cc2
+        "m2",
+        match_terminal_atoms_cc2,
+        connected_dummy_regions_cc2,
+        s2.tlc,
+        lj_default=lj_default_cc2,
     )
 
     print(connected_dummy_regions_cc2)
 
+    # match
     assert dummy_region_m1.connected_dummy_regions[0] == {
         40,
         42,
@@ -364,6 +382,7 @@ def test_find_connected_dummy_regions():
     assert dummy_region_m2.connected_dummy_regions[1] == {25}
     assert dummy_region_m2.connected_dummy_regions[2] == {39}
 
+    # return real atom that connects dummy region to mol
     assert (
         dummy_region_m1.return_connecting_real_atom(
             dummy_region_m1.connected_dummy_regions[0]
@@ -378,12 +397,19 @@ def test_find_connected_dummy_regions():
         == 0
     )
 
+    print(f"Matched dummy region: {dummy_region_m1.lj_default}")
+    print(f"Matched dummy region: {dummy_region_m2.lj_default}")
+    assert dummy_region_m1.lj_default == [1, 18]
+    assert dummy_region_m2.lj_default == [1, 39]
+
 
 def test_common_core():
 
     for conf in [
         "config/test-2oj9-solvation-free-energy.yaml",
         "config/test-2oj9-binding-free-energy.yaml",
+        "config/test-ethane-ethanol-solvation-free-energy.yaml",
+
     ]:
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
@@ -397,6 +423,7 @@ def test_common_core():
 def test_charge_mutation():
 
     for conf in [
+        "config/test-ethane-ethanol-solvation-free-energy.yaml",
         "config/test-2oj9-solvation-free-energy.yaml",
         "config/test-2oj9-binding-free-energy.yaml",
     ]:
