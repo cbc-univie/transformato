@@ -118,11 +118,6 @@ class create_dataclass_file(object):
         return tracker
 
 
-
-                    
-
-
-
     def __dict_to_dataclass__(self, configuration):
         self.setup = 'from dataclasses import dataclass' + '\n' + '\n' + '#dataclass' + '\n'
 
