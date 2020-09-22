@@ -21,7 +21,7 @@ import networkx as nx
 from parmed.charmm.parameters import CharmmParameterSet
 #import transformato
 from transformato import (IntermediateStateFactory, ProposeMutationRoute,
-                          SystemStructure, load_config_yaml, get_bin_dir, get_toppar_dir, canvas)
+                          SystemStructure, load_config_yaml, input_dataclass, fill_dataclass, get_bin_dir, get_toppar_dir, canvas)
 
 
 #############################
@@ -55,6 +55,14 @@ def test_read_yaml(): #transformato/transformato/utils.py
                                    input_dir='.', output_dir='data/')
 
     assert(settingsMap['system']['name'] == '2OJ9-test1-2OJ9-test2-solvation-free-energy')
+
+#def test_fill_dataclass():
+    #configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
+                                   #input_dir='.', output_dir='data/')
+    #filled_class = fill_dataclass(input_dataclass,configuration)
+
+    #assert(filled_class == input_dataclass(cluster_dir='/data/local/2OJ9-test1-2OJ9-test2-solvation-free-energy'))
+    
 
 ###### EXPORT FUNCTION ######
 

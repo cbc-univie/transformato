@@ -40,35 +40,8 @@ def load_config_yaml(config, input_dir, output_dir):
 
     return settingsMap
 
-
-
-
-
-def dict_depth(d):
-    if isinstance(d, dict):
-        return 1 + (max(map(dict_depth, d.values())) if d else 0)
-    return 0
-
-
-def dict_generator(indict, pre=None):   
-    pre = pre[:] if pre else []
-    if isinstance(indict, dict):
-        for key, value in indict.items():
-            if isinstance(value, dict):
-                for d in dict_generator(value, pre + [key]):
-                    yield d
-            elif isinstance(value, list) or isinstance(value, tuple):
-                for v in value:
-                    for d in dict_generator(v, pre + [key]):
-                        yield d
-            else:
-                yield pre + [key, value]
-    else:
-        yield pre + [indict]
-
-
 class CodeBlock():
-
+    
     def __init__(self, head, block):
         self.head = head
         self.block = block
@@ -80,93 +53,69 @@ class CodeBlock():
             if isinstance(block, CodeBlock):
                 result += block.__str__(indent)
             else:
-                result += indent + block + '\n'
+                result += indent + block + '\n' 
         return result
+    
+    
+def class_code(configuration, total_code, in_secondary_loop = False):
+    if isinstance(configuration, dict):
+        for key, value in configuration.items():
+            head = '@dataclass' + '\n' + 'class ' + str(key)
+            block = []
+            if isinstance(value, dict):   
+                for key1, value1 in value.items(): 
+                    if isinstance(value1, dict): 
+                        block.append(str(key1) + ':' + ' ' + str(key1))
+                    elif not isinstance(value1, dict):
+                        value_type = str(type(value1)).split("'")[1]
+                        block.append(str(key1) + ':' + ' ' + value_type)        
+                total_code += str(CodeBlock(head,block))
+                total_code += class_code(value,total_code='', in_secondary_loop = True)
+                in_secondary_loop = False
+            elif not isinstance(value, dict):
+                if in_secondary_loop == False:
+                    value_type = str(type(value)).split("'")[1]
+                    block.append(str(key) + ':' + ' ' + value_type)
+                    total_code += str(CodeBlock(head,block))
+                else:
+                    pass
+            else:
+                print ('type error')
+                #logger.info("Unsupported Type")
+    return total_code
+
 
 class create_dataclass_file(object):
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.generator = dict_generator(self.configuration)
-        #self.__gen_test__(self.generator)
-        self.tracker = self.__structure__(self.generator)
-        print (self.tracker)
-        #self.results = self.__dict_to_dataclass__(self.configuration)
-        #self.__parser__(self.results)
-
-    def __gen_test__(self, generator):
-        typelst = []
-        for i in self.generator:
-            typelst.append(type(i[-1]))
-
-        print (typelst)
-
-        if typelst[0] is str:
-            print ('Yolo')
-        
-    def __structure__(self, generator):
-        tracker = []
-        for i in self.generator:
-            #print (i)
-            depth_level = 0
-            for j in i[:-1]:
-                #print(j)
-                tracker.append((j,depth_level))
-                #print (tracker)
-                depth_level += 1
-
-        return tracker
-
-
-    def __dict_to_dataclass__(self, configuration):
+        self.results = self.__structure__(self.configuration)
+        self.__parser__(self.results)
+       
+    def __structure__(self, configuration):        
+        self.total_code = ''
+        self.code = str(class_code(self.configuration,self.total_code))
         self.setup = 'from dataclasses import dataclass' + '\n' + '\n' + '#dataclass' + '\n'
-
-
-        self.code = str(CodeBlock('def print_success(x)', [configuration, 'print "Def finished"']))
         self.results = self.setup + self.code
         return self.results
 
     def __parser__(self, results):
-
         file_path = os.getcwd()
-        file_name = '/dataclass.py'
+        file_name = '/scripts/dataclass.py'
         tmp_path = file_path + file_name
-
+        
         try:
             with open(tmp_path, 'w') as f:
                 f.write(self.results)
                 f.close()
-
         except IOError:
             print(f"Data class could not be created: {file_name}")
             #logger.info(f"Data class could not be created: {file_name}")
             pass
-
-    
-
-
-configuration = load_config_yaml(config='config/ethane-ethanol-solvation-free-energy.yaml',
-                                   input_dir='.', output_dir='data/')  
+        
+   
+configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
+                                   input_dir='.', output_dir='data/')
 
 
-
-def iter_paths(d):
-    def iter1(d, path):
-        paths = []
-        for k, v in d.items():
-            if isinstance(v, dict):
-                paths += iter1(v, path + [k])
-            paths.append((path + [k], v))
-        return paths
-    return iter1(d, [])
-
-#print(iter_paths(configuration))
-
-#for x in configuration:
-    #print(x)
-#print (settingsMap)
-#configuration= CodeBlock('if x>0', ['print x', 'print "Finished."'])
-#configuration = CodeBlock('def print_success(x)', [ifblock, 'print "Def finished"'])
-#print (configuration)
 create_dataclass_file(configuration)
-#print (configuration)

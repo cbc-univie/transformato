@@ -18,7 +18,7 @@ system:
         'step4_equilibration'
       simulation_parameter:
         'step5_production.inp'
-      intermediate-filename:
+      intermediate_filename:
         'lig_in_vacuum'
     waterbox:
       dirname:
@@ -31,7 +31,7 @@ system:
         'step4_equilibration'
       simulation_parameter:
         'step5_production.inp'
-      intermediate-filename:
+      intermediate_filename:
         'lig_in_waterbox'
 
   structure2:
@@ -50,7 +50,7 @@ system:
         'step4_equilibration'
       simulation_parameter:
         'step5_production.inp'
-      intermediate-filename:
+      intermediate_filename:
         'lig_in_vacuum'
     waterbox:
       dirname:
@@ -63,7 +63,7 @@ system:
         'step4_equilibration'
       simulation_parameter:
         'step5_production.inp'
-      intermediate-filename:
+      intermediate_filename:
         'lig_in_waterbox'
 
 ################
@@ -81,7 +81,7 @@ simulation:
     dt:
       0.001
 
-  free-energy-type:
+  free_energy_type:
     'solvation-free-energy'
 ################
 solvation:
