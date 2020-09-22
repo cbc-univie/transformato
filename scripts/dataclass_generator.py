@@ -30,7 +30,7 @@ def load_config_yaml(config, input_dir, output_dir):
     settingsMap['bin_dir'] = get_bin_dir()
     settingsMap['analysis_dir_base'] = os.path.abspath(f"{output_dir}")
     settingsMap['data_dir_base'] = os.path.abspath(f"{input_dir}")
-    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}-{settingsMap['simulation']['free-energy-type']}"
+    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}-{settingsMap['simulation']['free_energy_type']}"
     settingsMap['system_dir'] = f"{settingsMap['analysis_dir_base']}/{system_name}"
     settingsMap['cluster_dir'] = f"/data/local/{system_name}"
 
@@ -69,16 +69,17 @@ def class_code(configuration, total_code, in_secondary_loop = False):
                     elif not isinstance(value1, dict):
                         value_type = str(type(value1)).split("'")[1]
                         block.append(str(key1) + ':' + ' ' + value_type)        
-                total_code += str(CodeBlock(head,block))
-                total_code += class_code(value,total_code='', in_secondary_loop = True)
+                total_code = str(CodeBlock(head,block)) + total_code
+                total_code = class_code(value,total_code='', in_secondary_loop = True) + total_code
                 in_secondary_loop = False
             elif not isinstance(value, dict):
-                if in_secondary_loop == False:
-                    value_type = str(type(value)).split("'")[1]
-                    block.append(str(key) + ':' + ' ' + value_type)
-                    total_code += str(CodeBlock(head,block))
-                else:
-                    pass
+                pass
+                #if in_secondary_loop == False:
+                    #value_type = str(type(value)).split("'")[1]
+                    #block.append(str(key) + ':' + ' ' + value_type)
+                    #total_code = str(CodeBlock(head,block)) + total_code
+                #else:
+                    #pass
             else:
                 print ('type error')
                 #logger.info("Unsupported Type")
@@ -117,5 +118,6 @@ class create_dataclass_file(object):
 configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
                                    input_dir='.', output_dir='data/')
 
+configuration = {'input_dataclass': configuration}
 
 create_dataclass_file(configuration)
