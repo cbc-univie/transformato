@@ -79,12 +79,12 @@ def test_initialize_systems():
     )
 
     s1 = SystemStructure(configuration, "structure1")
-    assert int(s1.waterbox_offset) == 0
-    assert int(s1.vacuum_offset) == 0
+    assert int(s1.offset["waterbox"]) == 0
+    assert int(s1.offset["vacuum"]) == 0
 
     s2 = SystemStructure(configuration, "structure2")
-    assert int(s2.waterbox_offset) == 0
-    assert int(s2.vacuum_offset) == 0
+    assert int(s2.offset["waterbox"]) == 0
+    assert int(s2.offset["vacuum"]) == 0
 
     assert "vacuum" in s1.envs and "vacuum" in s2.envs
     assert "waterbox" in s1.envs and "waterbox" in s2.envs
@@ -96,16 +96,25 @@ def test_initialize_systems():
     )
 
     s1 = SystemStructure(configuration, "structure1")
-    assert int(s1.waterbox_offset) == 0
-    assert int(s1.complex_offset) == 4811
+    assert int(s1.offset["waterbox"]) == 0
+    assert int(s1.offset["complex"]) == 4811
 
     s2 = SystemStructure(configuration, "structure2")
-    assert int(s2.waterbox_offset) == 0
-    assert int(s2.complex_offset) == 4692
+    assert int(s2.offset["waterbox"]) == 0
+    assert int(s2.offset["complex"]) == 4692
 
     assert "complex" in s1.envs and "complex" in s2.envs
     assert "waterbox" in s1.envs and "waterbox" in s2.envs
 
+    configuration = load_config_yaml(
+        config="config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+        input_dir="data/",
+        output_dir=".",
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    a = ProposeMutationRoute(s1, s2)
 
 def test_proposed_mutation_mcs():
 
@@ -278,6 +287,44 @@ def test_proposed_mutation_mcs():
 
 
 def test_proposed_mutation_terminal_dummy_real_atom_match():
+    from rdkit.Chem import rdFMCS
+
+    for conf in [
+        "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+    ]:
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        a = ProposeMutationRoute(s1, s2)
+        # find mcs
+        a.bondCompare = rdFMCS.BondCompare.CompareOrderExact
+        a.completeRingsOnly = True
+        a._find_mcs("m1", "m2")
+        a.remove_idx_from_common_core_of_mol1([14])
+        a.remove_idx_from_common_core_of_mol2([6])
+
+        # find terminal dummy/real atoms
+        a._set_common_core_parameters()
+        # match terminal real/dummy atoms
+        print(a.terminal_real_atom_cc1)
+        print(a.terminal_real_atom_cc2)
+        assert set(a.terminal_real_atom_cc1) == set([15])
+        assert set(a.terminal_dummy_atom_cc1) == set([14])
+        assert set(a.terminal_real_atom_cc2) == set([15])
+        assert set(a.terminal_dummy_atom_cc2) == set([6])
+
+        match_terminal_atoms_cc1 = a._match_terminal_real_and_dummy_atoms_for_mol1()
+        match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
+
+        # are the correct terminal common core atoms identified?
+        assert match_terminal_atoms_cc1[15] == set([14])
+        assert match_terminal_atoms_cc2[15] == set([6])
+
+        # terminal atoms match between the two common cores
+        assert a.matching_terminal_atoms_between_cc[0] == (15, 15)
+        # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 0 : cc2: 0
+        # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 16 : cc2: 15
 
     for conf in [
         "config/test-2oj9-solvation-free-energy.yaml",
@@ -309,14 +356,56 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
         assert match_terminal_atoms_cc2[15] == set([39])
 
         # terminal atoms match between the two common cores
-        assert a.matching_terminal_atoms_betwee_cc[0] == (0, 0)
-        assert a.matching_terminal_atoms_betwee_cc[1] == (16, 15)
+        assert a.matching_terminal_atoms_between_cc[0] == (0, 0)
+        assert a.matching_terminal_atoms_between_cc[1] == (16, 15)
         # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 0 : cc2: 0
         # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 16 : cc2: 15
 
 
 def test_find_connected_dummy_regions():
 
+    from rdkit.Chem import rdFMCS
+
+    conf = "config/test-7-CPI-2-CPI-solvation-free-energy.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    a = ProposeMutationRoute(s1, s2)
+    # find mcs
+    a.bondCompare = rdFMCS.BondCompare.CompareOrderExact
+    a.completeRingsOnly = True
+    a._find_mcs("m1", "m2")
+    a.remove_idx_from_common_core_of_mol1([14])
+    a.remove_idx_from_common_core_of_mol2([6])
+
+    # find terminal dummy/real atoms
+    a._set_common_core_parameters()
+    # match terminal real/dummy atoms
+    match_terminal_atoms_cc1 = a._match_terminal_real_and_dummy_atoms_for_mol1()
+    match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
+    print(match_terminal_atoms_cc1)
+    print(match_terminal_atoms_cc2)
+
+    # find connected dummy regions
+    connected_dummy_regions_cc1 = a._find_connected_dummy_regions(
+        "m1", match_terminal_atoms_cc1
+    )
+    connected_dummy_regions_cc2 = a._find_connected_dummy_regions(
+        "m2", match_terminal_atoms_cc2
+    )
+
+    lj_default_cc1, lj_default_cc2 = a._match_terminal_dummy_atoms_between_common_cores(
+        match_terminal_atoms_cc1,
+        match_terminal_atoms_cc2,
+        connected_dummy_regions_cc1,
+        connected_dummy_regions_cc2,
+    )
+
+    print(connected_dummy_regions_cc1)
+    print(connected_dummy_regions_cc2)
+
+    ##################################################
     conf = "config/test-2oj9-solvation-free-energy.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
     s1 = SystemStructure(configuration, "structure1")
@@ -403,13 +492,12 @@ def test_find_connected_dummy_regions():
     assert dummy_region_m2.lj_default == [1, 39]
 
 
-def test_common_core():
+def test_common_core_system1():
+    from rdkit.Chem import rdFMCS
 
     for conf in [
-        "config/test-2oj9-solvation-free-energy.yaml",
-        "config/test-2oj9-binding-free-energy.yaml",
         "config/test-ethane-ethanol-solvation-free-energy.yaml",
-
+        "config/test-toluene-methane-solvation-free-energy.yaml"
     ]:
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
@@ -420,13 +508,127 @@ def test_common_core():
         a.calculate_common_core()
 
 
-def test_charge_mutation():
+def test_common_core_system2():
+    from rdkit.Chem import rdFMCS
+
+    for conf in [
+        "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+    ]:
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        a = ProposeMutationRoute(s1, s2)
+        # find mcs, find terminal dummy/real atoms, generate charge compensated psfs
+        a.bondCompare = rdFMCS.BondCompare.CompareOrderExact
+        a.completeRingsOnly = True
+        a.propose_common_core()
+
+        a.remove_idx_from_common_core_of_mol1([14])
+        a.remove_idx_from_common_core_of_mol2([6])
+        a.finish_common_core()
+
+
+def test_mutation_list():
+    from ..utils import print_mutations
+    from rdkit.Chem import rdFMCS
+
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
+
+        ],
+        ["ethane-ethanol", "7-CPI-2-CPI", "toluene-methane"],
+    ):
+
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+
+        if system_name == "ethane-ethanol":
+            s1_to_s2.calculate_common_core()
+            mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+            assert set(mutation_list.keys()) == set(
+                ["charge", "terminal-lj", "transform"]
+            )
+            mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+
+        elif system_name == "7-CPI-2-CPI":
+            s1_to_s2.bondCompare = rdFMCS.BondCompare.CompareOrderExact
+            s1_to_s2.completeRingsOnly = True
+            s1_to_s2.propose_common_core()
+            s1_to_s2.remove_idx_from_common_core_of_mol1([14])
+            s1_to_s2.remove_idx_from_common_core_of_mol2([6])
+            s1_to_s2.finish_common_core()
+            mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+            assert set(mutation_list.keys()) == set(
+                ["charge", "hydrogen-lj", "lj", "transform", "terminal-lj"]
+            )
+            mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+
+        elif system_name == "toluene-methane":
+            s1_to_s2.propose_common_core()
+            s1_to_s2.finish_common_core()
+            mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+            assert set(mutation_list.keys()) == set(
+                ["charge", "hydrogen-lj", "lj", "transform", "terminal-lj"]
+            )
+            mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+
+        else:
+            pass
+        print_mutations(mutation_list)
+
+
+def test_endpoint_mutation():
+    # test physical endpoint systems
+    from ..utils import print_mutations
+    from ..mutate import MutationDefinition
 
     for conf in [
         "config/test-ethane-ethanol-solvation-free-energy.yaml",
-        "config/test-2oj9-solvation-free-energy.yaml",
-        "config/test-2oj9-binding-free-energy.yaml",
+        "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+        "config/test-toluene-methane-solvation-free-energy.yaml"
+
     ]:
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        s2_to_s1 = ProposeMutationRoute(s2, s1)
+        try:
+            for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
+                a.calculate_common_core()
+                i = IntermediateStateFactory(
+                    system=system,
+                    configuration=configuration,
+                )
+                output_file_base = i.write_state(mutation_conf=[], intst_nr=0)
+
+        finally:
+            shutil.rmtree(output_file_base)
+
+
+def test_charge_mutation_test_system1():
+    from ..utils import print_mutations
+    from ..mutate import MutationDefinition
+
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
+
+        ],
+        ["ethane-ethanol", "7-CPI-2-CPI", "toluene-methane"],
+    ):
+
+        # try writing endstate in all directions
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
@@ -435,229 +637,621 @@ def test_charge_mutation():
         s2_to_s1 = ProposeMutationRoute(s2, s1)
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
             a.calculate_common_core()
-            mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_electrostatic=4, nr_of_steps_for_cc_transformation=4
-            )
             i = IntermediateStateFactory(
-                system=system, mutation_list=mutation_list, configuration=configuration
+                system=system,
+                configuration=configuration,
             )
+            output_file_base = i.write_state(mutation_conf=[], intst_nr=0)
 
-            # test endpoint - charge not scaled
-            m = mutation_list[0]
-            current_step = 0
+            # original psfs without charge change
+            original_psf = {}
+            for env in system.envs:
+                original_psf[env] = copy.deepcopy(system.psfs[env])
+
             try:
-                output_file_base = i.generate_specific_intermediate_state(
-                    m, current_step
-                )
-                # get a copy of the original structure
-                original_psf = {}
                 for env in system.envs:
-                    original_psf[env] = copy.deepcopy(system.psf_mapping[env])
+                    offset = system.offset[env]
 
-                for env in system.envs:
-                    offset = min(
-                        [
-                            a.idx
-                            for a in original_psf[env]
-                            .view[f":{system.tlc.upper()}"]
-                            .atoms
-                        ]
-                    )
-
-                    new_psf = generate_psf(output_file_base, env)
-                    scale = current_step / (m.nr_of_steps)
-                    for idx in m.atom_idx:
-                        assert np.isclose(
-                            original_psf[env].atoms[idx + offset].charge * (1 - scale),
-                            new_psf.atoms[idx + offset].charge,
-                        )
+                    mutated_psf = generate_psf(output_file_base, env)
+                    for atom in system.mol.GetAtoms():
+                        idx = atom.GetIdx()
                         assert np.isclose(
                             original_psf[env].atoms[idx + offset].charge,
-                            new_psf.atoms[idx + offset].charge,
+                            mutated_psf.atoms[idx + offset].charge,
+                            rtol=1e-3,
                         )
             finally:
                 shutil.rmtree(output_file_base)
 
-            # scale charges with 0.25
-            current_step = 1
-            try:
-                output_file_base = i.generate_specific_intermediate_state(
-                    m, current_step
+
+def test_charge_mutation_test_system2():
+    from ..utils import print_mutations
+    from ..mutate import MutationDefinition
+
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
+
+        ],
+        ["ethane-ethanol", "7-CPI-2-CPI", 'toluene-methane'],
+    ):
+
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        # scale charges with 0.5
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        # original psfs without charge change
+        original_psf = {}
+        for env in s1.envs:
+            original_psf[env] = copy.deepcopy(s1.psfs[env])
+
+        for lambda_charge in [1.0, 0.5, 0.25, 0.0]:
+            for a, system in zip([s1_to_s2], [s1]):
+                a.calculate_common_core()
+                i = IntermediateStateFactory(
+                    system=system,
+                    configuration=configuration,
                 )
-                for env in system.envs:
-                    offset = min(
-                        [
-                            a.idx
-                            for a in original_psf[env]
-                            .view[f":{system.tlc.upper()}"]
-                            .atoms
-                        ]
+
+
+                try:
+                    mutation_list = a.generate_mutations_to_common_core_for_mol1()
+
+                    charges = mutation_list["charge"]
+                    output_file_base = i.write_state(
+                        mutation_conf=charges,
+                        lambda_value_electrostatic=lambda_charge,
+                        intst_nr=0,
                     )
-                    new_psf = generate_psf(output_file_base, env)
-                    scale = current_step / (m.nr_of_steps)
-                    print("Scaling charges with: {}".format((1 - scale)))
-                    for idx in m.atom_idx:
-                        assert np.isclose(
-                            original_psf[env].atoms[idx + offset].charge * (1 - scale),
-                            new_psf.atoms[idx + offset].charge,
-                            rtol=1e-03,
-                        )
-            finally:
-                shutil.rmtree(output_file_base)
-
-            # scale charges with 1.0
-            current_step = 4
-            try:
-                output_file_base = i.generate_specific_intermediate_state(
-                    m, current_step
-                )
-                for env in system.envs:
-                    offset = min(
-                        [
-                            a.idx
-                            for a in original_psf[env]
-                            .view[f":{system.tlc.upper()}"]
-                            .atoms
-                        ]
-                    )
-                    new_psf = generate_psf(output_file_base, env)
-                    scale = current_step / (m.nr_of_steps)
-                    print("Scaling charges with: {}".format((1 - scale)))
-                    for idx in m.atom_idx:
-                        idxo = idx + offset
-                        assert np.isclose(
-                            original_psf[env].atoms[idxo].charge * (1 - scale),
-                            new_psf.atoms[idxo].charge,
-                            rtol=1e-03,
-                        )
-                        assert np.isclose(0.0, new_psf.atoms[idxo].charge)
-            finally:
-                shutil.rmtree(output_file_base)
+                    for env in system.envs:
+                        offset = system.offset[env]
+                        # read in newly generated psf
+                        mutated_psf = generate_psf(output_file_base, env)
+                        for idx in charges[0].atoms_to_be_mutated:
+                            assert np.isclose(
+                                original_psf[env].atoms[idx + offset].charge
+                                * lambda_charge,
+                                mutated_psf.atoms[idx + offset].charge,
+                                rtol=1e-03,
+                            )
 
 
-def test_vdw_mutation():
 
-    for conf in [
-        "config/test-2oj9-solvation-free-energy.yaml",
-        "config/test-2oj9-binding-free-energy.yaml",
-    ]:
+                finally:
+                    shutil.rmtree(output_file_base)
+
+
+def test_vdw_mutation_for_hydrogens_system1():
+    # testing terminal lj
+    from rdkit.Chem import rdFMCS
+
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
+
+        ],
+        ["ethane-ethanol",'toluene-methane'],
+    ):
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
         s1_to_s2 = ProposeMutationRoute(s1, s2)
-        s2_to_s1 = ProposeMutationRoute(s2, s1)
-        for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
-            mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_electrostatic=4, nr_of_steps_for_cc_transformation=4
+        s1_to_s2.calculate_common_core()
+
+        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+        i = IntermediateStateFactory(
+            system=s1,
+            configuration=configuration,
+        )
+
+        original_psf = {}
+        for env in s1.envs:
+            original_psf[env] = copy.deepcopy(s1.psfs[env])
+
+        try:
+
+            terminal_lj_mutations = mutation_list["terminal-lj"]
+            output_file_base = i.write_state(
+                mutation_conf=terminal_lj_mutations,
+                lambda_value_vdw=0.0,
+                intst_nr=0,
             )
+            print("Set epsilon/rmin to zero for selected atoms")
+
+            for env in s1.envs:
+                new_psf = generate_psf(output_file_base, env)
+                # are the terminal lj parameter correctly set?
+                offset = s1.offset[env]
+                for terminal_lj in terminal_lj_mutations:
+                    for idx in terminal_lj.vdw_atom_idx:
+                        idxo = idx + offset
+                        assert np.isclose(
+                            -0.15,
+                            new_psf.atoms[idxo].epsilon,
+                            rtol=1e-3,
+                        )
+                        assert np.isclose(
+                            1.5,
+                            new_psf.atoms[idxo].rmin,
+                            rtol=1e-3,
+                        )
+
+                # make sure that all other idx are not touched
+                for idx in range(len(original_psf[env].atoms)):
+                    idxo = idx - offset  # NOTE: the '-'
+                    if idxo not in terminal_lj.vdw_atom_idx:
+                        assert np.isclose(
+                            original_psf[env].atoms[idx].epsilon,
+                            new_psf.atoms[idx].epsilon,
+                            rtol=1e-3,
+                        )
+                        assert np.isclose(
+                            original_psf[env].atoms[idx].rmin,
+                            new_psf.atoms[idx].rmin,
+                            rtol=1e-3,
+                        )
+
+        finally:
+            shutil.rmtree(output_file_base)
+
+
+def test_vdw_mutation_for_hydrogens_system2():
+    from rdkit.Chem import rdFMCS
+
+    for conf, system_name in zip(
+        [
+            "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+        ],
+        ["7-CPI-2-CPI"],
+    ):
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        s1_to_s2.bondCompare = rdFMCS.BondCompare.CompareOrderExact
+        s1_to_s2.completeRingsOnly = True
+        s1_to_s2.calculate_common_core()
+
+        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+        i = IntermediateStateFactory(
+            system=s1,
+            configuration=configuration,
+        )
+
+        original_psf = {}
+        for env in s1.envs:
+            original_psf[env] = copy.deepcopy(s1.psfs[env])
+
+        for lambda_value in [1.0, 0.5, 0.25]:
+            try:
+                # lj hydrogens scaling
+                hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+                output_file_base = i.write_state(
+                    mutation_conf=hydrogen_lj_mutations,
+                    lambda_value_vdw=lambda_value,
+                    intst_nr=0,
+                )
+                print("Set epsilon/rmin for selected atoms")
+
+                for env in s1.envs:
+                    new_psf = generate_psf(output_file_base, env)
+                    # are the terminal lj parameter correctly set?
+                    offset = s1.offset[env]
+                    for hydrogen_lj in hydrogen_lj_mutations:
+                        for idx in hydrogen_lj.vdw_atom_idx:
+                            idxo = idx + offset
+                            assert np.isclose(
+                                original_psf[env].atoms[idxo].epsilon * lambda_value,
+                                new_psf.atoms[idxo].epsilon,
+                                rtol=1e-3,
+                            )
+                            assert np.isclose(
+                                original_psf[env].atoms[idxo].rmin * lambda_value,
+                                new_psf.atoms[idxo].rmin,
+                                rtol=1e-3,
+                            )
+
+                    # make sure that all other idx are not touched
+                    for idx in range(len(original_psf[env].atoms)):
+                        idxo = idx - offset  # NOTE: the '-'
+                        if idxo not in hydrogen_lj.vdw_atom_idx:
+                            assert np.isclose(
+                                original_psf[env].atoms[idx].epsilon,
+                                new_psf.atoms[idx].epsilon,
+                                rtol=1e-3,
+                            )
+                            assert np.isclose(
+                                original_psf[env].atoms[idx].rmin,
+                                new_psf.atoms[idx].rmin,
+                                rtol=1e-3,
+                            )
+
+            finally:
+                shutil.rmtree(output_file_base)
+
+
+def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
+    from rdkit.Chem import rdFMCS
+
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
+
+        ],
+        ["ethane-ethanol", "7-CPI-2-CPI", 'toluene-methane'],
+    ):
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        if system_name == "7-CPI-2-CPI":
+            # find mcs
+            s1_to_s2.bondCompare = rdFMCS.BondCompare.CompareOrderExact
+            s1_to_s2.completeRingsOnly = True
+            s1_to_s2.calculate_common_core()
+        else:
+            s1_to_s2.calculate_common_core()
+
+        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+        i = IntermediateStateFactory(
+            system=s1,
+            configuration=configuration,
+        )
+
+        original_psf = {}
+        for env in s1.envs:
+            original_psf[env] = copy.deepcopy(s1.psfs[env])
+
+        #
+        for lambda_vdw in [1.0, 0.0]:
+            print(f"Lambda: {lambda_vdw}")
+            output_files = []
+
+            intst_nr = 0
+            try:
+
+                all_atoms_for_which_lj_turned_off = []
+                print(mutation_list.keys())
+                # turn off hydrogen lj
+                hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+                print(
+                    f"Turn off lj for hydrogen atoms : {[e.atoms_to_be_mutated for e in hydrogen_lj_mutations]}"
+                )
+                output_file_base = i.write_state(
+                    mutation_conf=hydrogen_lj_mutations,
+                    lambda_value_vdw=lambda_vdw,
+                    intst_nr=intst_nr,
+                )
+                output_files.append(output_file_base)
+                for mutation in hydrogen_lj_mutations:
+                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+
+                # turn off heavy atom lj
+                for mutation in mutation_list["lj"]:
+                    intst_nr += 1
+                    print(
+                        f"Turn off lj for heavy atom : {mutation.atoms_to_be_mutated}"
+                    )
+
+                    output_file_base = i.write_state(
+                        mutation_conf=[mutation],
+                        lambda_value_vdw=lambda_vdw,
+                        intst_nr=intst_nr,
+                    )
+                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+                    output_files.append(output_file_base)
+
+                # change to default lj
+                intst_nr += 1
+                terminal_lj_mutations = mutation_list["terminal-lj"]
+                terminal_idx = []
+                for mutation in terminal_lj_mutations:
+                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+                    terminal_idx.extend(mutation.vdw_atom_idx)
+                print(
+                    f"Turn off lj for terminal atom : {all_atoms_for_which_lj_turned_off}"
+                )
+
+                output_file_base = i.write_state(
+                    mutation_conf=terminal_lj_mutations,
+                    lambda_value_vdw=0.0,
+                    intst_nr=intst_nr,
+                )
+                output_files.append(output_file_base)
+
+                print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
+
+                print(all_atoms_for_which_lj_turned_off)
+                for env in s1.envs:
+                    print(env)
+                    # read in generated psf at last mutation step
+                    new_psf = generate_psf(output_file_base, env)
+                    offset = s1.offset[env]
+                    for idx in all_atoms_for_which_lj_turned_off:
+                        idxo = idx + offset
+                        # match terminal jl
+                        if idx in terminal_idx:
+                            assert np.isclose(
+                                -0.15,
+                                new_psf.atoms[idxo].epsilon,
+                                rtol=1e-3,
+                            )
+                            assert np.isclose(
+                                1.5,
+                                new_psf.atoms[idxo].rmin,
+                                rtol=1e-3,
+                            )
+                        else:
+                            # match all other lj
+                            assert np.isclose(
+                                original_psf[env].atoms[idxo].epsilon * lambda_vdw,
+                                new_psf.atoms[idxo].epsilon,
+                                rtol=1e-3,
+                            )
+                            assert np.isclose(
+                                original_psf[env].atoms[idxo].rmin * lambda_vdw,
+                                new_psf.atoms[idxo].rmin,
+                                rtol=1e-3,
+                            )
+
+                    # make sure that all other idx are not touched
+                    for idx in range(s1.mol.GetNumAtoms()):
+                        if idx not in all_atoms_for_which_lj_turned_off:
+                            print(idx)
+                            assert np.isclose(
+                                original_psf[env].atoms[idx].epsilon,
+                                new_psf.atoms[idx].epsilon,
+                                rtol=1e-3,
+                            )
+                            assert np.isclose(
+                                original_psf[env].atoms[idx].rmin,
+                                new_psf.atoms[idx].rmin,
+                                rtol=1e-3,
+                            )
+
+            finally:
+                for output_file_base in output_files:
+                    shutil.rmtree(output_file_base)
+
+
+def test_full_mutation_system1():
+    from rdkit.Chem import rdFMCS
+
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
+
+        ],
+        ["ethane-ethanol", 'toluene-methane'],
+    ):
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        s1_to_s2.calculate_common_core()
+
+        for mutation_list, system in zip([s1_to_s2.generate_mutations_to_common_core_for_mol1(), s1_to_s2.generate_mutations_to_common_core_for_mol2()], [s1,s2]):
             i = IntermediateStateFactory(
-                system=system, mutation_list=mutation_list, configuration=configuration
+                system=system,
+                configuration=configuration,
             )
+
+            intst = 0
+            charges = mutation_list["charge"]
+            for lambda_value in np.linspace(0, 1, 5):
+                intst += 1
+                print('haeeeeeeeeeee?')
+                try:
+                    print(lambda_value)
+                    # turn off charges
+                    output_file_base = i.write_state(
+                        mutation_conf=charges,
+                        lambda_value_electrostatic=1 - lambda_value,
+                        intst_nr=intst,
+                    )
+                finally:
+                    shutil.rmtree(output_file_base)
 
             original_psf = {}
             for env in system.envs:
-                original_psf[env] = copy.deepcopy(system.psf_mapping[env])
+                original_psf[env] = copy.deepcopy(system.psfs[env])
 
-            m1 = mutation_list[1]
-            current_step = 0
+            #
+            lambda_vdw = 0.0
+            print(f"Lambda: {lambda_vdw}")
+            output_files = []
             try:
-                output_file_base = i.generate_specific_intermediate_state(
-                    m1, current_step
+                intst += 1
+
+                all_atoms_for_which_lj_turned_off = []
+                # Turn of hydrogens
+                hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+                output_file_base = i.write_state(
+                    mutation_conf=hydrogen_lj_mutations,
+                    lambda_value_vdw=lambda_vdw,
+                    intst_nr=intst,
                 )
-                # get a copy of the original structure
+                print(output_file_base)
+                output_files.append(output_file_base)
+                for mutation in hydrogen_lj_mutations:
+                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
-                for env in system.envs:
+                # turn off heavy atoms
+                for mutation in mutation_list["lj"]:
+                    intst += 1
 
-                    offset = min(
-                        [
-                            a.idx
-                            for a in original_psf[env]
-                            .view[f":{system.tlc.upper()}"]
-                            .atoms
-                        ]
+                    output_file_base = i.write_state(
+                        mutation_conf=[mutation],
+                        lambda_value_vdw=lambda_vdw,
+                        intst_nr=intst,
                     )
-                    new_psf = generate_psf(output_file_base, env)
-                    print("Set epsilon/rmin to zero for selected atoms")
-                    for idx in m1.atom_idx:
-                        idxo = idx + offset
-                        assert np.isclose(
-                            original_psf[env].atoms[idxo].epsilon * 0,
-                            new_psf.atoms[idxo].epsilon,
-                        )
-                        assert np.isclose(
-                            original_psf[env].atoms[idxo].rmin * 0,
-                            new_psf.atoms[idxo].rmin,
-                        )
+                    print(output_file_base)
 
-                    # make sure that all other idx are not touched
-                    for idx in range(len(original_psf[env].atoms)):
-                        idxo = idx - offset  # NOTE: the '-'
-                        if idxo not in m1.atom_idx:
-                            assert np.isclose(
-                                original_psf[env].atoms[idx].epsilon,
-                                new_psf.atoms[idx].epsilon,
-                            )
-                            assert np.isclose(
-                                original_psf[env].atoms[idx].rmin,
-                                new_psf.atoms[idx].rmin,
-                            )
-            finally:
-                shutil.rmtree(output_file_base)
+                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+                    output_files.append(output_file_base)
 
-            m2 = mutation_list[2]
-            current_step = 1
-            try:
-                output_file_base = i.generate_specific_intermediate_state(
-                    m2, current_step
+                new_psf = generate_psf(output_file_base, env)
+                print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
+
+                all_atoms_for_which_lj_turned_off = []
+                print(mutation_list.keys())
+                # Turn of hydrogens
+                intst += 1
+                terminal_lj_mutations = mutation_list["terminal-lj"]
+                output_file_base = i.write_state(
+                    mutation_conf=terminal_lj_mutations,
+                    lambda_value_vdw=lambda_vdw,
+                    intst_nr=intst,
                 )
-                for env in system.envs:
-
-                    offset = min(
-                        [
-                            a.idx
-                            for a in original_psf[env]
-                            .view[f":{system.tlc.upper()}"]
-                            .atoms
-                        ]
-                    )
-                    new_psf = generate_psf(output_file_base, env)
-                    print("Set epsilon/rmin to zero for selected atoms")
-                    for idx in m2.atom_idx:
-                        idxo = idx + offset
-                        assert np.isclose(
-                            original_psf[env].atoms[idxo].epsilon * 0,
-                            new_psf.atoms[idxo].epsilon,
-                        )
-                        assert np.isclose(
-                            original_psf[env].atoms[idxo].rmin * 0,
-                            new_psf.atoms[idxo].rmin,
-                        )
-
-                    # make sure that all other idx are not touched
-                    print(m2.atom_idx + m1.atom_idx)
-                    for idx in range(len(original_psf[env].atoms)):
-                        idxo = idx - offset  # NOTE: the '-'
-                        if idxo not in m2.atom_idx + m1.atom_idx:
-                            assert np.isclose(
-                                original_psf[env].atoms[idx].epsilon,
-                                new_psf.atoms[idx].epsilon,
-                            )
-                            assert np.isclose(
-                                original_psf[env].atoms[idx].rmin,
-                                new_psf.atoms[idx].rmin,
-                            )
+                print(output_file_base)
+                output_files.append(output_file_base)
+                for mutation in terminal_lj_mutations:
+                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
             finally:
-                shutil.rmtree(output_file_base)
+                print(output_files)
+                for output_file_base in output_files:
+                    shutil.rmtree(output_file_base)
 
 
-def test_endpoint_first_step():
+def test_full_mutation_system2():
+    from rdkit.Chem import rdFMCS
 
-    for conf in [
-        "config/test-2oj9-solvation-free-energy.yaml",
-        "config/test-2oj9-binding-free-energy.yaml",
-    ]:
+    for conf, system_name in zip(
+        [
+            "config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
+        ],
+        ["7-CPI-2-CPI"],
+    ):
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        if system_name == "7-CPI-2-CPI":
+            # find mcs
+            s1_to_s2.bondCompare = rdFMCS.BondCompare.CompareOrderExact
+            s1_to_s2.completeRingsOnly = True
+            s1_to_s2.calculate_common_core()
+        else:
+            s1_to_s2.calculate_common_core()
+
+        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+        i = IntermediateStateFactory(
+            system=s1,
+            configuration=configuration,
+        )
+
+        intst = 0
+        charges = mutation_list["charge"]
+        try:
+            for lambda_value in np.linspace(0, 1, 5):
+                intst += 1
+                # turn off charges
+                output_file_base = i.write_state(
+                    mutation_conf=charges,
+                    lambda_value_electrostatic=1 - lambda_value,
+                    intst_nr=intst,
+                )
+        finally:
+            pass
+            # shutil.rmtree(output_file_base)
+
+        original_psf = {}
+        for env in s1.envs:
+            original_psf[env] = copy.deepcopy(s1.psfs[env])
+
+        #
+        lambda_vdw = 0.0
+        print(f"Lambda: {lambda_vdw}")
+        output_files = []
+        try:
+            intst += 1
+
+            all_atoms_for_which_lj_turned_off = []
+            print(mutation_list.keys())
+            # Turn of hydrogens
+            hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+            output_file_base = i.write_state(
+                mutation_conf=hydrogen_lj_mutations,
+                lambda_value_vdw=lambda_vdw,
+                intst_nr=intst,
+            )
+            output_files.append(output_file_base)
+            for mutation in hydrogen_lj_mutations:
+                all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+
+            # turn off heavy atoms
+            for mutation in mutation_list["lj"]:
+                intst += 1
+
+                output_file_base = i.write_state(
+                    mutation_conf=[mutation],
+                    lambda_value_vdw=lambda_vdw,
+                    intst_nr=intst,
+                )
+                all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+                output_files.append(output_file_base)
+
+            new_psf = generate_psf(output_file_base, env)
+            print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
+
+            print(all_atoms_for_which_lj_turned_off)
+            offset = s1.offset[env]
+            for idx in all_atoms_for_which_lj_turned_off:
+                idxo = idx + offset
+                assert np.isclose(
+                    original_psf[env].atoms[idxo].epsilon * lambda_vdw,
+                    new_psf.atoms[idxo].epsilon,
+                    rtol=1e-3,
+                )
+                assert np.isclose(
+                    original_psf[env].atoms[idxo].rmin * lambda_vdw,
+                    new_psf.atoms[idxo].rmin,
+                    rtol=1e-3,
+                )
+
+            # make sure that all other idx are not touched
+            for idx in range(len(original_psf[env].atoms)):
+                idxo = idx - offset  # NOTE: the '-'
+                if idxo not in all_atoms_for_which_lj_turned_off:
+                    assert np.isclose(
+                        original_psf[env].atoms[idx].epsilon,
+                        new_psf.atoms[idx].epsilon,
+                        rtol=1e-3,
+                    )
+                    assert np.isclose(
+                        original_psf[env].atoms[idx].rmin,
+                        new_psf.atoms[idx].rmin,
+                        rtol=1e-3,
+                    )
+
+        finally:
+            pass
+
+
+def test_endpoint_bonded_parameters():
+
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
+
+        ],
+        ["ethane-ethanol", 'toluene-methane'],
+    ):
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
@@ -667,62 +1261,28 @@ def test_endpoint_first_step():
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
             a.calculate_common_core()
             mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_electrostatic=3, nr_of_steps_for_cc_transformation=3
+                
             )
             i = IntermediateStateFactory(
-                system=system, mutation_list=mutation_list, configuration=configuration
+                system=system,
+                configuration=configuration,
             )
-            # extract first mutation
-            m = mutation_list[0]
-
-
-def test_endpoint():
-
-    for conf in [
-        "config/test-2oj9-solvation-free-energy.yaml",
-        "config/test-2oj9-binding-free-energy.yaml",
-    ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
-
-        s1_to_s2 = ProposeMutationRoute(s1, s2)
-        s2_to_s1 = ProposeMutationRoute(s2, s1)
-        for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
-            mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_electrostatic=3, nr_of_steps_for_cc_transformation=3
-            )
-            i = IntermediateStateFactory(
-                system=system, mutation_list=mutation_list, configuration=configuration
-            )
-            # extract first mutation
-            m = mutation_list[0]
-            current_step = 0
             try:
+                output_file_base = i.write_state(mutation_conf=[], intst_nr=0)
                 # write out structure
-                output_file_base = i.generate_specific_intermediate_state(
-                    m, current_step
-                )
                 # get a copy of the original structure
                 original_psf = {}
                 for env in system.envs:
-                    original_psf[env] = copy.deepcopy(system.psf_mapping[env])
+                    original_psf[env] = copy.deepcopy(system.psfs[env])
 
                 # test for waterbox and complex
                 for env in system.envs:
                     # read in psf and parameters
                     new_psf = generate_psf(output_file_base, env)
-                    offset = min(
-                        [
-                            a.idx
-                            for a in original_psf[env]
-                            .view[f":{system.tlc.upper()}"]
-                            .atoms
-                        ]
-                    )
+                    offset = system.offset[env]
 
                     # test if atom parameters are the same
-                    for idx in m.atom_idx:
+                    for idx in range(system.mol.GetNumAtoms()):
                         assert (
                             original_psf[env].atoms[idx + offset].epsilon
                             == new_psf.atoms[idx + offset].epsilon
@@ -752,14 +1312,16 @@ def test_endpoint():
             finally:
                 shutil.rmtree(output_file_base)
 
+def test_bonded_mutation_setup():
 
-@pytest.mark.slowtest
-def test_bonded_mutation():
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
 
-    for conf in [
-        "config/test-2oj9-solvation-free-energy.yaml",
-        "config/test-2oj9-binding-free-energy.yaml",
-    ]:
+        ],
+        ["ethane-ethanol", 'toluene-methane'],
+    ):
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
@@ -768,34 +1330,74 @@ def test_bonded_mutation():
         s2_to_s1 = ProposeMutationRoute(s2, s1)
 
         for a, system, template in zip(
-            [s1_to_s2, s2_to_s1],
-            [
-                SystemStructure(configuration, "structure1"),
-                SystemStructure(configuration, "structure2"),
-            ],
-            [
-                SystemStructure(configuration, "structure2"),
-                SystemStructure(configuration, "structure1"),
-            ],
-        ):
+                [s1_to_s2, s2_to_s1],
+                [
+                    SystemStructure(configuration, "structure1"),
+                    SystemStructure(configuration, "structure2"),
+                ],
+                [
+                    SystemStructure(configuration, "structure2"),
+                    SystemStructure(configuration, "structure1"),
+                ],
+            ):
+            a.calculate_common_core()
 
             original_psf = {}
             template_psf = {}
             for env in system.envs:
-                original_psf[env] = copy.deepcopy(system.psf_mapping[env])
-                template_psf[env] = copy.deepcopy(template.psf_mapping[env])
+                original_psf[env] = copy.deepcopy(system.psfs[env])
+                template_psf[env] = copy.deepcopy(template.psfs[env])
 
-            mutation_list = a.generate_mutations_to_common_core_for_mol1(
-                nr_of_steps_for_electrostatic=4, nr_of_steps_for_cc_transformation=4
-            )
+            mutation_list = a.generate_mutations_to_common_core_for_mol1()
+            print(mutation_list)
+
+@pytest.mark.slowtest
+def test_bonded_mutation():
+
+    for conf, system_name in zip(
+        [
+            "config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "config/test-toluene-methane-solvation-free-energy.yaml"
+
+        ],
+        ["ethane-ethanol", 'toluene-methane'],
+    ):
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        s2_to_s1 = ProposeMutationRoute(s2, s1)
+
+        for a, system, template in zip(
+                [s1_to_s2, s2_to_s1],
+                [
+                    SystemStructure(configuration, "structure1"),
+                    SystemStructure(configuration, "structure2"),
+                ],
+                [
+                    SystemStructure(configuration, "structure2"),
+                    SystemStructure(configuration, "structure1"),
+                ],
+            ):
+            a.calculate_common_core()
+
+
+            original_psf = {}
+            template_psf = {}
+            for env in system.envs:
+                original_psf[env] = copy.deepcopy(system.psfs[env])
+                template_psf[env] = copy.deepcopy(template.psfs[env])
+
+            mutation_list = a.generate_mutations_to_common_core_for_mol1()
             i = IntermediateStateFactory(
-                system=system, mutation_list=mutation_list, configuration=configuration
+                system=system, configuration=configuration
             )
 
             print(mutation_list)
             # we select the bonded mutation which should be at postition [-1]
-            m1 = mutation_list[-1]
-            assert type(m1) == transformato.mutate.CommonCoreTransformation
+            m1 = mutation_list['transform']
+            print(m1)
             current_step = 1
             try:
                 output_file_base = i.generate_specific_intermediate_state(
@@ -964,145 +1566,6 @@ def test_bonded_mutation():
             finally:
                 shutil.rmtree(output_file_base)
 
-
-@pytest.mark.slowtest
-def test_charge_cc1_to_cc2_transformation1():
-    from parmed.charmm.psf import CharmmPsfFile
-
-    for conf in ["config/test-ethane-ethanol-solvation-free-energy.yaml"]:
-        configuration = load_config_yaml(
-            config=conf, input_dir="data/", output_dir="data"
-        )
-
-        # load systems
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
-        a = ProposeMutationRoute(s1, s2)
-
-        # manually matching Oxygen (0) with Hydrogen (4)
-        a.add_idx_to_common_core_of_mol1(4)
-        a.add_idx_to_common_core_of_mol2(0)
-
-        # generate mutation route
-        mutation_list = a.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
-        )
-
-        assert len(mutation_list) == 1
-        assert type(mutation_list[0]) == transformato.mutate.CommonCoreTransformation
-        assert mutation_list[0].nr_of_steps == 5
-
-        try:
-            # write intermediate states for systems
-            cc1_i = IntermediateStateFactory(
-                system=s1, mutation_list=mutation_list, configuration=configuration
-            )
-            cc1_i.generate_intermediate_states()
-
-            # generate mutation route
-            mutation_list = a.generate_mutations_to_common_core_for_mol2(
-                nr_of_steps_for_electrostatic=5
-            )
-            # write intermediate states
-            cc2_i = IntermediateStateFactory(
-                system=s2, mutation_list=mutation_list, configuration=configuration
-            )
-            cc2_i.generate_intermediate_states()
-
-            for env in s1.envs:
-                print("Env : {}".format(env))
-
-                cc_ethane = CharmmPsfFile(f"{cc1_i.path}/intst6/lig_in_{env}.psf")
-                cc_ethanol = CharmmPsfFile(f"{cc2_i.path}/intst7/lig_in_{env}.psf")
-                cc1_offset = min(
-                    [atom.idx for atom in cc_ethane.view[f":{a.s1_tlc.upper()}"].atoms]
-                )
-                cc2_offset = min(
-                    [atom.idx for atom in cc_ethanol.view[f":{a.s2_tlc.upper()}"].atoms]
-                )
-
-                # test atom parameters
-                for cc1, cc2 in zip(
-                    list(a.get_common_core_idx_mol1()),
-                    list(a.get_common_core_idx_mol2()),
-                ):
-                    # did atom type change? if not continue
-                    cc1_oidx = cc1 + cc1_offset
-                    cc2_oidx = cc2 + cc2_offset
-                    assert np.isclose(
-                        cc_ethane[cc1_oidx].charge,
-                        cc_ethanol[cc2_oidx].charge,
-                        rtol=1e-03,
-                    )
-        finally:
-            shutil.rmtree(cc1_i.path)
-            shutil.rmtree(cc2_i.path)
-
-
-@pytest.mark.slowtest
-def test_charge_cc1_to_cc2_transformation2():
-    from parmed.charmm.psf import CharmmPsfFile
-
-    for conf in ["config/test-ethane-ethanol-solvation-free-energy.yaml"]:
-        configuration = load_config_yaml(
-            config=conf, input_dir="data/", output_dir="data"
-        )
-
-        # load systems
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
-        a = ProposeMutationRoute(s1, s2)
-
-        # generate mutation route
-        mutation_list = a.generate_mutations_to_common_core_for_mol1(
-            nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
-        )
-
-        try:
-            # write intermediate states for systems
-            cc1_i = IntermediateStateFactory(
-                system=s1, mutation_list=mutation_list, configuration=configuration
-            )
-            cc1_i.generate_intermediate_states()
-
-            # generate mutation route
-            mutation_list = a.generate_mutations_to_common_core_for_mol2(
-                nr_of_steps_for_electrostatic=5
-            )
-            # write intermediate states
-            cc2_i = IntermediateStateFactory(
-                system=s2, mutation_list=mutation_list, configuration=configuration
-            )
-            cc2_i.generate_intermediate_states()
-
-            for env in s1.envs:
-                print("Env : {}".format(env))
-
-                cc_ethane = CharmmPsfFile(f"{cc1_i.path}/intst12/lig_in_{env}.psf")
-                cc_ethanol = CharmmPsfFile(f"{cc2_i.path}/intst8/lig_in_{env}.psf")
-                cc1_offset = min(
-                    [atom.idx for atom in cc_ethane.view[f":{a.s1_tlc.upper()}"].atoms]
-                )
-                cc2_offset = min(
-                    [atom.idx for atom in cc_ethanol.view[f":{a.s2_tlc.upper()}"].atoms]
-                )
-
-                # test atom parameters
-                for cc1, cc2 in zip(
-                    list(a.get_common_core_idx_mol1()),
-                    list(a.get_common_core_idx_mol2()),
-                ):
-                    # did atom type change? if not continue
-                    cc1_oidx = cc1 + cc1_offset
-                    cc2_oidx = cc2 + cc2_offset
-                    assert np.isclose(
-                        cc_ethane[cc1_oidx].charge,
-                        cc_ethanol[cc2_oidx].charge,
-                        rtol=1e-03,
-                    )
-        finally:
-            shutil.rmtree(cc1_i.path)
-            shutil.rmtree(cc2_i.path)
 
 
 @pytest.mark.slowtest

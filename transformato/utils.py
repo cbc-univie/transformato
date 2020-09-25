@@ -14,6 +14,21 @@ def get_toppar_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "toppar"))
 
 
+def print_mutations(mutation: dict):
+
+    if "charge" in mutation.keys():
+        for charge_mutation in mutation["charge"]:
+            print("Charge mutation")
+            print(f"Atoms to be mutated: {charge_mutation.atoms_to_be_mutated}")
+    if "hydrogen-lj" in mutation.keys():
+        print("Hydrogen LJ mutation")
+        print(f"Atoms to be mutated: {charge_mutation.atoms_to_be_mutated}")
+        print(f"LJ mutation to default:")
+
+    if "transform" in mutation.keys():
+        pass
+
+
 def load_config_yaml(config, input_dir, output_dir):
 
     with open(f"{config}", "r") as stream:

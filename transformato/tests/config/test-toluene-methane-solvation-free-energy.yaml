@@ -4,22 +4,22 @@ system:
 ################
   structure1:
     name:
-      'CE105'
+      'toluene'
     tlc:
-      'UNK'
-    complex:
+      'UNL'
+    vacuum:
       dirname:
-        'complex'
+        'vacuum'
       psf_file_name:
-        'step5_charmm2omm'
+        'step3_charmm2omm'
       crd_file_name:
-        'step5_charmm2omm'
+        'step3_charmm2omm'
       rst_file_name:
-        'step6.6_equilibration'
+        'step4_equilibration'
       simulation_parameter:
-        'step7_production.inp'
+        'step5_production.inp'
       intermediate-filename:
-        'lig_in_complex'
+        'lig_in_vacuum'
     waterbox:
       dirname:
         'waterbox'
@@ -36,23 +36,22 @@ system:
 
   structure2:
     name:
-      'CE121'
+      'methane'
     tlc:
-      'UNK'
-    complex:
+      'LIG'
+    vacuum:
       dirname:
-        'complex'
+        'vacuum'
       psf_file_name:
-        'step5_charmm2omm'
+        'step3_charmm2omm'
       crd_file_name:
-        'step5_charmm2omm'
+        'step3_charmm2omm'
       rst_file_name:
-        'step6.6_equilibration'
+        'step4_equilibration'
       simulation_parameter:
-        'step7_production.inp'
+        'step5_production.inp'
       intermediate-filename:
-        'lig_in_complex'
-
+        'lig_in_vacuum'
     waterbox:
       dirname:
         'waterbox'
@@ -70,10 +69,17 @@ system:
 ################
 simulation:
 ################
-  nsteps:
-    '500000'
+  parameters:
+    nstep:
+      2000000
+    nstdcd:
+      500
+    nstout:
+      5000
+    dt:
+      0.001
   free-energy-type:
-    'binding-free-energy'
+    'solvation-free-energy'
 ################
 solvation:
 ################

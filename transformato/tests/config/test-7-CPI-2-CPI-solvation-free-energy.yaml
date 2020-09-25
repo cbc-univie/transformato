@@ -4,9 +4,9 @@ system:
 ################
   structure1:
     name:
-      'ethane'
+      '2-CPI'
     tlc:
-      'LIG'
+      'UNL'
     vacuum:
       dirname:
         'vacuum'
@@ -36,9 +36,9 @@ system:
 
   structure2:
     name:
-      'methanol'
+      '7-CPI'
     tlc:
-      'UNK'
+      'UNL'
     vacuum:
       dirname:
         'vacuum'
@@ -71,11 +71,11 @@ simulation:
 ################
   parameters:
     nstep:
-      500000
+      5000000
     nstdcd:
-      10000
+      5000
     nstout:
-      10000
+      5000
     cons:
       None
     dt:

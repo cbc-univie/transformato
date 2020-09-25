@@ -4,9 +4,9 @@ system:
 ################
   structure1:
     name:
-      '2OJ9-e1'
+      'ethane'
     tlc:
-      '1OL'
+      'LIG'
     vacuum:
       dirname:
         'vacuum'
@@ -36,9 +36,9 @@ system:
 
   structure2:
     name:
-      '2OJ9-e2'
+      'ethanol'
     tlc:
-      '1KE'
+      'UNL'
     vacuum:
       dirname:
         'vacuum'
@@ -71,11 +71,16 @@ simulation:
 ################
   parameters:
     nstep:
-      2000
+      5000
     nstdcd:
       50
     nstout:
       50
+    cons:
+      None
+    dt:
+      0.001
+
   free-energy-type:
     'solvation-free-energy'
 ################

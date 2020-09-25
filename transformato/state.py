@@ -6,14 +6,16 @@ import parmed as pm
 import transformato
 
 from .utils import get_toppar_dir
+from .mutate import Mutation
+
+from typing import List
+import types
 
 logger = logging.getLogger(__name__)
 
 
 class IntermediateStateFactory(object):
-    def __init__(
-        self, system: transformato.system, mutation_list: list, configuration: dict
-    ):
+    def __init__(self, system: transformato.system, configuration: dict):
         """
         Generate the intermediate directories with for the provided systems with the provided mutations.
         Parameters
@@ -27,85 +29,57 @@ class IntermediateStateFactory(object):
         """
 
         self.system = system
-        self.mutation_list = mutation_list
         self.path = f"{configuration['system_dir']}/{self.system.name}"
         self._init_base_dir()
         self.configuration = configuration
 
-    def generate_specific_intermediate_state(self, mutation, state: int):
 
-        output_file_base = self._init_intermediate_state_dir(state)
-        logger.info("Writing to {}".format(output_file_base))
-        logger.info("#########################################")
-        for env in self.system.envs:
-            if env == "vacuum":
-                psf = self.system.vacuum_psf
-            elif env == "waterbox":
-                psf = self.system.waterbox_psf
-            elif env == "complex":
-                psf = self.system.complex_psf
-            else:
-                raise RuntimeError(f"Unknown system env :{env}")
-            mutation.mutate(psf, self.system.tlc, state)
-            self._write_psf(psf, output_file_base, env)
-
-        self._write_rtf_file(psf, output_file_base, self.system.tlc)
-        self._write_prm_file(psf, output_file_base, self.system.tlc)
-        self._write_toppar_str(output_file_base, self.system.tlc)
-        self._copy_files(output_file_base)
-        return output_file_base
-
-    def generate_intermediate_states(self, strategy="seperate"):
-        """
-        Generate the intermediate states as defined the the mutation list.
-        """
-
-        intst_nr = 1
-        if strategy == "seperate":
-            # no mixing of the different mutation states - first electrostatics is turend off,
-            # then VdW and the the bonded terms are transformed
-            nr_of_total_mutations = 1  # include the endstate at 0
-            start_step = 1
-            for m in self.mutation_list:
-                for current_step in range(start_step, m.nr_of_steps + 1):
-                    nr_of_total_mutations += 1
-
-            logger.info("#########################################")
-            logger.info("#########################################")
-            logger.info(
-                f"Preparing for a total of {nr_of_total_mutations} mutation steps"
-            )
-            logger.info(f"Writing endstate")
-            self._write_state(None, current_step=0, intst_nr=intst_nr, mutate=False)
-            intst_nr += 1
-            for m in self.mutation_list:
-                start_step = 1  # don't write out the first, unmodified state
-                for current_step in range(start_step, m.nr_of_steps + 1):
-                    self._write_state(m, current_step, intst_nr, mutate=True)
-                    intst_nr += 1
-
-    def _write_state(
-        self, mutation, current_step: int, intst_nr: int, mutate: bool = True
+    def write_state(
+        self,
+        mutation_conf: List,
+        intst_nr: int,
+        lambda_value_electrostatic: float = 1.0,
+        lambda_value_vdw: float = 1.0,
+        common_core_transformation:float = 1.0
     ):
 
         logger.info("#########################################")
         logger.info("#########################################")
-        logger.info("Current step: {}".format(current_step))
         output_file_base = self._init_intermediate_state_dir(intst_nr)
+        print(f'Writing to {output_file_base}')
+
         for env in self.system.envs:
-            if mutate:
-                mutation.mutate(
-                    self.system.psf_mapping[env], self.system.tlc, current_step
-                )
-            self._write_psf(self.system.psf_mapping[env], output_file_base, env)
-        self._write_rtf_file(
-            self.system.psf_mapping[env], output_file_base, self.system.tlc
-        )
-        self._write_prm_file(
-            self.system.psf_mapping[env], output_file_base, self.system.tlc
-        )
+            for mutation_type in mutation_conf:
+
+                if common_core_transformation < 1.0: #NOTE: THis is inconsisten -- the mutatino_type is the actual mutation in this case
+                    mutation_type.mutate(
+                        psf=self.system.psfs[env],
+                        lambda_value = common_core_transformation)
+
+                else:
+                    mutation_type.print_details()
+                    print(f"Lambda electrostatics: {lambda_value_electrostatic}")
+                    print(f"Lambda vdw: {lambda_value_vdw}")
+
+                    mutator = Mutation(
+                        atoms_to_be_mutated=mutation_type.atoms_to_be_mutated,
+                        common_core=mutation_type.common_core,
+                        dummy_region=mutation_type.dummy_region,
+                    )
+
+                    mutator.mutate(
+                        psf=self.system.psfs[env],
+                        lambda_value_electrostatic=lambda_value_electrostatic,
+                        lambda_value_vdw=lambda_value_vdw,
+                        vdw_atom_idx=mutation_type.vdw_atom_idx,
+                        steric_mutation_to_default=mutation_type.steric_mutation_to_default,
+                    )
+            self._write_psf(self.system.psfs[env], output_file_base, env)
+        self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
+        self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_toppar_str(output_file_base, self.system.tlc)
         self._copy_files(output_file_base)
+        return output_file_base
 
     def _add_serializer(self, file):
         # adding serializer functions
@@ -240,9 +214,7 @@ outfile.close()
                     f"No crd file found for {env} -- using parmed system structure to create crd file."
                 )
                 crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
-                pm.charmm.CharmmCrdFile.write(
-                    self.system.psf_mapping[env], crd_file_target
-                )
+                pm.charmm.CharmmCrdFile.write(self.system.psfs[env], crd_file_target)
 
         # copy ligand rtf file
         ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
@@ -587,7 +559,7 @@ toppar/top_all36_cgenff.rtf
 toppar/par_all36_cgenff.prm
 toppar/toppar_water_ions.str
 toppar/toppar_dum_noble_gases.str
-toppar/toppar_all36_prot_d_aminoacids.str
+toppar/toppar_all36_prot_c36m_d_aminoacids.str
 toppar/toppar_all36_prot_fluoro_alkanes.str
 toppar/toppar_all36_prot_heme.str
 toppar/toppar_all36_prot_na_combined.str
@@ -601,7 +573,6 @@ toppar/toppar_all36_lipid_lps.str
 toppar/toppar_all36_lipid_miscellaneous.str
 toppar/toppar_all36_lipid_model.str
 toppar/toppar_all36_lipid_prot.str
-toppar/toppar_all36_lipid_pyrophosphate.str
 toppar/toppar_all36_lipid_sphingo.str
 {}_g.rtf
 {}.prm
