@@ -60,12 +60,11 @@ def test_read_yaml(): #transformato/transformato/utils.py
     assert(settingsMap['system']['name'] == '2OJ9-test1-2OJ9-test2-solvation-free-energy')
 
 def test_fill_dataclass():
+    """Sample test, will check ability to import data from yaml file into a data class"""
     configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy_dataclass.yaml',
                                    input_dir='.', output_dir='data/')
 
     filled_class = fill_dataclass(input_dataclass,configuration)
-    print (filled_class)
-    print (configuration['system']['name'])
 
     assert(filled_class == input_dataclass(system=system(structure1=structure(name='2OJ9-test1', tlc='BMI', vacuum=environment(dirname='vacuum', psf_file_name='test_step3_charmm2omm', crd_file_name='step3_charmm2omm', rst_file_name='step4_equilibration', simulation_parameter='step5_production.inp', intermediate_filename='lig_in_vacuum'), waterbox=environment(dirname='waterbox', psf_file_name='step3_charmm2omm', crd_file_name='step3_charmm2omm', rst_file_name='step4_equilibration', simulation_parameter='step5_production.inp', intermediate_filename='lig_in_waterbox'), charmm_gui_dir='/home/benedict/transformato/2OJ9-test1/'), structure2=structure(name='2OJ9-test2', tlc='UNK', vacuum=environment(dirname='vacuum', psf_file_name='step3_charmm2omm', crd_file_name='step3_charmm2omm', rst_file_name='step4_equilibration', simulation_parameter='step5_production.inp', intermediate_filename='lig_in_vacuum'), waterbox=environment(dirname='waterbox', psf_file_name='step3_charmm2omm', crd_file_name='step3_charmm2omm', rst_file_name='step4_equilibration', simulation_parameter='step5_production.inp', intermediate_filename='lig_in_waterbox'), charmm_gui_dir='/home/benedict/transformato/2OJ9-test2/'), name='2OJ9-test1-2OJ9-test2-solvation-free-energy'), simulation=simulation(parameters=parameters(nstep=5000, nstdcd=50, nstout=50, cons='None', dt=0.001), free_energy_type='solvation-free-energy'), solvation=solvation(steps_for_equilibration=1000), bin_dir='/home/benedict/transformato/transformato/bin', analysis_dir_base='/home/benedict/transformato/data', data_dir_base='/home/benedict/transformato', system_dir='/home/benedict/transformato/data/2OJ9-test1-2OJ9-test2-solvation-free-energy', cluster_dir='/data/local/2OJ9-test1-2OJ9-test2-solvation-free-energy'))
     

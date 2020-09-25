@@ -91,10 +91,3 @@ class input_dataclass:
     data_dir_base: str
     system_dir: str
     cluster_dir: str
-
-configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy_dataclass.yaml',
-                                   input_dir='.', output_dir='data/')
-
-filled_class = fill_dataclass(input_dataclass,configuration)
-
-print(filled_class)
