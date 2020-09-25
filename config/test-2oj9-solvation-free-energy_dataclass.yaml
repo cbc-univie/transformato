@@ -7,11 +7,11 @@ system:
       '2OJ9-test1'
     tlc:
       'BMI'
-    vacuum1:
+    vacuum:
       dirname:
         'vacuum'
       psf_file_name:
-        'step3_charmm2omm'
+        'test_step3_charmm2omm'
       crd_file_name:
         'step3_charmm2omm'
       rst_file_name:
@@ -20,7 +20,7 @@ system:
         'step5_production.inp'
       intermediate_filename:
         'lig_in_vacuum'
-    waterbox1:
+    waterbox:
       dirname:
         'waterbox'
       psf_file_name:
@@ -39,7 +39,7 @@ system:
       '2OJ9-test2'
     tlc:
       'UNK'
-    vacuum2:
+    vacuum:
       dirname:
         'vacuum'
       psf_file_name:
@@ -52,7 +52,7 @@ system:
         'step5_production.inp'
       intermediate_filename:
         'lig_in_vacuum'
-    waterbox2:
+    waterbox:
       dirname:
         'waterbox'
       psf_file_name:

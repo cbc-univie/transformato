@@ -62,15 +62,7 @@ class simulation:
     parameters: parameters
     free_energy_type: str
 @dataclass
-class waterbox2:
-    dirname: str
-    psf_file_name: str
-    crd_file_name: str
-    rst_file_name: str
-    simulation_parameter: str
-    intermediate_filename: str
-@dataclass
-class vacuum2:
+class environment:
     dirname: str
     psf_file_name: str
     crd_file_name: str
@@ -81,32 +73,16 @@ class vacuum2:
 class structure2:
     name: str
     tlc: str
-    vacuum2: vacuum2
-    waterbox2: waterbox2
+    vacuum: environment
+    waterbox: environment
     charmm_gui_dir: str
-@dataclass
-class waterbox1:
-    dirname: str
-    psf_file_name: str
-    crd_file_name: str
-    rst_file_name: str
-    simulation_parameter: str
-    intermediate_filename: str
-@dataclass
-class vacuum1:
-    dirname: str
-    psf_file_name: str
-    crd_file_name: str
-    rst_file_name: str
-    simulation_parameter: str
-    intermediate_filename: str
 @dataclass
 class structure1:
     name: str
     tlc: str
-    vacuum1: vacuum1
-    waterbox1: waterbox1
-    charmm_gui_dir: str
+    vacuum: environment
+    waterbox: environment
+    charmm_gui_dir: str   
 @dataclass
 class system:
     structure1: structure1
