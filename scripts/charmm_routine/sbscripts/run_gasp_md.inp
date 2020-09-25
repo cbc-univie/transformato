@@ -1,0 +1,109 @@
+* SB June 2020
+* Attempt to read OpenMM stuff into charmm
+*
+
+stream read_rtf_par.str
+
+!
+!read rtf card append name unl_g.rtf
+!read para card append flex name unl.prm
+!endif
+!if mol .eq. METHANE then
+!read rtf card append name lig_g.rtf
+!read para card append flex name lig.prm
+!endif
+
+! try to read ligand specific RTFs/PARAm files, however named
+if mol .eq. TOLUENE then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. TOLUENE goto done
+
+if mol .eq. NEOPENTANE then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. NEOPENTANE goto done
+
+if mol .eq. 2-CPI then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. 2-CPI goto done
+
+if mol .eq. 7-CPI then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. 7-CPI goto done
+
+if mol .eq. METHANE then
+read rtf card append name lig_g.rtf
+read para card append flex name lig.prm
+endif
+if mol .eq. METHANE goto done
+
+! all others (so far) seem to be named unk*
+read rtf card append name unk_g.rtf
+read para card append flex name unk.prm
+
+label done
+
+read rtf card append name dummy_atom_definitions.rtf
+read para card append flex name dummy_parameters.prm
+
+read psf card name lig_in_vacuum.psf
+read coor card name lig_in_vacuum.crd
+
+coor orie sele all end ! put the molecule at the origin
+
+MMFP
+GEO rcm sphere -
+    Xref 0.0 Yref 0.0 Zref 0.0 XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
+    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
+END
+
+set ctofnb 990.
+set ctonnb 980.
+set cutnb  1000.
+
+nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
+  atom swit vatom vswitch -
+  inbfrq 1 imgfrq 1 
+
+energy   inbfrq 1
+energy   inbfrq 0
+
+mini sd nstep 10
+
+if @?rand .eq. 0 set rand 1
+calc r2 = 2*@rand
+calc r3 = 3*@rand
+calc r4 = 79*@rand
+
+set nstep = 200000
+set temp = 303.15
+
+open write unit 12 card name gas_equil1.@rand.rst
+scalar fbeta set 5. sele all end
+
+DYNA leap lang start time 0.001 nstep @nstep -
+     nprint 10000 iprfrq @nstep -
+     iunread -1 iunwri 12 iuncrd -1 iunvel -1 kunit -1 -
+     nsavc 50000 nsavv 0 iseed @rand @r2 @r3 @r4 -
+     rbuf 0. tbath @temp ilbfrq 0  echeck 0 firstt 250. ! don't overshoot
+
+open read  unit 11 card name gas_equil1.@rand.rst
+open write unit 12 card name gasp.@rand.rst
+open write unit 21 file name gasp.@rand.dcd
+
+set nstep 2000000
+DYNA lang leap restart time 0.001 nstep @nstep -
+     nprint 10000 iprfrq 100000 -
+     iunread 11 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
+     nsavc 100 nsavv 0 -
+     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
+     echeck 0
+
+stop

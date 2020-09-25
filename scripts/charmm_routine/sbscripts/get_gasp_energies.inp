@@ -1,0 +1,157 @@
+* SB June 2020
+* read traj generated during SAI step and evaluate
+* energies. Do this for step i-1,i,i+1
+* Handle cases i=1 and i='last' separately
+* Parameter @idx must be passed from the command line
+* In addition, the script needs to know @idxmax (the highest index), as well
+* as the random seed of the production run @rand (no default!)
+*
+
+stream read_rtf_par.str
+
+! try to read ligand specific RTFs/PARAm files, however named
+if mol .eq. TOLUENE then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. TOLUENE goto done
+
+if mol .eq. NEOPENTANE then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. NEOPENTANE goto done
+
+if mol .eq. 2-CPI then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. 2-CPI goto done
+
+if mol .eq. 7-CPI then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. 7-CPI goto done
+
+if mol .eq. METHANE then
+read rtf card append name lig_g.rtf
+read para card append flex name lig.prm
+endif
+if mol .eq. METHANE goto done
+
+! all others (so far) seem to be named unk*
+read rtf card append name unk_g.rtf
+read para card append flex name unk.prm
+
+label done
+
+read rtf card append name dummy_atom_definitions.rtf
+read para card append flex name dummy_parameters.prm
+
+read psf card name lig_in_vacuum.psf
+read coor card name lig_in_vacuum.crd
+
+MMFP
+GEO rcm sphere -
+    Xref 0.0 Yref 0.0 Zref 0.0 XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
+    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
+END
+
+set ctofnb 990.
+set ctonnb 980.
+set cutnb  1000. ! make list smaller
+
+nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
+  atom swit vatom vswitch -
+  inbfrq 1 imgfrq 1 
+
+energy inbfrq 1
+energy inbfrq 0
+
+!--------------------- idx itself ---------------
+
+open read unit 21 file name ../intst@{idx}/gasp.@{rand}.dcd
+open writ unit 31 form name ../intst@{idx}/gasp.@{rand}.@{idx}_@{idx}.dat
+traj query unit 21
+set nfram ?nfile
+rewind unit 21
+traj iread 21 nread 1
+set fram 1
+echu 31
+
+!prnlev 0 ! uncomment if you are sure that the scripts work ..
+label l1
+  traj read ! read frame from trajetory
+  energy
+  format (f12.4)
+  echo ?ener
+  format
+  ! check whether we are done
+  incr fram by 1
+!if fram le 10 goto l1
+if fram le @nfram goto l1
+prnlev 5
+clos unit 21
+clos unit 31
+
+!--------------------- idx - 1 ---------------
+
+calc idxm1 = @idx - 1
+if @idxm1 .ge. 1 then
+  open read unit 21 file name ../intst@{idxm1}/gasp.@{rand}.dcd
+  open writ unit 31 form name ../intst@{idx}/gasp.@{rand}.@{idx}_@{idxm1}.dat
+  traj query unit 21
+  set nfram ?nfile
+  rewind unit 21
+  traj iread 21 nread 1
+  set fram 1
+  echu 31
+
+  !prnlev 0 ! uncomment if you are sure that the scripts work ..
+  label l2
+    traj read ! read frame from trajetory
+    energy
+    format (f12.4)
+    echo ?ener
+    format
+    ! check whether we are done
+    incr fram by 1
+  !if fram le 10 goto l2
+  if fram le @nfram goto l2
+  prnlev 5
+  clos unit 21
+  clos unit 31
+endif
+
+!--------------------- idx + 1 ---------------
+
+calc idxp1 = @idx + 1
+if @idxp1 .le. @idxmax then
+  open read unit 21 file name ../intst@{idxp1}/gasp.@{rand}.dcd
+  open writ unit 31 form name ../intst@{idx}/gasp.@{rand}.@{idx}_@{idxp1}.dat
+  traj query unit 21
+  set nfram ?nfile
+  rewind unit 21
+  traj iread 21 nread 1
+  set fram 1
+  echu 31
+
+  !prnlev 0 ! uncomment if you are sure that the scripts work ..
+  label l3
+    traj read ! read frame from trajetory
+    energy
+    format (f12.4)
+    echo ?ener
+    format
+    ! check whether we are done
+    incr fram by 1
+  !if fram le 10 goto l3
+  if fram le @nfram goto l3
+  prnlev 5
+  clos unit 21
+  clos unit 31
+endif
+
+
+stop

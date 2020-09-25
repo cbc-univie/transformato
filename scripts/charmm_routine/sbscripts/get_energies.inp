@@ -1,0 +1,174 @@
+* SB June 2020
+* read traj generated during SAI step and evaluate
+* energies. Do this for step i-1,i,i+1
+* Handle cases i=1 and i='last' separately
+* Parameter @idx must be passed from the command line
+* In addition, the script needs to know @idxmax (the highest index)
+* no default provided for random seed @rand and method @method
+*
+
+! method 1 : VSWI 10 12
+! method 2 : VSWI 12 12
+! method 3 : VFWI 10 12
+
+stream read_rtf_par.str
+
+! try to read ligand specific RTFs/PARAm files, however named
+if mol .eq. TOLUENE then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. TOLUENE goto done
+
+if mol .eq. NEOPENTANE then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. NEOPENTANE goto done
+
+if mol .eq. 2-CPI then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. 2-CPI goto done
+
+if mol .eq. 7-CPI then
+read rtf card append name unl_g.rtf
+read para card append flex name unl.prm
+endif
+if mol .eq. 7-CPI goto done
+
+if mol .eq. METHANE then
+read rtf card append name lig_g.rtf
+read para card append flex name lig.prm
+endif
+if mol .eq. METHANE goto done
+
+! all others (so far) seem to be named unk*
+read rtf card append name unk_g.rtf
+read para card append flex name unk.prm
+
+label done
+
+read rtf card append name dummy_atom_definitions.rtf
+read para card append flex name dummy_parameters.prm
+
+read psf card name lig_in_waterbox.psf
+read coor card name lig_in_waterbox.crd
+
+set bxl 30.0
+
+MMFP
+GEO rcm sphere -
+    Xref 0.0 Yref 0.0 Zref 0.0 XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
+    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
+END
+
+!!shak bonh para fast sele segi WAT end
+!shak bonh para fast sele segi SOLV end
+cons fix sele segi SOLV end
+
+set ljswi VSWI
+if @method .eq. 3 set ljswi VFSW
+set ctofnb 12.
+set ctonnb 10.
+if @method .eq. 2 set ctonnb 12.
+set cutnb  12. ! make list smaller
+set cutim  @cutnb
+crystal define cubic @bxl @bxl @bxl 90.00 90.00 90.00
+crystal build Noper 0 cutoff @cutim
+image byres xcen 0.0 ycen 0.0 zcen 0.0 sele all end
+
+nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb cutim @cutim -
+  atom shif vatom @ljswi -
+  inbfrq 1 imgfrq 1 -
+  ewald pmew kappa 0.34 spline order 6 fftx 32 ffty 32 fftz 32
+
+energy 
+
+!--------------------- idx itself ---------------
+
+open read unit 21 file name ../intst@{idx}/prod_@{method}.@{rand}.dcd
+open writ unit 31 form name ../intst@{idx}/prod_@{method}.@{rand}.@{idx}_@{idx}.dat
+traj query unit 21
+set nfram ?nfile
+rewind unit 21
+traj iread 21 nread 1
+set fram 1
+echu 31
+
+!prnlev 0 ! uncomment if you are sure that the scripts work ..
+label l1
+  traj read ! read frame from trajetory
+  energy
+  format (f20.3)
+  echo ?ener
+  format
+  ! check whether we are done
+  incr fram by 1
+!if fram le 10 goto l1
+if fram le @nfram goto l1
+prnlev 5
+clos unit 21
+clos unit 31
+
+!--------------------- idx - 1 ---------------
+
+calc idxm1 = @idx - 1
+if @idxm1 .ge. 1 then
+  open read unit 21 file name ../intst@{idxm1}/prod_@{method}.@{rand}.dcd
+  open writ unit 31 form name ../intst@{idx}/prod_@{method}.@{rand}.@{idx}_@{idxm1}.dat
+  traj query unit 21
+  set nfram ?nfile
+  rewind unit 21
+  traj iread 21 nread 1
+  set fram 1
+  echu 31
+
+  !prnlev 0 ! uncomment if you are sure that the scripts work ..
+  label l2
+    traj read ! read frame from trajetory
+    energy
+    format (f20.3)
+    echo ?ener
+    format
+    ! check whether we are done
+    incr fram by 1
+  !if fram le 10 goto l2
+  if fram le @nfram goto l2
+  prnlev 5
+  clos unit 21
+  clos unit 31
+endif
+
+!--------------------- idx + 1 ---------------
+
+calc idxp1 = @idx + 1
+if @idxp1 .le. @idxmax then
+  open read unit 21 file name ../intst@{idxp1}/prod_@{method}.@{rand}.dcd
+  open writ unit 31 form name ../intst@{idx}/prod_@{method}.@{rand}.@{idx}_@{idxp1}.dat
+  traj query unit 21
+  set nfram ?nfile
+  rewind unit 21
+  traj iread 21 nread 1
+  set fram 1
+  echu 31
+
+  !prnlev 0 ! uncomment if you are sure that the scripts work ..
+  label l3
+    traj read ! read frame from trajetory
+    energy
+    format (f20.3)
+    echo ?ener
+    format
+    ! check whether we are done
+    incr fram by 1
+  !if fram le 10 goto l3
+  if fram le @nfram goto l3
+  prnlev 5
+  clos unit 21
+  clos unit 31
+endif
+
+
+stop
