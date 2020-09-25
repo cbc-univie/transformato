@@ -70,14 +70,7 @@ class environment:
     simulation_parameter: str
     intermediate_filename: str
 @dataclass
-class structure2:
-    name: str
-    tlc: str
-    vacuum: environment
-    waterbox: environment
-    charmm_gui_dir: str
-@dataclass
-class structure1:
+class structure:
     name: str
     tlc: str
     vacuum: environment
@@ -85,8 +78,8 @@ class structure1:
     charmm_gui_dir: str   
 @dataclass
 class system:
-    structure1: structure1
-    structure2: structure2
+    structure1: structure
+    structure2: structure
     name: str
 @dataclass
 class input_dataclass:
