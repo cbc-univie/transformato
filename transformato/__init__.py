@@ -4,7 +4,7 @@ Workflow to set up a relative free energy calculation of ligands with a common c
 """
 
 # Add imports here
-from .utils import load_config_yaml, get_bin_dir, get_toppar_dir, input_dataclass, fill_dataclass
+from .utils import *
 from .transformato import canvas
 from .system import SystemStructure
 
