@@ -48,65 +48,8 @@ def fill_dataclass(input_dataclass,configuration):
 
 #dataclass
 @dataclass
-class vacuum:
-    dirname: str
-    psf_file_name: str
-    crd_file_name: str
-    rst_file_name: str
-    simulation_parameter: str
-    intermediate_filename: str
-@dataclass
-class waterbox:
-    dirname: str
-    psf_file_name: str
-    crd_file_name: str
-    rst_file_name: str
-    simulation_parameter: str
-    intermediate_filename: str
-@dataclass
-class charmm_gui_dir:
-    charmm_gui_dir: str
-@dataclass
-class structure1:
-    name: str
-    tlc: str
-    vacuum: vacuum
-    waterbox: waterbox
-    charmm_gui_dir: str
-@dataclass
-class vacuum:
-    dirname: str
-    psf_file_name: str
-    crd_file_name: str
-    rst_file_name: str
-    simulation_parameter: str
-    intermediate_filename: str
-@dataclass
-class waterbox:
-    dirname: str
-    psf_file_name: str
-    crd_file_name: str
-    rst_file_name: str
-    simulation_parameter: str
-    intermediate_filename: str
-@dataclass
-class charmm_gui_dir:
-    charmm_gui_dir: str
-@dataclass
-class structure2:
-    name: str
-    tlc: str
-    vacuum: vacuum
-    waterbox: waterbox
-    charmm_gui_dir: str
-@dataclass
-class name:
-    name: str
-@dataclass
-class system:
-    structure1: structure1
-    structure2: structure2
-    name: str
+class solvation:
+    steps_for_equilibration: int
 @dataclass
 class parameters:
     nstep: int
@@ -115,26 +58,72 @@ class parameters:
     cons: str
     dt: float
 @dataclass
-class free_energy_type:
-    free_energy_type: str
-@dataclass
 class simulation:
     parameters: parameters
     free_energy_type: str
 @dataclass
-class solvation:
-    steps_for_equilibration: int
+class waterbox2:
+    dirname: str
+    psf_file_name: str
+    crd_file_name: str
+    rst_file_name: str
+    simulation_parameter: str
+    intermediate_filename: str
+@dataclass
+class vacuum2:
+    dirname: str
+    psf_file_name: str
+    crd_file_name: str
+    rst_file_name: str
+    simulation_parameter: str
+    intermediate_filename: str
+@dataclass
+class structure2:
+    name: str
+    tlc: str
+    vacuum2: vacuum2
+    waterbox2: waterbox2
+    charmm_gui_dir: str
+@dataclass
+class waterbox1:
+    dirname: str
+    psf_file_name: str
+    crd_file_name: str
+    rst_file_name: str
+    simulation_parameter: str
+    intermediate_filename: str
+@dataclass
+class vacuum1:
+    dirname: str
+    psf_file_name: str
+    crd_file_name: str
+    rst_file_name: str
+    simulation_parameter: str
+    intermediate_filename: str
+@dataclass
+class structure1:
+    name: str
+    tlc: str
+    vacuum1: vacuum1
+    waterbox1: waterbox1
+    charmm_gui_dir: str
+@dataclass
+class system:
+    structure1: structure1
+    structure2: structure2
+    name: str
 @dataclass
 class input_dataclass:
-    cluster_dir: str
-    system_dir: str
-    data_dir_base: str
-    analysis_dir_base: str
-    bin_dir: str
-    simulation: simulation
     system: system
+    simulation: simulation
+    solvation: solvation
+    bin_dir: str
+    analysis_dir_base: str
+    data_dir_base: str
+    system_dir: str
+    cluster_dir: str
 
-configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
+configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy_dataclass.yaml',
                                    input_dir='.', output_dir='data/')
 
 filled_class = fill_dataclass(input_dataclass,configuration)

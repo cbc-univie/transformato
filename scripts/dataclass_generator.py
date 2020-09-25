@@ -115,7 +115,7 @@ class create_dataclass_file(object):
             pass
         
    
-configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy.yaml',
+configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy_dataclass.yaml',
                                    input_dir='.', output_dir='data/')
 
 configuration = {'input_dataclass': configuration}

@@ -7,7 +7,7 @@ system:
       '2OJ9-test1'
     tlc:
       'BMI'
-    vacuum:
+    vacuum1:
       dirname:
         'vacuum'
       psf_file_name:
@@ -18,9 +18,9 @@ system:
         'step4_equilibration'
       simulation_parameter:
         'step5_production.inp'
-      intermediate-filename:
+      intermediate_filename:
         'lig_in_vacuum'
-    waterbox:
+    waterbox1:
       dirname:
         'waterbox'
       psf_file_name:
@@ -31,7 +31,7 @@ system:
         'step4_equilibration'
       simulation_parameter:
         'step5_production.inp'
-      intermediate-filename:
+      intermediate_filename:
         'lig_in_waterbox'
 
   structure2:
@@ -39,7 +39,7 @@ system:
       '2OJ9-test2'
     tlc:
       'UNK'
-    vacuum:
+    vacuum2:
       dirname:
         'vacuum'
       psf_file_name:
@@ -50,9 +50,9 @@ system:
         'step4_equilibration'
       simulation_parameter:
         'step5_production.inp'
-      intermediate-filename:
+      intermediate_filename:
         'lig_in_vacuum'
-    waterbox:
+    waterbox2:
       dirname:
         'waterbox'
       psf_file_name:
@@ -63,7 +63,7 @@ system:
         'step4_equilibration'
       simulation_parameter:
         'step5_production.inp'
-      intermediate-filename:
+      intermediate_filename:
         'lig_in_waterbox'
 
 ################
@@ -71,13 +71,25 @@ simulation:
 ################
   parameters:
     nstep:
-      500000
+      5000
     nstdcd:
-      10000
-  free-energy-type:
+      50
+    nstout:
+      50
+    cons:
+      None
+    dt:
+      0.001
+
+  free_energy_type:
     'solvation-free-energy'
 ################
 solvation:
 ################
   steps_for_equilibration:
     1000
+
+
+  
+
+  
