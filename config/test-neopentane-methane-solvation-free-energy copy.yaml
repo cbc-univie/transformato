@@ -4,12 +4,12 @@ system:
 ################
   structure1:
     name:
-      'toluene'
+      'neopentane'
     tlc:
       'UNL'
-    vacuum:
+    complex:
       dirname:
-        'vacuum'
+        'complex'
       psf_file_name:
         'step3_charmm2omm'
       crd_file_name:
@@ -19,7 +19,7 @@ system:
       simulation_parameter:
         'step5_production.inp'
       intermediate-filename:
-        'lig_in_vacuum'
+        'lig_in_complex'
     waterbox:
       dirname:
         'waterbox'
@@ -39,9 +39,9 @@ system:
       'methane'
     tlc:
       'LIG'
-    vacuum:
+    complex:
       dirname:
-        'vacuum'
+        'complex'
       psf_file_name:
         'step3_charmm2omm'
       crd_file_name:
@@ -51,7 +51,7 @@ system:
       simulation_parameter:
         'step5_production.inp'
       intermediate-filename:
-        'lig_in_vacuum'
+        'lig_in_complex'
     waterbox:
       dirname:
         'waterbox'
@@ -71,13 +71,18 @@ simulation:
 ################
   parameters:
     nstep:
-      250000
+      5000
     nstdcd:
-      5000
+      50
     nstout:
-      5000
+      50
+    cons:
+      None
+    dt:
+      0.002
   free-energy-type:
     'solvation-free-energy'
+    #'solvation-free-energy'
 ################
 solvation:
 ################

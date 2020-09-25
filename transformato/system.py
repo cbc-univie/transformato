@@ -8,7 +8,7 @@ import parmed as pm
 import rdkit
 from rdkit import Chem
 from simtk import unit
-
+from collections import defaultdict
 from .utils import get_toppar_dir
 
 logger = logging.getLogger(__name__)
@@ -31,84 +31,49 @@ class SystemStructure(object):
         self.name: str = configuration["system"][structure]["name"]
         self.tlc: str = configuration["system"][structure]["tlc"]
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
-        self.psf_mapping: dict = {}
-        self.vacuum_psf = None
-        self.waterbox_psf = None
-        self.complex_psf = None
-
+        self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
+        self.offset: defaultdict = defaultdict(int)
+        self.parameter = self._read_parameters(configuration, 'waterbox')
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "binding-free-energy":
             self.envs: set = set(["complex", "waterbox"])
-            self.parameter: pm.charmm.CharmmParameterSet = self._read_parameters(
-                configuration, "complex"
-            )
-
-            # set up complex objects
-            self.complex_psf: pm.charmm.CharmmPsfFile = self._initialize_system(
-                configuration, "complex"
-            )
-            # load parameters
-            self.complex_psf.load_parameters(self.parameter)
-            # get offset
-            self.complex_offset: int = (
-                self._determine_offset_and_set_possible_dummy_properties(
-                    self.complex_psf
+            for env in self.envs:
+                parameter = self._read_parameters(configuration, env)
+                # set up system
+                self.psfs[env] = self._initialize_system(configuration, env)
+                # load parameters
+                self.psfs[env].load_parameters(parameter)
+                # get offset
+                self.offset[
+                    env
+                ] = self._determine_offset_and_set_possible_dummy_properties(
+                    self.psfs[env]
                 )
-            )
-
-            # set up waterbox objects
-            self.waterbox_psf: pm.charmm.CharmmPsfFile = self._initialize_system(
-                configuration, "waterbox"
-            )
-            # load parameters
-            self.waterbox_psf.load_parameters(self.parameter)
-            # get offset
-            self.waterbox_offset: int = (
-                self._determine_offset_and_set_possible_dummy_properties(
-                    self.waterbox_psf
-                )
-            )
 
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
-                "complex", self.complex_psf[f":{self.tlc}"]
+                "complex", self.psfs["complex"][f":{self.tlc}"]
             )
             self.graph: nx.Graph = self._mol_to_nx(self.mol)
 
         elif configuration["simulation"]["free-energy-type"] == "solvation-free-energy":
             self.envs: set = set(["waterbox", "vacuum"])
-            self.parameter: pm.charmm.CharmmParameterSet = self._read_parameters(
-                configuration, "vacuum"
-            )
-            # set up complex objects
-            self.vacuum_psf: pm.charmm.CharmmPsfFile = self._initialize_system(
-                configuration, "vacuum"
-            )
-            # load parameters
-            self.vacuum_psf.load_parameters(self.parameter)
-            # get offset
-            self.vacuum_offset: int = (
-                self._determine_offset_and_set_possible_dummy_properties(
-                    self.vacuum_psf
+            for env in self.envs:
+                parameter = self._read_parameters(configuration, env)
+                # set up system
+                self.psfs[env] = self._initialize_system(configuration, env)
+                # load parameters
+                self.psfs[env].load_parameters(parameter)
+                # get offset
+                self.offset[
+                    env
+                ] = self._determine_offset_and_set_possible_dummy_properties(
+                    self.psfs[env]
                 )
-            )
-
-            # set up waterbox objects
-            self.waterbox_psf: pm.charmm.CharmmPsfFile = self._initialize_system(
-                configuration, "waterbox"
-            )
-            # load parameters
-            self.waterbox_psf.load_parameters(self.parameter)
-            # get offset
-            self.waterbox_offset: int = (
-                self._determine_offset_and_set_possible_dummy_properties(
-                    self.waterbox_psf
-                )
-            )
 
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
-                "waterbox", self.waterbox_psf[f":{self.tlc}"]
+                "waterbox", self.psfs['waterbox'][f":{self.tlc}"]
             )
             self.graph: nx.Graph = self._mol_to_nx(self.mol)
         else:
@@ -116,11 +81,6 @@ class SystemStructure(object):
                 "only binding and solvation free energy implemented."
             )
 
-        self.psf_mapping = {
-            "complex": self.complex_psf,
-            "waterbox": self.waterbox_psf,
-            "vacuum": self.vacuum_psf,
-        }
 
     def _mol_to_nx(self, mol: Chem.Mol):
         G = nx.Graph()
