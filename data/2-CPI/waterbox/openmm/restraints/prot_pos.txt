@@ -1,0 +1,14 @@
+ 0 BB
+ 2 BB
+ 4 BB
+ 6 BB
+ 8 BB
+ 9 BB
+ 11 BB
+ 12 BB
+ 14 BB
+ 15 BB
+ 17 BB
+ 20 BB
+ 23 BB
+ 26 BB

@@ -31,6 +31,14 @@ read rtf card append
 MASS  -1  ON2B      15.99940 O ! Nucleic acid phosphate ester oxygen (pres tp1/tp2, toppar_tyr_ser_thr_phosphate.str)
 MASS  -1  SP        32.06000 S ! positive Sulphur, S-adenosylmethionine (SAM)
 
+DECL -CA  
+DECL -C  
+DECL -O  
+DECL +N  
+DECL +HN  
+DECL +CA  
+DEFA FIRS NTER LAST CTER   
+
 !IMIDAZOLE ANALOGS FROM toppar_all27_na_model.str
 
 RESI THFI       0.00   ! imidazole analog with THF ring
@@ -742,6 +750,82 @@ IC O2    CH   *P1 O4     0.0000  000.00  115.90   000.00   0.0000
 IC CZ    P1   *CH FH1    0.0000  000.00  120.00   000.00   0.0000
 IC CZ    P1   *CH FH2    0.0000  000.00 -120.00   000.00   0.0000
 
+RESI PTR         -1.00  !phosphorylated Tyr, monoanionic, see PRES TP1A
+GROUP   
+ATOM N    NH1    -0.47  !     |        HD1  HE1    
+ATOM HN   H       0.31  !  HN-N         |    |   
+ATOM CA   CT1     0.07  !     |   HB1  CD1--CE1
+ATOM HA   HB1     0.09  !     |   |   //      \\
+GROUP                   !  HA-CA--CB--CG      CZ--OH  O1P
+ATOM CB   CT2    -0.18  !     |   |    \  __  /     \ //
+ATOM HB1  HA2     0.09  !     |   HB2  CD2--CE2       P (-)
+ATOM HB2  HA2     0.09  !   O=C         |    |      / \\
+GROUP                   !     |        HD2  HE2   O3P O2P
+ATOM CG   CA      0.00  !                           |
+GROUP                   !                         H3T
+ATOM CD1  CA     -0.115
+ATOM HD1  HP      0.115
+GROUP   
+ATOM CE1  CA     -0.21
+ATOM HE1  HP      0.21
+GROUP
+ATOM CZ   CA     -0.16
+ATOM OH  ON2B    -0.36   ! NA ATOM TYPE
+ATOM P   P        1.40   ! NA ATOM TYPE
+ATOM O3P ON4     -0.76   ! NA ATOM TYPE
+ATOM H3T HN4      0.40   ! NA ATOM TYPE
+ATOM O1P ON3     -0.76   ! NA ATOM TYPE
+ATOM O2P ON3     -0.76   ! NA ATOM TYPE
+GROUP
+ATOM CD2  CA     -0.115
+ATOM HD2  HP      0.115
+GROUP
+ATOM CE2  CA     -0.21
+ATOM HE2  HP      0.21
+GROUP   
+ATOM C    C       0.51
+ATOM O    O      -0.51
+BOND CB  CA   CG  CB   CD2 CG   CE1 CD1   
+BOND CZ  CE2  OH  CZ   
+BOND N   HN   N   CA    C   CA   C   +N   
+BOND CA  HA   CB  HB1  CB  HB2  CD1 HD1  CD2 HD2   
+BOND CE1 HE1  CE2 HE2  
+DOUBLE   O   C   CD1 CG  CE1  CZ  CE2 CD2      
+BOND P    OH     P   O1P   P   O2P    P   O3P
+BOND O3P  H3T
+IMPR N -C CA HN  C CA +N O   
+CMAP -C  N  CA  C   N  CA  C  +N
+DONOR HN N   
+!DONOR HH OH   
+ACCEPTOR OH   
+ACCEPTOR O C   
+IC -C   CA   *N   HN    1.3476 123.8100  180.0000 114.5400  0.9986
+IC -C   N    CA   C     1.3476 123.8100  180.0000 106.5200  1.5232
+IC N    CA   C    +N    1.4501 106.5200  180.0000 117.3300  1.3484
+IC +N   CA   *C   O     1.3484 117.3300  180.0000 120.6700  1.2287
+IC CA   C    +N   +CA   1.5232 117.3300  180.0000 124.3100  1.4513
+IC N    C    *CA  CB    1.4501 106.5200  122.2700 112.3400  1.5606
+IC N    C    *CA  HA    1.4501 106.5200 -116.0400 107.1500  1.0833
+IC N    CA   CB   CG    1.4501 111.4300  180.0000 112.9400  1.5113
+IC CG   CA   *CB  HB1   1.5113 112.9400  118.8900 109.1200  1.1119
+IC CG   CA   *CB  HB2   1.5113 112.9400 -123.3600 110.7000  1.1115
+IC CA   CB   CG   CD1   1.5606 112.9400   90.0000 120.4900  1.4064
+IC CD1  CB   *CG  CD2   1.4064 120.4900 -176.4600 120.4600  1.4068
+IC CB   CG   CD1  CE1   1.5113 120.4900 -175.4900 120.4000  1.4026
+IC CE1  CG   *CD1 HD1   1.4026 120.4000  178.9400 119.8000  1.0814
+IC CB   CG   CD2  CE2   1.5113 120.4600  175.3200 120.5600  1.4022
+IC CE2  CG   *CD2 HD2   1.4022 120.5600 -177.5700 119.9800  1.0813
+IC CG   CD1  CE1  CZ    1.4064 120.4000   -0.1900 120.0900  1.3978
+IC CZ   CD1  *CE1 HE1   1.3978 120.0900  179.6400 120.5800  1.0799
+IC CZ   CD2  *CE2 HE2   1.3979 119.9200 -178.6900 119.7600  1.0798
+IC CE1  CE2  *CZ  OH    1.3978 120.0500 -178.9800 120.2500  1.4063
+IC CE1  CZ   OH   HH    1.3978 119.6800  175.4500 107.4700  0.9594
+IC CE1  CZ   OH   P     0.0000 000.00      0.00   000.00    0.0000
+IC CZ   OH   P    O3P   0.0000 000.00    180.00   000.00    0.0000
+IC O3P  OH   *P   O1P   0.0000 000.00   -115.82   000.00    0.0000
+IC O3P  OH   *P   O2P   0.0000 000.00    115.90   000.00    0.0000
+IC H3T  O3P  P    OH    0.0000 000.00    180.00   000.00    0.0000
+
 RESI PPH1      -1.00   ! phenol-phosphate residue
 GROUP
 ATOM CG  CA    -0.115  !
@@ -1076,6 +1160,57 @@ BILD CB    OG   P   OT     0.0000  000.00  180.00   000.00   0.0000
 BILD OG    OT   *P  O1P    0.0000  000.00 -120.00   000.00   0.0000
 BILD OG    OT   *P  O2P    0.0000  000.00  120.00   000.00   0.0000
 
+RESI SEP         -1.00  !phosphorylated serine, monoanionic
+GROUP   
+ATOM N    NH1    -0.47  !     |       
+ATOM HN   H       0.31  !  HN-N       
+ATOM CA   CT1     0.07  !     |   HB1
+ATOM HA   HB1     0.09  !     |   |  
+GROUP                   !  HA-CA--CB--OG  O1P
+ATOM CB   CT2    -0.08  !     |   |     \ //
+ATOM HB1  HA2     0.09  !     |   HB2    P
+ATOM HB2  HA2     0.09  !   O=C         / \\ 
+                        !     |       O3P  O2P   
+                        !              |
+                        !             H3T
+ATOM OG   ON2    -0.62  !maintain NA atom type
+ATOM P    P       1.50
+ATOM O1P  ON3    -0.82
+ATOM O2P  ON3    -0.82
+ATOM O3P  ON4    -0.68
+ATOM H3T  HN4     0.34
+
+ATOM C    C       0.51
+ATOM O    O      -0.51
+BOND CB CA   OG CB  N HN  N  CA   
+BOND C  CA   C +N  CA HA  CB HB1   
+BOND CB HB2 
+BOND OG P    P   O3P  O3P  H3T
+BOND P  O1P  P   O2P
+DOUBLE   O  C      
+IMPR N -C CA HN  C CA +N O   
+CMAP -C  N  CA  C   N  CA  C  +N
+DONOR HN N   
+!DONOR HG1 OG   
+ACCEPTOR OG   
+ACCEPTOR O C   
+IC -C   CA   *N   HN    1.3474 124.3700  180.0000 114.1800  0.9999
+IC -C   N    CA   C     1.3474 124.3700  180.0000 105.8100  1.5166
+IC N    CA   C    +N    1.4579 105.8100  180.0000 117.7200  1.3448
+IC +N   CA   *C   O     1.3448 117.7200  180.0000 120.2500  1.2290
+IC CA   C    +N   +CA   1.5166 117.7200  180.0000 124.6300  1.4529
+IC N    C    *CA  CB    1.4579 105.8100  124.7500 111.4000  1.5585
+IC N    C    *CA  HA    1.4579 105.8100 -115.5600 107.3000  1.0821
+IC N    CA   CB   OG    1.4579 114.2800  180.0000 112.4500  1.4341
+IC OG   CA   *CB  HB1   1.4341 112.4500  119.3200 108.1000  1.1140
+IC OG   CA   *CB  HB2   1.4341 112.4500 -123.8600 110.3800  1.1136
+!IC CA  CB   OG   HG1   1.5585 112.4500  165.9600 107.0800  0.9655
+IC CA   CB   OG   P     0.0000 000.00    180.00   000.00    0.0000
+IC CB   OG   P    O3P   0.0000 000.00    180.00   000.00    0.0000
+IC OG   P    O3P  H3T   0.0000 000.00    180.00   000.00    0.0000
+IC OG   O3P  *P   O1P   0.0000 000.00   -120.00   000.00    0.0000
+IC OG   O3P  *P   O2P   0.0000 000.00    120.00   000.00    0.0000
+
 PRES THP1       -1.00  ! convert threonine to monoanionic phosphothreonine
                        ! use in a patch statement
 DELE ATOM 1HG1
@@ -1096,8 +1231,8 @@ BILD OG1   P    OT  HT     0.0000  000.00  180.00   000.00   0.0000
 BILD OG1   OT   *P  O1P    0.0000  000.00 -120.00   000.00   0.0000
 BILD OG1   OT   *P  O2P    0.0000  000.00  120.00   000.00   0.0000
 
-PRES THP2        -2.00  ! convert threonine to dianionic phosphothreonine
-                        ! use in a patch statement
+PRES THPB        -2.00  ! convert threonine to dianionic phosphothreonine
+                        ! use in a patch statement, previously THP2
 DELE ATOM 1HG1
 GROUP
 ATOM CB   CT1    -0.09  !
@@ -1188,6 +1323,63 @@ IC H21 C1  *C2   H23    0.0000    0.00 -120.00    0.00   0.0000
 IC O1  C1  C3    H31    0.0000    0.00  180.00    0.00   0.0000
 IC H31 C1  *C3   H32    0.0000    0.00  120.00    0.00   0.0000
 IC H31 C1  *C3   H33    0.0000    0.00 -120.00    0.00   0.0000
+
+RESI TPO         -1.00  !phosphorylated Threonine, monoanionic
+GROUP   
+ATOM N    NH1    -0.47  !     |          O1P   H3T
+ATOM HN   H       0.31  !  HN-N          ||   /
+ATOM CA   CT1     0.07  !     |     OG1--P--O3P
+ATOM HA   HB1     0.09  !     |    /     ||
+GROUP                   !  HA-CA--CB-HB  O2P
+ATOM CB   CT1     0.01  !     |    \     
+ATOM HB   HA1     0.09  !     |     CG2--HG21
+                        !   O=C    / \    
+                        !     | HG21 HG22 
+ATOM OG1  ON2    -0.62  !maintain NA atom type
+ATOM P    P       1.50
+ATOM O1P  ON3    -0.82
+ATOM O2P  ON3    -0.82
+ATOM O3P  ON4    -0.68
+ATOM H3T  HN4     0.34
+GROUP                 
+ATOM CG2  CT3    -0.27
+ATOM HG21 HA3     0.09
+ATOM HG22 HA3     0.09
+ATOM HG23 HA3     0.09
+GROUP   
+ATOM C    C       0.51
+ATOM O    O      -0.51
+BOND CB CA  OG1 CB   CG2 CB    N   HN   
+BOND N  CA    C   CA    C   +N    CA  HA   
+BOND CB HB  CG2 HG21  CG2 HG22  CG2 HG23
+DOUBLE  O   C    
+BOND OG1  P    P   O3P   O3P  H3T
+BOND P    O1P  P   O2P
+IMPR N -C CA HN  C CA +N O   
+CMAP -C  N  CA  C   N  CA  C  +N
+DONOR HN N   
+!DONOR HG1 OG1   
+ACCEPTOR OG1   
+ACCEPTOR O C   
+IC -C   CA   *N   HN    1.3471 124.1200  180.0000 114.2600  0.9995
+IC -C   N    CA   C     1.3471 124.1200  180.0000 106.0900  1.5162
+IC N    CA   C    +N    1.4607 106.0900  180.0000 117.6900  1.3449
+IC +N   CA   *C   O     1.3449 117.6900  180.0000 120.3000  1.2294
+IC CA   C    +N   +CA   1.5162 117.6900  180.0000 124.6600  1.4525
+IC N    C    *CA  CB    1.4607 106.0900  126.4600 112.7400  1.5693
+IC N    C    *CA  HA    1.4607 106.0900 -114.9200 106.5300  1.0817
+IC N    CA   CB   OG1   1.4607 114.8100  180.0000 112.1600  1.4252
+IC OG1  CA   *CB  HB    1.4252 112.1600  116.3900 106.1100  1.1174
+IC OG1  CA   *CB  CG2   1.4252 112.1600 -124.1300 115.9100  1.5324
+!IC CA   CB   OG1  HG1   1.5693 112.1600 -179.2800 105.4500  0.9633
+IC CA   CB   CG2  HG21  1.5693 115.9100 -173.6500 110.8500  1.1104
+IC HG21 CB   *CG2 HG22  1.1104 110.8500  119.5100 110.4100  1.1109
+IC HG21 CB   *CG2 HG23  1.1104 110.8500 -120.3900 111.1100  1.1113
+IC CA   CB   OG1  P     0.0000 000.00    180.00   000.00    0.0000
+IC CB   OG1  P    O3P   0.0000 000.00    180.00   000.00    0.0000
+IC OG1  P    O3P  H3T   0.0000 000.00    180.00   000.00    0.0000
+IC OG1  O3P  *P   O1P   0.0000 000.00   -120.00   000.00    0.0000
+IC OG1  O3P  *P   O2P   0.0000 000.00    120.00   000.00    0.0000
  
 PRES SAHC   0.00        ! Patch for ade to get S-adenosyl-homocysteine
                         ! ade has to be generated prior to application of
