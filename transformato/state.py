@@ -33,28 +33,30 @@ class IntermediateStateFactory(object):
         self._init_base_dir()
         self.configuration = configuration
 
-
     def write_state(
         self,
         mutation_conf: List,
         intst_nr: int,
         lambda_value_electrostatic: float = 1.0,
         lambda_value_vdw: float = 1.0,
-        common_core_transformation:float = 1.0
+        common_core_transformation: float = 1.0,
     ):
 
         logger.info("#########################################")
         logger.info("#########################################")
         output_file_base = self._init_intermediate_state_dir(intst_nr)
-        print(f'Writing to {output_file_base}')
+        print(f"Writing to {output_file_base}")
 
         for env in self.system.envs:
             for mutation_type in mutation_conf:
 
-                if common_core_transformation < 1.0: #NOTE: THis is inconsisten -- the mutatino_type is the actual mutation in this case
+                if (
+                    common_core_transformation < 1.0
+                ):  # NOTE: THis is inconsisten -- the mutatino_type is the actual mutation in this case
                     mutation_type.mutate(
                         psf=self.system.psfs[env],
-                        lambda_value = common_core_transformation)
+                        lambda_value=common_core_transformation,
+                    )
 
                 else:
                     mutation_type.print_details()
@@ -328,11 +330,16 @@ outfile.close()
         prm_file_handler = open(f"{output_file_base}/dummy_parameters.prm", "w")
         prm_file_handler.write(header_prm)
         prm_file_handler.write("\nATOMS\n")
-
+        already_seen = list()
         view = psf.view[f":{tlc}"]
         # writing atom parameters
         for atom in view.atoms:
             if hasattr(atom, "initial_type"):
+                if set([atom.type]) in already_seen:
+                    continue
+                else:
+                    already_seen.append(set([atom.type]))
+
                 logger.debug("- Setting dummy parameters ...")
                 logger.debug(f"  + Atom-Name: {atom.name}")
                 logger.debug(f"  + Atom-Type: {atom.initial_type}")
@@ -351,9 +358,15 @@ outfile.close()
         # - changing bonded parameters between real atoms - this again needs dummy atoms
 
         prm_file_handler.write("BONDS\n")
+        already_seen = []
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
             if any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
+                if set([atom1.type, atom2.type]) in already_seen:
+                    continue
+                else:
+                    already_seen.append(set([atom1.type, atom2.type]))
+
                 logger.debug(
                     " >> Setting dummy bond parameters for: {} - {}".format(
                         str(atom1.type), str(atom2.type)
@@ -391,11 +404,16 @@ outfile.close()
         #################################################################
         prm_file_handler.write("\n\n")
         prm_file_handler.write("ANGLES\n")
-
+        already_seen = []
         for angle in view.angles:
             atom1, atom2, atom3 = angle.atom1, angle.atom2, angle.atom3
-            # TODO:
             if any(hasattr(atom, "initial_type") for atom in [atom1, atom2, atom3]):
+
+                if set([atom1.type, atom2.type, atom3.type]) in already_seen:
+                    continue
+                else:
+                    already_seen.append(set([atom1.type, atom2.type, atom3.type]))
+
                 logger.debug("############################################")
                 logger.debug("Printing angle atoms which at least one dummy atom.")
                 logger.debug(f"{angle.atom1}, {angle.atom2}, {angle.atom3}")
@@ -444,6 +462,7 @@ outfile.close()
         #################################################################
         prm_file_handler.write("\n\n")
         prm_file_handler.write("DIHEDRALS\n")
+        already_seen = []
         for dihedral in view.dihedrals:
             atom1, atom2, atom3, atom4 = (
                 dihedral.atom1,
@@ -454,6 +473,16 @@ outfile.close()
             if any(
                 hasattr(atom, "initial_type") for atom in [atom1, atom2, atom3, atom4]
             ):
+                if (
+                    set([atom1.type, atom2.type, atom3.type, atom4.type])
+                    in already_seen
+                ):
+                    continue
+                else:
+                    already_seen.append(
+                        set([atom1.type, atom2.type, atom3.type, atom4.type])
+                    )
+
                 logger.debug(
                     f" >> Setting dummy dihedral parameters for: {atom1.type}-{atom2.type}-{atom3.type}-{atom4.type}"
                 )

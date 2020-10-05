@@ -81,7 +81,6 @@ class ProposeMutationRoute(object):
         self.mols: dict = {mol1_name: s1.mol, mol2_name: s2.mol}
         self.graphs: dict = {mol1_name: s1.graph, mol2_name: s2.graph}
         # psfs for reference of only ligand
-        print('WAAAAAAAAAAAAAT IS GOING ON!?')
         self.psfs: dict = {mol1_name: s1.psfs['waterbox'][f":{s1.tlc}"], mol2_name: s2.psfs['waterbox'][f":{s2.tlc}"]}
         self._substructure_match: dict = {mol1_name: [], mol2_name: []}
         self.removed_indeces: dict = {mol1_name: [], mol2_name: []}
@@ -217,19 +216,21 @@ class ProposeMutationRoute(object):
         mcs = self._find_mcs('m1', 'm2')
         return mcs
 
-    def finish_common_core(self):
+    def finish_common_core(self, connected_dummy_regions_cc1:list=[], connected_dummy_regions_cc2:list=[]):
         # set the teriminal real/dummy atom indices
         self._set_common_core_parameters()
         # match the real/dummy atoms
         match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol1()
         match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol2()
         # define connected dummy regions
-        connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
-            mol_name='m1', 
-            match_terminal_atoms_cc=match_terminal_atoms_cc1)
-        connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
-            mol_name='m2', 
-            match_terminal_atoms_cc=match_terminal_atoms_cc2)
+        if not connected_dummy_regions_cc1:
+            connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
+                mol_name='m1', 
+                match_terminal_atoms_cc=match_terminal_atoms_cc1)
+        if not connected_dummy_regions_cc2:
+            connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
+                mol_name='m2', 
+                match_terminal_atoms_cc=match_terminal_atoms_cc2)
 
         logger.info(f"connected dummy regions for mol1: {connected_dummy_regions_cc1}")
         logger.info(f"connected dummy regions for mol2: {connected_dummy_regions_cc2}")
@@ -422,7 +423,7 @@ class ProposeMutationRoute(object):
     def _return_atom_idx_from_bond_idx(self, mol: Chem.Mol, bond_idx: int):
         return mol.GetBondWithIdx(bond_idx).GetBeginAtomIdx(), mol.GetBondWithIdx(bond_idx).GetEndAtomIdx()
 
-    def _find_connected_dummy_regions(self, mol_name: str, match_terminal_atoms_cc: dict):
+    def _find_connected_dummy_regions(self, mol_name: str, match_terminal_atoms_cc: dict)->List[set]:
 
         from itertools import chain
 
@@ -453,7 +454,6 @@ class ProposeMutationRoute(object):
                     for subgraphs in all_subgraphs:
                         subgraphs = set(chain.from_iterable(
                             [self._return_atom_idx_from_bond_idx(mol=mol, bond_idx=e) for e in subgraphs]))
-                        print(subgraphs)
 
                         # test that only dummy atoms are in subgraph
                         if any([real_atom in subgraphs for real_atom in sub]):
@@ -845,7 +845,7 @@ class CommonCoreTransformation(object):
             if not found:
                 raise RuntimeError('No corresponding atom in cc2 found')
 
-    def _mutate_atoms(self, psf: pm.charmm.CharmmPsfFile, scale: float):
+    def _mutate_atoms(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
         """
         mutate atom types. 
 
@@ -882,12 +882,12 @@ class CommonCoreTransformation(object):
 
                             # scale epsilon
                             logger.debug(f"Real epsilon: {ligand1_atom.epsilon}")
-                            modified_epsilon = (1.0 - scale) * ligand1_atom.epsilon + scale * ligand2_atom.epsilon
+                            modified_epsilon = lambda_value * ligand1_atom.epsilon + (1.0 - lambda_value) * ligand2_atom.epsilon
                             logger.debug(f"New epsilon: {modified_epsilon}")
 
                             # scale rmin
                             logger.debug(f"Real rmin: {ligand1_atom.rmin}")
-                            modified_rmin = (1.0 - scale) * ligand1_atom.rmin + scale * ligand2_atom.rmin
+                            modified_rmin = lambda_value * ligand1_atom.rmin + (1.0 - lambda_value) * ligand2_atom.rmin
                             logger.debug(f"New rmin: {modified_rmin}")
 
                             ligand1_atom.mod_type = mod_type(modified_epsilon, modified_rmin)
@@ -895,7 +895,7 @@ class CommonCoreTransformation(object):
             if not found:
                 raise RuntimeError('No corresponding atom in cc2 found')
 
-    def _mutate_bonds(self, psf: pm.charmm.CharmmPsfFile, scale: float):
+    def _mutate_bonds(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
 
         logger.debug('#######################')
         logger.debug('mutate_bonds')
@@ -930,7 +930,7 @@ class CommonCoreTransformation(object):
                     logger.debug(f"Template bond: {ligand2_bond}")
                     logger.debug(f'Original value for k: {ligand1_bond.type.k}')
                     logger.debug(f"Target k: {ligand2_bond.type.k}")
-                    new_k = ((1.0 - scale) * ligand1_bond.type.k) + (scale * ligand2_bond.type.k)
+                    new_k = (lambda_value * ligand1_bond.type.k) + ((1.0 - lambda_value) * ligand2_bond.type.k)
                     logger.debug(new_k)
 
                     modified_k = new_k
@@ -938,7 +938,7 @@ class CommonCoreTransformation(object):
                     logger.debug(f"New k: {modified_k}")
 
                     logger.debug(f"Old req: {ligand1_bond.type.req}")
-                    modified_req = ((1.0 - scale) * ligand1_bond.type.req) + (scale * ligand2_bond.type.req)
+                    modified_req = (lambda_value * ligand1_bond.type.req) + ((1.0 - lambda_value) * ligand2_bond.type.req)
                     logger.debug(f"Modified bond: {ligand1_bond}")
 
                     ligand1_bond.mod_type = mod_type(modified_k, modified_req)
@@ -948,7 +948,7 @@ class CommonCoreTransformation(object):
                 logger.critical(ligand1_bond)
                 raise RuntimeError('No corresponding bond in cc2 found: {}'.format(ligand1_bond))
 
-    def _mutate_angles(self, psf: pm.charmm.CharmmPsfFile, scale: float):
+    def _mutate_angles(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
 
         mod_type = namedtuple('Angle', 'k, theteq')
         for cc1_angle in psf.view[f":{self.tlc_cc1}"].angles:
@@ -980,11 +980,11 @@ class CommonCoreTransformation(object):
                     logger.debug('Scaling k and theteq')
 
                     logger.debug(f"Old k: {cc1_angle.type.k}")
-                    modified_k = (1.0 - scale) * cc1_angle.type.k + scale * cc2_angle.type.k
+                    modified_k = lambda_value * cc1_angle.type.k + (1.0 - lambda_value) * cc2_angle.type.k
                     logger.debug(f"New k: {modified_k}")
 
                     logger.debug(f"Old k: {cc1_angle.type.theteq}")
-                    modified_theteq = (1.0 - scale) * cc1_angle.type.theteq + scale * cc2_angle.type.theteq
+                    modified_theteq = lambda_value * cc1_angle.type.theteq + (1.0 - lambda_value) * cc2_angle.type.theteq
                     logging.debug(f"New k: {modified_theteq}")
 
                     cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
@@ -993,7 +993,7 @@ class CommonCoreTransformation(object):
                 logger.critical(cc1_angle)
                 raise RuntimeError('No corresponding angle in cc2 found')
 
-    def _mutate_torsions(self, psf: pm.charmm.CharmmPsfFile, scale: float):
+    def _mutate_torsions(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
 
         mod_type = namedtuple('Torsion', 'phi_k, per, phase, scee, scnb')
 
@@ -1024,16 +1024,16 @@ class CommonCoreTransformation(object):
                         continue
 
                     mod_types = []
-                    if scale <= 0.5:
-                        # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2
+                    if lambda_value >= 0.5:
+                        # torsion present at cc1 needs to be turned fully off starting at lambda_vlaue == 1.
                         for torsion_t in cc1_torsion.type:
-                            modified_phi_k = torsion_t.phi_k * max(((1.0 - scale * 2)), 0.0)
+                            modified_phi_k = torsion_t.phi_k * (1-(1-lambda_value)* 2)
                             mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase,
                                                       torsion_t.scee, torsion_t.scnb))
                     else:
-                        # torsion present at cc1 needs to be turned fully off starting from self.nr_of_steps/2
+                        # torsion present at cc2 needs to be fully turned on at lambda_value == 0.0
                         for torsion_t in cc2_torsion.type:
-                            modified_phi_k = torsion_t.phi_k * max((scale - 0.5) * 2, 0.0)
+                            modified_phi_k = torsion_t.phi_k * 1-(1-(1-lambda_value))*2
                             mod_types.append(mod_type(modified_phi_k, torsion_t.per, torsion_t.phase,
                                                       torsion_t.scee, torsion_t.scnb))
 
