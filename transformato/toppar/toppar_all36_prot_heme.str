@@ -302,7 +302,7 @@ IC 1O   1C   2FE  2NA   0.0000  0.0000    0.0000  0.0000  0.0000
 IC 1O   1C   2FE  3NE2  0.0000  0.0000    0.0000  0.0000  0.0000
 
 !added from top_all22_model_b5i.inp for heme-S-CH3 patch
-RESI MES1       -1.00 ! methylthiolate, adm jr.
+RESI MES2       -1.00 ! methylthiolate, adm jr., was MES1
 GROUP
 ATOM S    SS    -0.80 !  H11
 ATOM C1   CS    -0.47 !     \

@@ -1,5 +1,5 @@
 *  --------------------------------------------------------------------------  *
-*          CGenFF: Topology for the Charmm General Force Field v. 4.1          *
+*          CGenFF: Topology for the Charmm General Force Field v. 4.3          *
 *                    for Small Molecule Drug Design                            *
 *  --------------------------------------------------------------------------  *
 *
@@ -29,6 +29,13 @@
 !         - As more functional groups will be introduced, small changes in     !
 !             existing parameters and/or charges may occur.                    !
 !         - Comments in this file may be misleading.                           !
+!                                                                              !
+!  2019-4 - Major changes in version 4.3 associated with synchronization of    !
+!           CGenFF release topology file and training file used for CGenFF     !
+!           program. See toppar_all.history with the CHARMM toppar release     !
+!           for more details.  Search for "training" to changes required for   !
+!           CGenFF program training including concatonation of the biologicals !
+!           in top_all36_cgenff.bio.training.rtf to the end of this file.      !
 !  --------------------------------------------------------------------------  !
 !  Contributors: abar  = Arghya Barman                                         !
 !                adm   = Alexander D. MacKerell Jr.                            !
@@ -53,11 +60,14 @@
 !                my    = Mingjun Yang                                          !
 !                oashi = Taiji Oashi                                           !
 !                og    = Olgun Guvench                                         !
+!                ozge  = Ozge Yoluk                                            !
+!                pchat = Payal Chatterjee                                      !
 !                peml  = Pedro Lopes                                           !
 !                pram  = E. Prabhu Raman                                       !
 !                rima  = Madhurima Jana                                        !
 !                rting = Ting Ran                                              !
 !                sc    = Sherry (Hua) Chen                                     !
+!                ashal = Shalini Awasthi                                       !
 !                sna   = Shanthi Nagarajan                                     !
 !                sz    = Shijun Zhong                                          !
 !                viv   = Igor Vorobyov                                         !
@@ -231,21 +241,23 @@ MASS  -1  BRGA1     79.90400 Br ! BRET, bromoethane
 MASS  -1  BRGA2     79.90400 Br ! DBRE, 1,1-dibromoethane
 MASS  -1  BRGA3     79.90400 Br ! TBRE, 1,1,1-dibromoethane
 MASS  -1  BRGR1     79.90400 Br ! BROB, bromobenzene
-MASS  -1  IGR1     126.90447 I ! IODB, iodobenzene
-MASS  -1  FGA1      18.99800 F ! aliphatic fluorine, monofluoro
-MASS  -1  FGA2      18.99800 F ! aliphatic fluorine, difluoro
-MASS  -1  FGA3      18.99800 F ! aliphatic fluorine, trifluoro
-MASS  -1  FGP1      18.99800 F ! anionic F, for ALF4 AlF4-
-MASS  -1  FGR1      18.99800 F ! aromatic flourine
+MASS  -1  IGR1     126.90447 I  ! IODB, iodobenzene
+MASS  -1  FGA1      18.99800 F  ! aliphatic fluorine, monofluoro
+MASS  -1  FGA2      18.99800 F  ! aliphatic fluorine, difluoro
+MASS  -1  FGA3      18.99800 F  ! aliphatic fluorine, trifluoro
+MASS  -1  FGP1      18.99800 F  ! anionic F, for ALF4 AlF4-
+MASS  -1  FGR1      18.99800 F  ! aromatic flourine
 !miscellaneous
-MASS  -1  PG0       30.97380 P ! neutral phosphate
-MASS  -1  PG1       30.97380 P ! phosphate -1
-MASS  -1  PG2       30.97380 P ! phosphate -2
+MASS  -1  PG0       30.97380 P  ! neutral phosphate
+MASS  -1  PG1       30.97380 P  ! phosphate -1
+MASS  -1  PG2       30.97380 P  ! phosphate -2
 MASS  -1  ALG1      26.98154 Al ! Aluminum, for ALF4, AlF4-
-MASS  -1  LPH        0.00000  X ! Lone pair for halogens
-MASS  -1  SG2P1     32.06000  ! mono-thio S-P bond
-MASS  -1  OG2S1     15.99940  ! mono-thio S-P bond modulated oxygen
-MASS  -1  SG2P2     32.06000  ! di-thio S-P bond
+!
+MASS  -1  LPH        0.00000 X  ! Lone pair for halogens, change name to LPG for training
+!
+MASS  -1  SG2P1     32.06000 S  ! mono-thio S-P bond
+MASS  -1  OG2S1     15.99940 O  ! mono-thio S-P bond modulated oxygen
+MASS  -1  SG2P2     32.06000 S  ! di-thio S-P bond
 
 DEFA FIRS NONE LAST NONE
 AUTO ANGLES DIHE PATCH DRUDE
@@ -328,7 +340,7 @@ ATOM  H32 HGP2     0.46
 BOND    C N2   C N3
 DOUBLE C N1
 BOND   N1 H11  N1 H12  N2 H21   N2 H22  N3 H31  N3 H32
-IMPR   C N2 N1 N3
+IMPR   C N2 N3 N1 ! reordered for CGenFF program synchronization, 2019/4
 IC  H11 N1  C  N2    0.00 0.00   0.0   0.00 0.00
 IC  H11 N1  C  N3    0.00 0.00 180.0   0.00 0.00
 IC  H12 N1  C  N3    0.00 0.00   0.0   0.00 0.00
@@ -357,7 +369,7 @@ BOND   C N2   C N3
 DOUBLE C N1
 BOND   N1 H11  N1 H12  N2 H21   N2 H22  N3 H31  N3 C2
 BOND   C2 HC1 C2 HC2 C2 HC3
-IMPR   C N2 N1 N3
+IMPR   C N2 N3 N1 ! reordered for CGenFF program synchronization, 2019/4
 IC  H11 N1  C  N2    0.00 0.00   0.0   0.00 0.00
 IC  H11 N1  C  N3    0.00 0.00 180.0   0.00 0.00
 IC  H12 N1  C  N3    0.00 0.00   0.0   0.00 0.00
@@ -375,16 +387,16 @@ GROUP
 ATOM N    NG321   -0.96
 ATOM HT1  HGPAM2   0.34  !  HT1  HT2
 ATOM HT2  HGPAM2   0.34  !    \ /
-ATOM CA   CG321    0.18  !     N
-ATOM HA1  HGA2     0.05  !     |
-ATOM HA2  HGA2     0.05  ! HA1-CA-HA2
+ATOM CA   CG321    0.10  !     N
+ATOM HA1  HGA2     0.09  !     |
+ATOM HA2  HGA2     0.09  ! HA1-CA-HA2
 GROUP                    !     |
 ATOM C    CG2O2    0.75  !     C
 ATOM OT1  OG2D1   -0.55  !   // \
 ATOM OT2  OG311   -0.63  !  OT1 OT2
 ATOM HO2  HGP1     0.43  !       |
                          !      HO2
-
+!charges on CH2 adjusted for CGenFF program synchronization, 2019/4
 BOND N   CA   CA  C   C   OT2   OT2  HO2
 BOND N   HT1  N   HT2 CA  HA1   CA   HA2
 DOUBLE OT1 C
@@ -404,15 +416,15 @@ PATCHING FIRS NONE LAST NONE
 
 RESI MAMM          1.00 ! CH6N methylammonium, K. Kuczera
 GROUP
-ATOM CE  CG334     0.16
+ATOM CE  CG334     0.04
 ATOM NZ  NG3P3    -0.30 ! HE1     HZ1
-ATOM HE1 HGA3      0.05 !    \ (+) |
-ATOM HE2 HGA3      0.05 !HE2-CE---NZ--HZ2
-ATOM HE3 HGA3      0.05 !    /     |
+ATOM HE1 HGA3      0.09 !    \ (+) |
+ATOM HE2 HGA3      0.09 !HE2-CE---NZ--HZ2
+ATOM HE3 HGA3      0.09 !    /     |
 ATOM HZ1 HGP2      0.33 ! HE3     HZ3
 ATOM HZ2 HGP2      0.33
 ATOM HZ3 HGP2      0.33
-
+!charges on CH3 adjusted for CGenFF program synchronization, 2019/4
 BOND CE HE1  CE HE2  CE HE3
 BOND CE NZ  NZ HZ1  NZ HZ2  NZ HZ3
 IC   NZ   HE3  *CE  HE1  0.0000    0.00  120.00    0.00   0.0000
@@ -424,10 +436,10 @@ PATC FIRS NONE LAST NONE
 
 RESI EAMM          1.00 ! C2H8N ethylammonium, adm jr.
 GROUP
-ATOM CE  CG324     0.21
+ATOM CE  CG324     0.13
 ATOM NZ  NG3P3    -0.30 ! HE1     HZ1
-ATOM HE1 HGA2      0.05 !    \ (+) |
-ATOM HE2 HGA2      0.05 !HE2-CE---NZ--HZ2
+ATOM HE1 HGA2      0.09 !    \ (+) |
+ATOM HE2 HGA2      0.09 !HE2-CE---NZ--HZ2
                         !    /     |
 ATOM HZ1 HGP2      0.33 !   /     HZ3
 ATOM HZ2 HGP2      0.33 !  C1-H13
@@ -437,6 +449,7 @@ ATOM C1  CG331    -0.27
 ATOM H11 HGA3      0.09
 ATOM H12 HGA3      0.09
 ATOM H13 HGA3      0.09
+!charges on CH2 adjusted for CGenFF program synchronization, 2019/4
 BOND CE HE1  CE HE2  CE C1
 BOND CE NZ  NZ HZ1  NZ HZ2  NZ HZ3
 BOND C1 H11 C1 H12  C1 H13
@@ -494,12 +507,13 @@ IC OG   HB1  *CB  HB3   0.0000  0.0000 -120.0000  0.0000  0.0000
 
 RESI METO         -1.00 ! CH3O methoxide, adm jr.
 GROUP    ! order of atoms to match that used in ab initio
-ATOM CB   CG331   -0.41 !  HB1
+ATOM CB   CG331   -0.35 !  HB1
 ATOM OG   OG312   -0.92 !     \
                         ! HB2--CB--OG (-)
-ATOM HB1  HGA3     0.11 !     /
-ATOM HB2  HGA3     0.11 !  HB3
-ATOM HB3  HGA3     0.11
+ATOM HB1  HGA3     0.09 !     /
+ATOM HB2  HGA3     0.09 !  HB3
+ATOM HB3  HGA3     0.09
+!charges on CH3 adjusted for CGenFF program synchronization, 2019/4
 BOND CB  OG
 BOND CB HB1  CB HB2  CB  HB3
 ACCE OG
@@ -535,13 +549,14 @@ IC C2   C1   O1   HO1   0.0000  0.0000 180.0000  0.0000  0.0000
 RESI ETO          -1.00 ! C2H5O Ethoxide, adm jr.
 GROUP
 ATOM OG   OG312   -0.92 !  HA1  HB1 HB2
-ATOM CB   CG321   -0.30 !     \   \  /
+ATOM CB   CG321   -0.26 !     \   \  /
 ATOM CA   CG331   -0.27 ! HA2--CA--CB
-ATOM HB1  HGA2     0.11 !     /      \
-ATOM HB2  HGA2     0.11 !  HA3        OG (-)
+ATOM HB1  HGA2     0.09 !     /      \
+ATOM HB2  HGA2     0.09 !  HA3        OG (-)
 ATOM HA1  HGA3     0.09
 ATOM HA2  HGA3     0.09
 ATOM HA3  HGA3     0.09
+!charges on CH2 adjusted for CGenFF program synchronization, 2019/4
 BOND CA  CB   CB  OG   CB  HB1  CB  HB2
 BOND CA  HA1  CA  HA2  CA  HA3
 ACCE OG
@@ -758,6 +773,7 @@ IC NL  CL  *CLP OL  0.0 0.0  180.0  0.0 0.0
 IC OL  CLP NL  CA   0.0 0.0    0.0  0.0 0.0
 IC CA  CRP NR  CR   0.0 0.0  180.0  0.0 0.0 ! Omega Right
 IC CRP CR  *NR HR   0.0 0.0  180.0  0.0 0.0
+IC CA  CRP NR  HR   0.0 0.0  180.0  0.0 0.0 ! added for CGenFF program synchronization
 IC NL  CRP *CA HA   0.0 0.0  240.0  0.0 0.0
 IC NL  CRP *CA CB   0.0 0.0  120.0  0.0 0.0
 IC HL1 CL  CLP NL   0.0 0.0  180.0  0.0 0.0
@@ -964,6 +980,7 @@ IC  CM2 S3  CM4 H8   0.00 0.00  300.0 0.0  0.0
 PATCH FIRST NONE LAST NONE
 
 RESI IMIA          0.00 ! C3H4N2 Imidazole, adm jr.
+!RING 5 CG CD2 NE2 CE1 ND1
 GROUP
 ATOM CG   CG2R51  -0.05 !       HD1    HE1
 ATOM HG   HGR52    0.09 !        |     /
@@ -1081,6 +1098,7 @@ IC   HA1   CB    *CA   HA2    0.0       0.0   120.0     0.0    0.0
 IC   HA1   CB    *CA   HA3    0.0       0.0  -120.0     0.0    0.0
 
 RESI IMIM          1.00 ! C3H5N2 Imidazolium, adm jr.
+!RING 5 CG CD2 NE2 CE1 ND1
 GROUP
 ATOM CG   CG2R51   0.19 !       HD1    HE1
 ATOM HG   HGR52    0.13 !        |     /
@@ -1156,6 +1174,7 @@ IC CE1  CD2   *NE2  HE2    0.0000    0.00  180.00    0.00   0.0000
 IC NE2  ND1   *CE1  HE1    0.0000    0.00  180.00    0.00   0.0000
 
 RESI BENZ          0.00 ! C6H6 benzene, adm jr.
+!RING 6 CG CD1 CE1 CZ CE2 CD2
 GROUP
 ATOM CG   CG2R61  -0.115
 ATOM HG   HGR61    0.115 !      HD1  HE1
@@ -1510,13 +1529,14 @@ IC C      NT    CR   HR2        1.3479  127.54   62.09  110.97   1.1130
 IC C      NT    CR   HR3        1.3479  127.54  -58.81  110.79   1.1141
 
 RESI PNH2          1.00 ! C5H11N2O prolineamide (aka TP2, PAMD), R. Dunbrack
-ATOM N    NG3P2   -0.07
-ATOM HN1  HGP2     0.24
-ATOM HN2  HGP2     0.24
-ATOM CD   CG3C54   0.16
-ATOM CB   CG3C52  -0.18 !    HN1   HD1 HD2
-ATOM CG   CG3C52  -0.18 !      \    \ /
-ATOM CA   CG3C53   0.16 !  HN2--N---CD   HG1
+                        ! charges adjusted for consistency with CGenFF charges
+ATOM N    NG3P2   -0.22
+ATOM HN1  HGP2     0.34
+ATOM HN2  HGP2     0.34
+ATOM CD   CG3C54  -0.35
+ATOM CB   CG3C52  -0.12 !    HN1   HD1 HD2
+ATOM CG   CG3C52  -0.12 !      \    \ /
+ATOM CA   CG3C53   0.12 !  HN2--N---CD   HG1
 ATOM C    CG2O1    0.51 !       |(+)  \  /
 ATOM O    OG2D1   -0.51 !       |      CG
 ATOM HA   HGA1     0.09 !       |     /  \
@@ -1524,8 +1544,8 @@ ATOM HB1  HGA2     0.09 !    HA-CA--CB   HG2
 ATOM HB2  HGA2     0.09 !       |   / \
 ATOM HG1  HGA2     0.09 !       | HB1 HB2
 ATOM HG2  HGA2     0.09 !     O=C
-ATOM HD1  HGA2     0.09 !       |
-ATOM HD2  HGA2     0.09 !       NT
+ATOM HD1  HGA2     0.28 !       |
+ATOM HD2  HGA2     0.28 !       NT
 ATOM NT   NG2S2   -0.62 !      / \
 ATOM HT1  HGP1     0.31 !   HT1   HT2
 ATOM HT2  HGP1     0.31
@@ -1798,7 +1818,7 @@ GROUP
 ATOM C    CG2O7    0.60
 ATOM OC1  OG2D5   -0.30
 ATOM OC2  OG2D5   -0.30
-BOND OC1 C   OC2 C
+DOUB OC1 C   OC2 C
 
 RESI CO3          -2.00 ! CO3 ionized carbonate, adm jr., aug 2001
 !As organic carbonates and carbamates are uncharged, we definitely want to use
@@ -1817,6 +1837,7 @@ IC O2   O1   *C1  O3     0.0000    0.00  180.00    0.00   0.0000
 IC O3   O2   *C1  O1     0.0000    0.00  180.00    0.00   0.0000 !redundant definition needed to enable seeding.
 
 RESI C3            0.00 ! C3H6 Cyclopropane Model Compound
+!RING 3 C1 C2 C3
 GROUP                     !  JMW and CBP 16 April 2004
 ATOM C1   CG3C31  -0.18
 ATOM H11  HGA2     0.09   !       H11  H12
@@ -2044,6 +2065,7 @@ PATC FIRS NONE LAST NONE
 
 !toppar_all22_prot_pyridines.str
 RESI PYR1          0.00 ! C5H5N pyridine, yin
+!RING 6 N1 C2 C3 C4 C5 C6
 GROUP
 ATOM N1   NG2R60  -0.600
 ATOM C2   CG2R61   0.180
@@ -2700,6 +2722,8 @@ IC OH   CD1  *CD3 H12   0.0000  0.0000 -120.0000  0.0000  0.0000
 PATCH FIRST NONE LAST NONE
 
 RESI 3PHP          0.00  ! C11H9N 3-phenyl-pyridine, yin
+!RING 6 CG CD1 CE1 NZ CE2 CD2
+!RING 6 CA1 CA2 CA3 CA4 CA5 CA6
 GROUP
 ATOM NZ   NG2R60  -0.600
 ATOM CE1  CG2R61   0.180
@@ -3399,21 +3423,25 @@ ACCE  OS2
 ACCE  OS3
 ACCE  OS4
 
-IC OS4  S    OS2  OS1   0.0000  0.0000   60.0000  0.0000  0.0000
-IC OS2  S    OS2  OS3   0.0000  0.0000  -60.0000  0.0000  0.0000
-IC OS3  S    OS1  OS4   0.0000  0.0000   60.0000  0.0000  0.0000
-IC OS1  S   OS3   OS2   0.0000  0.0000   60.0000  0.0000  0.0000
-IC C1   OS1   S   OS2   0.0000  0.0000   60.0000  0.0000  0.0000
-IC S    OS1  C1   OS3   0.0000  0.0000   60.0000  0.0000  0.0000
-IC OS1  S    OS4  OS2   0.0000  0.0000  180.0000  0.0000  0.0000
-IC OS1  S    OS2  OS3   0.0000  0.0000  180.0000  0.0000  0.0000
-IC OS1  S    OS3  OS2   0.0000  0.0000  180.0000  0.0000  0.0000
-IC OS4  S    OS2  OS1   0.0000  0.0000   60.0000  0.0000  0.0000
-IC OS4  S    OS3  OS1   0.0000  0.0000   60.0000  0.0000  0.0000
-IC OS3  S    OS2  OS1   0.0000  0.0000   60.0000  0.0000  0.0000
-IC OS4  S    OS1  C1    0.0000  0.0000   60.0000  0.0000  0.0000
-IC OS2  S    OS1  C1    0.0000  0.0000   60.0000  0.0000  0.0000
-IC OS3  S    OS1  C1    0.0000  0.0000   60.0000  0.0000  0.0000
+!  I        J        K        L        R(I(J/K)) T(I(JK/KJ)) PHI   T(JKL)   R(KL)
+IC OS4      S        OS2      OS1        1.4531  114.15 -115.40   38.92   2.4083
+IC OS2      S        OS2      OS3        1.4531    0.00    0.00   33.22   2.4294
+IC OS3      S        OS1      OS4        1.4517  103.28  119.40   35.55   2.4081
+IC OS1      S        OS3      OS2        1.5704  103.28  113.75   33.26   2.4294
+IC C1       OS1      S        OS2        1.4257  114.90  -60.44  105.53   1.4531
+IC S        OS1      C1       OS3        1.5704  114.90    0.19   17.88   3.6869
+IC OS1      S        OS4      OS2        1.5704  105.52 -115.41   32.93   2.4393
+IC OS1      S        OS2      OS3        1.5704  105.53 -112.39   33.22   2.4294
+IC OS1      S        OS3      OS2        1.5704  103.28  113.75   33.26   2.4294
+IC OS4      S        OS2      OS1        1.4531  114.15 -115.40   38.92   2.4083
+IC OS4      S        OS3      OS1        1.4531  113.51  113.73   40.14   2.3708
+IC OS3      S        OS2      OS1        1.4517  113.52  112.39   38.92   2.4083
+IC OS4      S        OS1      C1         1.4531  105.52   60.75  114.90   1.4257
+IC OS2      S        OS1      C1         1.4531  105.53  -60.44  114.90   1.4257
+IC OS3      S        OS1      C1         1.4517  103.28 -179.85  114.90   1.4257
+IC H11      C1       OS1      S          1.1147  111.44   61.19  114.90   1.5704
+IC H12      C1       OS1      S          1.1147  111.45  -61.10  114.90   1.5704
+IC H13      C1       OS1      S          1.1110  109.14 -179.96  114.90   1.5704
 
 RESI HEXA           0.00 ! C6H14 hexane
 GROUP
@@ -4375,6 +4403,8 @@ IC HM1  OM   *CM   HM3    0.0000    0.00 -120.00    0.00   0.0000
 !toppar_all27_na_base_modifications.str
 
 RESI DFT            0.00     ! C7H6F2 2,4-difluorotoluene
+!RING 6 C1 C2 C3 C4 C5 C6
+                             ! charges adjust for consistency with CGenFF
 GROUP                        ! adm jr. w/Daniel Barsky
 ATOM C1   CG2R61   -0.24
 ATOM C2   CG2R66    0.28
@@ -4386,10 +4416,10 @@ ATOM H1   HGR62     0.21 ! H52--C5M-C5    C3
 ATOM F2   FGR1     -0.21 !       /  ||    |
 ATOM H3   HGR62     0.19 !    H52   C6    C2
 ATOM F4   FGR1     -0.21 !         /  \  // \
-ATOM C5M  CG331    -0.24 !       H6    C1    F2
-ATOM H51  HGA3      0.07 !             |
-ATOM H52  HGA3      0.07 !             H1
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.30 !       H6    C1    F2
+ATOM H51  HGA3      0.09 !             |
+ATOM H52  HGA3      0.09 !             H1
+ATOM H53  HGA3      0.09
 ATOM H6   HGR61     0.21
 
 BOND C1  C2   C2  C3   C3  C4   C4  C5   C5  C6   C6  C1
@@ -4412,6 +4442,7 @@ IC H51  C5   *C5M H52    0.00      0.00   60.00    0.00   0.00
 IC H51  C5   *C5M H53    0.00      0.00  240.00    0.00   0.00
 
 RESI DFB            0.00     ! C6H4F2 1,3-difluorobenzene aka m-difluorobenzene
+!RING 6 C1 C2 C3 C4 C5 C6
                              ! adm jr. w/Daniel Barsky
 GROUP                        ! atom numbering based in difluorotoluene
 ATOM C1   CG2R61   -0.26
@@ -4897,7 +4928,7 @@ PATC  FIRS NONE LAST NONE
 
 RESI BPNP          -1.00 ! C7H12O4P North carbocyclic sugar with 3'-OPOCH3
                          ! used to parameterize epsilon
-
+!RING 3 C1 C5 C6
 ! the atom types used correspond to those used in the NA
 ! ribose/deoxyribose moieties
 
@@ -5237,6 +5268,7 @@ PATC  FIRS NONE LAST NONE
 RESI CSTH           0.00 ! C11H14N2O2 carbocyclic sugar with thymine base, south
                          ! base attached to C1 of carbocyclic sugar
                          ! used to parameterize chi
+                         ! charges adjusted to be consistent wth CGenFF
 
 ! the atom types used correspond to those used in the NA
 ! ribose/deoxyribose moieties
@@ -5274,10 +5306,10 @@ ATOM H3   HGP1      0.36 !                    H6-C6   C2
 ATOM C4   CG2R63    0.50 !                        \  / \\
 ATOM O4   OG2D4    -0.45 !                         N1   O2
 ATOM C5   CG2R62   -0.15 !                          \
-ATOM C5M  CG331    -0.11 !                           \
-ATOM H51  HGA3      0.07 !                            \
-ATOM H52  HGA3      0.07 !                             *
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.17 !                           \
+ATOM H51  HGA3      0.09 !                            \
+ATOM H52  HGA3      0.09 !                             *
+ATOM H53  HGA3      0.09
 
 BOND C1S  C2S       C2S  C3S       C3S  C4S       C4S  C5S
 BOND C5S  C1S       C5S  C6S       C6S  C1S
@@ -5616,7 +5648,7 @@ PATCH FIRST NONE LAST NONE
 RESI CNTH           0.00 ! C11H14N2O2 carbocyclic sugar with thymine base, north
                          ! base attached to C2 of carbocyclic sugar
                          ! used to parameterize chi
-
+                         ! charges adjusted to p 
 ! the atom types used correspond to those used in the NA
 ! ribose/deoxyribose moieties
 
@@ -5654,10 +5686,10 @@ ATOM H3   HGP1      0.36 !                    H6-C6   C2
 ATOM C4   CG2R63    0.50 !                        \  / \\
 ATOM O4   OG2D4    -0.45 !                         N1   O2
 ATOM C5   CG2R62   -0.15 !                          \
-ATOM C5M  CG331    -0.11 !                           \
-ATOM H51  HGA3      0.07 !                            \
-ATOM H52  HGA3      0.07 !                             *
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.17 !                           \
+ATOM H51  HGA3      0.09 !                            \
+ATOM H52  HGA3      0.09 !                             *
+ATOM H53  HGA3      0.09
 
 BOND C1S  C2S       C2S  C3S       C3S  C4S       C4S  C5S
 BOND C5S  C1S       C5S  C6S       C6S  C1S
@@ -5749,10 +5781,10 @@ ATOM H3   HGP1      0.36 !                    H6-C6   C2
 ATOM C4   CG2R63    0.50 !                        \  / \\
 ATOM O4   OG2D4    -0.45 !                         N1   O2
 ATOM C5   CG2R62   -0.15 !                          \
-ATOM C5M  CG331    -0.11 !                           \
-ATOM H51  HGA3      0.07 !                            \
-ATOM H52  HGA3      0.07 !                             *
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.17 !                           \
+ATOM H51  HGA3      0.09 !                            \
+ATOM H52  HGA3      0.09 !                             *
+ATOM H53  HGA3      0.09
 
 
 BOND C1S  C2S       C2S  C3S       C3S  C4S       C4S  C5S
@@ -5845,10 +5877,10 @@ ATOM H3   HGP1      0.36 !                    H6-C6   C2
 ATOM C4   CG2R63    0.50 !                        \  / \\
 ATOM O4   OG2D4    -0.45 !                         N1   O2
 ATOM C5   CG2R62   -0.15 !                          \
-ATOM C5M  CG331    -0.11 !                           \
-ATOM H51  HGA3      0.07 !                            \
-ATOM H52  HGA3      0.07 !                             *
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.17 !                           \
+ATOM H51  HGA3      0.09 !                            \
+ATOM H52  HGA3      0.09 !                             *
+ATOM H53  HGA3      0.09
 
 
 BOND C1S  C2S       C2S  C3S       C3S  C4S       C4S  C5S
@@ -5941,10 +5973,10 @@ ATOM H3   HGP1      0.36 !                    H6-C6   C2
 ATOM C4   CG2R63    0.50 !                        \  / \\
 ATOM O4   OG2D4    -0.45 !                         N1   O2
 ATOM C5   CG2R62   -0.15 !                          \
-ATOM C5M  CG331    -0.11 !                           \
-ATOM H51  HGA3      0.07 !                            \
-ATOM H52  HGA3      0.07 !                             *
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.17 !                           \
+ATOM H51  HGA3      0.09 !                            \
+ATOM H52  HGA3      0.09 !                             *
+ATOM H53  HGA3      0.09
 
 
 BOND C1S  C2S       C2S  C3S       C3S  C4S       C4S  C5S
@@ -7959,10 +7991,10 @@ ATOM H3   HGP1      0.36  !                    H6-C6   C2
 ATOM C4   CG2R63    0.50  !                        \  / \\
 ATOM O4   OG2D4    -0.45  !                         N1   O2
 ATOM C5   CG2R62   -0.15  !                          \
-ATOM C5M  CG331    -0.11  !                           \
-ATOM H51  HGA3      0.07  !                            \
-ATOM H52  HGA3      0.07  !                  H42'  O4'  \
-ATOM H53  HGA3      0.07  !                     \ /   \  \
+ATOM C5M  CG331    -0.17  !                           \
+ATOM H51  HGA3      0.09  !                            \
+ATOM H52  HGA3      0.09  !                  H42'  O4'  \
+ATOM H53  HGA3      0.09  !                     \ /   \  \
 ATOM O4'  OG3C51   -0.40  !                H41'-C4'    C1'
 ATOM C1'  CG3C51    0.11  !                      \     / \
 ATOM H12' HGA1      0.09  !                H31'--C3'--C2' H12'
@@ -8420,10 +8452,10 @@ ATOM H3   HGP1      0.36
 ATOM C4   CG2R63    0.50
 ATOM O4   OG2D4    -0.45
 ATOM C5   CG2R62   -0.15
-ATOM C5M  CG331    -0.11
-ATOM H51  HGA3      0.07
-ATOM H52  HGA3      0.07
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.17
+ATOM H51  HGA3      0.09
+ATOM H52  HGA3      0.09
+ATOM H53  HGA3      0.09
 GROUP   ! Hydroxyl group on C3'
 ATOM H31' HGA1      0.09
 ATOM C3'  CG3C51    0.14
@@ -9113,10 +9145,10 @@ ATOM H3   HGP1      0.36 !  O1P==P==O2P
 ATOM C4   CG2R63    0.50 !       |
 ATOM O4   OG2D4    -0.45 !      O3P  (-1)
 ATOM C5   CG2R62   -0.15 !        \
-ATOM C5M  CG331    -0.11 !        C3T--H3T3
-ATOM H51  HGA3      0.07 !       /  \
-ATOM H52  HGA3      0.07 !    H3T1 H3T2
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.17 !        C3T--H3T3
+ATOM H51  HGA3      0.09 !       /  \
+ATOM H52  HGA3      0.09 !    H3T1 H3T2
+ATOM H53  HGA3      0.09
 GROUP
 ATOM C2'  CG3C52   -0.18
 ATOM H21' HGA2      0.09
@@ -9197,7 +9229,7 @@ RESI NIC            1.00 ! C6H7N2O oxidized nicotinamide (protonated), jjp1/adm 
                          ! checked for consistency with new NA params, adm jr., 9/98
                          ! note that differences with respect to published results exist
                          ! due to new NA params
-
+!RING 6 N2 C3 C5 C7 C9 C10
                          !       H15
 GROUP                    !         \
 ATOM H1   HGP2      0.45 !     H16-N14     H8
@@ -9245,7 +9277,7 @@ RESI NICH           0.00 ! C6H8N2O reduced nicotinamide, jjp1/adm jr.
                          ! note that differences with respect to published results exist
                          ! due to new NA params
                          ! HN3 to HN6 atom type switch to maintain proper vdw params, 9/98
-
+!RING 6 N2 C3 C5 C7 C9 C10
                          !       H15
 GROUP                    !         \
 ATOM H1   HGPAM1    0.42 !     H16-N14   H8  H17
@@ -9731,6 +9763,34 @@ IC C4'  O5'  *C5' H5'    0.0       0.0  -115.0     0.0    0.0
 IC C4'  O5'  *C5' H5''   0.0       0.0   115.0     0.0    0.0
 PATC  FIRS NONE LAST NONE
 
+PRES 5DP         -3.00  ! patch to create 5' diphosphate on nucleotides, jjp1/adm jr.
+                        ! as in ADP, use in generate statement
+GROUP
+ATOM C5'  CG321    -0.08
+ATOM H5'  HGA2      0.09
+ATOM H5'' HGA2      0.09
+ATOM O5'  OG303    -0.62
+ATOM P    PG1       1.50
+ATOM O1P  OG2P1    -0.82
+ATOM O2P  OG2P1    -0.82
+ATOM O13  OG304    -0.74
+ATOM P2   PG2       1.10
+ATOM O21  OG2P1    -0.90
+ATOM O22  OG2P1    -0.90
+ATOM O23  OG2P1    -0.90
+
+BOND P    O13       O13   P2
+BOND P2    O21       P2     O22      P2    O23
+ACCE O13
+ACCE O21
+ACCE O22
+ACCE O23
+IC C5'  O5'  P    O13    0.0000  000.00  180.0   000.00   0.0000
+IC O5'  P    O13  P2      0.0000  000.00  180.0   000.00   0.0000
+IC P    O13  P2    O21    0.0000  000.00  180.0   000.00   0.0000
+IC P    O13  P2    O22    0.0000  000.00   60.0   000.00   0.0000
+IC P    O13  P2    O23    0.0000  000.00  -60.0   000.00   0.0000
+PATC  FIRS NONE LAST NONE
 
 RESI NAD           -1.00  ! C21H26N7O14P2 oxidized nicotinamide adenine dinucleotide, jjp1/adm jr.
                           ! atom names correspond to pdb nomenclature
@@ -10994,8 +11054,8 @@ ATOM N    NG3P3    -0.30
 ATOM HT1  HGP2      0.33  !    (2)    HT1
 ATOM HT2  HGP2      0.33  !     |    /
 ATOM HT3  HGP2      0.33  !(1)--CA--N--HT2 (+)
-ATOM CA   CG314     0.21  !     |    \
-ATOM HA   HGA1      0.10  !     HA    HT3
+ATOM CA   CG314     0.22  !     |    \
+ATOM HA   HGA1      0.09  !     HA    HT3
 GROUP
 ATOM CB   CG321    -0.18
 ATOM HB1  HGA2      0.09
@@ -11126,7 +11186,98 @@ IC C3'   C1'   *C2'  H2''   1.5132   95.49 -116.10  112.79   1.1120
 IC C1'   C2'   O2'   H2'    1.5135  113.17  177.31  109.89   0.9633
 IC C4'   C3'   O3'   H3T    1.5499  116.35  167.44  110.25   0.9629
 
+!RESI SAH is from orginal top_all36_cgenff.rtf
+!PRES SAH is from top_cgenff_all_2a.validate_typer.inp
+!PRES SAH           0.00 ! Patch for ade to get S-adenosyl-homocysteine
+PRES SAHP          0.00 ! Patch for ade to get S-adenosyl-homocysteine
+DELETE ATOM P           ! ade has to be generated prior to application of
+DELETE ATOM O1P         ! this patch in a separate patch command
+DELETE ATOM O2P
+DELETE ATOM O5'
+GROUP
+ATOM N    NG3P3    -0.30
+ATOM HT1  HGP2      0.33  !    (2)    HT1
+ATOM HT2  HGP2      0.33  !     |    /
+ATOM HT3  HGP2      0.33  !(1)--CA--N--HT2 (+)
+ATOM CA   CG314     0.22  !     |    \
+ATOM HA   HGA1      0.09  !     HA    HT3
+GROUP
+ATOM CB   CG321    -0.18
+ATOM HB1  HGA2      0.09
+ATOM HB2  HGA2      0.09  !           HB1 HG1     H5'  H4'  O4'   Adenine
+GROUP                     !            |   |       |     \ /  \  /
+ATOM CG   CG321    -0.13  !       (1)--CB--CG--SD--C5'----C4'  C1'-H1'
+ATOM HG1  HGA2      0.09  !            |   |       |      |    |
+ATOM HG2  HGA2      0.09  !          HB2  HG2    H5'' H3'-C3'--C2'-H21'
+ATOM SD   SG311    -0.10  ! kevo: symmetrized             |    |
+ATOM C5'  CG321    -0.13  !                          H3T--O3'  O2'-H2'
+ATOM H5'  HGA2      0.09
+ATOM H5'' HGA2      0.09  !      OT2(-)
+GROUP                     !     /
+ATOM C    CG2O3     0.34  !(2)-C
+ATOM OT1  OG2D2    -0.67  !    \\
+ATOM OT2  OG2D2    -0.67  !     OT1
+GROUP        !This comment is read by the create_release script; do not remove!
+ATOM C3'  CG3C51    0.14
+ATOM H3'  HGA1      0.09
+ATOM O3'  OG311    -0.65
+ATOM H3T  HGP1      0.42
+
+DOUB C   OT1
+BOND N   CA   O3' H3T
+BOND CB  CA   CG  CB   SD  CG   C5' SD  C  CA
+BOND CA  HA   CB  HB1  CB  HB2  CG  HG1 CG HG2
+BOND HT1 N    HT2 N    HT3 N    OT2 C
+IMPR C OT1 OT2 CA
+
+!DONOR HT1 N
+!DONOR HT2 N
+!DONOR HT3 N
+!ACCEPTOR OT1 C
+!ACCEPTOR OT2 C
+
+IC N     CA    CB    CG     1.4863  111.52  -68.05  114.80   1.5438
+IC CA    CB    CG    SD     1.5495  114.80 -169.85  111.97   1.8249
+IC HT1   CA    *N    HT2    1.0633   98.00  113.14  109.99   1.0338
+IC HT1   CA    *N    HT3    1.0633   98.00 -117.28  113.48   1.0305
+IC HT1   N     CA    CB     1.0633   98.00 -136.27  111.52   1.5495
+IC CB    N     *CA   C      1.5495  111.52  123.39  106.34   1.5395
+IC CB    N     *CA   HA     1.5495  111.52 -122.64  109.49   1.0806
+IC CG    CA    *CB   HB1    1.5438  114.80  125.78  110.22   1.1112
+IC CG    CA    *CB   HB2    1.5438  114.80 -119.31  106.97   1.1179
+IC SD    CB    *CG   HG1    1.8249  111.97  120.25  107.22   1.1112
+IC SD    CB    *CG   HG2    1.8249  111.97 -122.78  110.68   1.1101
+IC CB    CG    SD    C5'    1.5438  111.97  149.65  104.32   1.8303
+IC CG    SD    C5'   C4'    1.8249  104.32  -59.34  117.91   1.5403
+IC C4'   SD    *C5'  H5'    1.5403  117.91  122.31  108.22   1.1127
+IC C4'   SD    *C5'  H5''   1.5403  117.91 -122.71  108.62   1.1118
+IC N     CA    C     OT1    1.4863  106.34 -166.34  117.88   1.2492
+IC OT1   CA    *C    OT2    1.2492  117.88 -178.37  117.42   1.2654
+IC SD    C5'   C4'   O4'    1.8303  117.91  169.12  108.69   1.4591
+IC O4'   C5'   *C4'  C3'    1.4591  108.69  118.83  122.55   1.5499
+IC O4'   C5'   *C4'  H4'    1.4591  108.69 -116.07  109.38   1.1099
+IC C5'   C4'   O4'   C1'    1.5403  108.69  133.30  108.22   1.4240
+IC C4'   O4'   C1'   N9     1.4591  108.22 -159.13  111.15   1.4614
+IC N9    O4'   *C1'  C2'    1.4614  111.15  124.24  102.39   1.5135
+IC N9    O4'   *C1'  H1'    1.4614  111.15 -119.53  107.46   1.1156
+IC C4    C1'   *N9   C8     1.3837  126.86  175.00  127.05   1.3697
+IC C1'   N9    C4    C5     1.4614  126.86  176.84  105.37   1.3831
+IC C5    N9    *C4   N3     1.3831  105.37  179.25  128.02   1.3472
+IC N9    C4    C5    C6     1.3837  105.37  179.94  116.97   1.4115
+IC C6    C4    *C5   N7     1.4115  116.97  179.52  110.80   1.3914
+IC N7    N9    *C8   H8     1.3073  113.91 -179.74  121.60   1.0918
+IC C4    C5    C6    N1     1.3831  116.97   -0.21  118.01   1.3524
+IC N1    C5    *C6   N6     1.3524  118.01 -179.35  123.62   1.3438
+IC N3    N1    *C2   H2     1.3403  129.44 -179.97  115.20   1.0945
+IC C5    C6    N6    H61    1.4115  123.62  179.97  117.15   0.9949
+IC C3'   C1'   *C2'  O2'    1.5132   95.49  115.41  113.17   1.4151
+IC C3'   C1'   *C2'  H2''   1.5132   95.49 -116.10  112.79   1.1120
+IC C1'   C2'   O2'   H2'    1.5135  113.17  177.31  109.89   0.9633
+IC C4'   C3'   O3'   H3T    1.5499  116.35  167.44  110.25   0.9629
+
 RESI INDO          0.00 ! C8H7N indole, adm jr., atm
+!RING 5 CG CD1 NE1 CE2 CD2
+!RING 6 CD2 CE2 CZ2 CH2 CZ3 CE3
 GROUP
 ATOM HG   HGR51    0.14 !                   HE3
 ATOM CG   CG2R51  -0.17 !                    |
@@ -11278,6 +11429,8 @@ IC CG   NE1  *CD1 HD1   0.0000  0.0000 180.0000  0.0000  0.0000
 DEFA FIRS NONE LAST NONE
 
 RESI BFL           0.00 ! C12H10 biphenyl, peml.
+!RING 6 CG1 CD1 CE1 CZ1 CE2 CD2
+!RING 6 CG2 CD3 CE3 CZ2 CE4 CD4
 GROUP
 ATOM CG1  CG2R67   0.000
 ATOM CG2  CG2R67   0.000
@@ -13201,22 +13354,6 @@ IC C14   C16   *C15  H15A    .0000     .00  120.00     .00    .0000
 IC C14   C16   *C15  H15B    .0000     .00 -120.00     .00    .0000
 PATCH FIRST NONE LAST NONE
 
-
-!RESI DUM       0.00 ! DUMMY ATOM
-!GROUP
-!ATOM DUM  DUM   0.00
-!PATCHING FIRST NONE LAST NONE
-
-!RESI HE        0.00 ! helium
-!GROUP
-!ATOM HE   HE    0.00
-!PATCHING FIRST NONE LAST NONE
-
-!RESI NE        0.00 ! neon
-!GROUP
-!ATOM NE   NE    0.00
-!PATCHING FIRST NONE LAST NONE
-
 !adm jr(?), july2006
 RESI ALF4          -1.00  ! AlF4 Aluminum tetraflouride, tetrahedral geometry
 GROUP
@@ -13257,7 +13394,6 @@ IC   C2   C3   C4   C5   0.0000    0.00    0.00    0.00   0.0000
 IC   C5   C3   *C4  H4   0.0000    0.00  180.00    0.00   0.0000
 IC   C6   C4   *C5  H5   0.0000    0.00  180.00    0.00   0.0000
 IC   C5   C1   *C6  F6   0.0000    0.00  180.00    0.00   0.0000
-
 
 RESI UREA           0.00  ! CH4N2O Urea, adm
 GROUP
@@ -13376,6 +13512,7 @@ IC   C1   C6   N6   O6A  0.0000    0.00  180.00    0.00   0.0000
 IC   O6A  C6   *N6  O6B  0.0000    0.00  180.00    0.00   0.0000
 
 RESI PYRL          0.000 ! C4H5N pyrrole
+!RING 5 C1 C2 C3 C4 N5
 GROUP                    !  H2        H1
 ATOM C1   CG2R51  -0.04  !    \ ____ /
 ATOM H1   HGR52    0.14  !    C2----C1
@@ -13398,6 +13535,7 @@ IC   N5   C3   *C4  H4   0.0000    0.00  180.00    0.00   0.0000
 IC   C4   C1   *N5  H5   0.0000    0.00  180.00    0.00   0.0000
 
 RESI FURA          0.00  ! C4H4O furan
+!RING 5 C1 C2 C3 C4 O5
 GROUP                    !  H2        H1
 ATOM C1   CG2R51   0.10  !    \ ____ /
 ATOM H1   HGR52    0.14  !    C2----C1
@@ -13418,6 +13556,7 @@ IC   C4   C2   *C3  H3   0.0000    0.00  180.00    0.00   0.0000
 IC   O5   C3   *C4  H4   0.0000    0.00  180.00    0.00   0.0000
 
 RESI THIP          0.000 ! C4H4S thiophene
+!RING 5 C1 C2 C3 C4 S5
 GROUP
 ATOM C1   CG2R51  -0.06  !  H2        H1
 ATOM H1   HGR52    0.18  !    \ ____ /
@@ -13438,6 +13577,7 @@ IC   C4   C2   *C3  H3   0.0000    0.00  180.00    0.00   0.0000
 IC   S5   C3   *C4  H4   0.0000    0.00  180.00    0.00   0.0000
 
 RESI OXAZ          0.000 ! C3H3NO oxazole
+!RING 5 C1 C2 N3 C4 O5
 GROUP                    !  H2        H1
 ATOM C1   CG2R51   0.11  !    \ ____ /
 ATOM H1   HGR52    0.12  !    C2----C1
@@ -13456,6 +13596,7 @@ IC   C1   C2   N3   C4   0.0000    0.00    0.00    0.00   0.0000
 IC   O5   N3   *C4  H4   0.0000    0.00  180.00    0.00   0.0000
 
 RESI ISOX          0.000 ! C3H3NO isoxazole
+!RING 5 C1 C2 C3 N4 O5
 GROUP                    !  H2        H1
 ATOM C1   CG2R51   0.28  !    \ ____ /
 ATOM H1   HGR52    0.13  !    C2----C1
@@ -13475,6 +13616,7 @@ IC   C3   C1   *C2  H2   0.0000    0.00  180.00    0.00   0.0000
 IC   N4   C2   *C3  H3   0.0000    0.00  180.00    0.00   0.0000
 
 RESI THAZ          0.000 ! C3H3NS thiazole
+!RING 5 C1 C2 N3 C4 S5
 GROUP                    !  H2        H1
 ATOM C1   CG2R51  -0.30  !    \ ____ /
 ATOM H1   HGR52    0.21  !    C2----C1
@@ -13493,6 +13635,7 @@ IC   N3   C1   *C2  H2   0.0000    0.00  180.00    0.00   0.0000
 IC   S5   N3   *C4  H4   0.0000    0.00  180.00    0.00   0.0000
 
 RESI ISOT          0.000 ! C3H3NS isothiazole
+!RING 5 C1 C2 C3 N4 S5
 GROUP                    !  H2        H1
 ATOM C1   CG2R51  -0.04  !    \ ____ /
 ATOM H1   HGR52    0.16  !    C2----C1
@@ -13511,6 +13654,7 @@ IC   C3   C1   *C2  H2   0.0000    0.00  180.00    0.00   0.0000
 IC   N4   C2   *C3  H3   0.0000    0.00  180.00    0.00   0.0000
 
 RESI PYRZ          0.000 ! C3H4N2 pyrazole
+!RING 5 C1 C2 C3 N4 N5
 GROUP
 ATOM C1   CG2R51  -0.03  !  H2        H1
 ATOM H1   HGR52    0.15  !    \ ____ /
@@ -13531,6 +13675,7 @@ IC   N4   C2   *C3  H3   0.0000    0.00  180.00    0.00   0.0000
 IC   N4   C1   *N5  H5   0.0000    0.00  180.00    0.00   0.0000
 
 RESI OXAD          0.000 ! C2H2N2O oxadiazole123
+!RING 5 C1 C2 N3 N4 O5
 GROUP                    !  H2        H1
 ATOM C1   CG2R51   0.17  !    \ ____ /
 ATOM H1   HGR52    0.14  !    C2----C1
@@ -13549,6 +13694,7 @@ IC   C2   O5   *C1  H1   0.0000    0.00  180.00    0.00   0.0000
 IC   N3   C1   *C2  H2   0.0000    0.00  180.00    0.00   0.0000
 
 RESI TRZ3          0.000 ! C2H3N3 triazole123
+!RING 5 C1 C2 N3 N4 N5
 GROUP                    !  H2        H1
 ATOM C1   CG2R51  -0.35  !    \ ____ /
 ATOM H1   HGR52    0.20  !    C2----C1
@@ -13567,6 +13713,7 @@ IC   C1   C2   N3   N4   0.0000    0.00    0.00    0.00   0.0000
 IC   N4   C1   *N5  H5   0.0000    0.00  180.00    0.00   0.0000
 
 RESI PYRD          0.000 ! C4H4N2 pyridazine
+!RING 6 N1 N2 C3 C4 C5 C6
 GROUP
 ATOM N1   NG2R62  -0.44
 ATOM N2   NG2R62  -0.44  !    H5         H6
@@ -13592,6 +13739,7 @@ IC   C5   N1   *C6  H6   0.0000    0.00  180.00    0.00   0.0000
 
 
 RESI PYZN          0.000 ! C4H4N2 pyrazine
+!RING 6 N1 C2 C3 N4 C5 C6
 GROUP
 ATOM N1   NG2R60  -0.56  !    H5         H6
 ATOM C2   CG2R61   0.18  !      \  ____ /
@@ -13616,6 +13764,7 @@ IC   N4   C6   *C5  H5   0.0000    0.00  180.00    0.00   0.0000
 
 
 RESI PYRM          0.00  ! C4H4N2 pyrimidine
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM N1   NG2R62  -0.73  !     H5       H6
 ATOM C2   CG2R64   0.50  !      \  ___ /
@@ -13641,6 +13790,7 @@ IC    C6   C4   *C5  H5         0.0000    0.00  180.00    0.00   0.0000
 IC    C5   N1   *C6  H6         0.0000    0.00  180.00    0.00   0.0000
 
 RESI TRIA          0.00  ! C3H3N3 1,3,5-triazine
+!RING 6 N1 C2 N3 C4 N5 C6
 GROUP
 ATOM N1   NG2R62  -0.88  !              H6
 ATOM C2   CG2R64   0.78  !         ___ /
@@ -13664,6 +13814,7 @@ IC   N5   N3   *C4  H4   0.0000    0.00  180.00    0.00   0.0000
 IC   N5   N1   *C6  H6   0.0000    0.00  180.00    0.00   0.0000
 
 RESI TRIB          0.00  ! C3H3N3 1,2,4-triazine
+!RING 6 N1 N2 C3 N4 C5 C6
 GROUP
 ATOM N1   NG2R62  -0.41  !    H5        H6
 ATOM N2   NG2R62  -0.53  !      \  ___ /
@@ -14223,6 +14374,8 @@ IC CPE1  CPZ   OPH   HPH    0.0000    0.00  180.00    0.00   0.0000
 
 !Continuation of Maybridge list, kevo, dec2006
 RESI INDZ          0.00  ! C8H7N indolizine, kevo
+!RING 5 C1 C2 C3 N4 C9
+!RING 6 N4 C5 C6 C7 C8 C9
 GROUP
 ATOM C1   CG2R51  -0.28  !                  H5
 ATOM H1   HGR51    0.23  !                   |
@@ -14262,6 +14415,8 @@ IC C9    C7    *C8   H8     0.0000    0.00  180.00    0.00   0.0000
 PATCH FIRST NONE LAST NONE
 
 RESI ISOI          0.00 ! C8H7N isoindole, kevo
+!RING 5 CG ND1 CE1 CE2 CD2
+!RING 6 CD2 CE2 CZ2 CH2 CZ3 CE3
 GROUP
 ATOM HG   HGR52    0.15 !                   HE3
 ATOM CG   CG2R51  -0.16 !                    |
@@ -14305,6 +14460,8 @@ IC ND1  CD2  *CG  HG    0.0000    0.00  180.00    0.00   0.0000
 PATCH FIRST NONE LAST NONE
 
 RESI INDA          0.00 ! C7H6N2 1H-indazole, kevo
+!RING 5 N1 N2 C3 C4 C9
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM N1   NG2R51  -0.05 !                  H5
 ATOM H1   HGP1     0.28 !                   |
@@ -14345,6 +14502,8 @@ IC N2   C4   *C3  H3    0.0000    0.00  180.00    0.00   0.0000
 PATCH FIRST NONE LAST NONE
 
 RESI ZIMI          0.00 ! C7H6N2 benzimidazole, kevo
+!RING 5 N1 C2 N3 C4 C9
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM N1   NG2R51  -0.28 !                  H5
 ATOM H1   HGP1     0.31 !                  |
@@ -14384,6 +14543,7 @@ IC N3   N1   *C2  H2    0.0000    0.00  180.00    0.00   0.0000
 PATCH FIRST NONE LAST NONE
 
 RESI 2HPR          0.000 ! C4H5N 2H-pyrrole, kevo
+!RING 5 N1 C2 C3 C4 C5
 GROUP
 ATOM N1   NG2R50  -0.72 !  H5
 ATOM C2   CG3C52   0.45 !    \ ____
@@ -14681,6 +14841,7 @@ IC   N1   C4   *C5  H51  0.0000    0.00  120.00    0.00   0.0000
 IC   N1   C4   *C5  H52  0.0000    0.00  240.00    0.00   0.0000
 
 RESI 2HPP          1.000 ! C4H6N 2H-pyrrole protonated, kevo
+!RING 5 N1 C2 C3 C4 C5
 GROUP
 ATOM N1   NG2R52  -0.27
 ATOM H1   HGP2     0.39 !  H5         H1
@@ -16220,7 +16381,6 @@ ATOM HM3  HGA3     0.09 !        / \  / \  /  \
 
 BOND OG2  CM
 BOND CM   HM1  CM   HM2  CM   HM3
-DELETE IMPR CG OG2 OG1 CC3
 DELETE IMPR CG OG2 OG1 CC3
 IMPR CG  CC3 OG1 OG2
 
@@ -18059,7 +18219,10 @@ ATOM H22  HGA2    0.09
 
 BOND C1 H11   C1 H12   C1 O1
 BOND O1 C2    C2 H21   C2 H22
+! modify for training: comment BOND C1 -C2 and uncomment BOND C1 C2
 BOND C1 -C2
+!BOND C1 C2
+!
 IC -O1 -C2 C1   O1     0.0000    0.00  180.00    0.00   0.0000
 IC -C2  C1 O1   C2     0.0000    0.00  180.00    0.00   0.0000
 IC  C1  O1 C2  +C1     0.0000    0.00  180.00    0.00   0.0000
@@ -21186,6 +21349,7 @@ IC   C2   H11  *C1  H13  0.0000    0.00  240.00    0.00   0.0000
 
 !Continuation of Maybridge list, kevo, feb2008
 RESI 3HPR          0.000 ! C4H5N 3H-pyrrole, kevo
+!RING 5 N1 C2 C3 C4 C5
 GROUP
 ATOM N1   NG2R50  -0.60
 ATOM C2   CG2R52   0.10
@@ -21209,6 +21373,8 @@ IC   C5   C3   *C4  H4   0.0000    0.00  180.00    0.00   0.0000
 IC   N1   C4   *C5  H5   0.0000    0.00  180.00    0.00   0.0000
 
 RESI 3HIN          0.000 ! C8H7N 3H-indole, kevo
+!RING 5 N1 C2 C3 C4 C9
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM N1   NG2R50  -0.61
 ATOM C2   CG2R52   0.18
@@ -21246,6 +21412,8 @@ IC C4   C2   *C3  H31   0.0000    0.00  120.00    0.00   0.0000
 IC C4   C2   *C3  H32   0.0000    0.00  240.00    0.00   0.0000
 
 RESI INDI          0.000 ! C8H9N indoline, kevo
+!RING 5 N1 C2 C3 C4 C9
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM N1   NG3C51  -0.68
 ATOM H1   HGP1     0.33
@@ -21287,6 +21455,8 @@ IC C4   C2   *C3  H31   0.0000    0.00  120.00    0.00   0.0000
 IC C4   C2   *C3  H32   0.0000    0.00  240.00    0.00   0.0000
 
 RESI ZFUR          0.000 ! C8H6O benzofuran (there's only 1 benzofuran), kevo
+!RING 5 O1 C2 C3 C4 C9
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM O1   OG2R50  -0.28
 ATOM C2   CG2R51   0.02
@@ -21322,6 +21492,8 @@ IC C3   O1   *C2  H2    0.0000    0.00  180.00    0.00   0.0000
 IC C4   C2   *C3  H3    0.0000    0.00  180.00    0.00   0.0000
 
 RESI ZTHP          0.000 ! C8H6S benzothiophene (there's only 1 benzothiophene), kevo
+!RING 5 S1 C2 C3 C4 C9
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM S1   SG2R50  -0.16
 ATOM C2   CG2R51  -0.09
@@ -21357,6 +21529,8 @@ IC C3   S1   *C2  H2    0.0000    0.00  180.00    0.00   0.0000
 IC C4   C2   *C3  H3    0.0000    0.00  180.00    0.00   0.0000
 
 RESI ZTHZ          0.000 ! C7H5NS benzothiazole, kevo
+!RING 5 S1 C2 N3 C4 C9
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM S1   SG2R50  -0.25
 ATOM C2   CG2R53   0.16
@@ -21390,6 +21564,8 @@ IC C9   C7   *C8  H8    0.0000    0.00  180.00    0.00   0.0000
 IC N3   S1   *C2  H2    0.0000    0.00  180.00    0.00   0.0000
 
 RESI PUR9          0.00 ! C5H4N4 purine (N9H-tautomer), kevo
+!RING 5 C5 N7 C8 N9 C4
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM C5   CG2RC0    0.30
 ATOM N7   NG2R50   -0.73
@@ -21421,6 +21597,8 @@ IC C8   C4   *N9  H9    0.0000    0.00  180.00    0.00   0.0000
 IC N7   N9   *C8  H8    0.0000    0.00  180.00    0.00   0.0000
 
 RESI PUR7          0.00 ! C5H4N4 purine (N7H-tautomer), kevo
+!RING 5 C5 N7 C8 N9 C4
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM C5   CG2RC0    0.23
 ATOM N7   NG2R51   -0.22
@@ -21454,6 +21632,7 @@ IC N7   N9   *C8  H8    0.0000    0.00  180.00    0.00   0.0000
 
 !Continuation of Maybridge list, kevo and erh, jun2008
 RESI CPDE           0.000 ! C5H6 cyclopentadiene, kevo
+!RING 5 C1 C2 C3 C4 C5
 ATOM C1   CG3C52   0.10
 ATOM H11  HGA2     0.09 !      H3          H4
 ATOM H12  HGA2     0.09 !        \        /
@@ -21479,6 +21658,8 @@ IC C3   C5   *C4  H4    0.0000    0.00  180.00    0.00   0.0000
 IC C4   C1   *C5  H5    0.0000    0.00  180.00    0.00   0.0000
 
 RESI INDE          0.00 ! C9H8 indene, kevo
+!RING 5 C1 C2 C3 C4 C9
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM C1   CG3C52   0.02
 ATOM H11  HGA2     0.09
@@ -21519,6 +21700,9 @@ IC C6   C8   *C7  H7    0.0000    0.00  180.00    0.00   0.0000
 IC C7   C9   *C8  H8    0.0000    0.00  180.00    0.00   0.0000
 
 RESI CRBZ          0.00  ! C12H9N Carbazole, erh
+!RING 6 C1 C2 C3 C4 C5 C13
+!RING 5 C5 C6 C11 N12 C13
+!RING 6 C6 C7 C8 C9 C10 C11
 GROUP
 ATOM C1   CG2R61  -0.180
 ATOM H1   HGR61    0.180
@@ -21569,6 +21753,9 @@ IC C9   C11  *C10  H10   0.0000    0.00  180.00    0.00   0.0000
 IC C11  C13  *N12  H12   0.0000    0.00  180.00    0.00   0.0000
 
 RESI FLRN          0.00  ! C13H10 Fluorene, erh
+!RING 6 C1 C2 C3 C4 C5 C13
+!RING 5 C5 C6 C11 C12 C13
+!RING 6 C6 C7 C8 C9 C10 C11
 GROUP
 ATOM C1   CG2R61  -0.140
 ATOM H1   HGR61    0.140
@@ -21621,6 +21808,8 @@ IC C11  C13  *C12  H21   0.0000    0.00  120.00    0.00   0.0000
 IC C11  C13  *C12  H22   0.0000    0.00 -120.00    0.00   0.0000
 
 RESI NAFT          0.00  ! C10H8 Naphtalene, kevo
+!RING 6 C1 C2 C3 C4 C5 C10
+!RING 6 C5 C6 C7 C8 C9 C10
 GROUP
 ATOM C1   CG2R61  -0.115
 ATOM H1   HGR61    0.115
@@ -21663,6 +21852,8 @@ IC C7   C9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9   H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI QINL          0.00  ! C9H7N Quinoline, kevo and erh
+!RING 6 N1 C2 C3 C4 C5 C10
+!RING 6 C5 C6 C7 C8 C9 C10
 GROUP
 ATOM N1   NG2R60  -0.640
 ATOM C2   CG2R61   0.160
@@ -21703,6 +21894,8 @@ IC C7   C9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9   H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI IQIN          0.00  ! C9H7N Isoquinoline, erh
+!RING 6 C1 N2 C3 C4 C5 C10
+!RING 6 C5 C6 C7 C8 C9 C10
 GROUP
 ATOM C1   CG2R61   0.17
 ATOM H1   HGR62    0.15
@@ -21743,6 +21936,8 @@ IC C7   C9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9   H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI CINL          0.00  ! C8H6N2 Cinnoline, erh
+!RING 6 N1 N2 C3 C4 C5 C10
+!RING 6 C5 C6 C7 C8 C9 C10
 GROUP
 ATOM N1   NG2R62  -0.500
 ATOM N2   NG2R62  -0.450
@@ -21781,6 +21976,8 @@ IC C7   C9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9   H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI FTAZ          0.00  ! C8H6N2 Phthalazine, erh
+!RING 6 C1 N2 N3 C4 C5 C10
+!RING 6 C5 C6 C7 C8 C9 C10
 GROUP
 ATOM C1   CG2R61   0.340
 ATOM H1   HGR62    0.080
@@ -21819,6 +22016,8 @@ IC C7   C9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9   H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI QINZ          0.00  ! C8H6N2 Quinazoline, erh
+!RING 6 N1 C2 N3 C4 C5 C10
+!RING 6 C5 C6 C7 C8 C9 C10
 GROUP
 ATOM N1   NG2R62  -0.810
 ATOM C2   CG2R64   0.520
@@ -21857,6 +22056,8 @@ IC C7   C9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9   H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI QINX          0.00  ! C8H6N2 Quinoxaline, erh
+!RING 6 N1 C2 C3 N4 C5 C10
+!RING 6 C5 C6 C7 C8 C9 C10
 GROUP
 ATOM N1   NG2R60  -0.580
 ATOM C2   CG2R61   0.090
@@ -21895,6 +22096,8 @@ IC C7   C9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9   H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI 18NFD         0.00  ! C8H6N2 1,8-naphthyridine, erh
+!RING 6 N1 C2 C3 C4 C5 C10
+!RING 6 C5 C6 C7 C8 N9 C10
 GROUP
 ATOM N1   NG2R62  -0.660
 ATOM C2   CG2R61   0.330
@@ -21933,6 +22136,8 @@ IC C6   C8   *C7   H7    0.0000    0.00  180.00    0.00   0.0000
 IC C7   N9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 
 RESI PTID          0.00  ! C6H4N4 pteridine, erh
+!RING 6 N1 C2 N3 C4 C5 C10
+!RING 6 C5 N6 C7 C8 N9 C10
 GROUP
 ATOM N1   NG2R62  -0.710
 ATOM C2   CG2R64   0.500
@@ -21967,6 +22172,9 @@ IC N6   C8   *C7   H7    0.0000    0.00  180.00    0.00   0.0000
 IC C7   N9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 
 RESI ANTR          0.00  ! C14H10 Anthracene, kevo and erh
+!RING 6 C1 C2 C3 C4 C5 C14
+!RING 6 C5 C6 C7 C12 C13 C14
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM C1   CG2R61  -0.115
 ATOM H1   HGR61    0.115
@@ -22021,6 +22229,9 @@ IC C10  C12  *C11  H11   0.0000    0.00  180.00    0.00   0.0000
 IC C12  C14  *C13  H13   0.0000    0.00  180.00    0.00   0.0000
 
 RESI ACRD          0.00  ! C13H9N Acridine, erh
+!RING 6 C1 C2 C3 C4 C5 C14
+!RING 6 C5 C6 C7 C12 N13 C14
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM C1   CG2R61  -0.115
 ATOM H1   HGR61    0.115
@@ -22073,6 +22284,9 @@ IC C9   C11  *C10  H10   0.0000    0.00  180.00    0.00   0.0000
 IC C10  C12  *C11  H11   0.0000    0.00  180.00    0.00   0.0000
 
 RESI FENZ          0.00  ! C12H8N2 Phenazine, erh
+!RING 6 C1 C2 C3 C4 C5 C14
+!RING 6 C5 N6 C7 C12 N13 C14
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM C1   CG2R61  -0.115
 ATOM H1   HGR61    0.115
@@ -22123,6 +22337,9 @@ IC C9   C11  *C10  H10   0.0000    0.00  180.00    0.00   0.0000
 IC C10  C12  *C11  H11   0.0000    0.00  180.00    0.00   0.0000
 
 RESI FEOZ          0.00  ! C12H9NO Phenoxazine, erh & kevo
+!RING 6 C1 C2 C3 C4 C5 C14
+!RING 6 C5 O6 C7 C12 N13 C14
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM C1   CG2R61  -0.115
 ATOM H1   HGR61    0.115
@@ -22175,6 +22392,9 @@ IC C10  C12  *C11  H11   0.0000    0.00  180.00    0.00   0.0000
 IC C12  C14  *N13  H13   0.0000    0.00  120.00    0.00   0.0000
 
 RESI FETZ          0.00  ! C12H9NS Phenothiazine, erh
+!RING 6 C1 C2 C3 C4 C5 C14
+!RING 6 C5 S6 C7 C12 N13 C14
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM C1   CG2R61  -0.115
 ATOM H1   HGR61    0.115
@@ -22317,29 +22537,29 @@ IC   N1   C3   *N2  H22  0.0000    0.00 -120.00    0.00   0.0000
 IC   N1   C4   *C5  H51  0.0000    0.00 -120.00    0.00   0.0000
 IC   N1   C4   *C5  H52  0.0000    0.00  120.00    0.00   0.0000
 
-RESI QINU           1.00 ! C7H14N Quinuclidine, kevo
+RESI QINU           1.00 ! Quinuclidine, kevo
 GROUP
-ATOM N1   NG3P1     0.13
-ATOM H1   HGP2      0.19
-ATOM C2   CG324     0.03
+ATOM N1   NG3P1    -0.40 ! From PIP[123]
+ATOM H1   HGP2      0.32 ! From PIP[123]
+ATOM C2   CG324     0.18 ! sum of charges; between PIP[123] and PIP
 ATOM H21  HGA2      0.09
 ATOM H22  HGA2      0.09
-ATOM C6   CG324     0.03
-ATOM H61  HGA2      0.09 !              C5---C6
-ATOM H62  HGA2      0.09 !             /       \ (+)
-ATOM C7   CG324     0.03 !       H4--C4--C8-C7--N1--H1
-ATOM H71  HGA2      0.09 !             \       /
-ATOM H72  HGA2      0.09 !              C3---C2
+ATOM C6   CG324     0.18 ! sum of charges; between PIP[123] and PIP
+ATOM H61  HGA2      0.09
+ATOM H62  HGA2      0.09
+ATOM C7   CG324     0.18 ! sum of charges; between PIP[123] and PIP
+ATOM H71  HGA2      0.09
+ATOM H72  HGA2      0.09
 ATOM C3   CG321    -0.18
 ATOM H31  HGA2      0.09
 ATOM H32  HGA2      0.09
-ATOM C4   CG311    -0.04
+ATOM C4   CG311    -0.09 ! Set to standard; was a very bad source of analogy
 ATOM H4   HGA1      0.09
-ATOM C5   CG321    -0.18
-ATOM H51  HGA2      0.09
-ATOM H52  HGA2      0.09
-ATOM C8   CG321    -0.18
-ATOM H81  HGA2      0.09
+ATOM C5   CG321    -0.18 !              C5---C6
+ATOM H51  HGA2      0.09 !             /       \ (+)
+ATOM H52  HGA2      0.09 !       H4--C4--C8-C7--N1--H1
+ATOM C8   CG321    -0.18 !             \       /
+ATOM H81  HGA2      0.09 !              C3---C2
 ATOM H82  HGA2      0.09
 
 BOND N1   C2   C2   C3   C3   C4   C4   C5   C5   C6
@@ -22473,6 +22693,8 @@ IC C5    C1    *C10  H101       0.0000    0.00  120.00    0.00   0.0000
 IC C5    C1    *C10  H102       0.0000    0.00 -120.00    0.00   0.0000
 
 RESI AZUL          0.00 ! C10H8 azulene, kevo
+!RING 5 C1 C2 C3 C4 C10
+!RING 7 C4 C5 C6 C7 C8 C9 C10
 !QM has exteremly low freq for 7-ring. In CHARMM, it's way too rigid,
 !despite drastically pulling down all force constants. However,
 !The final result is more or less in line with naftalene (NAFT).
@@ -22599,6 +22821,7 @@ IC  C1   C5   *C6  H6   0.00 0.00  180.0 0.00 0.00
 PATCH FIRST NONE LAST NONE
 
 RESI 2DHF          0.000 ! C4H6O 2,3-dihydrofuran, kevo
+!RING 5 O1 C2 C3 C4 C5
 GROUP
 ATOM O1   OG3C51  -0.33
 ATOM C2   CG2R51  -0.06
@@ -22627,6 +22850,8 @@ IC   O1   C4   *C5  H52  0.0000    0.00  240.00    0.00   0.0000
 
 !Compounds for GSK/IBM collaboration, kevo, jun2008
 RESI 9MAD           0.00  ! C6H7N5 9-Methyl-Adenine, kevo for gsk/ibm
+!RING 5 C4 C5 N7 C8 N9
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM C1   CG331    -0.27
 ATOM H11  HGA3      0.09
@@ -22676,6 +22901,7 @@ IC N9   N7   *C8   H8    0.0       0.0   180.0     0.0    0.0
 IC N1   N3   *C2   H2    0.0       0.0   180.0     0.0    0.0
 
 RESI 1MTH           0.00  ! C6H8N2O2 1-Methyl-Thymine, kevo for gsk/ibm
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM C1   CG331    -0.27
 ATOM H11  HGA3      0.09
@@ -22692,10 +22918,10 @@ ATOM H3   HGP1      0.36 !      H6-C6   C2
 ATOM C4   CG2R63    0.50 !          \  / \\
 ATOM O4   OG2D4    -0.45 !           N1   O2
 ATOM C5   CG2R62   -0.15 !           |
-ATOM C5M  CG331    -0.11 !      H11--C1--H13
-ATOM H51  HGA3      0.07 !           |
-ATOM H52  HGA3      0.07 !          H12
-ATOM H53  HGA3      0.07
+ATOM C5M  CG331    -0.17 !      H11--C1--H13
+ATOM H51  HGA3      0.09 !           |
+ATOM H52  HGA3      0.09 !          H12
+ATOM H53  HGA3      0.09
 
 BOND C1   N1        C1   H11       C1   H12       C1   H13
 BOND N1   C2        N1   C6
@@ -23637,7 +23863,7 @@ IC H21    C1      *C2     H23        0.0000    0.00 -120.00    0.00   0.0000
 PATC FIRS NONE LAST NONE
 
 !New compounds by "team CGenFF", Dec 09
-RESI CYIN            0.000  ! C9H6N2 5-cyanoindole, alr
+RESI CYIN            0.00   ! C9H6N2 5-cyanoindole, alr
 GROUP
 ATOM  N1    NG2R51  -0.45   !                 H6
 ATOM  H1    HGP1     0.37   !                 |
@@ -23779,9 +24005,9 @@ ATOM  H5   HGA2    0.09 !         C9
 ATOM  C6   CG3C31 -0.18 !          \
 ATOM  H7   HGA2    0.09 !           N12+
 ATOM  H8   HGA2    0.09
-ATOM  C9   CG324   0.21
-ATOM  H10  HGA2    0.05
-ATOM  H11  HGA2    0.05
+ATOM  C9   CG324   0.13 !0.21, consistent with CGenFF
+ATOM  H10  HGA2    0.09 !0.05
+ATOM  H11  HGA2    0.09 !0.05
 ATOM  N12  NG3P3  -0.30 ! from ethylammonium
 ATOM  H13  HGP2    0.33
 ATOM  H14  HGP2    0.33
@@ -23907,8 +24133,10 @@ ATOM H21  HGA3     0.09
 ATOM H22  HGA3     0.09
 ATOM H23  HGA3     0.09
 
-BOND C1   S1   S1   C    C    S2   S2   C2   C    S
+BOND C1   S1   S1   C    C    S2   S2   C2   !C    S
 BOND C1   H11  C1   H12  C1   H13  C2   H21  C2   H22  C2   H23
+DOUB C    S  ! 
+!BOND C    S  
 IMPR C    S1   S2   S
 IC   S1   C    S2   C2   0.0000    0.00  185.00    0.00   0.0000
 IC   S2   C    S1   C1   0.0000    0.00  180.00    0.00   0.0000
@@ -24264,6 +24492,7 @@ IC  C1 C2   *N O    0.00 0.00 -120.0 0.0  0.0
 IC  C3 N   O   HO   0.00 0.00  180.0 0.0  0.0
 
 RESI MRDN         0.000 ! C4H3NOS2 methylidene rhodanine, kevo & xxwy
+!RING 5 S1 C2 N3 C4 C5
 GROUP
 ATOM S1   SG311   -0.14 ! H3         S2
 ATOM C2   CG2R53   0.26 !   \       //
@@ -24272,14 +24501,16 @@ ATOM N3   NG2R53  -0.25 !    |     |
 ATOM H3   HGP1     0.32 !    C4    S1
 ATOM C4   CG2R53   0.29 !   // \  /
 ATOM O4   OG2D1   -0.39 !  O4   C5
-ATOM C5   CG252O   0.10 !       ||
-ATOM C6   CG2DC3  -0.49 !       C6
+ATOM C5   CG251O   0.10 !       ||
+ATOM C6   CG2DC3  -0.40 !       C6
 ATOM H61  HGA5     0.24 !      /  \
-ATOM H62  HGA5     0.33 !   H61    H62
+ATOM H62  HGA5     0.24 !   H61    H62
 
 BOND S1   C2   C2   N3   N3   C4   C4   C5
-BOND C5   S1   C2   S2   N3   H3   C4   O4
+BOND C5   S1   N3   H3   C4   O4
 BOND C5   C6   C6   H61  C6   H62
+!BOND C2   S2
+DOUB C2   S2  ! 
 IMPR C2   N3   S2   S1
 IMPR C4   C5   N3   O4
 IC   C5   C4   N3   C2   0.0000    0.00    0.00    0.00   0.0000
@@ -24292,11 +24523,13 @@ IC   C4   C5   C6   H61  0.0000    0.00    0.00    0.00   0.0000
 IC   H61  C5   *C6  H62  0.0000    0.00  180.00    0.00   0.0000
 
 RESI MEOI         0.000 ! C9H7NO methyleneoxindole, kevo & xxwy
+!RING 5 C6 C7 N8 C9 C14
+!RING 6 C9 C10 C11 C12 C13 C14
 GROUP
-ATOM C5   CG2DC3  -0.52
-ATOM H51  HGA5     0.29
-ATOM H52  HGA5     0.24
-ATOM C6   CG25C2  -0.10 !            H51    H52
+ATOM C5   CG2DC3  -0.41
+ATOM H51  HGA5     0.21
+ATOM H52  HGA5     0.21
+ATOM C6   CG25C1  -0.10 !            H51    H52
 ATOM C7   CG2R53   0.67 !               \  /
 ATOM O7   OG2D1   -0.57 !         H13    C5
 ATOM N8   NG2R51  -0.45 !          |     ||
@@ -24332,6 +24565,66 @@ IC   C14  C12  *C13 H13  0.0000    0.00  180.00    0.00   0.0000
 IC   C7   C14  *C6  C5   0.0000    0.00  180.00    0.00   0.0000
 IC   C14  C6   C5   H51  0.0000    0.00    0.00    0.00   0.0000
 IC   H51  C6   *C5  H52  0.0000    0.00  180.00    0.00   0.0000
+
+RESI OIRD         0.000 ! oxindol-3-ylidene rhodanine, kevo & xxwy
+!RING 5 S1 C2 N3 C4 C5
+!RING 5 C6 C7 N8 C9 C14
+!RING 6 C9 C10 C11 C12 C13 C14
+ATOM S1   SG311   -0.14
+ATOM C2   CG2R53   0.26
+ATOM S2   SG2D1   -0.27
+ATOM N3   NG2R53  -0.24 !            H3         S2
+ATOM H3   HGP1     0.31 !              \       //
+ATOM C4   CG2R53   0.29 !               N3----C2
+ATOM O4   OG2D1   -0.39 !               |     |
+ATOM C5   CG251O   0.18 !or CG252O  O4==C4    S1
+ATOM C6   CG25C1  -0.09 !or CG25C2        \  /
+ATOM C7   CG2R53   0.67 !           H13    C5
+ATOM O7   OG2D1   -0.57 !            |     ||
+ATOM N8   NG2R51  -0.45 !           C13    C6   O7
+ATOM H8   HGP1     0.32 !          //  \  /  \ //
+ATOM C9   CG2RC0   0.25 !   H12--C12    C14   C7
+ATOM C10  CG2R61  -0.34 !         |     ||    |
+ATOM H10  HGR61    0.24 !   H11--C11    C9----N8
+ATOM C11  CG2R61  -0.20 !          \\  /        \
+ATOM H11  HGR61    0.22 !           C10          H8
+ATOM C12  CG2R61  -0.23 !            |
+ATOM H12  HGR61    0.21 !           H10
+ATOM C13  CG2R61  -0.32
+ATOM H13  HGR61    0.28
+ATOM C14  CG2RC0   0.01
+
+BOND S1   C2   C2   N3   N3   C4   C4   C5
+BOND C5   S1   N3   H3   C4   O4
+BOND C5   C6
+BOND C6   C7   C7   N8   N8   C9   C9   C10  C10  C11
+BOND C11  C12  C12  C13  C13  C14  C14  C6   C9   C14
+BOND C7   O7   N8   H8   C10  H10  C11  H11  C12  H12
+BOND C13  H13  
+DOUB C2   S2  ! 
+IMPR C2   N3   S2   S1
+IMPR C4   C5   N3   O4
+IMPR C7   C6   N8   O7
+IC   C5   C4   N3   C2   0.0000    0.00    0.00    0.00   0.0000
+IC   C4   N3   C2   S1   0.0000    0.00    0.00    0.00   0.0000
+IC   N3   S1   *C2  S2   0.0000    0.00  180.00    0.00   0.0000
+IC   C4   C2   *N3  H3   0.0000    0.00  180.00    0.00   0.0000
+IC   C5   N3   *C4  O4   0.0000    0.00  180.00    0.00   0.0000
+IC   S1   C4   *C5  C6   0.0000    0.00  180.00    0.00   0.0000
+IC   S1   C5   C6   C7   0.0000    0.00    0.00    0.00   0.0000
+IC   C5   C7   *C6  C14  0.0000    0.00  180.00    0.00   0.0000
+IC   C7   C6   C14  C9   0.0000    0.00    0.00    0.00   0.0000
+IC   C6   C14  C9   N8   0.0000    0.00    0.00    0.00   0.0000
+IC   C6   C9   *C14 C13  0.0000    0.00  180.00    0.00   0.0000
+IC   C14  N8   *C9  C10  0.0000    0.00  180.00    0.00   0.0000
+IC   C14  C9   C10  C11  0.0000    0.00    0.00    0.00   0.0000
+IC   C9   C14  C13  C12  0.0000    0.00    0.00    0.00   0.0000
+IC   N8   C6   *C7  O7   0.0000    0.00  180.00    0.00   0.0000
+IC   C9   C7   *N8  H8   0.0000    0.00  180.00    0.00   0.0000
+IC   C11  C9   *C10 H10  0.0000    0.00  180.00    0.00   0.0000
+IC   C12  C10  *C11 H11  0.0000    0.00  180.00    0.00   0.0000
+IC   C13  C11  *C12 H12  0.0000    0.00  180.00    0.00   0.0000
+IC   C14  C12  *C13 H13  0.0000    0.00  180.00    0.00   0.0000
 
 RESI BAB2         -1.00 ! C29H47N2O6 Bile Acid Basic moiety 1 (BASE FOR NEW COMPOUNDS), cacha
 ! Based on Glu-UDCA Amide
@@ -25413,9 +25706,6 @@ IC CD1  CE1  CM   HM1   1.4039  121.70  120.68  108.10   1.1099
 IC HM1  CE1  *CM  HM2   1.1099  108.10  118.69  108.12   1.1099
 IC HM1  CE1  *CM  HM3   1.1099  108.10 -120.64  110.47   1.1094
 
-
-
-
 PRES 3CPD          0.00  ! C9H11N2O Gamma-3-Amide Pyridine Lysine CDCA Amide (alpha deprotected), cacha
 ! core residue Glutamic Acid CDCA Amide (GA)
 DELETE ATOM CG
@@ -26056,6 +26346,7 @@ IC HM21 OE2  *CM2 HM23  1.1134  111.01 -121.82  110.85   1.1129
 
 !New compounds by "team CGenFF" (mainly xxwy), Jul 10
 RESI STYR          0.00 ! C8H8 styrene, xxwy & oashi
+!RING 6 CG CD1 CE1 CZ CE2 CD2
 GROUP
 ATOM CG   CG2R61  -0.115
 ATOM HG   HGR61    0.115 !      HD1  HE1
@@ -26173,6 +26464,7 @@ IC   H41  C3   *C4  H42  0.0000    0.00  120.00    0.00   0.0000
 IC   H41  C3   *C4  H43  0.0000    0.00 -120.00    0.00   0.0000
 
 RESI URAC           0.000 ! C4H4N2O2 uracil, xxwy
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM N1   NG2R61   -0.37  !                         O4
 ATOM C6   CG2R62    0.11  !                         ||
@@ -26204,6 +26496,7 @@ IC   C4   C6   *C5  H5   0.0000    0.00  180.00    0.00   0.0000
 IC   N1   C5   *C6  H6   0.0000    0.00  180.00    0.00   0.0000
 
 RESI 2PYO           0.000 ! C5H5NO 2-Pyridone, xxwy
+!RING 6 N1 C2 C3 C4 C5 C6
 GROUP
 ATOM N1   NG2R61   -0.13  !                         H4
 ATOM H1   HGP1      0.28  !                          |
@@ -26278,6 +26571,7 @@ IC   C6     C2     *C5    H52   0.0  0.0  -120.00   0.0  0.0
 IC   C3     C5     *C2    H21   0.0  0.0  -120.00   0.0  0.0
 
 RESI OXD4          0.000 ! C2H2N2O oxadiazole124, xxwy
+!RING 5 C1 N2 C3 N4 O5
 GROUP                    !           H1
 ATOM C1   CG2R53   0.45  !      ____ /
 ATOM H1   HGR52    0.17  !    N2----C1
@@ -26297,6 +26591,7 @@ IC   N2   O5   *C1  H1   0.0000    0.00  180.00    0.00   0.0000
 IC   N2   N4   *C3  H3   0.0000    0.00  180.00    0.00   0.0000
 
 RESI TRZ4          0.00  ! C2H3N3 triazole124
+!RING 5 C1 N2 C3 N4 N5
 GROUP                    !            H1
 ATOM C1   CG2R53   0.23  !      ____ /
 ATOM H1   HGR52    0.16  !    N2----C1
@@ -26418,6 +26713,7 @@ IC O3   O43  *P4  O42    0.0000    0.00 -120.00    0.00   0.0000
 
 !New compounds by "team CGenFF", Dec 10
 RESI 4CYT         0.00  ! C8H7N p-cyanotoluene, alr
+!RING 6 CG CD1 CE1 CZ CE2 CD2
 GROUP
 ATOM CG   CG2R61   0.10
 ATOM C3N  CG1N1    0.36
@@ -26494,6 +26790,7 @@ IC N    H31  *C3  H33   0.0000  0.0000 -120.0000  0.0000  0.0000
 !IC N    H41  *O1  H43   0.0000  0.0000 -120.0000  0.0000  0.0000
 
 RESI PHMK          0.000  ! C8H8O phenyl methyl ketone, mcs
+!RING 6 C3 C4 C5 C6 C7 C8
 GROUP
 ATOM C1   CG331   -0.23
 ATOM H11  HGA3     0.09
@@ -26533,6 +26830,7 @@ IC  C8   C6  *C7  H7   0.0000   0.00   -180.00     0.00   0.0000
 IC  C7   C3  *C8  H8   0.0000   0.00    180.00     0.00   0.0000
 
 RESI PHEK          0.000  ! C9H10O phenyl ethyl ketone, mcs
+!RING 6 C4 C5 C6 C7 C8 C9
 GROUP
 ATOM C1   CG331   -0.27
 ATOM H11  HGA3     0.09
@@ -26725,7 +27023,7 @@ ATOM H11  HGP2     0.40
 BOND C1  C2  C2  H3  C2  H4  C2  H5
 BOND C1  N6  N6  H7  N6  H8
 BOND C1  N9  N9  H10 N9  H11
-IMPR C1 N6 N9 C2
+IMPR C1 N9 N6 C2 ! switched two inner atoms to pacify imptest2
 IC   N6   C1   C2   H3   0.0000    0.00   90.00    0.00   0.0000
 IC   C1   H3  *C2   H4   0.0000    0.00  120.00    0.00   0.0000
 IC   C1   H3  *C2   H5   0.0000    0.00 -120.00    0.00   0.0000
@@ -26736,6 +27034,7 @@ IC   H10  N9   C1   N6   0.0000    0.00  180.00    0.00   0.0000
 IC   H10  C1  *N9   H11  0.0000    0.00  180.00    0.00   0.0000
 
 RESI BAMI          1.00  ! C7H9N2 benzamidinium cation, sz & pram
+!RING 6 C1 C3 C5 C11 C9 C7
 GROUP
 ATOM C1   CG2R61  -0.115
 ATOM H2   HGR61    0.115
@@ -26762,7 +27061,7 @@ BOND C1  C3  C3  H4  C3  C5  C5  H6
 BOND C1  C7  C7  H8  C7  C9  C9  H10
 BOND C11 C5  C11 C12 C11 C9
 BOND C12 N13 N13 H14 N13 H15 C12 N16 N16 H17 N16 H18
-IMPR C12 N13 N16 C11
+IMPR C12 N16 N13 C11 ! switched two inner atoms to pacify imptest2
 IC   C1   C3   C5   C11  0.0000    0.00    0.00    0.00   0.0000
 IC   C3   C5   C11  C9   0.0000    0.00    0.00    0.00   0.0000
 IC   C5   C11  C9   C7   0.0000    0.00    0.00    0.00   0.0000
@@ -26853,8 +27152,8 @@ BOND C35 C36 C36 H37 C36 C38 C38 H39
 BOND C35 C40 C40 H41 C40 C42 C42 H43
 BOND C38 C44 C42 C44 C44 C45 C45 N46 C45 N49
 BOND N46 H47 N46 H48 N49 H50 N49 H51
-IMPR C24 N25 N28 C23
-IMPR C45 N46 N49 C44
+IMPR C24 N28 N25 C23 ! switched two inner atoms to pacify imptest2
+IMPR C45 N49 N46 C44 ! switched two inner atoms to pacify imptest2
 IC   C10  C4   C1   C7   0.0000    0.00  180.00    0.00   0.0000
 IC   O13  C10  C4   C1   0.0000    0.00  180.00    0.00   0.0000
 IC   C14  O13  C10  C4   0.0000    0.00  180.00    0.00   0.0000
@@ -26911,6 +27210,7 @@ IC   C44  C45  N49  H50  0.0000    0.00    0.00    0.00   0.0000
 IC   C45  H50 *N49  H51  0.0000    0.00  180.00    0.00   0.0000
 
 RESI MHYO         0.000 ! C4H4N2O2 5-methylenehydantoin, xxwy
+!RING 5 N1 C2 N3 C4 C5
 GROUP
 ATOM N1   NG2R53  -0.18 ! H3         O2
 ATOM C2   CG2R53   0.25 !   \       //
@@ -26919,10 +27219,10 @@ ATOM N3   NG2R53  -0.25 !    |     |
 ATOM H3   HGP1     0.35 !    C4    N1
 ATOM C4   CG2R53   0.26 !   // \  /  \
 ATOM O4   OG2D1   -0.41 !  O4   C5    H1
-ATOM C5   CG252O   0.09 !       ||
-ATOM C6   CG2DC3  -0.46 !       C6
+ATOM C5   CG251O   0.09 !       ||
+ATOM C6   CG2DC3  -0.45 !       C6
 ATOM H61  HGA5     0.23 !      /  \
-ATOM H62  HGA5     0.24 !   H61    H62
+ATOM H62  HGA5     0.23 !   H61    H62
 ATOM H1   HGP1     0.31
 
 BOND N1   C2   C2   N3   N3   C4   C4   C5
@@ -27465,6 +27765,7 @@ IC C4   H51  *C5  H52  0.00     0.0000   120.00     0.00     0.00
 IC C4   H51  *C5  H53  0.00     0.0000  -120.00     0.00     0.00
 
 RESI MTDO         0.000 ! C4H3NO2S 5-methylene-2,4-thiazolidinedione, kevo & xxwy & oashi
+!RING 5 S1 C2 N3 C4 C5
 GROUP
 ATOM S1   SG311   -0.15 ! H3         O2
 ATOM C2   CG2R53   0.42 !   \       //
@@ -27473,10 +27774,10 @@ ATOM N3   NG2R53  -0.36 !    |     |
 ATOM H3   HGP1     0.44 !    C4    S1
 ATOM C4   CG2R53   0.26 !   // \  /
 ATOM O4   OG2D1   -0.45 !  O4   C5
-ATOM C5   CG252O   0.22 !       ||
-ATOM C6   CG2DC3  -0.58 !       C6
-ATOM H61  HGA5     0.33 !      /  \
-ATOM H62  HGA5     0.33 !   H61    H62
+ATOM C5   CG251O   0.22 !       ||
+ATOM C6   CG2DC3  -0.40 !       C6
+ATOM H61  HGA5     0.24 !      /  \
+ATOM H62  HGA5     0.24 !   H61    H62
 
 BOND S1   C2   C2   N3   N3   C4   C4   C5
 BOND C5   S1   C2   O2   N3   H3   C4   O4
@@ -27493,6 +27794,8 @@ IC   C4   C5   C6   H61  0.0000    0.00    0.00    0.00   0.0000
 IC   H61  C5   *C6  H62  0.0000    0.00  180.00    0.00   0.0000
 
 RESI ZDOL          0.000  ! C7H6O2 1,3-benzodioxole, pram & oashi & kevo
+!RING 5 C1 O1 C2 O2 C3
+!RING 6 C1 C3 C4 C5 C6 C7
 GROUP
 ATOM C1   CG2RC0    0.03
 ATOM O1   OG3C51   -0.31
@@ -27695,6 +27998,7 @@ IC C2    C1  N1   O11    0.0000    0.00   90.00    0.00   0.0000
 IC O11   C1  *N1  O12    0.0000    0.00  180.00    0.00   0.0000
 
 RESI CBU           0.00 ! C4H8 cyclobutane, lsk & kevo
+!RING 4 C1 C2 C3 C4
 GROUP
 ATOM  C1  CG3C41  -0.18
 ATOM  H11 HGA2     0.09
@@ -27728,6 +28032,7 @@ IC C3    C1   *C4   H41         0.0000    0.00  120.00    0.00   0.0000
 IC C3    C1   *C4   H42         0.0000    0.00 -120.00    0.00   0.0000
 
 RESI AZDO          0.00 ! C3H5NO beta-lactam, 2-azetidinone, lsk & kevo
+!RING 4 N1 C2 C3 C4
 GROUP
 ATOM  N1  NG2R43  -0.54
 ATOM  H1  HGP1     0.36
@@ -27757,6 +28062,7 @@ IC C3    N1   *C4   H41         0.0000    0.00  120.00    0.00   0.0000
 IC C3    N1   *C4   H42         0.0000    0.00 -120.00    0.00   0.0000
 
 RESI ZOIC          0.000 ! C7H6O2 neutral benzoic acid, jal
+!RING 6 C1 C2 C3 C4 C5 C6
 GROUP
 ATOM C2   CG2R61  -0.115
 ATOM H2   HGR61    0.115 !    H3         H2
@@ -27794,6 +28100,7 @@ IC   C1   O8   *C7  O7   0.0000    0.00  180.00    0.00   0.0000
 IC   C1   C7   O8   H8   0.0000    0.00  180.00    0.00   0.0000
 
 RESI MBOA          0.000 ! C8H8O2 methylbenzoate, jal
+!RING 6 C1 C2 C3 C4 C5 C6
 GROUP
 ATOM C2   CG2R61  -0.115
 ATOM H2   HGR61    0.115 !    H3         H2
@@ -27886,6 +28193,7 @@ IC C3   H43  *C4  H41    0.0000    0.00  120.00    0.00   0.0000
 IC C3   H43  *C4  H42    0.0000    0.00 -120.00    0.00   0.0000
 
 RESI PMST         0.00 ! C7H8O3S phenyl methanesulfonate, xxwy
+!RING 6 CZ CE1 CD1 CG CD2 CE2
 GROUP
 ATOM  S1  SG3O2   0.24
 ATOM  C2  CG331   0.05
@@ -27956,6 +28264,7 @@ IC  H41   O3    *C4   H42       0.0000    0.00  120.00    0.00   0.0000
 IC  H41   O3    *C4   H43       0.0000    0.00 -120.00    0.00   0.0000
 
 RESI PSMT         0.00 ! C6H7NO3S phenyl sulfamate, xxwy
+!RING 6 CZ CE1 CD1 CG CD2 CE2
 GROUP
 ATOM  S1  SG3O2   0.22
 ATOM  N2  NG321  -0.46
@@ -27998,6 +28307,8 @@ IC  CG    CE2   *CD2  HD2       0.0000    0.00  180.00    0.00   0.0000
 IC  CD1   CD2   *CG   HG        0.0000    0.00  180.00    0.00   0.0000
 
 RESI OBTZ           0.00  ! C7H8N2O2S 1,1-dioxo-3,4-dihydro-2H-1,2,4-benzothiadiazine model compound for drug hydrochlorothiazide, xxwy
+!RING 6 S1 N2 C3 N4 C5 C10
+!RING 6 C5 C10 C9 C8 C7 C6
 GROUP
 ATOM S1     SG3O2   0.33
 ATOM N2     NG311  -0.55
@@ -28043,6 +28354,7 @@ IC C7   C9   *C8  H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9  H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI AOBT            0.00  ! C8H12N2O2S acyclic model compound for OBTZ, xxwy
+!RING 6 C5 C6 C7 C8 C9 C10
 GROUP
 ATOM S1     SG3O2    0.56
 ATOM N2     NG311   -0.60
@@ -28182,6 +28494,8 @@ IC  C4  C1  *C5  H51    0.0000    0.00   120.0    0.00   0.0000
 IC  C4  C1  *C5  H52    0.0000    0.00  -120.0    0.00   0.0000
 
 RESI 13BPO        0.00 ! C8H8N2 1,3-bipyrrole, lf
+!RING 5 N6 C7 C8 C9 C10
+!RING 5 N1 C2 C3 C4 C5
 GROUP
 ATOM N1     NG2R57 -0.35
 ATOM C2     CG2R51 -0.04
@@ -28223,6 +28537,8 @@ IC  C4  C2  *C3  H3     0.0000    0.00  180.00    0.00   0.0000
 IC  C3  N1  *C2  H2     0.0000    0.00  180.00    0.00   0.0000
 
 RESI 11BPO        0.00 ! C8H8N2 1,1-bipyrrole, lf
+!RING 5 N6 C7 C8 C9 C10
+!RING 5 N1 C2 C3 C4 C5
 GROUP
 ATOM C2     CG2R51 -0.04
 ATOM H2     HGR52   0.14
@@ -28264,6 +28580,8 @@ IC  C8  C10 *C9  H9    0.0000    0.00  180.00    0.00   0.0000
 IC  N6  C9  *C10 H10   0.0000    0.00  180.00    0.00   0.0000
 
 RESI 33BPO        0.00 ! C8H8N2 3,3-bipyrrole, lf
+!RING 5 N6 C7 C8 C9 C10
+!RING 5 N1 C2 C3 C4 C5
 GROUP
 ATOM C5     CG2R51 -0.04
 ATOM H5     HGR52   0.14
@@ -28305,6 +28623,7 @@ IC  C8  C10 *C9  H9  0.0000    0.00  180.00    0.00   0.0000
 IC  N6  C9  *C10 H10 0.0000    0.00  180.00    0.00   0.0000
 
 RESI TRZ2          0.00 ! C2H3N3 2H-1,2,3-triazole, lf
+!RING 5 C4 N3 N2 N1 C5
 GROUP                    ! H4
 ATOM C4     CG2R52  0.06 !  \
 ATOM H4     HGR52   0.16 !   C4==N3
@@ -28324,6 +28643,8 @@ IC  N3  C5  *C4  H4  0.0000    0.00  180.00    0.00   0.0000
 IC  C4  N1  *C5  H5  0.0000    0.00  180.00    0.00   0.0000
 
 RESI 22BPY          0.000 ! C10H8N2 2,2'-bipyridine, kevo
+!RING 6 N1 C2 C3 C4 C5 C6
+!RING 6 N7 C8 C9 C10 C11 C12
 GROUP
 ATOM N1     NG2R60 -0.600
 ATOM C2     CG2R67  0.300 !        H5
@@ -28372,6 +28693,7 @@ IC   C10  C12  *C11 H11  0.0000    0.00  180.00    0.00   0.0000
 IC   C11  N7   *C12 H12  0.0000    0.00  180.00    0.00   0.0000
 
 RESI ETRZ           0.000 ! C4H7N3 1-ethyl-1,2,3-triazole, kevo
+!RING 5 N1 N2 N3 C4 C5
 GROUP
 ATOM N1     NG2R51  0.28
 ATOM N2     NG2R50 -0.37
@@ -28405,6 +28727,8 @@ IC   C6   H73  *C7  H71  0.0000    0.00  120.00    0.00   0.0000
 IC   C6   H73  *C7  H72  0.0000    0.00 -120.00    0.00   0.0000
 
 RESI YTHY           0.00 ! C8H6N2O2 2,4(1H,3H)-quinazolinedione (CAS # 86-96-4), isg
+!RING 6 C1 C2 C3 C4 C5 C6
+!RING 6 C5 C4 N11 C10 N9 C8
 GROUP
 ATOM C1     CG2R61 -0.115
 ATOM C2     CG2R61 -0.115
@@ -28486,6 +28810,8 @@ IC C7   C9   *C8   H8    0.0000    0.00  180.00    0.00   0.0000
 IC C8   C10  *C9   H9    0.0000    0.00  180.00    0.00   0.0000
 
 RESI YTS2           0.00 ! C8H6N2S2 2,4(1H,3H)-quinazolinedithione (CAS # 5993-69-1), isg
+!RING 6 C1 C2 C3 C4 C5 C6
+!RING 6 C5 C4 N11 C10 N9 C8
 GROUP
 ATOM C1     CG2R61 -0.115
 ATOM C2     CG2R61 -0.115
@@ -28507,8 +28833,11 @@ ATOM N11    NG2R61 -0.600
 ATOM H11    HGP1    0.410
 
 BOND C1  C2   C2  C3   C3  C4   C4  C5   C5  C6   H1  C1   H2  C2
-BOND H3  C3   H6  C6   C5  C8   C8  S8   C8  N9   N9  H9   N9  C10
-BOND C10 S10  C10 N11  N11 H11  N11 C4   C6  C1
+!BOND H3  C3   H6  C6   C5  C8   C8  S8   C8  N9   N9  H9   N9  C10
+!BOND C10 S10  C10 N11  N11 H11  N11 C4   C6  C1
+BOND H3  C3   H6  C6   C5  C8   C8  N9   N9  H9   N9  C10
+BOND C10 N11  N11 H11  N11 C4   C6  C1
+DOUB C8  S8   C10 S10  ! 
 IMPR C8  C5  N9  S8
 IMPR C10 N9  N11 S10
 IC C5   C4   C3    C2    0.0000    0.00    0.00    0.00   0.0000
@@ -28528,6 +28857,8 @@ IC N9   N11  *C10  S10   0.0000    0.00  180.00    0.00   0.0000
 IC C10  C4   *N11  H11   0.0000    0.00  180.00    0.00   0.0000
 
 RESI YT4S           0.00 ! C8H6N2OS 2,3-dihydro-2-thioxo-4(1H)-quinazolinone (CAS # 13906-09-7), isg
+!RING 6 C1 C2 C3 C4 C5 C6
+!RING 6 C5 C4 N11 C10 N9 C8
 GROUP
 ATOM C1     CG2R61 -0.115
 ATOM C2     CG2R61 -0.115
@@ -28549,8 +28880,11 @@ ATOM N11    NG2R61 -0.290
 ATOM H11    HGP1    0.320
 
 BOND C1  C2   C1  H1   C1  C6   C2  C3   C2  H2   C3  C4   C3  H3   C4  C5
-BOND C4  N11  C5  C8   C5  C6   C6  H6   N11 H11  N11 C10  C10 S10  C10 N9
+!BOND C4  N11  C5  C8   C5  C6   C6  H6   N11 H11  N11 C10  C10 S10  C10 N9
+!BOND N9  H9   N9  C8   C8  O8
+BOND C4  N11  C5  C8   C5  C6   C6  H6   N11 H11  N11 C10  C10 N9
 BOND N9  H9   N9  C8   C8  O8
+DOUB C10 S10  ! 
 IMPR C8  C5  N9  O8
 IMPR C10 N11 N9  S10
 IC C5   C4   C3    C2    0.0000    0.00    0.00    0.00   0.0000
@@ -28570,6 +28904,8 @@ IC N9   N11  *C10  S10   0.0000    0.00  180.00    0.00   0.0000
 IC C10  C4   *N11  H11   0.0000    0.00  180.00    0.00   0.0000
 
 RESI YT2S           0.00 ! C8H6N2OS 3,4-dihydro-4-thioxo-2(1H)-quinazolinone (CAS # 17796-47-3) isg
+!RING 6 C1 C2 C3 C4 C5 C6
+!RING 6 C5 C4 N11 C10 N9 C8
 GROUP
 ATOM C1     CG2R61 -0.115
 ATOM C2     CG2R61 -0.115
@@ -28591,8 +28927,11 @@ ATOM H3     HGR61   0.115
 ATOM H6     HGR61   0.115
 
 BOND C1  C6   C1  H1   C1  C2   C2  H2   C2  C3   C3  H3   C3  C4
-BOND C4  C5   C4  N11  C5  C6   C6  H6   C5  C8   C8  S8   C8  N9
+!BOND C4  C5   C4  N11  C5  C6   C6  H6   C5  C8   C8  S8   C8  N9
+!BOND N9  H9   N9  C10  C10 O10  C10 N11  N11 H11
+BOND C4  C5   C4  N11  C5  C6   C6  H6   C5  C8   C8  N9
 BOND N9  H9   N9  C10  C10 O10  C10 N11  N11 H11
+DOUB C8  S8   ! 
 IMPR C8  C5  N9  S8
 IMPR C10 N9  N11 O10
 IC C5   C4   C3    C2    0.0000    0.00    0.00    0.00   0.0000
@@ -28612,6 +28951,8 @@ IC N9   N11  *C10  O10   0.0000    0.00  180.00    0.00   0.0000
 IC C10  C4   *N11  H11   0.0000    0.00  180.00    0.00   0.0000
 
 RESI TC243C         0.00 ! C8H6N2O 4(3H)-quinazolinone (CAS # 491-36-1), isg
+!RING 6 C1 C2 C3 C4 C5 C6
+!RING 6 C5 C4 N11 C10 N9 C8
 GROUP
 ATOM H10    HGR62   0.150
 ATOM H3     HGR61   0.115
@@ -28651,6 +28992,7 @@ IC C8   C10  *N9   H9    0.0000    0.00  180.00    0.00   0.0000
 IC N9   N11  *C10  H10   0.0000    0.00  180.00    0.00   0.0000
 
 RESI 4PYO           0.00 ! C5H5NO 4(1H)-pyridinone (CAS # 108-96-3), isg
+!RING 6 C1 C21 C31 N1 C32 C22
 GROUP
 ATOM O1     OG2D4  -0.57
 ATOM C1     CG2R63  0.46
@@ -28679,6 +29021,8 @@ IC N1   C21  *C31 H31   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C32  C31  *N1  H1    0.0000  0.0000 179.0000  0.0000  0.0000 ! deliberately distorted for test case
 
 RESI 1PH4PO           0.00 ! C11H9NO 1-phenyl-4(1H)-pyridinone (CAS # 39076-91-0), isg
+!RING 6 N1 C2 C3 C4 C5 C6
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM O4     OG2D4  -0.570
 ATOM C4     CG2R63  0.460
@@ -28728,6 +29072,8 @@ IC C12  C10  *C11 H11   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C7   C11  *C12 H12   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI 21QU           0.00 ! C9H7NO 2(1H)-quinolinone (CAS # 59-31-4), isg
+!RING 6 C1 C2 C3 C4 C5 C6
+!RING 6 C5 C4 N11 C10 C9 C8
 GROUP
 ATOM C1     CG2R61 -0.115
 ATOM C2     CG2R61 -0.115
@@ -28769,6 +29115,8 @@ IC C9   N11  *C10  O10   0.0000    0.00  180.00    0.00   0.0000
 IC C10  C4   *N11  H11   0.0000    0.00  180.00    0.00   0.0000
 
 RESI 1PH2PO           0.00 ! C11H9NO 1-phenyl-2(1H)-pyridinone (CAS # 13131-02-7), isg
+!RING 6 N1 C2 C3 C4 C5 C6
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM N1     NG2R67 -0.130
 ATOM C2     CG2R63  0.160
@@ -28818,6 +29166,8 @@ IC C12  C10  *C11 H11   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C7   C11  *C12 H12   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI 3PHURA           0.00 ! C10H8N2O2 3-phenyl-2,4(1H,3H)-pyrimidinedione (CAS # 4260-40-6), isg
+!RING 6 N1 C2 C3 C4 N5 C6
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM N1     NG2R67 -0.530
 ATOM C2     CG2R63  0.400
@@ -28868,6 +29218,7 @@ IC C12  C10  *C11 H11   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C7   C11  *C12 H12   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI URA2S          0.00 ! C4H4N2OS 2,3-dihydro-2-thioxo-4(1H)pyrimidinone (CAS # 141-90-2), isg
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM C2     CG2R63 -0.04
 ATOM C4     CG2R63  0.52 !       O4
@@ -28882,8 +29233,11 @@ ATOM S2     SG2D1  -0.30 !       N1   S2
 ATOM N1     NG2R61 -0.22 !       |
 ATOM N3     NG2R61 -0.38 !       H1
 
-BOND C2  S2   C2  N1   C2  N3   C4  C5   C4  O4   C4  N3
+!BOND C2  S2   C2  N1   C2  N3   C4  C5   C4  O4   C4  N3
+!BOND C5  C6   C5  H5   C6  H6   C6  N1   H1  N1   H3  N3
+BOND C2  N1   C2  N3   C4  C5   C4  O4   C4  N3
 BOND C5  C6   C5  H5   C6  H6   C6  N1   H1  N1   H3  N3
+DOUB C2  S2   ! 
 IMPR C2  N1  N3  S2
 IMPR C4  C5  N3  O4
 IC C4   N3   C2   N1    0.0000  0.0000   0.0000  0.0000  0.0000
@@ -28897,6 +29251,8 @@ IC N1   C5   *C6  H6    0.0000  0.0000 180.0000  0.0000  0.0000
 IC C2   C6   *N1  H1    0.0000  0.0000 179.0000  0.0000  0.0000 ! deliberately distorted for test case
 
 RESI 3PH2SR           0.00 ! C10H8N2OS 2,3-dihydro-3-phenyl-2-thioxo-4(1H)pyrimidinone (CAS # 53632-80-7), isg
+!RING 6 N1 C2 C3 C4 N5 C6
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM N1     NG2R67 -0.380
 ATOM C2     CG2R63  0.520
@@ -28922,8 +29278,11 @@ ATOM H11    HGR61   0.115
 ATOM H12    HGR61   0.115
 
 BOND C2  N1   C2  O2   C2  C3   C3  H3   C3  C4   C4  H4   C4  N5   N5  H5
-BOND N5  C6   C6  S6   C6  N1   N1  C7   C7  C8   C7  C12  C8  H8
+!BOND N5  C6   C6  S6   C6  N1   N1  C7   C7  C8   C7  C12  C8  H8
+!BOND C8  C9   C9  H9   C9  C10  C10 H10  C10 C11  C11 H11  C11 C12  C12 H12
+BOND N5  C6   C6  N1   N1  C7   C7  C8   C7  C12  C8  H8
 BOND C8  C9   C9  H9   C9  C10  C10 H10  C10 C11  C11 H11  C11 C12  C12 H12
+DOUB C6  S6   ! 
 IMPR C2  C3  N1  O2
 IMPR C6  N5  N1  S6
 IC C4   N5   C6   N1    0.0000  0.0000   0.0000  0.0000  0.0000
@@ -28947,6 +29306,7 @@ IC C12  C10  *C11 H11   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C7   C11  *C12 H12   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI URA4S          0.00 ! C4H4N2OS 3,4-dihydro-4-thioxo-2(1H)-pyrimidinone (CAS # 591-28-6), isg
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM C2     CG2R63  0.41
 ATOM C4     CG2R63  0.11 !       S4
@@ -28961,8 +29321,11 @@ ATOM O2     OG2D4  -0.44 !       N1   O2
 ATOM N1     NG2R61 -0.30 !       |
 ATOM N3     NG2R61 -0.35 !       H1
 
-BOND C2  O2   C2  N1   C2  N3   C4  C5   C4  S4   C4  N3   C5  C6
+!BOND C2  O2   C2  N1   C2  N3   C4  C5   C4  S4   C4  N3   C5  C6
+!BOND C5  H5   C6  H6   C6  N1   H1  N1   H3  N3
+BOND C2  O2   C2  N1   C2  N3   C4  C5   C4  N3   C5  C6
 BOND C5  H5   C6  H6   C6  N1   H1  N1   H3  N3
+DOUB C4  S4   ! 
 IMPR C2  N1  N3  O2
 IMPR C4  C5  N3  S4
 IC C4   N3   C2   N1    0.0000  0.0000   0.0000  0.0000  0.0000
@@ -28976,6 +29339,8 @@ IC N1   C5   *C6  H6    0.0000  0.0000 180.0000  0.0000  0.0000
 IC C2   C6   *N1  H1    0.0000  0.0000 179.0000  0.0000  0.0000 ! deliberately distorted for test case
 
 RESI 3PH4SR          0.00 ! C10H8N2OS 2,3-dihydro-3-phenyl-2-oxo-4(1H)pyrimidinethione, isg
+!RING 6 N1 C2 C3 C4 N5 C6
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM N1     NG2R67 -0.350
 ATOM C2     CG2R63  0.110
@@ -29000,9 +29365,13 @@ ATOM H10    HGR61   0.115
 ATOM H11    HGR61   0.115
 ATOM H12    HGR61   0.115
 
-BOND C2  N1   C2  S2   C2  C3   C3  H3   C3  C4   C4  H4   C4  N5   N5  H5
+!BOND C2  N1   C2  S2   C2  C3   C3  H3   C3  C4   C4  H4   C4  N5   N5  H5
+!BOND N5  C6   C6  O6   C6  N1   N1  C7   C7  C8   C7  C12  C8  H8
+!BOND C8  C9   C9  H9   C9  C10  C10 H10  C10 C11  C11 H11  C11 C12  C12 H12
+BOND C2  N1   C2  C3   C3  H3   C3  C4   C4  H4   C4  N5   N5  H5
 BOND N5  C6   C6  O6   C6  N1   N1  C7   C7  C8   C7  C12  C8  H8
 BOND C8  C9   C9  H9   C9  C10  C10 H10  C10 C11  C11 H11  C11 C12  C12 H12
+DOUB C2  S2   ! 
 IMPR C2  C3  N1  S2
 IMPR C6  N5  N1  O6
 IC C4   N5   C6   N1    0.0000  0.0000   0.0000  0.0000  0.0000
@@ -29026,6 +29395,7 @@ IC C12  C10  *C11 H11   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C7   C11  *C12 H12   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI URA24S         0.00 ! C4H4N2S2 2,4(1H,3H)-pyrimidinedithione (CAS # 2001-93-6), isg
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM N1     NG2R61 -0.12
 ATOM C2     CG2R63 -0.13 !       S4
@@ -29040,8 +29410,11 @@ ATOM H6     HGR62   0.26 !       N1   S2
 ATOM S4     SG2D1  -0.26 !       |
 ATOM S2     SG2D1  -0.23 !       H1
 
-BOND N1  H1   N1  C2   N1  C6   C2  S2   C2  N3   N3  H3   N3  C4
-BOND C4  S4   C4  C5   C5  H5   C5  C6   C6  H6
+!BOND N1  H1   N1  C2   N1  C6   C2  S2   C2  N3   N3  H3   N3  C4
+!BOND C4  S4   C4  C5   C5  H5   C5  C6   C6  H6
+BOND N1  H1   N1  C2   N1  C6   C2  N3   N3  H3   N3  C4
+BOND C4  C5   C5  H5   C5  C6   C6  H6
+DOUB C2  S2   C4  S4   ! 
 IMPR C2  N1  N3  S2
 IMPR C4  C5  N3  S4
 IC C4   N3   C2   N1    0.0000  0.0000   0.0000  0.0000  0.0000
@@ -29055,6 +29428,8 @@ IC N1   C5   *C6  H6    0.0000  0.0000 180.0000  0.0000  0.0000
 IC C2   C6   *N1  H1    0.0000  0.0000 179.0000  0.0000  0.0000 ! deliberately distorted for test case
 
 RESI 3PH24S          0.00 ! C10H8N2S2 2,3-dihydro-3-phenyl-2-thioxo-4(1H)pyrimidinethione, isg
+!RING 6 N1 C2 C3 C4 N5 C6
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM N1     NG2R67 -0.170
 ATOM C2     CG2R63  0.040
@@ -29079,9 +29454,13 @@ ATOM H10    HGR61   0.115
 ATOM H11    HGR61   0.115
 ATOM H12    HGR61   0.115
 
-BOND C2  N1   C2  S2   C2  C3   C3  H3   C3  C4   C4  H4   C4  N5   N5  H5
-BOND N5  C6   C6  S6   C6  N1   N1  C7   C7  C8   C7  C12  C8  H8
+!BOND C2  N1   C2  S2   C2  C3   C3  H3   C3  C4   C4  H4   C4  N5   N5  H5
+!BOND N5  C6   C6  S6   C6  N1   N1  C7   C7  C8   C7  C12  C8  H8
+!BOND C8  C9   C9  H9   C9  C10  C10 H10  C10 C11  C11 H11  C11 C12  C12 H12
+BOND C2  N1   C2  C3   C3  H3   C3  C4   C4  H4   C4  N5   N5  H5
+BOND N5  C6   C6  N1   N1  C7   C7  C8   C7  C12  C8  H8
 BOND C8  C9   C9  H9   C9  C10  C10 H10  C10 C11  C11 H11  C11 C12  C12 H12
+DOUB C2  S2   C6  S6   ! 
 IMPR C2  C3  N1  S2
 IMPR C6  N5  N1  S6
 IC C4   N5   C6   N1    0.0000  0.0000   0.0000  0.0000  0.0000
@@ -29105,6 +29484,7 @@ IC C12  C10  *C11 H11   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C7   C11  *C12 H12   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI 43HPY          0.00 ! C4H4N2O 4(3H)-pyrimidinone (CAS # 4562-27-0), isg
+!RING 6 C1 N2 C3 N4 C5 C6
 GROUP
 ATOM C6     CG2R62 -0.21
 ATOM C5     CG2R62  0.35 !        O1
@@ -29131,6 +29511,8 @@ IC N4   N2   *C3  H3    0.0000  0.0000 180.0000  0.0000  0.0000
 IC N4   C6   *C5  H5    0.0000  0.0000 179.0000  0.0000  0.0000 ! deliberately distorted for test case
 
 RESI 43PPY          0.00 ! C10H8N2O 3-phenyl-4(3H)-pyrimidinone (CAS # 52090-51-4), isg
+!RING 6 N1 C2 C3 C4  N5  C6
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM N1     NG2R67 -0.300
 ATOM C2     CG2R63  0.210
@@ -29178,6 +29560,7 @@ IC C12  C10  *C11 H11   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C7   C11  *C12 H12   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI 43HSPY         0.00 ! C4H4N2S 4(3H)-pyrimidinethione (CAS # 1450-86-8), isg
+!RING 6 C1 N2 C3 N4 C5 C6
 GROUP
 ATOM C6     CG2R61 -0.03
 ATOM C5     CG2R61  0.21 !        S1
@@ -29191,8 +29574,11 @@ ATOM H6     HGR62   0.16 !       \  // \
 ATOM H5     HGR62   0.17 !        N4    H3
 ATOM H3     HGR62   0.13
 
-BOND C1  S1   C1  N2   C1  C6   N2  H2   N2  C3
+!BOND C1  S1   C1  N2   C1  C6   N2  H2   N2  C3
+!BOND C3  H3   C3  N4   N4  C5   C5  H5   C5  C6   C6  H6
+BOND C1  N2   C1  C6   N2  H2   N2  C3
 BOND C3  H3   C3  N4   N4  C5   C5  H5   C5  C6   C6  H6
+DOUB C1  S1   ! 
 IMPR C1  C6  N2  S1
 IC C1   N2   C3   N4    0.0000  0.0000   0.0000  0.0000  0.0000
 IC N2   C3   N4   C5    0.0000  0.0000   0.0000  0.0000  0.0000
@@ -29204,6 +29590,8 @@ IC N4   N2   *C3  H3    0.0000  0.0000 180.0000  0.0000  0.0000
 IC N4   C6   *C5  H5    0.0000  0.0000 179.0000  0.0000  0.0000 ! deliberately distorted for test case
 
 RESI 43HSPP         0.00 ! C10H8N2S 3-phenyl-4(3H)-pyrimidinethione, isg
+!RING 6 N1 C2 C3 C4  N5  C6
+!RING 6 C7 C8 C9 C10 C11 C12
 GROUP
 ATOM N1     NG2R67 -0.240
 ATOM C2     CG2R63 -0.370
@@ -29227,9 +29615,13 @@ ATOM H10    HGR61   0.115
 ATOM H11    HGR61   0.115
 ATOM H12    HGR61   0.115
 
-BOND N1  C7   N1  C2   N1  C6   C2  S2   C2  C3   C3  H3   C3  C4   C4  H4
+!BOND N1  C7   N1  C2   N1  C6   C2  S2   C2  C3   C3  H3   C3  C4   C4  H4
+!BOND C4  N5   N5  C6   C6  H6   C7  C8   C8  H8   C8  C9   C9  H9
+!BOND C9  C10  C10 H10  C10 C11  C11 H11  C11 C12  C12 H12  C12 C7
+BOND N1  C7   N1  C2   N1  C6   C2  C3   C3  H3   C3  C4   C4  H4
 BOND C4  N5   N5  C6   C6  H6   C7  C8   C8  H8   C8  C9   C9  H9
 BOND C9  C10  C10 H10  C10 C11  C11 H11  C11 C12  C12 H12  C12 C7
+DOUB C2  S2   ! 
 IMPR C2  C3  N1  S2
 IC C4   N5   C6   N1    0.0000  0.0000   0.0000  0.0000  0.0000
 IC N5   C6   N1   C2    0.0000  0.0000   0.0000  0.0000  0.0000
@@ -29251,6 +29643,7 @@ IC C12  C10  *C11 H11   0.0000  0.0000 180.0000  0.0000  0.0000
 IC C7   C11  *C12 H12   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI 4O2SM          0.00 ! C5H6N2OS 2-(methylthio)-4(3H)-pyrimidinone (CAS # 5751-20-2), isg
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM N1     NG2R62 -0.76
 ATOM C2     CG2R64  0.58 !        O4
@@ -29285,6 +29678,7 @@ IC C2   S2   C7   H72   0.0000  0.0000 -60.0000  0.0000  0.0000
 IC C2   S2   C7   H73   0.0000  0.0000 180.0000  0.0000  0.0000
 
 RESI 2SMPYR         0.00 ! C5H6N2S 2-(methylthio)-pyrimidine (CAS # 823-09-6), isg
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM N1     NG2R62 -0.730
 ATOM C2     CG2R64  0.640 !       H6
@@ -29618,6 +30012,7 @@ IC   C4   O1   *C5  H51  0.0000    0.00  120.00    0.00   0.0000
 IC   C4   O1   *C5  H52  0.0000    0.00 -120.00    0.00   0.0000
 
 RESI B2FO          0.00 ! C4H4O2 5H-furan-2-one, ctsai
+!RING 5 O1 C2 C3 C4 C5
 GROUP
 ATOM O1     OG3C51 -0.31
 ATOM C2     CG2R53  0.29
@@ -29642,6 +30037,7 @@ IC   C4   O1   *C5  H51  0.0000    0.00  120.00    0.00   0.0000
 IC   C4   O1   *C5  H52  0.0000    0.00 -120.00    0.00   0.0000
 
 RESI A2FO          0.00 ! C4H4O2 3H-furan-2-one, ctsai
+!RING 5 O1 C2 C3 C4 C5
 GROUP
 ATOM O1     OG3C51 -0.23
 ATOM C2     CG2R53  0.30
@@ -29782,6 +30178,7 @@ IC   N4   C5   C6   H62   0.0000    0.00   60.00    0.00   0.0000
 IC   N4   C5   C6   H63   0.0000    0.00  -60.00    0.00   0.0000
 
 RESI PYRH          1.00 ! C4H5N2 pyrimidin-1-ium, fylin
+!RING 6 N1 C2 N3 C4 C5 C6
 GROUP
 ATOM N1     NG2R62 -0.49
 ATOM C2     CG2R62  0.38 !     H5       H6
@@ -30374,6 +30771,7 @@ IC C3   C5  *C4  H4      0.0000    0.00  180.00    0.00   0.0000
 IC C4   C6  *C5  H5      0.0000    0.00  180.00    0.00   0.0000
 
 RESI OXTN           0.00 ! C3H6O oxetane, gmu
+!RING * 4 C1 C3 C2 O1
 GROUP
 ATOM  C1  CG3C41  -0.035
 ATOM  H4  HGA2     0.090 !    H4   H8
@@ -30398,44 +30796,45 @@ IC  C2    C1   *C3  H9   0.0000    0.00 -120.00   0.00    0.0000
 IC  O1    C3   *C2  H6   0.0000    0.00  120.00   0.00    0.0000
 IC  O1    C3   *C2  H7   0.0000    0.00 -120.00   0.00    0.0000
 
-RESI CBHH       0.000 ! C4H6N4O2 glycoluril, jing
+RESI CBHH           0.000 ! C4H6N4O2 glycoluril, jing
+!RING * 5 N6 C8 N5 C1 C2
+!RING * 5 N3 C7 N4 C2 C1
 GROUP
-ATOM C1     CG3RC1  0.290 !            O10 
-ATOM H1     HGA1    0.090 !            ||  
-ATOM C2     CG3RC1  0.290 !            C8  
-ATOM H2     HGA1    0.090 !          /    \   
-ATOM N3     NG2R53 -0.480 !     H5-N5      N6-H6 
-ATOM H3     HGP1    0.340 !          \    /   
-ATOM N4     NG2R53 -0.480 !       H1-C1--C2-H2 
-ATOM H4     HGP1    0.340 !          /    \   
-ATOM N5     NG2R53 -0.480 !     H3-N3      N4-H4 
-ATOM H5     HGP1    0.340 !          \    /   
-ATOM N6     NG2R53 -0.480 !            C7  
-ATOM H6     HGP1    0.340 !            ||  
-ATOM C7     CG2R53  0.360 !            O9  
-ATOM C8     CG2R53  0.360 ! 
-ATOM O9     OG2D1  -0.460 ! 
-ATOM O10    OG2D1  -0.460 ! 
-BOND C1   H1   
-BOND C1   C2   
-BOND C1   N3   
-BOND C1   N5   
-BOND C2   H2   
-BOND C2   N4   
-BOND C2   N6   
-BOND N3   H3   
-BOND N3   C7   
-BOND N4   H4   
-BOND N4   C7   
-BOND N5   H5   
-BOND N5   C8   
-BOND N6   H6   
-BOND N6   C8   
-BOND C7   O9   
-BOND C8   O10  
-IMPR C7     N3     N4     O9     
-IMPR C8     N5     N6     O10    
-
+ATOM C1     CG3RC1  0.290 !            O10
+ATOM H1     HGA1    0.090 !            ||
+ATOM C2     CG3RC1  0.290 !            C8
+ATOM H2     HGA1    0.090 !          /    \
+ATOM N3     NG2R53 -0.480 !     H5-N5      N6-H6
+ATOM H3     HGP1    0.340 !          \    /
+ATOM N4     NG2R53 -0.480 !       H1-C1--C2-H2
+ATOM H4     HGP1    0.340 !          /    \
+ATOM N5     NG2R53 -0.480 !     H3-N3      N4-H4
+ATOM H5     HGP1    0.340 !          \    /
+ATOM N6     NG2R53 -0.480 !            C7
+ATOM H6     HGP1    0.340 !            ||
+ATOM C7     CG2R53  0.360 !            O9
+ATOM C8     CG2R53  0.360 !
+ATOM O9     OG2D1  -0.460 !
+ATOM O10    OG2D1  -0.460 !
+BOND C1   H1
+BOND C1   C2
+BOND C1   N3
+BOND C1   N5
+BOND C2   H2
+BOND C2   N4
+BOND C2   N6
+BOND N3   H3
+BOND N3   C7
+BOND N4   H4
+BOND N4   C7
+BOND N5   H5
+BOND N5   C8
+BOND N6   H6
+BOND N6   C8
+BOND C7   O9
+BOND C8   O10
+IMPR C7     N3     N4     O9
+IMPR C8     N5     N6     O10
 IC C1    C2   N4      C7         1.5230  113.70    0.00  112.00   1.3800
 IC C2    N4   C7      N3         1.4500  112.00    0.00  104.40   1.3800
 IC C7    N3   C1      C2         1.3800  112.00    0.00  113.70   1.5230
@@ -30458,7 +30857,6 @@ IC H1    C1   C2      N4         1.1110  110.10  180.00  113.70   1.4500
 IC N4    C1   *C2     N6         1.4500  113.70  120.00  113.70   1.4500
 IC N4    C1   *C2     H2         1.4500  113.70 -120.00  110.10   1.1110
 
-
 RESI CHLB          0.000 ! C6H5Cl chlorobenzene + lonepair, isg/fylin
 ! with Virtual atom on Cl
 GROUP                    !
@@ -30479,7 +30877,7 @@ ATOM LP   LPH      0.05  !
 BOND C1   H1   C1   C2   C2   H2   C2   C3
 BOND C3   H3   C3   C4   C4   H4   C4   C5
 BOND C5   H5   C5   C6   C6   C1   C6   CL
-BOND CL   LP
+!BOND CL   LP
 
 LONEPAIR COLINEAR LP CL C6  DIST 1.640
 
@@ -30603,7 +31001,7 @@ BOND C35 C36 C36 H37 C36 C38 C38 H39
 IMPR C14 C16 N12 O15
 IMPR C22 C19 N24 O23
 IMPR C27 C29 N26 H28
-BOND CL5 LP
+!BOND CL5 LP
 
 LONEPAIR COLINEAR LP CL5 C4  DIST 1.640
 
@@ -30679,8 +31077,8 @@ ATOM LP6  LPH      0.05  !
 BOND C1   H1   C1   C2   C1   C6   C2   H2   
 BOND C2   C3   C3   H3   C3   C4   C4   H4   
 BOND C4   C5   C5   CL5  C5   C6   C6   CL6
-BOND CL5  LP5
-BOND CL6  LP6
+!BOND CL5  LP5
+!BOND CL6  LP6
 
 LONEPAIR COLINEAR LP5 CL5 C5  DIST 1.640
 LONEPAIR COLINEAR LP6 CL6 C6  DIST 1.640
@@ -30715,7 +31113,7 @@ ATOM LP6  LPH      0.05  !
 BOND C1   C6   C1   H1   C1   C2   C2   H2   
 BOND C2   C3   C3   H3   C3   C4   C4   CL4  
 BOND C4   C5   C5   H5   C5   C6   C6   CL6  
-BOND CL6  LP6  CL4  LP4
+!BOND CL6  LP6  CL4  LP4
 
 LONEPAIR COLINEAR LP4 CL4 C4  DIST 1.640
 LONEPAIR COLINEAR LP6 CL6 C6  DIST 1.640
@@ -30751,7 +31149,7 @@ ATOM LP6  LPH      0.05 !
 BOND C1   C6   C1   H1   C1   C2   C2   H2   
 BOND C2   C3   C3   CL3  C3   C4   C4   H4   
 BOND C4   C5   C5   H5   C5   C6   C6   CL6  
-BOND CL6  LP6  CL3  LP3
+!BOND CL6  LP6  CL3  LP3
 
 LONEPAIR COLINEAR LP3 CL3 C3  DIST 1.640
 LONEPAIR COLINEAR LP6 CL6 C6  DIST 1.640
@@ -30788,7 +31186,7 @@ ATOM LP6  LPH      0.05  !
 BOND C1   H1   C1   C2   C1   C6   C2   H2
 BOND C2   C3   C3   H3   C3   C4   C4   CL4
 BOND C4   C5   C5   CL5  C5   C6   C6   CL6
-BOND CL6  LP6  CL4  LP4  CL5  LP5
+!BOND CL6  LP6  CL4  LP4  CL5  LP5
 
 LONEPAIR COLINEAR LP4 CL4 C4  DIST 1.640
 LONEPAIR COLINEAR LP5 CL5 C5  DIST 1.640
@@ -30826,7 +31224,7 @@ BOND C1   H1   C1   C2   C1   C6   C2   H2
 BOND C2   C3   C3   CL3  C3   C4
 BOND C4   H4   C4   C5   C5   CL5  C5   C6
 BOND C6   CL6
-BOND CL3  LP3  CL6  LP6  CL5  LP5
+!BOND CL3  LP3  CL6  LP6  CL5  LP5
 
 LONEPAIR COLINEAR LP3 CL3 C3  DIST 1.640
 LONEPAIR COLINEAR LP5 CL5 C5  DIST 1.640
@@ -30863,7 +31261,7 @@ ATOM LP6  LPH      0.05 !
 BOND C1   H1   C1   C2   C1   C6   C2   CL2
 BOND C2   C3   C3   H3   C3   C4   C4   CL4
 BOND C4   C5   C5   H5   C5   C6   C6   CL6
-BOND CL6  LP6  CL4  LP4  CL2  LP2
+!BOND CL6  LP6  CL4  LP4  CL2  LP2
 
 LONEPAIR COLINEAR LP2 CL2 C2  DIST 1.640
 LONEPAIR COLINEAR LP4 CL4 C4  DIST 1.640
@@ -30898,7 +31296,7 @@ ATOM LP   LPH      0.05  !
 BOND C1   H1   C1   C2   C2   H2   C2   C3
 BOND C3   H3   C3   C4   C4   H4   C4   C5  
 BOND C5   H5   C5   C6   C6   C1   C6   BR
-BOND BR   LP
+!BOND BR   LP
 
 LONEPAIR COLINEAR LP BR C6  DIST 1.890
 
@@ -30932,7 +31330,7 @@ ATOM BR6  BRGR1   -0.15  !
 BOND C6 C1  C1 H1  C1 C2  C2 H2
 BOND C2 C3  C3 H3  C3 C4  C4 H4
 BOND C4 C5  C5 BR5 C5 C6  C6 BR6 
-BOND BR5 LP5  BR6 LP6
+!BOND BR5 LP5  BR6 LP6
 
 LONEPAIR COLINEAR LP5 BR5 C5  DIST 1.890
 LONEPAIR COLINEAR LP6 BR6 C6  DIST 1.890
@@ -30967,7 +31365,7 @@ ATOM BR6  BRGR1   -0.17  !
 BOND C6 C1   C1 H1   C1 C2   C2 H2
 BOND C2 C3   C3 H3   C3 C4   C4 BR4
 BOND C4 C5   C5 H5   C5 C6   C6 BR6
-BOND BR4 LP4  BR6 LP6
+!BOND BR4 LP4  BR6 LP6
 
 LONEPAIR COLINEAR LP4 BR4 C4  DIST 1.890
 LONEPAIR COLINEAR LP6 BR6 C6  DIST 1.890
@@ -31002,7 +31400,7 @@ ATOM BR6  BRGR1  -0.17 !
 BOND C6 C1   C1 H1   C1 C2   C2 H2
 BOND C2 C3   C3 BR3  C3 C4   C4 H4
 BOND C4 C5   C5 H5   C5 C6   C6 BR6
-BOND BR3 LP3   BR6 LP6
+!BOND BR3 LP3   BR6 LP6
 
 LONEPAIR COLINEAR LP3 BR3 C3  DIST 1.890
 LONEPAIR COLINEAR LP6 BR6 C6  DIST 1.890
@@ -31038,7 +31436,7 @@ ATOM LP6  LPH      0.05  !
 BOND C6 C1   C1 H1   C1 C2  C2 H2
 BOND C2 C3   C3 H3   C3 C4  C4 BR4
 BOND C4 C5   C5 BR5  C5 C6  C6 BR6
-BOND BR4 LP4  BR5 LP5   BR6 LP6
+!BOND BR4 LP4  BR5 LP5   BR6 LP6
 
 LONEPAIR COLINEAR LP4 BR4 C4  DIST 1.890
 LONEPAIR COLINEAR LP5 BR5 C5  DIST 1.890
@@ -31075,7 +31473,7 @@ ATOM LP6  LPH       0.05 !
 BOND C1   H1   C1   C2   C1   C6   C2   H2
 BOND C2   C3   C3   BR3  C3   C4   C4   H4
 BOND C4   C5   C5   BR5  C5   C6   C6   BR6
-BOND BR3  LP3  BR5  LP5  BR6  LP6
+!BOND BR3  LP3  BR5  LP5  BR6  LP6
 
 LONEPAIR COLINEAR LP3 BR3 C3  DIST 1.890
 LONEPAIR COLINEAR LP5 BR5 C5  DIST 1.890
@@ -31112,7 +31510,7 @@ ATOM LP6  LPH       0.05 !
 BOND C1   H1   C1   C2   C1   C6   C2   BR2
 BOND C2   C3   C3   H3   C3   C4   C4   BR4
 BOND C4   C5   C5   H5   C5   C6   C6   BR6
-BOND BR2  LP2  BR4  LP4  BR6  LP6
+!BOND BR2  LP2  BR4  LP4  BR6  LP6
 
 LONEPAIR COLINEAR LP2 BR2 C2  DIST 1.890
 LONEPAIR COLINEAR LP4 BR4 C4  DIST 1.890
@@ -31147,7 +31545,7 @@ ATOM LP   LPH      0.05  !
 BOND C1   H1   C1   C2   C2   H2   C2   C3
 BOND C3   H3   C3   C4   C4   H4   C4   C5   
 BOND C5   H5   C5   C6   C6   C1   C6   I6
-BOND I6   LP
+!BOND I6   LP
 
 LONEPAIR COLINEAR LP I6 C6  DIST 2.200
 
@@ -31181,7 +31579,7 @@ ATOM LP6  LPH      0.05  !
 BOND C1  C6   C1  H1   C1  C2   C2  H2
 BOND C2  C3   C3  H3   C3  C4   C4  H4
 BOND C4  C5   C5  I5   C5  C6   C6  I6
-BOND I5  LP5  I6  LP6
+!BOND I5  LP5  I6  LP6
 
 LONEPAIR COLINEAR LP5 I5 C5  DIST 2.200
 LONEPAIR COLINEAR LP6 I6 C6  DIST 2.200
@@ -31216,7 +31614,7 @@ ATOM LP6  LPH      0.05  !
 BOND C1  C6   C1  H1   C1  C2   C2  H2
 BOND C2  C3   C3  H3   C3  C4   C4  I4
 BOND C4  C5   C5  H5   C5  C6   C6  I6
-BOND I4  LP4  I6  LP6
+!BOND I4  LP4  I6  LP6
 
 LONEPAIR COLINEAR LP4 I4 C4  DIST 2.200
 LONEPAIR COLINEAR LP6 I6 C6  DIST 2.200
@@ -31251,7 +31649,7 @@ ATOM LP6  LPH      0.05 !
 BOND C1  C6   C1  H1  C1  C2  C2  H2
 BOND C2  C3   C3  I3  C3  C4  C4  H4
 BOND C4  C5   C5  H5  C5  C6  C6  I6
-BOND I3  LP3  I6  LP6
+!BOND I3  LP3  I6  LP6
 
 LONEPAIR COLINEAR LP3 I3 C3  DIST 2.200
 LONEPAIR COLINEAR LP6 I6 C6  DIST 2.200
@@ -31287,7 +31685,7 @@ ATOM LP6  LPH     0.05  !
 BOND C1  C6   C1  H1   C1  C2   C2  H2
 BOND C2  C3   C3  H3   C3  C4   C4  I4
 BOND C4  C5   C5  I5   C5  C6   C6  I6
-BOND I4  LP4  I5  LP5  I6  LP6
+!BOND I4  LP4  I5  LP5  I6  LP6
 
 LONEPAIR COLINEAR LP4 I4 C4  DIST 2.200
 LONEPAIR COLINEAR LP5 I5 C5  DIST 2.200
@@ -31324,7 +31722,7 @@ ATOM LP6  LPH      0.05 !
 BOND C1  C6   C1  H1   C1  C2   C2  H2
 BOND C2  C3   C3  I3   C3  C4   C4  H4
 BOND C4  C5   C5  I5   C5  C6   C6  I6
-BOND I3  LP3  I5  LP5  I6  LP6
+!BOND I3  LP3  I5  LP5  I6  LP6
 
 LONEPAIR COLINEAR LP3 I3 C3  DIST 2.200
 LONEPAIR COLINEAR LP5 I5 C5  DIST 2.200
@@ -31361,7 +31759,7 @@ ATOM LP6  LPH      0.05 !
 BOND C1  C6   C1  H1   C1  C2   C2  I2
 BOND C2  C3   C3  H3   C3  C4   C4  I4
 BOND C4  C5   C5  H5   C5  C6   C6  I6
-BOND I2  LP2  I4  LP4  I6  LP6
+!BOND I2  LP2  I4  LP4  I6  LP6
 
 LONEPAIR COLINEAR LP2 I2 C2  DIST 2.200
 LONEPAIR COLINEAR LP4 I4 C4  DIST 2.200
@@ -31377,65 +31775,6 @@ IC   C5   C3   *C4  I4   0.0000    0.00  180.00    0.00   0.0000
 IC   C6   C4   *C5  H5   0.0000    0.00  180.00    0.00   0.0000
 IC   C5   C1   *C6  I6   0.0000    0.00  180.00    0.00   0.0000
 
-RESI OIRD         0.000 ! oxindol-3-ylidene rhodanine, kevo & xxwy
-!RING 5 S1 C2 N3 C4 C5
-!RING 5 C6 C7 N8 C9 C14
-!RING 6 C9 C10 C11 C12 C13 C14
-ATOM S1   SG311   -0.14
-ATOM C2   CG2R53   0.26
-ATOM S2   SG2D1   -0.27
-ATOM N3   NG2R53  -0.24 !            H3         S2
-ATOM H3   HGP1     0.31 !              \       //
-ATOM C4   CG2R53   0.29 !               N3----C2
-ATOM O4   OG2D1   -0.39 !               |     |
-ATOM C5   CG252O   0.18 !or CG251O  O4==C4    S1
-ATOM C6   CG25C2  -0.09 !or CG25C1        \  /
-ATOM C7   CG2R53   0.67 !           H13    C5
-ATOM O7   OG2D1   -0.57 !            |     ||
-ATOM N8   NG2R51  -0.45 !           C13    C6   O7
-ATOM H8   HGP1     0.32 !          //  \  /  \ //
-ATOM C9   CG2RC0   0.25 !   H12--C12    C14   C7
-ATOM C10  CG2R61  -0.34 !         |     ||    |
-ATOM H10  HGR61    0.24 !   H11--C11    C9----N8
-ATOM C11  CG2R61  -0.20 !          \\  /        \
-ATOM H11  HGR61    0.22 !           C10          H8
-ATOM C12  CG2R61  -0.23 !            |
-ATOM H12  HGR61    0.21 !           H10
-ATOM C13  CG2R61  -0.32
-ATOM H13  HGR61    0.28
-ATOM C14  CG2RC0   0.01
-
-BOND S1   C2   C2   N3   N3   C4   C4   C5
-BOND C5   S1   C2   S2   N3   H3   C4   O4
-BOND C5   C6
-BOND C6   C7   C7   N8   N8   C9   C9   C10  C10  C11
-BOND C11  C12  C12  C13  C13  C14  C14  C6   C9   C14
-BOND C7   O7   N8   H8   C10  H10  C11  H11  C12  H12
-BOND C13  H13
-IMPR C2   N3   S2   S1
-IMPR C4   C5   N3   O4
-IMPR C7   C6   N8   O7
-IC   C5   C4   N3   C2   0.0000    0.00    0.00    0.00   0.0000
-IC   C4   N3   C2   S1   0.0000    0.00    0.00    0.00   0.0000
-IC   N3   S1   *C2  S2   0.0000    0.00  180.00    0.00   0.0000
-IC   C4   C2   *N3  H3   0.0000    0.00  180.00    0.00   0.0000
-IC   C5   N3   *C4  O4   0.0000    0.00  180.00    0.00   0.0000
-IC   S1   C4   *C5  C6   0.0000    0.00  180.00    0.00   0.0000
-IC   S1   C5   C6   C7   0.0000    0.00    0.00    0.00   0.0000
-IC   C5   C7   *C6  C14  0.0000    0.00  180.00    0.00   0.0000
-IC   C7   C6   C14  C9   0.0000    0.00    0.00    0.00   0.0000
-IC   C6   C14  C9   N8   0.0000    0.00    0.00    0.00   0.0000
-IC   C6   C9   *C14 C13  0.0000    0.00  180.00    0.00   0.0000
-IC   C14  N8   *C9  C10  0.0000    0.00  180.00    0.00   0.0000
-IC   C14  C9   C10  C11  0.0000    0.00    0.00    0.00   0.0000
-IC   C9   C14  C13  C12  0.0000    0.00    0.00    0.00   0.0000
-IC   N8   C6   *C7  O7   0.0000    0.00  180.00    0.00   0.0000
-IC   C9   C7   *N8  H8   0.0000    0.00  180.00    0.00   0.0000
-IC   C11  C9   *C10 H10  0.0000    0.00  180.00    0.00   0.0000
-IC   C12  C10  *C11 H11  0.0000    0.00  180.00    0.00   0.0000
-IC   C13  C11  *C12 H12  0.0000    0.00  180.00    0.00   0.0000
-IC   C14  C12  *C13 H13  0.0000    0.00  180.00    0.00   0.0000
-
 !! Note, use charmm c40b1 or higher to avoid seg-fault
 PRES 3CBD          0.00 ! C3H2Cl Gamma 3-Chloro amino benzene glutamic acid CDCA amide, cacha (lsk added lone-pair on chlorine)
 !To be patched with residue GABD
@@ -31447,12 +31786,9 @@ ATOM CL   CLGR1   -0.210 !   ||        \   __  //
 ATOM CP   CG2R61  -0.100 !   OG         CD2--CE2
 ATOM HP   HGR62    0.150
 ATOM LP   LPH      0.050
-
-BOND CE1 CL
-BOND CL  LP
-
+BOND CE1  CL
+!BOND CL  LP
 LONEPAIR COLINEAR LP CL CE1  DIST 1.640
-
 IC CP   CD1  *CE1 CL    1.4002  119.96  179.97  120.18   1.7396
 
 !! Note, use charmm c40b1 or higher to avoid seg-fault
@@ -31466,12 +31802,9 @@ ATOM CL   CLGR1   -0.210 !   ||        \   __  //
 ATOM CE2  CG2R61  -0.100 !   OG         CD2--CE2
 ATOM HE2  HGR62    0.150
 ATOM LP   LPH      0.050
-
 BOND CP  CL
-BOND CL  LP
-
+!BOND CL  LP
 LONEPAIR COLINEAR LP CL CP  DIST 1.640
-
 IC CE1  CE2  *CP  CL    1.3996  119.90 -179.82  120.09   1.7397
 
 PRES B576         -1.97 ! BCL6 inhibitor 57-6, Chirality ~ L-Asp, kevo & xxwy (lsk added a lone-pair on bromine)
@@ -31503,7 +31836,7 @@ BOND C12  BR2
 BOND N3   C31  C31  C32  C32  C33  C31  C34
 BOND C33  O33A C33  O33B C34  O34A C34  O34B
 BOND C31  H31  C32  H32A C32  H32B
-BOND BR2  LP
+!BOND BR2  LP
 
 IMPR C34  O34A O34B C31
 IMPR C33  O33A O33B C32
@@ -31556,7 +31889,7 @@ BOND N3   C31  C31  C32  C32  C33  C31  C34
 BOND C33  O33A C33  O33B C34  O34A C34  O34B
 BOND C31  H31  C32  H32A C32  H32B
 BOND O33A H33A O34A H34A
-BOND BR2  LP
+!BOND BR2  LP
 
 IMPR C34  C31  O34B O34A
 IMPR C33  C32  O33B O33A
@@ -32971,5 +33304,554 @@ IMPR C6 C5  N1  O6
  IC    S2G     O3B     *PG     O1G         1.9855  108.32 -114.91   76.05   1.5620
  IC    O3B     PG      O1G     H1G         1.6339   76.05    4.79  107.59   0.9693
 
-END
+RESI NC2       1.000 ! dimethylammonium  fylin/kenno
+GROUP            
+ATOM N      NG3P2  -0.508 !             HN3 
+ATOM C1     CG334   0.154 !     H23      | 
+ATOM C2     CG334   0.154 !      |       | 
+ATOM HN3    HGP2    0.330 !  H22-C2------N------HN4     (+) 
+ATOM HN4    HGP2    0.330 !      |       | 
+ATOM H11    HGA3    0.090 !      H21     | 
+ATOM H12    HGA3    0.090 !         H11-C1-H13 
+ATOM H13    HGA3    0.090 !              | 
+ATOM H21    HGA3    0.090 !              H12 
+ATOM H22    HGA3    0.090 ! 
+ATOM H23    HGA3    0.090 !  
 
+BOND H11  C1  
+BOND H21  C2  
+BOND HN4  N   
+BOND N    C1  
+BOND N    C2  
+BOND N    HN3 
+BOND C1   H13 
+BOND C1   H12 
+BOND C2   H22 
+BOND C2   H23 
+
+IC C2    C1   *N   HN4       1.4900  115.20 -120.00  110.80   1.0060
+IC HN4   C1   *N   HN3       1.0060  110.80 -120.00  110.80   1.0060
+IC HN4   N     C1  H11       1.0060  110.80  180.00  102.30   1.1110
+IC C1    N     C2  H23       1.4900  115.20    0.00  102.30   1.1110
+IC H11   N    *C1  H13       1.1110  102.30  120.00  102.30   1.1110
+IC H11   N    *C1  H12       1.1110  102.30 -120.00  102.30   1.1110
+IC HN4   N     C2  H21       1.0060  110.80  180.00  102.30   1.1110
+IC H21   N    *C2  H22       1.1110  102.30  120.00  102.30   1.1110
+IC H21   N    *C2  H23       1.1110  102.30  120.00  102.30   1.1110
+       
+
+PATC FIRS NONE LAST NONE
+
+RESI NC3       1.000 ! trimethylammonium  fylin/kenno
+GROUP            
+ATOM N      NG3P1  -0.565 !                 H32
+ATOM C1     CG334   0.145 !                  | 
+ATOM C2     CG334   0.145 !              H31-C3-H33 
+ATOM C3     CG334   0.145 !          H23     | 
+ATOM HN4    HGP2    0.320 !          |       | 
+ATOM H11    HGA3    0.090 !      H22-C2------N------HN4    (+) 
+ATOM H12    HGA3    0.090 !          |       | 
+ATOM H13    HGA3    0.090 !          H21     | 
+ATOM H21    HGA3    0.090 !             H11-C1-H13 
+ATOM H22    HGA3    0.090 !                  | 
+ATOM H23    HGA3    0.090 !                  H12 
+ATOM H31    HGA3    0.090 ! 
+ATOM H32    HGA3    0.090 ! 
+ATOM H33    HGA3    0.090 ! 
+
+BOND H12  C1  
+BOND H23  C2  
+BOND H32  C3  
+BOND C1   H11 
+BOND C1   H13 
+BOND C1   N   
+BOND C2   H21 
+BOND C2   H22 
+BOND C2   N   
+BOND C3   H31 
+BOND C3   H33 
+BOND C3   N   
+BOND N    HN4 
+
+IC C2     C1    *N      C3         1.4800  109.50  120.00  109.50   1.4800
+IC C2     C1    *N      HN4        1.4800  109.50 -120.00  110.80   1.0400
+IC C2     N     C1      H12        1.4800  109.50  180.00  102.30   1.1110
+IC H12    N     *C1     H11        1.1110  102.30  120.00  102.30   1.1110
+IC H12    N     *C1     H13        1.1110  102.30 -120.00  102.30   1.1110
+IC C1     N     C2      H23        1.4800  109.50  180.00  102.30   1.1110
+IC H23    N     *C2     H21        1.1110  102.30  120.00  102.30   1.1110
+IC H23    N     *C2     H22        1.1110  102.30 -120.00  102.30   1.1110
+IC C1     N     C3      H32        1.4800  109.50  180.00  102.30   1.1110
+IC H32    N     *C3     H31        1.1110  102.30  120.00  102.30   1.1110
+IC H32    N     *C3     H33        1.1110  102.30 -120.00  102.30   1.1110
+
+
+PATC FIRS NONE LAST NONE
+
+RESI NH4           1.00 !ammonium fylin/kenno
+GROUP
+ATOM HZ1 HGP2      0.33 !                (+) |
+ATOM NZ  NG3P3    -0.32 !                   HZ1
+ATOM HZ2 HGP2      0.33 !               HZ4--NZ--HZ2
+ATOM HZ3 HGP2      0.33 !                    |
+ATOM HZ4 HGP2      0.33 !                   HZ3
+BOND NZ HZ1  NZ HZ2  NZ HZ3  NZ HZ4
+
+IC HZ2  HZ1    *NZ      HZ3        1.0400  109.50  120.00  109.50   1.0400
+IC HZ1  HZ2    *NZ      HZ4        1.0400  109.50  120.00  109.50   1.0400
+IC HZ2  HZ1    *NZ      HZ4        1.0400  109.50 -120.00  109.50   1.0400
+
+
+PATC FIRS NONE LAST NONE
+
+RESI TEAZ         0.000 ! C1H2N4, 1H-tetrazole  pchat    
+GROUP            
+ATOM C1     CG2R53   0.235 !               H5  
+ATOM H1     HGR52    0.153 !              /
+ATOM N2     NG2R50  -0.400 !      N4_____N5           
+ATOM N3     NG2R50  -0.116 !      ||     \
+ATOM N4     NG2R50  -0.300 !      ||      C1--H1
+ATOM N5     NG2R51   0.157 !      ||     //
+ATOM H5     HGP1     0.271 !      N3_____N2
+                                
+BOND C1   N5                  
+BOND C1   H1  
+BOND C1   N2  
+BOND N2   N3  
+BOND N3   N4  
+BOND N4   N5  
+BOND N5   H5 
+IC   N2   N5   *C1   H1     1.3200  113.00  180.00  122.20   1.0900
+IC   N5   C1   N2    N3     1.3740  113.00  180.00  105.90   1.2900
+IC   C1   N2   N3    N4     1.3200  105.90  180.00  108.20   1.3224
+IC   N2   N3   N4    N5     1.3632  110.96  180.00  105.33   1.3481
+IC   N3   N4   N5    C1     1.3224  105.33  180.00  109.51   1.2900
+IC   N4   N5   C1    H1     1.3481  109.52  180.00  124.97   1.0795
+IC   N4   N5   C1    N2     1.3480  109.52    0.00  109.51   1.3200
+IC   H5   N5   C1    H1     1.3480  108.22  180.00  105.98   1.0795
+IC   N4   C1   *N5   H5     1.3550  114.00  180.00  127.00   1.0100
+
+RESI MTEA       0.000 ! C2H4N4, 5-Methyl-1H-tetrazole pchat
+GROUP            
+ATOM C1     CG2R53  0.235 !            H6  
+ATOM N2     NG2R50 -0.400 !           /
+ATOM N3     NG2R50 -0.116 !   N4_____N5   H8       
+ATOM N4     NG2R50 -0.300 !   ||     \    |
+ATOM N5     NG2R51  0.157 !   ||      C1--C7--H10
+ATOM H6     HGP1    0.271 !   ||     //   |
+ATOM C7     CG331  -0.117 !   N3_____N2   H9
+ATOM H8     HGA3    0.090 ! 
+ATOM H9     HGA3    0.090 ! 
+ATOM H10    HGA3    0.090 ! 
+
+BOND C1   N5  
+BOND C1   N2  
+BOND C1   C7  
+BOND N2   N3  
+BOND N3   N4  
+BOND N4   N5  
+BOND N5   H6  
+BOND C7   H8  
+BOND C7   H9  
+BOND C7   H10 
+
+IC   N2   N5   *C1   C7      1.3200  113.00  180.00  120.00   1.5000
+IC   N5   C1   N2    N3      1.3740  113.00  180.00  105.90   1.2900
+IC   N2   N3   N4    N5      1.3632  110.96  180.00  105.33   1.3481
+IC   N3   N4   N5    C1      1.3231  105.14  180.00  110.18   1.2900
+IC   N5   C1   N2    N3      1.3524  107.13  180.00  106.76   1.3609
+IC   N4   N5   C1    C7      1.3479  110.18  180.00  125.97   1.5000
+IC   C1   N2   N3    N4      1.3200  105.90  180.00  108.20   1.2900
+IC   N4   C1   *N5   H6      1.3550  114.00  180.00  127.00   1.0100
+IC   N5   C1   C7    H8      1.3740  120.00  180.00  109.50   1.1110
+IC   H8   C1   *C7   H9      1.1110  109.50  120.00  109.50   1.1110
+IC   H8   C1   *C7   H10     1.1110  109.50 -120.00  109.50   1.1110
+
+RESI ETEA       0.000 ! C3H6N4, 5-Ethyl-1H-tetrazole pchat
+GROUP            
+ATOM C1     CG2R53  0.235 ! 
+ATOM N2     NG2R50 -0.400 ! 
+ATOM N3     NG2R50 -0.116 ! 
+ATOM N4     NG2R50 -0.300 !          H6  
+ATOM N5     NG2R51  0.157 !         /
+ATOM H6     HGP1    0.271 ! N4_____N5   H8  H11     
+ATOM C7     CG321  -0.030 ! ||     \    |   |
+ATOM H8     HGA2    0.090 ! ||      C1--C7--C10--H13
+ATOM H9     HGA2    0.090 ! ||     //   |   |
+ATOM C10    CG331  -0.267 ! N3_____N2   H9  H12
+ATOM H11    HGA3    0.090 ! 
+ATOM H12    HGA3    0.090 ! 
+ATOM H13    HGA3    0.090 ! 
+
+BOND C1   N5  
+BOND C1   N2  
+BOND C1   C7  
+BOND N2   N3  
+BOND N3   N4  
+BOND N4   N5  
+BOND N5   H6  
+BOND C7   H8  
+BOND C7   H9  
+BOND C7   C10 
+BOND C10  H11 
+BOND C10  H12 
+BOND C10  H13 
+
+IC   N5    C7    *C1    N2     1.3740  120.00  180.00  123.00   1.3200
+IC   C7    C1    N2     N3     1.5000  123.00  180.00  105.90   1.2900
+IC   C1    N2    N3     N4     1.3200  105.90  180.00  108.20   1.2900
+IC   N4    C1    *N5    H6     1.3550  114.00  180.00  127.00   1.0100
+IC   N5    C1    C7     C10    1.3740  120.00  180.00  111.00   1.5280
+IC   C10   C1    *C7    H8     1.5280  111.00  120.00  109.50   1.1110
+IC   H8    C1    *C7    H9     1.1110  109.50 -120.00  109.50   1.1110
+IC   C1    C7    C10    H11    1.5000  111.00  180.00  110.10   1.1110
+IC   H11   C7    *C10   H12    1.1110  110.10  120.00  110.10   1.1110
+IC   H11   C7    *C10   H13    1.1110  110.10 -120.00  110.10   1.1110
+
+RESI 2OXT          0.00 ! 2-Oxetanone ozyo
+!RING planar 4 O1 C1 C2 C3
+GROUP
+ATOM  O1  OG3C51  -0.27  !           O2
+ATOM  C1  CG3C41   0.07  !          //
+ATOM  H11 HGA2     0.09  !     O1--C2
+ATOM  H12 HGA2     0.09  !     |   |
+ATOM  C3  CG3C41   0.10  ! H11-C1--C3-H31
+ATOM  H31 HGA2     0.09  !     |   |
+ATOM  H32 HGA2     0.09  !    H12  H32
+ATOM  C2  CG2O4    0.07
+ATOM  O2  OG2D1   -0.33
+
+BOND O1 C1  C1 C3  C3 C2  C2 O1 
+DOUBLE C2 O2
+BOND C1 H11 C1 H12
+BOND C3 H31 C3 H32
+!IMPR C2   C3   O1   O2
+IMPR C2   C3   O2   O1
+
+IC C2    O1    C1  C3           1.3340   90.00    0.00   90.00   1.5400
+IC C3    O1   *C1  H11          1.5400   90.00  120.00  112.00   1.0930
+IC C3    O1   *C1  H12          1.5400   90.00 -120.00  112.00   1.0930
+IC C2    C1   *C3  H31          1.5600   90.00  120.00  110.50   1.0930
+IC C2    C1   *C3  H32          1.5600   90.00 -120.00  110.50   1.0930
+IC C3    O1   *C2  O2           1.5600   90.00  180.00  127.00   1.2200
+IC C3    C2    O1  C1           1.5600   90.00  180.00   90.00   1.4223
+IC O1    C3   *C2  O2           1.3340   90.00    0.00  134.00   1.2200
+
+RESI 3OXT           0.00 ! 3-Oxetanone ozyo
+!RING planar 4 O1 C1 C3 C2
+GROUP 
+ATOM O1     OG3C51 -0.48 !        H22      
+ATOM C1     CG3C41  0.18 !         |       
+ATOM H11    HGA2    0.09 !      O1--C2--H21
+ATOM H12    HGA2    0.09 !      |   |   
+ATOM C2     CG3C41  0.18 ! H11--C1--C3  
+ATOM H21    HGA2    0.09 !      |    \\ 
+ATOM H22    HGA2    0.09 !     H12    O2
+ATOM C3     CG2O4   0.10 !
+ATOM O2     OG2D3  -0.34 !
+
+BOND O1   C1  
+BOND O1   C2  
+BOND C1   H11 
+BOND C1   H12 
+BOND C1   C3  
+BOND C2   H21 
+BOND C2   H22 
+BOND C2   C3  
+BOND C3   O2  
+IMPR C3     C1     C2     O2    
+IMPR C3   C2   C1  O2
+IC C2    C3    C1  O1          0.0000   90.00    0.00   90.00   0.0000
+IC C1    O1    C2  C3          0.0000   90.00  180.00   90.00   0.0000
+IC C2    C1   *C3  O2          0.0000   90.00  180.00    0.00   0.0000
+IC C1    C3   *C2  H22         0.0000   90.00  120.00    0.00   0.0000
+IC C1    C3   *C2  H21         0.0000   90.00 -120.00    0.00   0.0000
+IC C3    O1   *C1  H11         0.0000   90.00  120.00    0.00   0.0000
+IC C3    O1   *C1  H12         0.0000   90.00 -120.00    0.00   0.0000
+IC C1    C2   *C3  O2          0.0000   90.00    0.00  134.00   0.0000
+
+RESI BUTY            0.000 ! 1-butyne pchat
+GROUP
+ATOM C1      CG1T2  -0.410 !
+ATOM H1      HGPAM1  0.290 !
+ATOM C2      CG1T1  -0.010 !
+ATOM C3      CG321  -0.050 !             H41  H31
+ATOM H31     HGA2    0.090 !              |    |    __
+ATOM H32     HGA2    0.090 !         H42--C4--C3--C2==C1--H1
+ATOM C4      CG331  -0.270 !              |    |
+ATOM H41     HGA3    0.090 !             H43  H32
+ATOM H42     HGA3    0.090 !
+ATOM H43     HGA3    0.090 !
+
+BOND C1 H1  C1 C2  C2 C3  C3 C4
+BOND C3 H31 C3 H32 C4 H41 C4 H42 C4 H43
+
+ IC    C1      C2      C3      C4          1.2194  179.39 -180.00  118.17   1.5368
+ IC    H1      C1      C2      C3          1.0705  179.62  149.15  179.39   1.4641
+ IC    C2      C3      C4      H43         1.4641  118.17  -59.81  110.32   1.1113
+ IC    C4      C2      *C3     H31         1.5368  118.17 -122.77  108.23   1.1131
+ IC    H31     C2      *C3     H32         1.1131  108.23 -114.46  108.23   1.1131
+ IC    H43     C3      *C4     H42         1.1113  110.32  119.62  110.32   1.1113
+ IC    H43     C3      *C4     H41         1.1113  110.32 -120.19  110.66   1.1106
+
+RESI PNTY            0.000 ! 1-pentyne pchat
+GROUP           
+ATOM C1      CG1T2  -0.410 !
+ATOM H1      HGPAM1  0.290 !
+ATOM C2      CG1T1  -0.010 !
+ATOM C3      CG321  -0.050 !       H51  H41 H31
+ATOM H31     HGA2    0.090 !        |    |   |    __
+ATOM H32     HGA2    0.090 !    H52-C5--C4--C3--C2==C1--H1
+ATOM C4      CG321  -0.180 !        |    |   |
+ATOM H41     HGA2    0.090 !       H53  H42 H32
+ATOM H42     HGA2    0.090 !
+ATOM C5      CG331  -0.270 !
+ATOM H51     HGA3    0.090 !
+ATOM H52     HGA3    0.090 !
+ATOM H53     HGA3    0.090 !
+
+BOND C1 H1  C1 C2  C2 C3  C3 C4  C4 C5
+BOND C3 H31 C3 H32 C4 H41 C4 H42 
+BOND C5 H51 C5 H52 C5 H53
+
+ IC    C1      C2      C3      C4          1.2195  179.04 -163.96  113.52   1.5417
+ IC    H1      C1      C2      C3          1.0704  179.64  145.03  179.04   1.4653
+ IC    C2      C3      C4      C5          1.4653  113.52  -63.03  114.25   1.5336
+ IC    C4      C2      *C3     H31         1.5417  113.52 -121.48  109.60   1.1117
+ IC    H31     C2      *C3     H32         1.1117  109.60 -117.22  109.30   1.1117
+ IC    C5      C3      *C4     H41         1.5336  114.25 -121.49  108.38   1.1139
+ IC    H41     C3      *C4     H42         1.1139  108.38 -116.33  108.73   1.1142
+ IC    C3      C4      C5      H51         1.5417  114.25   60.85  110.46   1.1118
+ IC    H51     C4      *C5     H52         1.1118  110.46  119.92  110.64   1.1111
+ IC    H51     C4      *C5     H53         1.1118  110.46 -119.84  110.60   1.1111
+
+RESI HXYN            0.000 ! 1-hexyne pchat
+GROUP            
+ATOM C1      CG1T2  -0.410 !                                   
+ATOM H1      HGPAM1  0.290 !                                   
+ATOM C2      CG1T1  -0.073 !           H61 H51 H41 H31
+ATOM C3      CG321   0.025 !           |    |   |   |    __
+ATOM H31     HGA2    0.090 !      H62--C6--C5--C4--C3--C2==C1--H1
+ATOM H32     HGA2    0.090 !           |    |    |   |
+ATOM C4      CG321  -0.194 !          H63   H52  H42 H32
+ATOM H41     HGA2    0.090 !
+ATOM H42     HGA2    0.090 !
+ATOM C5      CG321  -0.178 !
+ATOM H51     HGA2    0.090 !                                   
+ATOM H52     HGA2    0.090 !                                   
+ATOM C6      CG331  -0.270 !                                   
+ATOM H61     HGA3    0.090 !                                   
+ATOM H62     HGA3    0.090 !                                   
+ATOM H63     HGA3    0.090 ! 
+
+BOND C1 H1  C1 C2  C2 C3   C3 C4  C3 H31  C3 H32  
+BOND C4 C5  C5 C6  C4 H41  C4 H42 C5 H51  C5 H52
+BOND C6 H61 C6 H62 C6 H63 
+
+IC    C1      C2      C3      C4          1.2198  179.13 -168.52  113.51   1.5434
+IC    H1      C1      C2      C3          1.0709  179.57 -162.10  179.13   1.4658
+IC    C2      C3      C4      C5          1.4658  113.51  -61.08  114.84   1.5398
+IC    C4      C2      *C3     H31         1.5434  113.51 -122.60  109.75   1.1106
+IC    H31     C2      *C3     H32         1.1106  109.75 -116.67  109.13   1.1119
+IC    C5      C3      *C4     H41         1.5398  114.84 -121.62  108.53   1.1129
+IC    H41     C3      *C4     H42         1.1129  108.53 -116.61  108.50   1.1137
+IC    C3      C4      C5      H51         1.5434  114.84   61.90  108.79   1.1147
+IC    H51     C4      *C5     H52         1.1147  108.79  116.05  108.33   1.1145
+IC    H51     C4      *C5     C6          1.1147  108.79 -122.25  114.56   1.5320
+IC    C4      C5      C6      H61         1.5398  114.56   64.15  110.75   1.1110
+IC    H61     C5      *C6     H62         1.1110  110.75  119.55  110.38   1.1114
+IC    H61     C5      *C6     H63         1.1110  110.75 -120.49  110.60   1.1110
+
+RESI HPTY            0.000 ! 1-heptyne pchat
+GROUP            
+ATOM C1     CG1T2   -0.410 !   
+ATOM H1     HGPAM1   0.290 !
+ATOM C2     CG1T1   -0.073 ! 
+ATOM C3     CG321    0.025 !  
+ATOM H31    HGA2     0.090 ! 
+ATOM H32    HGA2     0.090 ! 
+ATOM C4     CG321   -0.192 !           H71  H61 H51 H41 H31
+ATOM H41    HGA2     0.090 !           |    |   |   |   |    __                  
+ATOM H42    HGA2     0.090 !      H73--C7--C6--C5--C4--C3--C2==C1--H1            
+ATOM C5     CG321   -0.182 !           |    |   |   |   |                        
+ATOM H51    HGA2     0.090 !           H72  H61 H52 H42 H32                        
+ATOM H52    HGA2     0.090 ! 
+ATOM C6     CG321   -0.178 !
+ATOM H61    HGA2     0.090 !
+ATOM H62    HGA2     0.090 !
+ATOM C7     CG331   -0.270 ! 
+ATOM H71    HGA3     0.090 !
+ATOM H72    HGA3     0.090 !
+ATOM H73    HGA3     0.090 !
+
+BOND C1 H1  C1 C2  C2 C3 C3 C4  C4 C5  C5 C6  C6 C7    
+BOND C3 H31  C3 H32  C4 H41  C4 H42  C5 H51   C5 H52  
+BOND C6 H61  C6 H62  C7 H71  C7 H72  C7 H73
+
+IC    C1      C2      C3      C4          1.2198  179.16 -173.07  113.51   1.5432
+IC    H1      C1      C2      C3          1.0709  179.64 -144.15  179.16   1.4657
+IC    C2      C3      C4      C5          1.4657  113.51  -60.28  114.79   1.5419
+IC    C4      C2      *C3     H31         1.5432  113.51 -122.35  109.73   1.1108
+IC    H31     C2      *C3     H32         1.1108  109.73 -116.77  109.21   1.1118
+IC    C5      C3      *C4     H41         1.5419  114.79 -122.53  108.69   1.1120
+IC    H41     C3      *C4     H42         1.1120  108.69 -116.18  108.40   1.1138
+IC    C3      C4      C5      H51         1.5432  114.79   63.92  108.66   1.1143
+IC    H51     C4      *C5     H52         1.1143  108.66  116.32  108.48   1.1137
+IC    H51     C4      *C5     C6          1.1143  108.66 -121.86  115.18   1.5388
+IC    C4      C5      C6      H61         1.5419  115.18   64.59  109.08   1.1135
+IC    H61     C5      *C6     H62         1.1135  109.08  115.62  107.99   1.1148
+IC    H61     C5      *C6     C7          1.1135  109.08 -122.98  114.71   1.5324
+IC    C5      C6      C7      H71         1.5388  114.71   63.58  110.88   1.1104
+IC    H71     C6      *C7     H72         1.1104  110.88  119.92  110.45   1.1113
+IC    H71     C6      *C7     H73         1.1104  110.88 -120.23  110.40   1.1112
+
+RESI OCTY            0.000 ! 1-octyne pchat
+GROUP            
+ATOM C1      CG1T2  -0.410 !
+ATOM H1      HGPAM1  0.290 !   
+ATOM C2      CG1T1  -0.073 !   
+ATOM C3      CG321   0.025 !
+ATOM H31     HGA2    0.090 ! 
+ATOM H32     HGA2    0.090 !             H81  H71 H61 H51 H41 H31
+ATOM C4      CG321  -0.192 !             |    |   |   |   |   |    __       
+ATOM H41     HGA2    0.090 !        H83--C8--C7--C6--C5--C4--C3--C2==C1--H1 
+ATOM H42     HGA2    0.090 !             |    |   |   |   |   |            
+ATOM C5      CG321  -0.180 !            H82  H72  H62 H52 H42 H32           
+ATOM H51     HGA2    0.090 !
+ATOM H52     HGA2    0.090 !
+ATOM C6      CG321  -0.182 !
+ATOM H61     HGA2    0.090 !
+ATOM H62     HGA2    0.090 !
+ATOM C7      CG321  -0.178 !
+ATOM H71     HGA2    0.090 !
+ATOM H72     HGA2    0.090 !
+ATOM C8      CG331  -0.270 !
+ATOM H81     HGA3    0.090 !
+ATOM H82     HGA3    0.090 !
+ATOM H83     HGA3    0.090 !
+
+BOND C1 H1  C1 C2  C2 C3  C3 C4  C4 C5  C5 C6        
+BOND C6 C7  C7 C8  C3 H31 C3 H32 C4 H41 C4 H42  
+BOND C5 H51 C5 H52  C6 H61  C6 H62  C7 H71 
+BOND C7 H72 C8 H81  C8 H82 C8 H83 
+
+IC    C1      C2      C3      C4          1.2198  179.16 -174.63  113.51   1.5430
+IC    H1      C1      C2      C3          1.0709  179.62 -149.16  179.16   1.4657
+IC    C2      C3      C4      C5          1.4657  113.51  -60.38  114.80   1.5418
+IC    C4      C2      *C3     H31         1.5430  113.51 -122.35  109.72   1.1107
+IC    H31     C2      *C3     H32         1.1107  109.72 -116.77  109.22   1.1118
+IC    C5      C3      *C4     H41         1.5418  114.80 -122.30  108.67   1.1121
+IC    H41     C3      *C4     H42         1.1121  108.67 -116.29  108.47   1.1137
+IC    C3      C4      C5      H51         1.5430  114.80   63.77  108.50   1.1145
+IC    H51     C4      *C5     H52         1.1145  108.50  115.91  108.70   1.1128
+IC    H51     C4      *C5     C6          1.1145  108.50 -121.34  115.13   1.5408
+IC    C4      C5      C6      H61         1.5418  115.13   65.48  108.98   1.1130
+IC    H61     C5      *C6     H62         1.1130  108.98  115.89  108.12   1.1141
+IC    H61     C5      *C6     C7          1.1130  108.98 -122.77  115.27   1.5390
+IC    C5      C6      C7      H71         1.5408  115.27   64.06  109.22   1.1129
+IC    H71     C6      *C7     H72         1.1129  109.22  115.94  108.06   1.1148
+IC    H71     C6      *C7     C8          1.1129  109.22 -122.76  114.55   1.5324
+IC    C6      C7      C8      H81         1.5390  114.55   63.31  110.77   1.1107
+IC    H81     C7      *C8     H82         1.1107  110.77  119.96  110.53   1.1112
+IC    H81     C7      *C8     H83         1.1107  110.77 -120.08  110.40   1.1112
+
+RESI BEYN            0.000 ! But-1-ene-3-yne pchat
+GROUP            
+ATOM C1      CG1T2  -0.410 !
+ATOM H1      HGPAM1  0.290 !
+ATOM C2      CG1T1   0.031 !       H41  
+ATOM C3      CG2D1  -0.066 !        \         __
+ATOM H3      HGA4    0.150 !        C4==C3--C2==C1--H1
+ATOM C4      CG2D2  -0.415 !        /    |
+ATOM H41     HGA5    0.210 !      H42   H3 
+ATOM H42     HGA5    0.210 !
+
+BOND H1 C1  C1 C2  C2 C3  C3 C4  
+BOND C3 H3  C4 H41 C4 H42    
+
+IC    C1      C2      C3      C4          1.2198  178.72 -180.00  126.28   1.3463
+IC    H1      C1      C2      C3          1.0699  179.72  129.28  178.72   1.4355
+IC    C2      C3      C4      H41         1.4355  126.28  180.00  121.21   1.1005
+IC    C4      C2      *C3     H3          1.3463  126.28  180.00  114.80   1.1014
+IC    H41     C3      *C4     H42         1.1005  121.21 -180.00  120.30   1.1014
+
+
+RESI PRF          1.000            !(2-amino-4-oxo-1,7-dihydropyrrolo[2,3-d]pyrimidin-5-yl)methylazanium ; ashal                                                
+GROUP               ! CHARGE       !     
+ATOM N1     NG2R61   -0.33         !     
+ATOM C2     CG2R64    0.75         !     
+ATOM N3     NG2R62   -0.73         !                      H4  H5
+ATOM C4     CG2RC0    0.06         !                       \ /+ 
+ATOM C5     CG2RC0   -0.02         !                O6      N11--H6 
+ATOM C6     CG2R63    0.38         !                ||       \  
+ATOM O6     OG2D4    -0.49         !                C6   H3--C10--H2
+ATOM C7     CG2R51    0.06         !               /  \      /
+ATOM C10    CG324     0.27         !           H1-N1   C5--C7\\
+ATOM N11    NG3P3    -0.49         !              |    ||    C8-H7
+ATOM C8     CG2R51   -0.08         !              C2   C4--N9/
+ATOM N9     NG2R51   -0.30         !             / \\ /      \
+ATOM N2     NG2S3    -0.67         !        H9-N2   N3        H8
+ATOM H1     HGP1      0.26         !           |               
+ATOM H2     HGA2      0.09         !          H10               
+ATOM H3     HGA2      0.09         !
+ATOM H4     HGP2      0.31         !
+ATOM H5     HGP2      0.31         !
+ATOM H6     HGP2      0.31         !
+ATOM H7     HGR52     0.20         !
+ATOM H8     HGP1      0.36         !  
+ATOM H9     HGP4      0.33         ! 
+ATOM H10    HGP4      0.33         !
+
+BOND N1   H1  
+BOND N1   C6  
+BOND N1   C2  
+BOND C2   N2  
+BOND C2   N3  
+BOND N3   C4  
+BOND C4   C5  
+BOND C4   N9  
+BOND C5   C6  
+BOND C5   C7  
+BOND C6   O6  
+BOND C7   C10 
+BOND C7   C8  
+BOND C10  H3  
+BOND C10  N11 
+BOND C10  H2  
+BOND N11  H5  
+BOND N11  H6  
+BOND N11  H4  
+BOND C8   N9  
+BOND C8   H7  
+BOND N9   H8  
+BOND N2   H9  
+BOND N2   H10 
+IMPR C2     N1     N3     N2    
+IMPR C6     C5     N1     O6    
+IMPR N2     H10    H9     C2    
+
+IC  C4  N9    C8    C7     1.3770  106.00    0.00  113.50   1.3040
+IC  C8  N9    C4    C5     1.3740  106.00    0.00  105.60   1.3770
+IC  N3  C4    N9    H8     1.3740  106.00    0.00  105.60   1.0100
+IC  N9  C5    *C4   N3     1.3770  105.60  180.00  128.40   1.3550
+IC  C5  C4    N3    C2     1.3770  128.40    0.00  111.80   1.3270
+IC  C4  N3    C2    N1     1.3550  111.80    0.00  124.00   1.3750
+IC  N1  N3    *C2   N2     1.3750  124.00  180.00  119.70   1.3410
+IC  N3  C2    N2    H9     1.3270  119.70  180.00  127.00   1.0100
+IC  H9  C2    *N2   H10    1.0100  127.00 -180.00  116.50   1.0100
+IC  N3  C2    N1    C6     1.3270  124.00    0.00  124.90   1.3930
+IC  C6  C2    *N1   H1     1.3930  124.90  180.00  117.40   1.0300
+IC  C6  C5    C7    C10    1.3930  124.90  -13.00  117.40   1.0300
+IC  C5  C7    C10   N11    1.3930  124.90   60.00  117.40   1.0300
+IC  C5  N1    *C6   O6     1.4150  111.70  180.00  120.00   1.2390
+IC  N9  C7    *C8   H7     1.3800  106.00  180.00  130.00   1.0830
+IC  C5  C7    C10   H2     1.4300  126.70  -60.00  109.50   1.1000
+IC  C5  C7    C10   H3     1.4300  126.70  180.00  109.50   1.1000
+IC  C7  C10   N11   H4     1.5000  102.30 -180.00  109.50   1.0400
+IC  C7  C10   N11   H5     1.5000  102.30   60.00  109.50   1.0400
+IC  C7  C10   N11   H6     1.5000  102.30  -60.00  109.50   1.0400
+
+!concatonate top_all36_cgenff.bio.training.rtf to this file to generate
+!the topology file for training
+
+END

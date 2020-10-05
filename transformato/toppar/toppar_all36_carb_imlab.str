@@ -18547,6 +18547,499 @@ IC  O7     O7A   *P7A   O7C      1.6173  110.24 -126.47  114.59   1.5172
 IC  O7     O7A   *P7A   O7B      1.6173  110.24  115.70  106.36   1.5661
 
 
+! =============================== neutral phosphate patches ========================
+PRES 1APH0          0.20  ! Phosphate (0 total charge) at alpha C1 position
+DELE ATOM HO1
+GROUP
+ATOM C1   CC3162    0.21
+ATOM H1   HCA1      0.09
+ATOM O1   OC30P    -0.56
+ATOM P1   PC        1.50
+ATOM OP12 OC312    -0.63 !
+ATOM H12  HCP1      0.43 !
+ATOM OP13 OC312    -0.63
+ATOM H13  HCP1      0.43 !
+ATOM OP14 OC2DP    -0.64
+BOND   O1   P1      OP12 P1   OP13 P1   OP14 P1  OP12 H12 OP13 H13
+IC   C5   O5   C1    O1         1.4305  111.50   63.93  108.22   1.4352
+IC   O5   O1   *C1   H1         1.5613  108.22 -116.76  114.09   1.1193
+IC   O5   C1   O1    P1         1.5613  108.22  131.56  117.57   1.5527
+IC   C1   O1   P1    OP12       1.4352  117.57  177.25  104.11   1.4504
+IC   O1   OP12 *P1   OP13       1.5527  104.11  112.40  113.72   1.4529
+IC   O1   OP12 *P1   OP14       1.5527  104.11 -114.18  114.03   1.4500
+IC   O1   P1   OP12  H12        1.6634   92.04   17.38  110.00   0.9486
+IC   O1   P1   OP13  H13        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 1BPH0          0.20  ! Phosphate (0 total charge) at equitorial C1 position
+DELE ATOM HO1
+GROUP
+ATOM C1   CC3162    0.21
+ATOM H1   HCA1      0.09
+ATOM O1   OC30P    -0.56
+ATOM P1   PC        1.50
+ATOM OP12 OC312    -0.63 !
+ATOM H12  HCP1      0.43 !
+ATOM OP13 OC312    -0.63
+ATOM H13  HCP1      0.43 !
+ATOM OP14 OC2DP    -0.64
+BOND   O1   P1      OP12 P1      OP13 P1      OP14 P1  OP12 H12 OP13 H13
+IC   C5   O5   C1    O1         1.4305  111.50  174.93  108.22   1.4352
+IC   O5   O1   *C1   H1         1.5613  108.22  116.76  114.09   1.1193
+IC   O5   C1   O1    P1         1.5613  108.22  131.56  117.57   1.5527
+IC   C1   O1   P1    OP12       1.4352  117.57  177.25  104.11   1.4504
+IC   O1   OP12 *P1   OP13       1.5527  104.11  112.40  113.72   1.4529
+IC   O1   OP12 *P1   OP14       1.5527  104.11 -114.18  114.03   1.4500
+IC   O1   P1   OP12  H12        1.6634   92.04   17.38  110.00   0.9486
+IC   O1   P1   OP13  H13        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 2APH0          0.00  ! Phosphate (0 total charge) at axial C2 position
+DELE ATOM HO2
+GROUP
+ATOM C2   CC3161    0.01
+ATOM H2   HCA1      0.09
+ATOM O2   OC30P    -0.56
+ATOM P2   PC        1.50
+ATOM OP22 OC312    -0.63 !
+ATOM H22  HCP1      0.43
+ATOM OP23 OC312    -0.63
+ATOM H23  HCP1      0.43 !
+ATOM OP24 OC2DP    -0.64
+BOND   O2   P2      OP22 P2      OP23 P2      OP24 P2 OP22 H22 OP23 H23
+IC   O5   C1   C2    O2         1.4305  111.50  -60.93  108.22   1.4352
+IC   C1   O2   *C2   H2         1.5613  108.22  116.76  114.09   1.1193
+IC   C1   C2   O2    P2         1.5613  108.22  131.56  117.57   1.5527
+IC   C2   O2   P2    OP22       1.4352  117.57  177.25  104.11   1.4504
+IC   O2   OP22 *P2   OP23       1.5527  104.11  112.40  113.72   1.4529
+IC   O2   OP22 *P2   OP24       1.5527  104.11 -114.18  114.03   1.4500
+IC   O2   P2   OP22  H22        1.6634   92.04   17.38  110.00   0.9486
+IC   O2   P2   OP23  H23        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 2BPH0          0.00 ! Phosphate (0 total charge) at equitorial C2 position
+DELE ATOM HO2
+GROUP
+ATOM C2   CC3161    0.01
+ATOM H2   HCA1      0.09
+ATOM O2   OC30P    -0.56
+ATOM P2   PC        1.50
+ATOM OP22 OC312    -0.63 !
+ATOM H22  HCP1      0.43 !
+ATOM OP23 OC312    -0.63
+ATOM H23  HCP1      0.43 !
+ATOM OP24 OC2DP    -0.64
+BOND   O2   P2      OP22 P2      OP23 P2      OP24 P2 OP22 H22 OP23 H23
+IC   O5   C1   C2    O2         1.4305  111.50 -170.93  108.22   1.4352
+IC   C1   O2   *C2   H2         1.5613  108.22 -116.76  114.09   1.1193
+IC   C1   C2   O2    P2         1.5613  108.22  131.56  117.57   1.5527
+IC   C2   O2   P2    OP22       1.4352  117.57  177.25  104.11   1.4504
+IC   O2   OP22 *P2   OP23       1.5527  104.11  112.40  113.72   1.4529
+IC   O2   OP22 *P2   OP24       1.5527  104.11 -114.18  114.03   1.4500
+IC   O2   P2   OP22  H22        1.6634   92.04   17.38  110.00   0.9486
+IC   O2   P2   OP23  H23        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 3APH0          0.00  ! Phosphate (0 total charge) at axial C3 position
+DELE ATOM HO3
+GROUP
+ATOM C3   CC3161    0.01
+ATOM H3   HCA1      0.09
+ATOM O3   OC30P    -0.56
+ATOM P3   PC        1.50
+ATOM OP32 OC312    -0.63 !
+ATOM H32  HCP1      0.43 !
+ATOM OP33 OC312    -0.63
+ATOM H33  HCP1      0.43 !
+ATOM OP34 OC2DP    -0.64
+BOND   O3   P3   OP32 P3   OP33 P3  OP34 P3 OP32 H32 OP33 H33
+IC   C1   C2   C3    O3         1.5413  114.47   71.07  109.68   1.4364
+IC   C2   O3   *C3   H3         1.5146  109.68 -119.48  114.05   1.1261
+IC   C2   C3   O3    P3         1.5146  109.68  125.46  115.96   1.5805
+IC   C3   O3   P3    OP32       1.4364  115.96  176.98  104.32   1.4471
+IC   O3   OP32 *P3   OP33       1.5805  104.32  111.57  114.64   1.4516
+IC   O3   OP32 *P3   OP34       1.5805  104.32 -111.89  114.79   1.4496
+IC   O3   P3   OP32  H32        1.6634   92.04   17.38  110.00   0.9486
+IC   O3   P3   OP33  H33        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 3BPH0          0.00  ! Phosphate (0 total charge) at equitorial C3 position
+DELE ATOM HO3
+GROUP
+ATOM C3   CC3161    0.01
+ATOM H3   HCA1      0.09
+ATOM O3   OC30P    -0.56
+ATOM P3   PC        1.50
+ATOM OP32 OC312    -0.63 !
+ATOM H32  HCP1      0.43 !
+ATOM OP33 OC312    -0.63
+ATOM H33  HCP1      0.43 !
+ATOM OP34 OC2DP    -0.64
+BOND   O3   P3   OP32 P3   OP33 P3  OP34 P3 OP32 H32 OP33 H33
+IC   C1   C2   C3    O3         1.5397  112.35  179.14  111.07   1.4293
+IC   C2   O3   *C3   H3         1.5217  111.07  115.81  106.51   1.1190
+IC   C2   C3   O3    P3         1.5217  111.07   88.75  123.02   1.5789
+IC   C3   O3   P3    OP32       1.4293  123.02 -165.25  103.14   1.4482
+IC   O3   OP32 *P3   OP33       1.5789  103.14  111.60  114.04   1.4527
+IC   O3   OP32 *P3   OP34       1.5789  103.14 -114.44  114.19   1.4494
+IC   O3   P3   OP32  H32        1.6634   92.04   17.38  110.00   0.9486
+IC   O3   P3   OP33  H33        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 4APH0          0.00 ! Phosphate (0 total charge) at axial C4 position
+dele atom HO4            !
+GROUP                    !
+ATOM C4   CC3161    0.01 !
+ATOM H4   HCA1      0.09 ! equitorial hydrogen
+ATOM O4   OC30P    -0.56 !
+ATOM P4   PC        1.50 !
+ATOM OP42 OC312    -0.63 !
+ATOM H42  HCP1      0.43 !
+ATOM OP43 OC312    -0.63 !
+ATOM H43  HCP1      0.43 !
+ATOM OP44 OC2DP    -0.64 !
+BOND C4 O4 O4 P4 OP42 P4 OP43 P4 OP44 P4 OP42 H42 OP43 H43
+!Thermalized IC
+IC  C5    C4    O4   P4         1.5323  109.44  -84.54  127.66   1.5968
+IC  C4    O4    P4   OP42       1.4102  127.66 -174.21  102.94   1.5071
+IC  O4    OP42  *P4  OP43       1.5968  102.94  113.03  118.81   1.5471
+IC  O4    OP42  *P4  OP44       1.5968  102.94 -113.60  109.37   1.4811
+IC   O4   P4   OP42  H42        1.6634   92.04   17.38  110.00   0.9486
+IC   O4   P4   OP43  H43        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 4BPH0          0.00 ! Phosphate (0 total charge) at equitorial C4 position
+dele atom HO4            !
+GROUP                    !
+ATOM C4   CC3161    0.01 !
+ATOM H4   HCA1      0.09 ! equitorial hydrogen
+ATOM O4   OC30P    -0.56 !
+ATOM P4   PC        1.50 !
+ATOM OP42 OC312    -0.63 !
+ATOM H42  HCP1      0.43 !
+ATOM OP43 OC312    -0.63 !
+ATOM H43  HCP1      0.43 !
+ATOM OP44 OC2DP    -0.64 !
+BOND C4 O4 O4 P4 OP42 P4 OP43 P4 OP44 P4 OP42 H42 OP43 H43
+!Thermalized IC
+IC  O5    C5    C4   O4         1.5364  112.47 -174.92  109.44   1.4102
+IC  C5    O4    *C4  H4         1.5323  109.44 -120.96  109.46   1.1223
+IC  C5    C4    O4   P4         1.5323  109.44  -84.54  127.66   1.5968
+IC  C4    O4    P4   OP42       1.4102  127.66 -174.21  102.94   1.5071
+IC  O4    OP42  *P4  OP43       1.5968  102.94  113.03  118.81   1.5471
+IC  O4    OP42  *P4  OP44       1.5968  102.94 -113.60  109.37   1.4811
+IC   O4   P4   OP42  H42        1.6634   92.04   17.38  110.00   0.9486
+IC   O4   P4   OP43  H43        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 6TPH0          0.00 ! Phosphate (0 total charge) at C6
+DELE ATOM HO6
+GROUP
+ATOM C6   CC321    -0.08
+ATOM H61  HCA2      0.09
+ATOM H62  HCA2      0.09
+ATOM O6   OC30P    -0.56
+ATOM P6   PC        1.50
+ATOM OP62 OC312    -0.63 !
+ATOM H63  HCP1      0.43 !
+ATOM OP64 OC2DP    -0.64
+ATOM OP63 OC312    -0.63
+ATOM H64  HCP1      0.43 !
+BOND   O6   P6  OP62 P6  OP63 P6  OP64 P6 OP62 H63 OP63 H64
+IC   O5   C5   C6    O6         1.4383  108.81   76.01  109.30   1.4275
+IC   C5   O6   *C6   H61        1.5222  109.30  120.33  111.18   1.1156
+IC   C5   O6   *C6   H62        1.5222  109.30 -118.94  111.25   1.1168
+IC   C5   C6   O6    P6         1.5222  109.30  169.79  115.83   1.5647
+IC   C6   O6   P6    OP62       1.4275  115.83  177.39  103.52   1.4539
+IC   O6   OP62 *P6   OP63       1.5647  103.52  114.97  113.22   1.4527
+IC   O6   OP62 *P6   OP64       1.5647  103.52 -113.66  112.94   1.4539
+IC   O6   P6   OP62  H63        1.6634   92.04   17.38  110.00   0.9486
+IC   O6   P6   OP63  H64        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 6APH0          0.00 !only apply to AHEP, BHEP
+dele atom HO6            !
+GROUP                    !
+ATOM C6   CC312     0.01 !
+ATOM H6   HCA1      0.09 ! axial hydrogen
+ATOM O6   OC30P    -0.56 !                   ---O5      H61     OP64--H64
+ATOM P6   PC        1.50 !                       \     /        |
+ATOM OP62 OC2DP    -0.64 !                        C5--C6---O6---P6==OP62
+ATOM OP63 OC312    -0.63 !                        /    \   H71  |
+ATOM OP64 OC312    -0.63 !                       /      \ /     OP63--H63
+ATOM H63  HCP1      0.43 !                   ---C4   H72-C7
+ATOM H64  HCP1      0.43 !
+
+BOND C5 C6 C6 O6 C6 C7 C6 H6
+BOND O6 P6 OP62 P6 OP63 P6 OP64 P6 OP63 H63 OP64 H64
+!Thermalized IC
+IC   C6    O5  *C5    H5         1.5514  109.15  114.44  106.87   1.0951
+IC   O6    C7  *C6    H6         1.4265  113.86  112.96  109.28   1.1586
+IC   O6    C5  *C6    C7         1.4265  112.10  127.71  109.94   1.5272
+IC   C4    C5   C6    O6         1.5199  112.49   52.86  112.10   1.4265
+IC   C5    O6  *C6    H6         1.5514  112.10  116.99  101.72   1.1586
+IC   C5    O6  *C6    C7         1.5514  112.10 -125.59  113.86   1.5372
+IC   C5    C6   O6    P6         1.5514  112.10 -179.74  111.93   1.6431
+IC   C6    O6   P6    OP62       1.4275  115.83  177.39  103.52   1.4539
+IC   O6    OP62 *P6   OP63       1.5647  103.52  114.97  113.22   1.4527
+IC   O6    OP62 *P6   OP64       1.5647  103.52 -113.66  112.94   1.4539
+IC   O6    P6   OP63  H63        1.6634   92.04   17.38  110.00   0.9486
+IC   O6    P6   OP64  H64        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 7TPH0          0.00 !only apply to AHEP, BHEP
+! 6PH, toppar_all36_carb_lps.str
+dele atom HO7            !
+!dele atom O7            !    H71       OP72--H
+GROUP                    !     |         ||
+ATOM C7   CC322    -0.08 !   --C7 - O7 - P7 - O74(-)
+ATOM H71  HCA2      0.09 !     |         |
+ATOM H72  HCA2      0.09 !     H72       OP73(-)
+ATOM O7   OC30P    -0.56 !
+ATOM P7   PC        1.50 !
+ATOM OP72 OC2DP    -0.64 !
+ATOM OP73 OC312    -0.63 !
+ATOM OP74 OC312    -0.63 !
+ATOM H73  HCP1      0.43 !
+ATOM H74  HCP1      0.43 !
+
+BOND C6 C7 C7 O7
+BOND C7 H71 C7 H72
+BOND O7 P7 OP72 P7 OP73 P7 OP74 P7 OP73 H73 OP74 H74
+!Thermalized IC
+IC   C6    C7   O7    P7         1.5514  112.10 -179.74  111.93   1.6431
+IC   C7    O7   P7    OP72       1.4265  111.93  172.41  104.68   1.4202
+IC   O7  OP72  *P7    OP73       1.6431  104.68  116.86  113.70   1.4534
+IC   O7  OP72  *P7    OP74       1.6431  104.68 -110.72  111.01   1.4884
+IC   O7   P7   OP73   H73        1.6634   92.04   17.38  110.00   0.9486
+IC   O7   P7   OP74   H74        1.6634   92.04   17.38  110.00   0.9486
+
+! ====================== -1 phosphate patches  ===================================
+PRES 1APH1         -0.80 ! Phosphate (-1 total charge) at alpha C1 position
+DELE ATOM HO1
+GROUP
+ATOM C1   CC3162    0.21
+ATOM H1   HCA1      0.09
+ATOM O1   OC30P    -0.62
+ATOM P1   PC        1.50
+ATOM OP12 OC312    -0.68 !
+ATOM H12  HCP1      0.34 !
+ATOM OP13 OC2DP    -0.82
+ATOM OP14 OC2DP    -0.82
+BOND   O1   P1      OP12 P1      OP13 P1      OP14 P1  OP12 H12
+IC   C5   O5   C1    O1         1.4305  111.50   63.93  108.22   1.4352
+IC   O5   O1   *C1   H1         1.5613  108.22 -116.76  114.09   1.1193
+IC   O5   C1   O1    P1         1.5613  108.22  131.56  117.57   1.5527
+IC   C1   O1   P1    OP12       1.4352  117.57  177.25  104.11   1.4504
+IC   O1   OP12 *P1   OP13       1.5527  104.11  112.40  113.72   1.4529
+IC   O1   OP12 *P1   OP14       1.5527  104.11 -114.18  114.03   1.4500
+IC   O1   P1   OP12  H12        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 1BPH1         -0.80 ! Phosphate (-1 total charge) at beta C1 position
+DELE ATOM HO1
+GROUP
+ATOM C1   CC3162    0.21
+ATOM H1   HCA1      0.09
+ATOM O1   OC30P    -0.62
+ATOM P1   PC        1.50
+ATOM OP12 OC312    -0.68 !
+ATOM H12  HCP1      0.34 !
+ATOM OP13 OC2DP    -0.82
+ATOM OP14 OC2DP    -0.82
+BOND   O1   P1      OP12 P1      OP13 P1      OP14 P1  OP12 H12
+IC   C5   O5   C1    O1         1.4305  111.50  174.93  108.22   1.4352
+IC   O5   O1   *C1   H1         1.5613  108.22  116.76  114.09   1.1193
+IC   O5   C1   O1    P1         1.5613  108.22  131.56  117.57   1.5527
+IC   C1   O1   P1    OP12       1.4352  117.57  177.25  104.11   1.4504
+IC   O1   OP12 *P1   OP13       1.5527  104.11  112.40  113.72   1.4529
+IC   O1   OP12 *P1   OP14       1.5527  104.11 -114.18  114.03   1.4500
+IC   O1   P1   OP12  H12        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 2APH1         -1.00 ! Phosphate (-1 total charge) at axial C2 position
+DELE ATOM HO2
+GROUP
+ATOM C2   CC3161    0.01
+ATOM H2   HCA1      0.09
+ATOM O2   OC30P    -0.62
+ATOM P2   PC        1.50
+ATOM OP22 OC312    -0.68 !
+ATOM H22  HCP1      0.34 !
+ATOM OP23 OC2DP    -0.82
+ATOM OP24 OC2DP    -0.82
+BOND   O2   P2      OP22 P2      OP23 P2      OP24 P2 OP22 H22
+IC   O5   C1   C2    O2         1.4305  111.50  -60.93  108.22   1.4352
+IC   C1   O2   *C2   H2         1.5613  108.22  116.76  114.09   1.1193
+IC   C1   C2   O2    P2         1.5613  108.22  131.56  117.57   1.5527
+IC   C2   O2   P2    OP22       1.4352  117.57  177.25  104.11   1.4504
+IC   O2   OP22 *P2   OP23       1.5527  104.11  112.40  113.72   1.4529
+IC   O2   OP22 *P2   OP24       1.5527  104.11 -114.18  114.03   1.4500
+IC   O2   P2   OP22  H22        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 2BPH1         -1.00 ! Phosphate (-1 total charge) at equitorial C2 position
+DELE ATOM HO2
+GROUP
+ATOM C2   CC3161    0.01
+ATOM H2   HCA1      0.09
+ATOM O2   OC30P    -0.62
+ATOM P2   PC        1.50
+ATOM OP22 OC312    -0.68 !
+ATOM H22  HCP1      0.34 !
+ATOM OP23 OC2DP    -0.82
+ATOM OP24 OC2DP    -0.82
+BOND   O2   P2      OP22 P2      OP23 P2      OP24 P2 OP22 H22
+IC   O5   C1   C2    O2         1.4305  111.50 -170.93  108.22   1.4352
+IC   C1   O2   *C2   H2         1.5613  108.22 -116.76  114.09   1.1193
+IC   C1   C2   O2    P2         1.5613  108.22  131.56  117.57   1.5527
+IC   C2   O2   P2    OP22       1.4352  117.57  177.25  104.11   1.4504
+IC   O2   OP22 *P2   OP23       1.5527  104.11  112.40  113.72   1.4529
+IC   O2   OP22 *P2   OP24       1.5527  104.11 -114.18  114.03   1.4500
+IC   O2   P2   OP22  H22        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 3APH1         -1.00 ! Phosphate (-1 total charge) at axial C3 position
+DELE ATOM HO3
+GROUP
+ATOM C3   CC3161    0.01
+ATOM H3   HCA1      0.09
+ATOM O3   OC30P    -0.62
+ATOM P3   PC        1.50
+ATOM OP32 OC312    -0.68 !
+ATOM H32  HCP1      0.34 !
+ATOM OP33 OC2DP    -0.82
+ATOM OP34 OC2DP    -0.82
+BOND   O3   P3      OP32 P3      OP33 P3      OP34 P3 OP32 H32
+IC   C1   C2   C3    O3         1.5413  114.47   71.07  109.68   1.4364
+IC   C2   O3   *C3   H3         1.5146  109.68 -119.48  114.05   1.1261
+IC   C2   C3   O3    P3         1.5146  109.68  125.46  115.96   1.5805
+IC   C3   O3   P3    OP32       1.4364  115.96  176.98  104.32   1.4471
+IC   O3   OP32 *P3   OP33       1.5805  104.32  111.57  114.64   1.4516
+IC   O3   OP32 *P3   OP34       1.5805  104.32 -111.89  114.79   1.4496
+IC   O3   P3   OP32  H32        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 3BPH1         -1.00 ! Phosphate (-1 total charge) at equitorial C3 position
+DELE ATOM HO3
+GROUP
+ATOM C3   CC3161    0.01
+ATOM H3   HCA1      0.09
+ATOM O3   OC30P    -0.62
+ATOM P3   PC        1.50
+ATOM OP32 OC312    -0.68 !
+ATOM H32  HCP1      0.34 !
+ATOM OP33 OC2DP    -0.82
+ATOM OP34 OC2DP    -0.82
+BOND   O3   P3      OP32 P3      OP33 P3      OP34 P3 OP32 H32
+IC   C1   C2   C3    O3         1.5397  112.35  179.14  111.07   1.4293
+IC   C2   O3   *C3   H3         1.5217  111.07  115.81  106.51   1.1190
+IC   C2   C3   O3    P3         1.5217  111.07   88.75  123.02   1.5789
+IC   C3   O3   P3    OP32       1.4293  123.02 -165.25  103.14   1.4482
+IC   O3   OP32 *P3   OP33       1.5789  103.14  111.60  114.04   1.4527
+IC   O3   OP32 *P3   OP34       1.5789  103.14 -114.44  114.19   1.4494
+IC   O3   P3   OP32  H32        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 4APH1         -1.00 ! Phosphate (-1 total charge) at axial C4 position
+dele atom HO4            !
+GROUP                    !
+ATOM C4   CC3161    0.01 !
+ATOM H4   HCA1      0.09 ! equitorial hydrogen
+ATOM O4   OC30P    -0.62 !
+ATOM P4   PC        1.50 !
+ATOM OP42 OC312    -0.68 !
+ATOM H42  HCP1      0.34 !
+ATOM OP43 OC2DP    -0.82 !
+ATOM OP44 OC2DP    -0.82 !
+BOND C4 O4 O4 P4 OP42 P4 OP43 P4 OP44 P4 OP42 H42
+!Thermalized IC
+IC  C5    C4    O4   P4         1.5323  109.44  -84.54  127.66   1.5968
+IC  C4    O4    P4   OP42       1.4102  127.66 -174.21  102.94   1.5071
+IC  O4    OP42  *P4  OP43       1.5968  102.94  113.03  118.81   1.5471
+IC  O4    OP42  *P4  OP44       1.5968  102.94 -113.60  109.37   1.4811
+IC   O4   P4   OP42  H42        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 4BPH1         -1.00 ! Phosphate (-1 total charge) at equitorial C4 position
+dele atom HO4            !
+GROUP                    !
+ATOM C4   CC3161    0.01 !
+ATOM H4   HCA1      0.09 ! equitorial hydrogen
+ATOM O4   OC30P    -0.62 !                      O5
+ATOM P4   PC        1.50 !                       \
+ATOM OP42 OC312    -0.68 !
+ATOM H42  HCP1      0.34 !
+ATOM OP43 OC2DP    -0.82 !
+ATOM OP44 OC2DP    -0.82 !
+BOND C4 O4 O4 P4 OP42 P4 OP43 P4 OP44 P4 OP42 H42
+!Thermalized IC
+IC  O5    C5    C4   O4         1.5364  112.47 -174.92  109.44   1.4102
+IC  C5    O4    *C4  H4         1.5323  109.44 -120.96  109.46   1.1223
+IC  C5    C4    O4   P4         1.5323  109.44  -84.54  127.66   1.5968
+IC  C4    O4    P4   OP42       1.4102  127.66 -174.21  102.94   1.5071
+IC  O4    OP42  *P4  OP43       1.5968  102.94  113.03  118.81   1.5471
+IC  O4    OP42  *P4  OP44       1.5968  102.94 -113.60  109.37   1.4811
+IC   O4   P4   OP42  H42        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 6TPH1         -1.00 ! Phosphate (-1 total charge) at C6
+DELE ATOM HO6
+GROUP
+ATOM C6   CC321    -0.08
+ATOM H61  HCA2      0.09
+ATOM H62  HCA2      0.09
+ATOM O6   OC30P    -0.62
+ATOM P6   PC        1.50
+ATOM OP62 OC312    -0.68 !
+ATOM H63  HCP1      0.34 !
+ATOM OP63 OC2DP    -0.82
+ATOM OP64 OC2DP    -0.82
+BOND   O6   P6      OP62 P6      OP63 P6      OP64 P6 OP62 H63
+IC   O5   C5   C6    O6         1.4383  108.81   76.01  109.30   1.4275
+IC   C5   O6   *C6   H61        1.5222  109.30  120.33  111.18   1.1156
+IC   C5   O6   *C6   H62        1.5222  109.30 -118.94  111.25   1.1168
+IC   C5   C6   O6    P6         1.5222  109.30  169.79  115.83   1.5647
+IC   C6   O6   P6    OP62       1.4275  115.83  177.39  103.52   1.4539
+IC   O6   OP62 *P6   OP63       1.5647  103.52  114.97  113.22   1.4527
+IC   O6   OP62 *P6   OP64       1.5647  103.52 -113.66  112.94   1.4539
+IC   O6   P6   OP62  H63        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 6APH1         -1.00 !only apply to AHEP, BHEP
+dele atom HO6            !
+GROUP                    !
+ATOM C6   CC312     0.01 !
+ATOM H6   HCA1      0.09 ! axial hydrogen
+ATOM O6   OC30P    -0.62 !                   ---O5      H6       OP64
+ATOM P6   PC        1.50 !                       \     /         ||
+ATOM OP62 OC2DP    -0.82 !                        C5--C6---O6--P6--OP62 (-)
+ATOM OP63 OC312    -0.68 !                        /    \   H71   |
+ATOM OP64 OC2DP    -0.82 !                       /      \ /     OP63--H63
+ATOM H63  HCP1      0.34 !                   ---C4   H72-C7
+
+BOND C5 C6 C6 O6 C6 C7 C6 H6
+BOND O6 P6 OP62 P6 OP63 P6 OP64 P6 OP63 H63
+!Thermalized IC
+IC   C6    O5  *C5    H5         1.5514  109.15  114.44  106.87   1.0951
+IC   O6    C7  *C6    H6         1.4265  113.86  112.96  109.28   1.1586
+IC   O6    C5  *C6    C7         1.4265  112.10  127.71  109.94   1.5272
+IC   C4    C5   C6    O6         1.5199  112.49   52.86  112.10   1.4265
+IC   C5    O6  *C6    H6         1.5514  112.10  116.99  101.72   1.1586
+IC   C5    O6  *C6    C7         1.5514  112.10 -125.59  113.86   1.5372
+IC   C5    C6   O6    P6         1.5514  112.10 -179.74  111.93   1.6431
+IC   C6    O6   P6    OP62       1.4275  115.83  177.39  103.52   1.4539
+IC   O6    OP62 *P6   OP63       1.5647  103.52  114.97  113.22   1.4527
+IC   O6    OP62 *P6   OP64       1.5647  103.52 -113.66  112.94   1.4539
+IC   O6    P6   OP63  H63        1.6634   92.04   17.38  110.00   0.9486
+
+PRES 7TPH1          -1.00 !only apply to AHEP, BHEP
+! 6PH, toppar_all36_carb_lps.str
+dele atom HO7            !
+!dele atom O7            !    H71       OP72--H
+GROUP                    !     |         ||
+ATOM C7   CC322    -0.08 !   --C7 - O7 - P7 - O74(-)
+ATOM H71  HCA2      0.09 !     |         |
+ATOM H72  HCA2      0.09 !     H72       OP73(-)
+ATOM O7   OC30P    -0.62 !
+ATOM P7   PC        1.50 !
+ATOM OP72 OC2DP    -0.82 !
+ATOM OP73 OC312    -0.68 !
+ATOM OP74 OC2DP    -0.82 !
+ATOM H73  HCP1      0.34 !
+
+BOND C6 C7 C7 O7
+BOND C7 H71 C7 H72
+BOND O7 P7 OP72 P7 OP73 P7 OP74 P7 OP73 H73
+!Thermalized IC
+IC   C6    C7   O7    P7         1.5514  112.10 -179.74  111.93   1.6431
+IC   C7    O7   P7    OP72       1.4265  111.93  172.41  104.68   1.4202
+IC   O7  OP72  *P7    OP73       1.6431  104.68  116.86  113.70   1.4534
+IC   O7  OP72  *P7    OP74       1.6431  104.68 -110.72  111.01   1.4884
+IC   O7   P7   OP73   H73        1.6634   92.04   17.38  110.00   0.9486
+
+! ============================= -2 phosphate patches =============================
 PRES 1APH        -1.80 ! Phosphate at alpha C1 position
 DELE ATOM HO1
 GROUP
@@ -18788,6 +19281,25 @@ IC C5   O5    P5   OP52       1.4275  115.83  177.39  103.52   1.4539
 IC O5   OP52 *P5   OP53       1.5647  103.52  114.97  113.22   1.4527
 IC O5   OP52 *P5   OP54       1.5647  103.52 -113.66  112.94   1.4539
 
+PRES 6TPHF         -2.00 ! Phosphate at C6 (for fructose)
+DELE ATOM HO6
+GROUP
+ATOM C6   CC321    -0.18
+ATOM H61  HCA2      0.09
+ATOM H62  HCA2      0.09
+ATOM O6   OC30P    -0.40
+ATOM P6   PC        1.10
+ATOM OP62 OC2DP    -0.90
+ATOM OP63 OC2DP    -0.90
+ATOM OP64 OC2DP    -0.90
+BOND   O6   P6      OP62 P6      OP63 P6      OP64 P6
+IC O5   C5    C6   O6         1.4309  113.01 -178.27  111.12   1.4304
+IC O5   C5   *C6   H61        2.4824   32.04   59.71  109.84   1.1020
+IC O5   C5   *C6   H62        2.4824   32.04  -58.37  108.86   1.1027
+IC C5   C6    O6   P6         1.5448  111.12  -87.73  110.40   1.4275
+IC C6   O6    P6   OP62       1.4275  115.83  177.39  103.52   1.4539
+IC O6   OP62 *P6   OP63       1.5647  103.52  114.97  113.22   1.4527
+IC O6   OP62 *P6   OP64       1.5647  103.52 -113.66  112.94   1.4539
 
 PRES 7TPH           -2.00 !only apply to AHEP, BHEP
 ! 6PH, toppar_all36_carb_lps.str
@@ -20903,7 +21415,26 @@ IC   C1   O1   P1    OP12       1.4352  117.57  177.25  104.11   1.4504
 IC   O1   OP12 *P1   OP13       1.5527  104.11  112.40  113.72   1.4529
 IC   O1   OP12 *P1   OP14       1.5527  104.11 -114.18  114.03   1.4500
 
-PRES 1TPHF        -2.00 !  Phosphate at alpha C1 position for fructose
+PRES 1APHF        -2.00 !  Phosphate at alpha C1 position for fructose
+DELE ATOM HO1
+GROUP
+ATOM C1   CC321    -0.18 !!
+ATOM H11  HCA2      0.09
+ATOM H12  HCA2      0.09
+ATOM O1   OC30P    -0.40
+ATOM P1   PC        1.10
+ATOM OP12 OC2DP    -0.90
+ATOM OP13 OC2DP    -0.90
+ATOM OP14 OC2DP    -0.90
+BOND   O1   P1      OP12 P1      OP13 P1      OP14 P1
+IC   C5   O5   C1    O1         1.4305  111.50   63.93  108.22   1.4352
+IC   O5   O1   *C1   H11        1.5613  108.22 -116.76  114.09   1.1193
+IC   O5   C1   O1    P1         1.5613  108.22  131.56  117.57   1.5527
+IC   C1   O1   P1    OP12       1.4352  117.57  177.25  104.11   1.4504
+IC   O1   OP12 *P1   OP13       1.5527  104.11  112.40  113.72   1.4529
+IC   O1   OP12 *P1   OP14       1.5527  104.11 -114.18  114.03   1.4500
+
+PRES 1BPHF        -2.00 !  Phosphate at alpha C1 position for fructose
 DELE ATOM HO1
 GROUP
 ATOM C1   CC321    -0.18 !!
@@ -25228,6 +25759,8 @@ CC3261   CC321   222.50  1.490 ! CC321   CC3163
 CC321    NG2S3   322.00     1.4400 !CG321  NG2S3
 !!
 C       NG2S1   370.0       1.3450 ! NH1   C      370.0       1.3450 ! ALLOW   PEP POL ARO
+!======================= ahaile ==========================
+OC2DP    CC331  350.0 1.5
 
 !****************** ANGLES ************
 ANGLES
@@ -25736,6 +26269,9 @@ NG2S1   C        O      80.000   122.50                  ! based on "O    C    N
 CG321   CG321    OC30P  75.70    110.10                  ! OSLP CTL2 CTL2   75.700    110.10   ! acetic acid
 !FP17BT
 CC3152   OC301    CC322  95.00   111.00  ! from CC3152  OC301   CC321
+!======================= ahaile ==========================
+PC       OC2DP    CC331    45.0    109.5
+OC2DP    CC331    HCA3     45.0    109.5
 
 ! ******** V(dihedral) = Kchi(1 + cos(n(chi) - delta))
 DIHEDRALS
@@ -27399,6 +27935,15 @@ CC322    OC301    CC3152   OC3C51  1.50    3     0.00 ! from CC321   OC301   CC3
 CC322    OC301    CC3152   CC3151  0.97    1   180.00 ! from CC321   OC301   CC3152  CC3151
 CC322    OC301    CC3152   CC3151  0.44    3   180.00 ! from CC321   OC301   CC3152  CC3151
 HCA1     CC3152   OC301    CC322   0.284   3     0.00 ! from HCA1    CC3152  OC301   CC321
+!======================= ahaile ==========================
+OC30P    PC       OC2DP      CC331    0.33    3     0.0
+PC       OC2DP    CC331      HCA3     0.33    3     0.0
+OC2DP    PC       OC2DP      CC331    0.33    3     0.0
+!====================== seonghoon ========================
+CC322    OC30P    PC         OC312    0.9500  2     0.00 ! from CC321 OC30P PC OC312
+CC322    OC30P    PC         OC312    0.5000  3     0.00 ! from CC321 OC30P PC OC312
+CC312    OC30P    PC         OC312    0.9500  2     0.00 ! from CC321 OC30P PC OC312
+CC312    OC30P    PC         OC312    0.5000  3     0.00 ! from CC321 OC30P PC OC312
 
 IMPROPER
 !

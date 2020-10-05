@@ -48,6 +48,8 @@ MASS  -1  HT         1.00800 H ! TIPS3P WATER HYDROGEN
 MASS  -1  HX         1.00800 H ! hydroxide hydrogen
 MASS  -1  OT        15.99940 O ! TIPS3P WATER OXYGEN
 MASS  -1  OX        15.99940 O ! hydroxide oxygen
+MASS  -1  HPER       1.00800 H ! H of H2O2
+MASS  -1  OPER      15.99900 O ! O of H2O2
 MASS  -1  LIT        6.94100 LI ! Lithium ion
 MASS  -1  SOD       22.98977 NA ! Sodium Ion
 MASS  -1  MG        24.30500 MG ! Magnesium Ion
@@ -93,6 +95,29 @@ ATOM H1 HX     0.32
 BOND O1 H1
 DONOR H1 O1
 ACCEPTOR O1
+
+RESI H2O2         0.000 ! hydrogen peroxide
+                        ! Orabi and English, JCTC. 2018, 14, 2808-2821
+!
+!   HP2
+!     \
+!      OP2--OP1
+!             \
+!             HP1
+!
+GROUP
+ATOM HP1   HPER   0.41
+ATOM OP1   OPER  -0.41
+ATOM OP2   OPER  -0.41
+ATOM HP2   HPER   0.41
+
+BOND HP1 OP1  OP1 OP2  OP2 HP2
+DONOR HP1 OP1
+DONOR HP2 OP2
+ACCEPTOR OP1
+ACCEPTOR OP2
+IC HP1  OP1  OP2  HP2   0.963  99.92  111.71  99.92  0.963
+PATCH FIRST NONE LAST NONE
 
 ! Ion parameters from Benoit Roux and Coworkers
 ! As of 8/10 new NBFIX terms required
@@ -163,6 +188,8 @@ MASS  -1  HT         1.00800 ! TIPS3P WATER HYDROGEN
 MASS  -1  HX         1.00800 ! hydroxide hydrogen
 MASS  -1  OT        15.99940 ! TIPS3P WATER OXYGEN
 MASS  -1  OX        15.99940 ! hydroxide oxygen
+MASS  -1  HPER       1.00800 ! H of H2O2
+MASS  -1  OPER      15.99900 ! O of H2O2
 MASS  -1  LIT        6.94100 ! Lithium ion
 MASS  -1  SOD       22.98977 ! Sodium Ion
 MASS  -1  MG        24.30500 ! Magnesium Ion
@@ -187,6 +214,8 @@ BONDS
 HT    HT      0.0       1.5139  ! from TIPS3P geometry (for SHAKE w/PARAM)
 HT    OT    450.0       0.9572  ! from TIPS3P geometry
 OX    HX    545.0       0.9700  ! hydroxide ion
+HPER  OPER  521.0       0.963   ! H2O2
+OPER  OPER  285.5       1.442   ! H2O2
 
 ANGLES
 !
@@ -202,6 +231,7 @@ ANGLES
 !atom types     Ktheta    Theta0   Kub     S0
 !
 HT   OT   HT     55.0      104.52   ! FROM TIPS3P GEOMETRY
+HPER OPER OPER   60.4       99.92   ! H2O2
 
 DIHEDRALS
 !
@@ -213,7 +243,7 @@ DIHEDRALS
 !
 !atom types             Kchi    n   delta
 !
-
+HPER  OPER  OPER  HPER   2.02     2     0.0 ! H2O2
 
 !
 IMPROPER
@@ -239,6 +269,10 @@ OX     0.000000  -0.120000     1.700000 ! ALLOW   POL ION
                 ! JG 8/27/89
 HX     0.000000  -0.046000     0.224500 ! ALLOW PEP POL SUL ARO ALC
                 ! same as TIP3P hydrogen, adm jr., 7/20/89
+
+!for hydrogen peroxide
+HPER     0.0       -0.046     0.2245
+OPER     0.0       -0.20384   1.67423
 
 !ions
 LIT      0.0      -0.00233       1.2975  ! Lithium
@@ -304,32 +338,39 @@ NBFIX
 ! Venable, R.M.; Luo, Y,; Gawrisch, K.; Roux, B.; Pastor, R.W. 
 ! J. Phys. Chem. B 2013, 117 (35), pp 10183–10192.  DOI: 10.1021/jp401512z
 !
+! prot
+SOD    OC       -0.07502    3.23  ! osmotic P; carboxylate =O
+SOD    OS       -0.07502    3.13  ! POPC optim.; ester =O
+!! NA
+!SOD    ON3      -0.07502    3.16  ! POPC optim.; phosphate =O UNVALIDATED
+LIT    ON3      -0.0167     3.1775 ! Savelyev and MacKerell, JPCB 2015
+!! lipid
 SOD    OCL      -0.07502    3.23  ! osmotic P; carboxylate =O
-SOD    OBL      -0.07502    3.13  ! POPC optim.; ester =O 
-SOD    OC2D1    -0.07502    3.13  ! POPC optim.; NHC=O 
-SOD    O2L      -0.07502    3.16  ! POPC optim.; phosphate =O 
-SOD    ON3      -0.07502    3.16  ! For pyrophosphate; phosphate =O 
-SOD    OC2DP    -0.07502    3.16  ! For carb; phosphate =O
-SOD    OG2P1    -0.07502    3.16  ! For CGenFF; phosphate =O
-!
-SOD    OC       -0.07502    3.23  ! For prot carboxylate groups
-SOD    OC2D2    -0.07502    3.23  ! For carb carboxylate groups
-SOD    OG2D2    -0.07502    3.23  ! For CGenFF carboxylate groups
+SOD    OBL      -0.07502    3.13  ! POPC optim.; ester =O
+SOD    O2L      -0.07502    3.16  ! POPC optim.; phosphate =O
+!! carb
+SOD    OC2D2    -0.07502    3.23  ! osmotic P; carboxylate =O
+SOD    OC2DP    -0.07502    3.16  ! POPC optim.; phosphate =O
+!! CGenFF
+SOD    OG2D2    -0.07502    3.23  ! osmotic P; carboxylate =O
+! OG2D1 in CGenFF shared between esters, amides, aldehydes,...
+!SOD    OG2D1    -0.07502    3.13  ! POPC optim.; ester =O
+SOD    OG2P1    -0.07502    3.16  ! POPC optim.; phosphate =O
+! Chloride
+CLA    LIT      -0.0187     3.6875 ! Savelyev and MacKerell, JPCB 2015
+CLA    SOD      -0.0839     3.7310 ! Savelyev and MacKerell, JPCB 2015
+CLA    POT      -0.1142     4.0810 ! Savelyev and MacKerell, JPCB 2015
 
+!Calcium NBFixes: 2019-8
 CAL    CLA      -0.134164   3.727 ! from J. Phys. Chem. B 2018, 122, 1484−1494
 CAL    O2L      -0.12       3.256 ! from J. Phys. Chem. B 2018, 122, 1484−1494
 CAL    OC2DP    -0.12       3.256 ! from J. Phys. Chem. B 2018, 122, 1484−1494
 CAL    OG2P1    -0.12       3.256 ! from J. Phys. Chem. B 2018, 122, 1484−1494
-
+!
 CAL    OCL      -0.12       3.232 ! Rong Shen and Benoit Roux, personal communication
 CAL    OC       -0.12       3.232 ! Rong Shen and Benoit Roux, personal communication
 CAL    OC2D2    -0.12       3.232 ! Rong Shen and Benoit Roux, personal communication
 CAL    OG2D2    -0.12       3.232 ! Rong Shen and Benoit Roux, personal communication
-
-!CAL    OBL      -0.12       2.715
-!CAL    OC2D1    -0.12       2.715 ! from, CAL    OBL
-!CAL    OB       -0.12       2.715 ! from, CAL    OBL
-!CAL    O        -0.12       2.715 ! from, CAL    OBL
 
 END
 BOMLEV @bom @PARA

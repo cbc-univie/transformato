@@ -1,5 +1,5 @@
 *  --------------------------------------------------------------------------  *
-*         CGenFF: Parameters for the Charmm General Force Field v. 4.1         *
+*         CGenFF: Parameters for the Charmm General Force Field v. 4.3         *
 *                    for Small Molecule Drug Design                            *
 *  --------------------------------------------------------------------------  *
 *  2017/8: If protein, nucleic acid and carbohydrate topology and parameter files
@@ -34,6 +34,12 @@
 !         - As more functional groups will be introduced, small changes in     !
 !             existing parameters and/or charges may occur.                    !
 !         - Comments in this file may be misleading.                           !
+!
+!  2019/4 - Changes in version 4.3 associated with sychronization of CGenFF    !
+!           release parameter file and training file used for CGenFF program   !
+!           See toppar_all.history with the CHARMM toppar release for more     !
+!           details.  Parameters in this file need to be reordered per the     !
+!           CGenFF training protocol prior to training.                        !
 !  --------------------------------------------------------------------------  !
 !  Contributors: abar  = Arghya Barman                                         !
 !                adm   = Alexander D. MacKerell Jr.                            !
@@ -58,6 +64,8 @@
 !                my    = Mingjun Yang                                          !
 !                oashi = Taiji Oashi                                           !
 !                og    = Olgun Guvench                                         !
+!                ozge  = Ozge Yoluk
+!                pchat = Payal Chatterjee
 !                peml  = Pedro Lopes                                           !
 !                pram  = E. Prabhu Raman                                       !
 !                rima  = Madhurima Jana                                        !
@@ -639,6 +647,7 @@ CG321  SG3O2   185.00     1.7900 ! EESM, N-ethylethanesulfonamide; MESN, methyl 
 CG321  SG3O3   185.00     1.8100 ! MESO, methylethylsulfoxide, kevo
 CG321  CLGA1   220.00     1.7880 ! CLET, chloroethane
 CG321  BRGA1   160.00     1.9660 ! BRET
+CG321  NG2R53  320.00     1.4300 ! MSCH model,  xxwy
 CG321  HGA2    309.00     1.1110 ! PROT alkane update, adm jr., 3/2/92
 CG322  CG331   170.00     1.5200 ! FLUROALK fluoroalkanes
 CG322  FGA1    420.00     1.3740 ! FLUROALK fluoroalkanes
@@ -809,9 +818,19 @@ PG2    SG2P2   258.90     1.9953 ! di-thio S-P bond
 SG301  SG301   173.00     2.0290 ! PROT improved CSSC torsion in DMDS  5/15/92 (FL)
 SG311  HGP3    275.00     1.3250 ! PROT methanethiol pure solvent, adm jr., 6/22/92
 FGP1   ALG1    205.00     1.7260 ! aluminum tetrafluoride, ALF4, w/UB
-LPH    CLGR1     0.00     0.0000 ! aromatic halogen to lone pair
-LPH    BRGR1     0.00     0.0000 ! aromatic halogen to lone pair
-LPH    IGR1      0.00     0.0000 ! aromatic halogen to lone pair
+!LPH    CLGR1     0.00     0.0000 ! aromatic halogen to lone pair
+!LPH    BRGR1     0.00     0.0000 ! aromatic halogen to lone pair
+!LPH    IGR1      0.00     0.0000 ! aromatic halogen to lone pair
+!additions 2019-3
+CG2R53 CG331   425.00     1.5000 ! MTEA , 5-Methyl-1H-tetrazole, pchat   
+CG2R53 CG321   425.00     1.5000 ! etea , 5-Ethyl-1H-tetrazole , pchat
+CG2O4  CG3C41  189.00     1.5600 ! 2oxt , ozyo
+CG2O4  OG3C51  290.00     1.3340 ! 2oxt , ozyo
+CG2O4  OG2D3   700.00     1.2100 ! 3oxt , ozyo
+CG334  NG3P2   200.00     1.4900 ! nc2 , fylin/kenno
+CG1T1  CG321   410.00     1.4650 ! BUTY, PNTY, HXYN, HPTY, OCTY pchat
+CG1T1  CG2D1   345.00     1.4350 ! BEYN pchat
+CG2R51 CG324   229.63     1.5000 ! PRF , ashalini
 
 ANGLES
 CG2R61 CG1N1  NG1T1    40.00    180.00 ! 3CYP, 3-Cyanopyridine (PYRIDINE pyr-CN), yin
@@ -2455,7 +2474,41 @@ CG321  SG3O3  OG2P1    65.00    106.50 ! MESO, methylethylsulfoxide, mnoon
 CG331  SG3O3  CG331    34.00     95.00 ! DMSO, dimethylsulfoxide (ML Strader, et al.JPC2002_A106_1074), sz
 CG331  SG3O3  OG2P1    79.00    106.75 ! DMSO, dimethylsulfoxide (ML Strader, et al.JPC2002_A106_1074), sz
 FGP1   ALG1   FGP1     23.00    109.47 15.0 2.81855 ! aluminum tetrafluoride, ALF4, tetrahedral
-CG321  CG2R53 NG2R50   45.80    123.00
+!additions 2019-3
+CG2R53 NG2R50 NG2R50  110.00    105.90 ! TEAZ ,1H-tetrazole, pchat 
+CG331  CG2R53 NG2R50   45.80    123.00 ! MTEA , 5-Methyl-1H-tetrazole, pchat    
+CG331  CG2R53 NG2R51   45.80    120.00 ! MTEA , 5-Methyl-1H-tetrazole, pchat 
+CG2R53 CG331  HGA3     55.00    109.50 ! MTEA , 5-Methyl-1H-tetrazole, pchat 
+CG321  CG2R53 NG2R50   45.80    123.00 ! etea, 5-Ethyl-1H-tetrazole, pchat 
+CG321  CG2R53 NG2R51   45.80    120.00 ! etea, 5-Ethyl-1H-tetrazole, pchat 
+CG2R53 CG321  CG331    59.00    111.00 ! etea, 5-Ethyl-1H-tetrazole, pchat 
+CG2R53 CG321  HGA2     55.00    109.50 ! etea, 5-Ethyl-1H-tetrazole, pchat   
+NG2R50 NG2R50 NG2R50  160.00    108.20 ! etea, 5-Ethyl-1H-tetrazole, pchat
+CG3C41 OG3C51 CG2O4     89.00    95.00 ! 2OXT, ozyo
+CG3C41 CG2O4  OG3C51    89.00    99.00 ! 2OXT, ozyo
+OG3C51 CG2O4  OG2D1     70.00   127.00 ! 2OXT, ozyo
+CG3C41 CG3C41 CG2O4     95.00   101.00 ! 2OXT, ozyo
+CG2O4  CG3C41 HGA2      72.00   113.00 ! 2OXT, ozyo
+CG3C41 CG2O4  OG2D1     70.00   134.00 ! 2OXT, ozyo
+CG3C41 CG2O4  OG2D3    80.00    134.00 ! 3OXT, ozyo
+OG3C51 CG3C41 CG2O4    85.00     90.00 ! 3OXT, ozyo
+CG3C41 CG2O4  CG3C41   89.00     98.00 ! 3OXT, ozyo
+NG3P2  CG334  HGA3     45.00    102.30   35.00   2.10100 ! nc2, fylin/kenno 
+CG334  NG3P2  CG334    40.00    115.20 ! nc2 , fylin/kenno
+CG334  NG3P2  HGP2     30.00    110.80   27.00   2.07400 ! nc2 , fylin/kenno
+CG334  NG3P1  CG334    45.00    109.50 ! nc3 , fylin/kenno
+CG1T2  CG1T1  CG321    11.00    180.00 ! BUTY , PNTY, HPTY, HXYN,OCTY , pchat 
+CG1T1  CG321  CG331    70.00    120.00 ! BUTY , pchat
+CG1T1  CG321  HGA2     47.00    111.50 ! BUTY , PENTY, HXYN, HPTY, OCTY , pchat
+CG1T1  CG321  CG321    70.00    113.50 ! PENTY, HPTY, HXYN, OCTY, pchat
+CG1T2  CG1T1  CG2D1    11.00    180.00 ! BEYN, pchat
+CG1T1  CG2D1  CG2D2    48.00    126.00 ! BEYN, pchat
+CG1T1  CG2D1  HGA4     40.00    116.00 ! BEYN, pchat
+CG2R51 CG2R51 CG324    45.80    130.00 ! prf, ashalini 
+CG2RC0 CG2R51 CG324    30.00    126.70 ! prf, ashalini
+CG2R51 CG2RC0 CG2R63  130.00    132.00 ! prf, ashalini
+CG2R51 CG324  NG3P3    25.00    102.30 ! prf, ashalini
+CG2R51 CG324  HGA2     55.00    109.50 ! prf, ashalini
 
 DIHEDRALS
 CG2R53 CG251O CG25C1 CG2R53     6.4000  2   180.00 ! OIRD, oxindol-3-ylidene rhodanine, kevo & xxwy
@@ -3058,14 +3111,14 @@ NG321  CG2N2  SG311  CG321      0.3300  4     0.00 ! DH3T, fylin
 NG321  CG2N2  SG311  CG331      0.6400  1   180.00 ! MT2A, fylin
 NG321  CG2N2  SG311  CG331      1.1200  2   180.00 ! MT2A, fylin
 NG321  CG2N2  SG311  CG331      0.3300  4     0.00 ! MT2A, fylin
-NG2S1  CG2O1  CG2R51 CG2R51     1.7000  2   180.00 ! INCA model for D3R, xxwy
-NG2S1  CG2O1  CG2R51 CG2R51     0.3600  4     0.00 ! INCA model for D3R, xxwy
-NG2S1  CG2O1  CG2R51 NG2R51     1.7000  2   180.00 ! INCA model for D3R, xxwy
-NG2S1  CG2O1  CG2R51 NG2R51     0.3600  4     0.00 ! INCA model for D3R, xxwy
-OG2D1  CG2O1  CG2R51 CG2R51     1.7000  2   180.00 ! INCA model for D3R, xxwy
-OG2D1  CG2O1  CG2R51 CG2R51     0.3600  4     0.00 ! INCA model for D3R, xxwy
-OG2D1  CG2O1  CG2R51 NG2R51     1.7000  2   180.00 ! INCA model for D3R, xxwy
-OG2D1  CG2O1  CG2R51 NG2R51     0.3600  4     0.00 ! INCA model for D3R, xxwy
+NG2S1  CG2O1  CG2R51 CG2R51     1.1000  2   180.00 ! INCA model for D3R, xxwy; updated to match with other yxu par in na_rna_modified.prm
+NG2S1  CG2O1  CG2R51 CG2R51     0.3000  4     0.00 ! INCA model for D3R, xxwy; updated to match with other yxu par in na_rna_modified.prm
+NG2S1  CG2O1  CG2R51 NG2R51     1.1000  2   180.00 ! INCA model for D3R, xxwy; updated to match with other yxu par in na_rna_modified.prm
+NG2S1  CG2O1  CG2R51 NG2R51     0.3000  4     0.00 ! INCA model for D3R, xxwy; updated to match with other yxu par in na_rna_modified.prm
+OG2D1  CG2O1  CG2R51 CG2R51     1.1000  2   180.00 ! INCA model for D3R, xxwy; updated to match with other yxu par in na_rna_modified.prm
+OG2D1  CG2O1  CG2R51 CG2R51     0.3000  4     0.00 ! INCA model for D3R, xxwy; updated to match with other yxu par in na_rna_modified.prm
+OG2D1  CG2O1  CG2R51 NG2R51     1.1000  2   180.00 ! INCA model for D3R, xxwy; updated to match with other yxu par in na_rna_modified.prm
+OG2D1  CG2O1  CG2R51 NG2R51     0.3000  4     0.00 ! INCA model for D3R, xxwy; updated to match with other yxu par in na_rna_modified.prm
 NG2S1  CG2O1  CG2R61 CG2R61     1.0000  2   180.00 ! HDZ2, hydrazone model cmpd 2
 NG2S1  CG2O1  CG2R61 CG2RC0     1.0000  2   180.00 ! HDZ2, hydrazone model cmpd 2
 NG2S2  CG2O1  CG2R61 CG2R61     1.0000  2   180.00 ! 3NAP, nicotinamide (PYRIDINE pyr-CONH2), yin
@@ -3646,7 +3699,7 @@ CG2R51 CG2R51 CG321  CG314      0.2000  1     0.00 ! PROT 4-ethylimidazole 4-21G
 CG2R51 CG2R51 CG321  CG314      0.2700  2     0.00 ! PROT 4-ethylimidazole 4-21G rot bar, adm jr. 3/4/92
 CG2R51 CG2R51 CG321  CG314      0.0000  3     0.00 ! PROT 4-ethylimidazole 4-21G rot bar, adm jr. 3/4/92
 CG2R51 CG2R51 CG321  CG321      0.2000  1     0.00 ! INCA model for D3R, xxwy, from WBG, from CG2R51 CG2R51 CG321 CG311, yxu
-!!CG2R51 CG2R51 CG321  CG321      0.2700  2     0.00 ! INCA model for D3R, xxwy
+CG2R51 CG2R51 CG321  CG321      0.2700  2     0.00 ! INCA model for D3R, xxwy
 CG2R51 CG2R51 CG321  CG331      0.2000  1     0.00 ! PROT 4-ethylimidazole 4-21G rot bar, adm jr. 3/4/92
 CG2R51 CG2R51 CG321  CG331      0.2700  2     0.00 ! PROT 4-ethylimidazole 4-21G rot bar, adm jr. 3/4/92
 CG2R51 CG2R51 CG321  CG331      0.0000  3     0.00 ! PROT 4-ethylimidazole 4-21G rot bar, adm jr. 3/4/92
@@ -3725,8 +3778,7 @@ CG2R51 CG2R51 NG2R51 CG2R61     0.0000  1     0.00 ! D3R set1 scaffold 1, xxwy
 CG2R51 CG2R51 NG2R51 CG2R64     0.2000  2   180.00 ! PIPA model for D3R, xxwy
 CG2R51 CG2R51 NG2R51 CG2RC0     5.0000  2   180.00 ! PROT JWK 05/14/91 fit to indole
 CG2R51 CG2R51 NG2R51 CG321      0.0000  1     0.00 ! ETRZ, 1-Ethyl-1,2,3-triazole, from CG2R51 CG2R51 NG2R51 CG3C51, kevo
-!CG2R51 CG2R51 NG2R51 CG331      0.0000  1     0.00 ! INCA model for D3R, xxwy
-CG2R51 CG2R51 NG2R51 CG331     11.0000  2   180.00 ! DCG, yxu
+CG2R51 CG2R51 NG2R51 CG331     11.0000  2   180.00 ! INCA model for D3R, xxwy; updated to match yxu par in na_rna_modified.prm : DCG
 CG2R51 CG2R51 NG2R51 CG3C51     0.0000  1     0.00 ! NA, glycosyl linkage
 CG2R51 CG2R51 NG2R51 NG2R50    10.0000  2   180.00 ! PYRZ, pyrazole
 CG2R51 CG2R51 NG2R51 HGP1       1.0000  2   180.00 ! PROT his, adm jr., 7/20/89
@@ -6593,6 +6645,79 @@ CG321  SG301  SG301  CG331      0.9000  3     0.00 ! PROT DMDS  5/15/92 (FL)
 CG331  SG301  SG301  CG331      1.0000  1     0.00 ! PROT DMDS  5/15/92 (FL)
 CG331  SG301  SG301  CG331      4.1000  2     0.00 ! PROT mp 6-311G** dimethyldisulfide,   3/26/92 (FL)
 CG331  SG301  SG301  CG331      0.9000  3     0.00 ! PROT DMDS  5/15/92 (FL)
+!additions, 2019-3
+NG2R51 CG2R53 NG2R50 NG2R50    14.0000  2   180.00 ! TEAZ , 1H-tetrazole, pchat 
+HGR52  CG2R53 NG2R50 NG2R50     4.3000  2   180.00 ! TEAZ , 1H-tetrazole, pchat 
+CG2R53 NG2R50 NG2R50 NG2R50    15.5000  2   180.00 ! TEAZ , 1H-tetrazole, pchat 
+NG2R50 NG2R50 NG2R50 NG2R51    15.3000  2   180.00 ! TEAZ , 1H-tetrazole, pchat 
+NG2R50 NG2R50 NG2R51 CG2R53     8.5000  2   180.00 ! TEAZ , 1H-tetrazole, pchat 
+NG2R50 CG2R53 CG331  HGA3       0.1900  3     0.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat 
+NG2R51 CG2R53 CG331  HGA3       0.1900  3     0.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat
+CG331  CG2R53 NG2R50 NG2R50     7.0000  2   180.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat
+!NG2R51 CG2R53 NG2R50 NG2R50    14.0000  2   180.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat
+CG331  CG2R53 NG2R51 NG2R50     5.0000  2   180.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat
+CG331  CG2R53 NG2R51 HGP1       1.0000  2   180.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat
+!CG2R53 NG2R50 NG2R50 NG2R50    15.5000  2   180.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat
+!NG2R50 NG2R50 NG2R50 NG2R51    15.3000  2   180.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat
+!NG2R50 NG2R50 NG2R51 CG2R53     8.5000  2   180.00 ! MTEA, 5-Methyl-1H-tetrazole , pchat
+NG2R50 CG2R53 CG321  CG331      0.3638  1   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+NG2R50 CG2R53 CG321  CG331      0.0149  2     0.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+NG2R50 CG2R53 CG321  CG331      0.2841  3   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat   
+NG2R50 CG2R53 CG321  CG331      0.0295  6     0.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat
+NG2R51 CG2R53 CG321  CG331      0.8833  1     0.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat
+NG2R51 CG2R53 CG321  CG331      0.0506  2     0.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat
+NG2R51 CG2R53 CG321  CG331      0.1791  3   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+NG2R51 CG2R53 CG321  CG331      0.0158  6   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+NG2R50 CG2R53 CG321  HGA2       0.1900  3     0.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+NG2R51 CG2R53 CG321  HGA2       0.1900  3     0.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+CG321  CG2R53 NG2R50 NG2R50     7.0000  2   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat   
+!NG2R51 CG2R53 NG2R50 NG2R50    14.0000  2   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat
+CG321  CG2R53 NG2R51 NG2R50     5.0000  2   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat
+CG321  CG2R53 NG2R51 HGP1       1.0000  2   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat
+CG2R53 CG321  CG331  HGA3       0.1600  3     0.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+!CG2R53 NG2R50 NG2R50 NG2R50    15.5000  2   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+!NG2R50 NG2R50 NG2R50 NG2R51    15.3000  2   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat 
+!NG2R50 NG2R50 NG2R51 CG2R53     8.5000  2   180.00 ! ETEA, 5-Ethyl-1H-tetrazole, pchat   
+CG2O4  CG3C41 CG3C41 OG3C51     0.1441  3   180.00 ! 2OXT, ozyo
+OG3C51 CG2O4  CG3C41 CG3C41     0.1026  3   180.00 ! 2OXT, ozyo
+CG3C41 CG2O4  OG3C51 CG3C41     0.1828  2   180.00 ! 2OXT, ozyo
+CG3C41 CG3C41 OG3C51 CG2O4      0.2191  2   180.00 ! 2OXT, ozyo
+OG2D1  CG2O4  CG3C41 CG3C41     0.0995  2     0.00 ! 2OXT, ozyo
+OG2D1  CG2O4  OG3C51 CG3C41     0.0389  2     0.00 ! 2OXT, ozyo
+OG3C51 CG2O4  CG3C41 HGA2       0.1223  3   180.00 ! 2OXT, ozyo
+OG2D1  CG2O4  CG3C41 HGA2       0.4558  3   180.00 ! 2OXT, ozyo
+CG2O4  CG3C41 CG3C41 HGA2       0.1743  3   180.00 ! 2OXT, ozyo
+HGA2   CG3C41 OG3C51 CG2O4      0.3383  3   180.00 ! 2OXT, ozyo
+CG2O4  CG3C41 OG3C51 CG3C41     0.0297  2     0.00 ! 3OXT, ozyo
+CG3C41 CG2O4  CG3C41 OG3C51     0.0953  3     0.00 ! 3OXT, ozyo
+OG2D3  CG2O4  CG3C41 OG3C51     0.1761  2     0.00 ! 3OXT, ozyo
+CG3C41 CG2O4  CG3C41 HGA2       0.0350  3   180.00 ! 3OXT, ozyo
+OG2D3  CG2O4  CG3C41 HGA2       0.2268  3     0.00 ! 3OXT, ozyo
+
+HGA3   CG334  NG3P2  CG334      0.1000  3     0.00 ! nc2 fylin 
+HGA3   CG334  NG3P2  HGP2       0.1000  3     0.00 ! nc2 fylin   
+HGA3   CG334  NG3P1  CG334      0.1000  3     0.00 ! nc3 fylin
+CG1T1  CG321  CG331  HGA3       0.1950  3     0.00 ! BUTY 
+CG1T1  CG321  CG321  CG331      0.2000  3     0.00 ! PNTY 
+CG1T1  CG321  CG321  CG321      0.2000  3     0.00 ! HXYN, OCTY 
+CG1T1  CG321  CG321  HGA2       0.1950  3     0.00 ! HXYN , OCTY 
+CG1T1  CG2D1  CG2D2  HGA5       5.2000  2   180.00 ! BEYN
+CG324  CG2R51 CG2R51 NG2R51     3.0000  2   180.00 ! prf, ashalini 
+CG324  CG2R51 CG2R51 HGR52      1.0000  2   180.00 ! prf, ashalini
+CG2R51 CG2R51 CG2RC0 CG2R63     3.0000  2   180.00 ! prf, ashalini
+CG324  CG2R51 CG2RC0 CG2R63     2.5000  2   180.00 ! prf, ashalini
+CG324  CG2R51 CG2RC0 CG2RC0     3.0000  2   180.00 ! prf, ashalini
+CG2R51 CG2R51 CG324  NG3P3      4.8000  1     0.00 ! prf, ashalini
+CG2R51 CG2R51 CG324  NG3P3      0.2000  2     0.00 ! prf, ashalini
+CG2R51 CG2R51 CG324  HGA2       0.0000  3     0.00 ! prf, ashalini
+CG2RC0 CG2R51 CG324  NG3P3      0.0900  2   180.00 ! prf, ashalini   
+CG2RC0 CG2R51 CG324  NG3P3      0.5700  3     0.00 ! prf, ashalini   
+CG2RC0 CG2R51 CG324  HGA2       0.4000  3     0.00 ! prf, ashalini
+NG2R61 CG2R63 CG2RC0 CG2R51     0.2000  2   180.00 ! prf, ashalini
+OG2D4  CG2R63 CG2RC0 CG2R51     4.0000  2   180.00 ! prf, ashalini
+CG2R51 CG2RC0 CG2RC0 NG2R62     3.5000  2   180.00 ! prf, ashalini
+NG2R62 CG2RC0 NG2R51 CG2R51     2.0000  2   180.00 ! prf, ashalini
+CG2R51 CG324  NG3P3  HGP2       0.8000  3     0.00 ! prf, ashalini
 
 IMPROPERS
 !!  --------------------------------------------------------------------------  !
@@ -6733,6 +6858,9 @@ NG2O1  OG2N1  OG2N1  CG324     53.6000  0     0.00 ! NIPR, nitropropane, abar
 NG2O1  OG2N1  OG2N1  CG334     50.8000  0     0.00 ! NIME, nitromethane, abar
 NG2S3  HGP4   HGP4   CG2R61    -2.5000  0     0.00 ! -2.0 PYRIDINE aminopyridine 11/10 kevo: sic! Compensates for in-plane force from CG2R61 CG2R61 NG2S3 HGP4
 NG2S3  HGP4   HGP4   CG2R64     9.0000  0     0.00 ! NA GUA ADE CYT; from artificially planar 2APY, 2-aminopyridine parameter set (12/2010); xxwy & kevo
+!additions, 2019-3
+CG2O4  CG3C41 OG2D1  OG3C51    60.0000  0     0.00 ! 2OXT, ozyo
+CG2O4  CG3C41 CG3C41 OG2D3     20.0000  0     0.00 ! 3OXT, ozyo
 
 NONBONDED nbxmod  5 atom cdiel fshift vatom vdistance vfswitch -
 cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5
@@ -6905,7 +7033,7 @@ PG1      0.0       -0.5850     2.1500 ! phosphate -1
 PG2      0.0       -0.5850     2.1500 ! phosphate -2
 ALG1     0.0       -0.6500     2.0000 ! Aluminum tetraflouride, ALF4
 !Halogens with lone-pairs
-LPH     0.0        0.0000     0.0000 ! lone-pair on chlorine attached to aromatic, isg/fylin
+LPH     0.0        -0.0000     0.0000 ! lone-pair on chlorine attached to aromatic, isg/fylin
 CLGR1    0.0       -0.2300     1.8600 ! CHLB, chlorobenzene, adjusted for lone-pair, fylin
 BRGR1    0.0       -0.3200     1.9800 ! BROB, bromobenzene, adjusted for lone-pair,  fylin
 IGR1     0.0       -0.5200     2.2400 ! IODB, iodobenzene, adjusted for lone-pair,  fylin
@@ -6920,15 +7048,121 @@ NBFIX
 !!! 1) top_all36_prot.rtf/par_all36_prot.rtf
 !!! 2) top_all36_na.rtf/par_all36_na.rtf
 !!! 3) top_all36_carb.rtf/par_all36_carb.rtf
-!!! IMPORTANT!!!
-OG2D1   CLGR1      -0.2000      3.4000 ! NBFIX based on NMA (carbonyl oxygen in amide) and CL of CGenFF
-O       CLGR1      -0.2000      3.4000 ! NBFIX for carbonyl oxygen in amide of protein 
-ON1     CLGR1      -0.2000      3.4000 ! NBFIX for carbonyl oxygen in nucleic acid bases
-ON1C    CLGR1      -0.2000      3.4000 ! NBFIX for carbonyl oxygen in nucleic acid bases 
-OC2D1   CLGR1      -0.2000      3.4000 ! NBFIX for carbonyl oxygen in carbohydrate amides
-S       CLGR1      -0.3800      3.8300 ! NBFIX for cysteine sulphur
-HS      CLGR1      -0.2000      2.8200 ! NBFIX for cysteine sulphur
+!!
+!!========================================================================================================
+!! Below are NBFIXs for chlorine/bromine and protein-model compounds Jan 12, 2018, fylin
+!!=======================================================================================================
+!!
+!!========================================================================================================
+!! NBFIXs for chlorine/bromine and CGenFF model compounds. Jan 12, 2018, fylin
+!!=======================================================================================================
+!!!!! MEOH/PHEN NBFIX not required; initial results yield balanced HBD/HBA interactions
+!!!OG311    CLGR1  -0.35        3.60   ! CHLB..MEOH/PHEN  
+! ACEM  N-CL/ (O-CL is based on CHLB and NMA which were already optimized ) 
+NG2S2     CLGR1    -0.40        3.88   ! CHLB..ACME   
+! NMA  N-CL/  (O-CL is based on CHLB and NMA which were already optimized ) 
+NG2S1     CLGR1    -0.40        3.88   ! CHLB..NMA    
+NG2P1     CLGR1    -1.05        3.50   ! CHLB..MGUA
+NG2R50    CLGR1    -0.46        3.42   ! CHLB..IMIA(NE2) 
+NG2R51    CLGR1    -0.48        3.75   ! CHLB..IMIA(ND1-HD2)/INDO(NE1)   
+NG3P3     CLGR1    -3.60        3.18   ! CHLB..MAMM   
+OG2D1     CLGR1    -0.20        3.40   ! NMA (carbonyl oxygen in amide) and CL of CGenFF
+OG2D2     CLGR1    -2.50        2.80   ! CHLB..ACET   
+! MESH previously optimized
+SG311     CLGR1    -0.38        3.83   ! CHLB..MESH  ;  they are already in the prm for protein
+HGP3      CLGR1    -0.20        2.82   ! CHLB..MESH  ;  they are already in the prm for protein
+!--------------------------------------------------------
+!!!!! MEOH/PHEN  not necessary to change, initial results are in balance of HBD/HBA interactions
+!!!!!OG311     BRGR1    -0.36      3.68   ! BROB..MEOH/PHEN  
+                                                            
+NG2S2     BRGR1    -0.30        4.05   ! BROB..ACEM   
+NG2S1     BRGR1    -0.30        4.02   ! BROB..NMA    
+OG2D1     BRGR1    -0.27        3.52   ! BROB..NMA/ACEM    
+NG2R50    BRGR1    -0.22        3.61   ! BROB..IMIA(NE2)   
+NG2R51    BRGR1    -0.72        3.80   ! BROB..IMIA(ND1-HD2)/INDO(NE1) 
+SG311     BRGR1    -0.49        3.70   ! BROB...MESH
+HGP3      BRGR1    -0.24        2.97   ! BROB...MESH
+NG3P3     BRGR1    -3.65        3.33   ! BROB..MAMM
+NG2P1     BRGR1    -1.10        3.66   ! BROB..MGUA
+OG2D2     BRGR1    -1.25        2.98   ! BROB..ACET
 
+!!========================================================================================================
+!! NBFIXs for chlorine/bromine and proteins. Jan 12, 2018, fylin
+!!=======================================================================================================
+!!!!! MEOH/PHEN  not necessary to change, initial results are in balance of HBD/HBA interactions
+!!OH1    CLGR1      -0.35     3.60  ! CHLB..MEOH/PHEN-OG311 
+NH2    CLGR1       -0.40       3.88  ! CHLB..ACME-NG2S2 
+NH1     CLGR1      -0.40       3.88  ! CHLB..NMA-NG2S1, backbone N 
+NR2     CLGR1      -0.46       3.42  ! CHLB..IMIA-NG2R50(NE2)
+NR1     CLGR1      -0.48       3.75  ! CHLB..IMIA-NG2R51(ND1-HD2)
+NY      CLGR1      -0.48       3.75  ! CHLB..INDO-NG2R51(NE1)
+! -SH  already optimized for Kaushik system and put in the main toppar                                                     
+NH3     CLGR1      -3.60       3.18   ! CHLB..MAMM-NG3P3,  larger eps was used to inprove interE
+NC2     CLGR1      -1.05       3.50   ! CHLB..MGUA-NG2P1,  larger eps was used to inprove interE
+O       CLGR1      -0.20       3.40   ! NMA, carbonyl oxygen in amide of protein 
+OC      CLGR1      -2.50       2.80   ! CHLB..ACET-OG2D2,  larger eps was used to inprove interE
+S       CLGR1      -0.38       3.83   ! NBFIX for cysteine sulphur
+HS      CLGR1      -0.20       2.82   ! NBFIX for cysteine sulphur
+
+! BROB
+!-------------------------------------------------------- 
+!!!!! MEOH/PHEN  not necessary to change, initial results are in balance of HBD/HBA interactions
+!!OH1     BRGR1    -0.36       3.68  ! BROB..MEOH/PHEN-OG311 
+NH2      BRGR1     -0.30       4.05  ! BROB..ACEM-NG2S2 
+NH1      BRGR1     -0.30       4.02  ! BROB..NMA-NG2S1, backbone N 
+O        BRGR1     -0.27       3.52  ! BROB..NMA/ACEM-OG2D1 
+NR2      BRGR1     -0.22       3.61  ! BROB..IMIA-NG2R50(NE2)
+NR1      BRGR1     -0.72       3.80  ! BROB..IMIA-NG2R51(ND1-HD2)
+NY       BRGR1     -0.72       3.80  ! BROB..IMIA-NG2R51(NE1)
+SG311    BRGR1     -0.49       3.70  ! BROB..MESH, for cysteine SG311 sulphur
+HGP3     BRGR1     -0.24       2.97  ! BROB..MESH, for cysteine HGP3  sulphur
+NH3      BRGR1     -3.65       3.33  ! BROB..MAMM-NG3P3, larger eps was used to inprove interE
+NC2      BRGR1     -1.10       3.66  ! BROB..MGUA-NG2P1, larger eps was used to inprove interE
+OC       BRGR1     -1.25       2.98  ! BROB..ACET-OG2D2, larger eps was used to inprove interE
+
+!!========================================================================================================
+!! Below are NBFIXs for chlorine/bromine and carbohydrates, Mar 22, 2018, fylin
+!! - HO..CL/BR initial results are already good, nbfixs were not applied
+!!=======================================================================================================
+OC2D1     CLGR1    -0.20       3.40   ! NMA, carbonyl oxygen in carbohydrate amides
+OC2D2     CLGR1    -2.50       2.80   ! from CLGR1 OG2D2, ACET
+OC2D3     CLGR1    -0.20       3.40   ! from CLGR1 OG2D1, NMA 
+OC2D4     CLGR1    -0.20       3.40   ! from CLGR1 OG2D1, NMA 
+OC2D2     BRGR1    -1.25       2.98   ! from BRGR1 OG2D2, ACET
+OC2D3     BRGR1    -0.27       3.52   ! from BRGR1 OG2D1, NMA 
+OC2D4     BRGR1    -0.27       3.52   ! from BRGR1 OG2D1, NMA 
+!========================================================================================================
+!! Below are NBFIXs for chlorine/bromine and lipids, Mar 22, 2018, fylin
+!!=======================================================================================================
+OBL       CLGR1    -0.20       3.40   ! from CLGR1 OG2D1, NMA
+NH3L      CLGR1    -3.60       3.18   ! from NG3P3 CLGR1, MAMM 
+OCL       CLGR1    -2.50       2.80   ! from CLGR1 OG2D2, ACET
+OBL       BRGR1    -0.27       3.52   ! from BRGR1 OG2D1, NMA 
+NH3L      BRGR1    -3.65       3.33   ! from NG3P3 BRGR1, MAMM
+OCL       BRGR1    -1.25       2.98   ! from BRGR1 OG2D2, ACET
+!========================================================================================================
+!! Below are NBFIXs for chlorine/bromine and nucleic acid Mar 22, 2018, fylin
+!!=======================================================================================================
+NN1       CLGR1    -0.40       3.88  ! from CLGR1 NG2S2, ACEM
+NN2       CLGR1    -0.48       3.75  ! from CLGR1 NG2R51, NH-IMID
+NN2U      CLGR1    -0.48       3.75  ! from CLGR1 NG2R51, NH-IMID
+NN2G      CLGR1    -0.48       3.75  ! from CLGR1 NG2R51, HN-IMID
+NN3       CLGR1    -0.46       3.42  ! from CLGR1 NG2R50, N-IMID
+NN3A      CLGR1    -0.46       3.42  ! from CLGR1 NG2R50, N-IMID
+NN3G      CLGR1    -0.46       3.42  ! from CLGR1 NG2R50, N-IMID
+NN4       CLGR1    -0.46       3.42  ! from CLGR1 NG2R50, N-IMID
+ON1       CLGR1    -0.20       3.40  ! from CLGR1 OG2D1, NMA
+ON1C      CLGR1    -0.20       3.40  ! from CLGR1 OG2D1, NMA
+NN1       BRGR1    -0.30       4.05  ! from BRGR1 NG2S2, ACEM
+NN2       BRGR1    -0.72       3.80  ! from BRGR1 NG2R51, NH-IMID
+NN2U      BRGR1    -0.72       3.80  ! from BRGR1 NG2R51, NH-IMID
+NN2G      BRGR1    -0.72       3.80  ! from BRGR1 NG2R51, HN-IMID
+NN3       BRGR1    -0.22       3.61  ! from BRGR1 NG2R50, N-IMID
+NN3A      BRGR1    -0.22       3.61  ! from BRGR1 NG2R50, N-IMID
+NN3G      BRGR1    -0.22       3.61  ! from BRGR1 NG2R50, N-IMID
+NN4       BRGR1    -0.22       3.61  ! from BRGR1 NG2R50, N-IMID
+ON1       BRGR1    -0.27       3.52  ! from BRGR1 OG2D1, NMA
+ON1C      BRGR1    -0.27       3.52  ! from BRGR1 OG2D1, NMA
 
 HBOND CUTHB 0.5  ! If you want to do hbond analysis (only), then use
                  ! READ PARAM APPEND CARD
