@@ -14,6 +14,16 @@ def get_toppar_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "toppar"))
 
 
+def map_lj_mutations_to_atom_idx(lj_mutations: list) -> dict:
+
+    d = {}
+    for lj in lj_mutations:
+        key = lj.atoms_to_be_mutated
+        d[tuple(key)] = lj
+
+    return d
+
+
 def print_mutations(mutation: dict):
 
     if "charge" in mutation.keys():
