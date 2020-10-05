@@ -5,7 +5,7 @@ channels:
   - omnia
   - defaults
 dependencies:
-    # Base depends
+  # Base depends
   - python
   - pip
   - openmm
@@ -21,13 +21,10 @@ dependencies:
   - networkx
   - tqdm
   - seaborn
-
     # Testing
   - pytest
   - pytest-cov
   - codecov
-
     # Pip-only installs
-  #- pip:
-  #  - codecov
-
+  - pip:
+      - dataclass
