@@ -104,6 +104,7 @@ def test_initialize_systems():
     assert "complex" in s1.envs and "complex" in s2.envs
     assert "waterbox" in s1.envs and "waterbox" in s2.envs
 
+
 def test_proposed_mutation_mcs():
 
     from rdkit.Chem import rdFMCS
@@ -345,7 +346,11 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
         # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 16 : cc2: 15
 
 
-def test_find_connected_dummy_regions():
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_find_connected_dummy_regions1():
 
     from rdkit.Chem import rdFMCS
 
@@ -387,6 +392,11 @@ def test_find_connected_dummy_regions():
 
     print(connected_dummy_regions_cc1)
     print(connected_dummy_regions_cc2)
+
+
+def test_find_connected_dummy_regions2():
+
+    from rdkit.Chem import rdFMCS
 
     ##################################################
     conf = "transformato/tests/config/test-2oj9-solvation-free-energy.yaml"
@@ -501,7 +511,6 @@ def test_common_core_system1():
         else:
             # find mcs, find terminal dummy/real atoms, generate charge compensated psfs
             a.calculate_common_core()
-
 
 
 def test_mutation_list():
