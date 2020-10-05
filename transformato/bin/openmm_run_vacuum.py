@@ -2,7 +2,6 @@ import argparse
 
 from omm_readinputs import *
 from omm_readparams import *
-
 from simtk.unit import *
 from simtk.openmm import *
 from simtk.openmm.app import *
@@ -23,9 +22,12 @@ psf = read_psf(args.psffile)
 crd = read_crd(args.crdfile)
 
 # Build system
-integrator = LangevinIntegrator(inputs.temp*kelvin, inputs.fric_coeff/picosecond, inputs.dt*picoseconds)
+integrator = LangevinIntegrator(inputs.temp*kelvin, 
+                                inputs.fric_coeff / picosecond,
+                                inputs.dt*picoseconds)
 
 system = psf.createSystem(params, nonbondedMethod=NoCutoff)
+
 simulation = Simulation(psf.topology, system, integrator)
 simulation.context.setPositions(crd.positions)
 
