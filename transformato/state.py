@@ -409,10 +409,11 @@ outfile.close()
             atom1, atom2, atom3 = angle.atom1, angle.atom2, angle.atom3
             if any(hasattr(atom, "initial_type") for atom in [atom1, atom2, atom3]):
 
-                if set([atom1.type, atom2.type, atom3.type]) in already_seen:
+                if [atom1.type, atom2.type, atom3.type] in already_seen:
+                    logger.info(f"Skipping {[atom1.type, atom2.type, atom3.type]}")
                     continue
                 else:
-                    already_seen.append(set([atom1.type, atom2.type, atom3.type]))
+                    already_seen.append([atom1.type, atom2.type, atom3.type])
 
                 logger.debug("############################################")
                 logger.debug("Printing angle atoms which at least one dummy atom.")
@@ -474,13 +475,13 @@ outfile.close()
                 hasattr(atom, "initial_type") for atom in [atom1, atom2, atom3, atom4]
             ):
                 if (
-                    set([atom1.type, atom2.type, atom3.type, atom4.type])
+                    [atom1.type, atom2.type, atom3.type, atom4.type]
                     in already_seen
                 ):
                     continue
                 else:
                     already_seen.append(
-                        set([atom1.type, atom2.type, atom3.type, atom4.type])
+                        [atom1.type, atom2.type, atom3.type, atom4.type]
                     )
 
                 logger.debug(

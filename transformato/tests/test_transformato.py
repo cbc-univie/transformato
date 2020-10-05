@@ -61,19 +61,17 @@ def test_transformato_imported():
 def test_read_yaml():
     """Sample test, will check ability to read yaml files"""
     settingsMap = load_config_yaml(
-        config="transformato/tests/config/test-2oj9-solvation-free-energy.yaml",
+        config="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
         input_dir=".",
         output_dir="data/",
     )
 
-    assert (
-        settingsMap["system"]["name"] == "2OJ9-test1-2OJ9-test2-solvation-free-energy"
-    )
+    assert settingsMap["system"]["name"] == "toluene-methane-solvation-free-energy"
 
 
 def test_initialize_systems():
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-2oj9-solvation-free-energy.yaml",
+        config="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
         input_dir="data/",
         output_dir=".",
     )
@@ -105,7 +103,6 @@ def test_initialize_systems():
 
     assert "complex" in s1.envs and "complex" in s2.envs
     assert "waterbox" in s1.envs and "waterbox" in s2.envs
-
 
 def test_proposed_mutation_mcs():
 
@@ -276,6 +273,36 @@ def test_proposed_mutation_mcs():
         )
         assert set(a.get_common_core_idx_mol2()) == cc2
 
+    for conf in [
+        "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    ]:
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        a = ProposeMutationRoute(s1, s2)
+        # find mcs
+        a._find_mcs("m1", "m2")
+
+        assert str(a.s1_tlc) == "UNL"
+        assert str(a.s2_tlc) == "LIG"
+
+        print(set(a.get_common_core_idx_mol1()))
+        print(set(a.get_common_core_idx_mol2()))
+        cc1 = set([8, 5, 6, 7])
+        cc2 = set([0, 1, 2, 3])
+        assert set(a.get_common_core_idx_mol1()) == cc1
+        assert set(a.get_common_core_idx_mol2()) == cc2
+
+        a.bondCompare = rdFMCS.BondCompare.CompareOrder
+        # find mcs
+        a._find_mcs("m1", "m2")
+
+        cc1 = set([8, 5, 6, 7])
+        cc2 = set([0, 1, 2, 3])
+        assert set(a.get_common_core_idx_mol1()) == cc1
+        assert set(a.get_common_core_idx_mol2()) == cc2
+
 
 def test_proposed_mutation_terminal_dummy_real_atom_match():
     from rdkit.Chem import rdFMCS
@@ -314,41 +341,6 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
 
         # terminal atoms match between the two common cores
         assert a.matching_terminal_atoms_between_cc[0] == (15, 15)
-        # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 0 : cc2: 0
-        # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 16 : cc2: 15
-
-    for conf in [
-        "transformato/tests/config/test-2oj9-solvation-free-energy.yaml",
-        "transformato/tests/config/test-2oj9-binding-free-energy.yaml",
-    ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
-
-        a = ProposeMutationRoute(s1, s2)
-        # find mcs
-        a._find_mcs("m1", "m2")
-        # find terminal dummy/real atoms
-        a._set_common_core_parameters()
-        # match terminal real/dummy atoms
-        assert set(a.terminal_real_atom_cc1) == set([0, 16])
-        assert set(a.terminal_dummy_atom_cc1) == set([1, 18])
-        assert set(a.terminal_real_atom_cc2) == set([0, 15])
-        assert set(a.terminal_dummy_atom_cc2) == set([1, 25, 39])
-
-        match_terminal_atoms_cc1 = a._match_terminal_real_and_dummy_atoms_for_mol1()
-        match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
-
-        # are the correct terminal common core atoms identified?
-        assert match_terminal_atoms_cc1[0] == set([1])
-        assert match_terminal_atoms_cc2[0] == set([1, 25])
-
-        assert match_terminal_atoms_cc1[16] == set([18])
-        assert match_terminal_atoms_cc2[15] == set([39])
-
-        # terminal atoms match between the two common cores
-        assert a.matching_terminal_atoms_between_cc[0] == (0, 0)
-        assert a.matching_terminal_atoms_between_cc[1] == (16, 15)
         # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 0 : cc2: 0
         # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 16 : cc2: 15
 
@@ -510,26 +502,6 @@ def test_common_core_system1():
             # find mcs, find terminal dummy/real atoms, generate charge compensated psfs
             a.calculate_common_core()
 
-
-def test_common_core_system2():
-    from rdkit.Chem import rdFMCS
-
-    for conf in [
-        "transformato/tests/config/test-7-CPI-2-CPI-solvation-free-energy.yaml",
-    ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
-
-        a = ProposeMutationRoute(s1, s2)
-        # find mcs, find terminal dummy/real atoms, generate charge compensated psfs
-        a.bondCompare = rdFMCS.BondCompare.CompareOrderExact
-        a.completeRingsOnly = True
-        a.propose_common_core()
-
-        a.remove_idx_from_common_core_of_mol1([14])
-        a.remove_idx_from_common_core_of_mol2([6])
-        a.finish_common_core()
 
 
 def test_mutation_list():
@@ -755,7 +727,6 @@ def test_vdw_mutation_for_hydrogens_system1():
             original_psf[env] = copy.deepcopy(s1.psfs[env])
 
         try:
-
             terminal_lj_mutations = mutation_list["terminal-lj"]
             output_file_base = i.write_state(
                 mutation_conf=terminal_lj_mutations,
