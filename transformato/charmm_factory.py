@@ -1,43 +1,6 @@
 import os
 import datetime
-import yaml
-
-def get_bin_dir():
-    """Returns the bin directory of this package"""
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), 'bin'))
-
-
-def get_toppar_dir():
-    """Returns the toppar directory of this package"""
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), 'toppar'))
-
-
-def load_config_yaml(config, input_dir, output_dir):
-
-    with open(f"{config}", 'r') as stream:
-        try:
-            settingsMap = yaml.load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    if settingsMap['simulation']['parameters'].get('nstep') == None or settingsMap['simulation']['parameters'].get('nstdcd') == None:
-        raise KeyError('nsteps or nstdcd is not defined in config file')
-    else:
-        if settingsMap['simulation']['parameters']['nstep']/settingsMap['simulation']['parameters']['nstdcd'] < 20:
-            raise RuntimeError('nsteps size and nstdcd size in config file does not match')
-
-    # set the bin, data and analysis dir
-    settingsMap['bin_dir'] = get_bin_dir()
-    settingsMap['analysis_dir_base'] = os.path.abspath(f"{output_dir}")
-    settingsMap['data_dir_base'] = os.path.abspath(f"{input_dir}")
-    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}-{settingsMap['simulation']['free_energy_type']}"
-    settingsMap['system_dir'] = f"{settingsMap['analysis_dir_base']}/{system_name}"
-    settingsMap['cluster_dir'] = f"/data/local/{system_name}"
-
-    settingsMap['system']['structure1']['charmm_gui_dir'] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure1']['name']}/"
-    settingsMap['system']['structure2']['charmm_gui_dir'] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure2']['name']}/"
-    settingsMap['system']['name'] = system_name
-    return settingsMap
+from utils import get_bin_dir,get_toppar_dir,load_config_yaml
 
 def parser(string, name):
         file_path = os.getcwd()
@@ -55,16 +18,38 @@ def parser(string, name):
 
 def charmm_factory(configuration,structure):
     """Function to build the string needed to create a CHARMM input and streaming file"""
-    #if classes for every case for defaults and change names in function
+
     tlc = configuration['system'][structure]['tlc']
-    vacuum = configuration['system'][structure]['vacuum']['intermediate-filename']
-    waterbox = configuration['system'][structure]['waterbox']['intermediate-filename']
+    vacuum = configuration['system'][structure]['vacuum']['intermediate_filename']
+    waterbox = configuration['system'][structure]['waterbox']['intermediate_filename']
     nstep = configuration['simulation']['parameters']['nstep']
     nstout = configuration['simulation']['parameters']['nstout']
     nstdcd = configuration['simulation']['parameters']['nstdcd']
-    steps_for_equilibration = configuration['solvation'][' steps_for_equilibration']
+    steps_for_equilibration = configuration['solvation']['steps_for_equilibration']
     
-    #toppar file
+    #building a reduced toppar file and including dummy rtf and prm
+    toppar = build_reduced_toppar(tlc)
+    parser(toppar,'/toppar_with_dummy.str')
+
+    #gas phase
+    env = 'vacuum'
+    header = header_string(vacuum)
+    body = body_string(env,nstep,nstout,nstdcd,steps_for_equilibration)
+    gas_phase_file = f'{header}{body}'
+    parser(gas_phase_file,'/run_gasp_md.inp')
+
+    #waterbox
+    env = 'waterbox'
+    header = header_string(waterbox)
+    body_vswi, body_vfswi = body_string(env,nstep,nstout,nstdcd,steps_for_equilibration)
+    waterbox_vswitch = f'{header}{body_vswi}'
+    waterbox_vfswitch = f'{header}{body_vfswi}'
+    parser(waterbox_vswitch,'/run_liqp_md_vswi.inp')
+    parser(waterbox_vfswitch,'/run_liqp_md_vfsw.inp')
+
+
+#toppar file
+def build_reduced_toppar(tlc):    
     toppar = """
 ! Read Protein Topology and Parameter 
 open read card unit 10 name ./toppar/top_all36_prot.rtf 
@@ -111,18 +96,22 @@ stream ./toppar/toppar_water_ions.str
     dummy_rtf = f'! Read dummy_atom RTF \nopen read unit 10 card name dummy_atom_definitions.rtf \nread rtf unit 10 append \n\n'
     dummy_prm = f'! Read dummy_atom prm \nopen read unit 10 card name dummy_parameters.prm \nread para unit 10 append flex \n\n'
     date = datetime.date.today()
-    streaming_file = f'* Simplified toppar script \n* Version from {date} \n* \n\n{toppar}{rtf}{prm}{dummy_rtf}{dummy_prm}'
+    toppar_file = f'* Simplified toppar script \n* Version from {date} \n* \n\n{toppar}{rtf}{prm}{dummy_rtf}{dummy_prm}'
     
-    parser(streaming_file,'/toppar_with_dummy.str')
-    
-    
-    # CHARMM inp file
+    return toppar_file
+
+def header_string(type): 
+    """Header of the CHARMM file with flexible psf and crd input"""   
     version = '*Version September 2020 \n*Run script for CHARMM jobs from transformato \n*\n\n'
     streaming_file = '! Read topology and parameter files \nstream toppar_with_dummy.str \n\n'
     psf = f'! Read PSF \nopen read unit 10 card name {type}.psf \nread psf  unit 10 card\n\n'
     crd = f'! Read Coordinate \nopen read unit 10 card name {type}.crd \nread coor unit 10 card'
     header = f'{version}{streaming_file}{psf}{crd}'
-    
+    return header
+
+def  body_string(envs,nstep,nstout,nstdcd,steps_for_equilibration): 
+    """Body of the CHARMM file with option for gas pahse, waterbox with vswitch and vfswitch"""
+
     ##### gas phase ######
     gas_phase_1 = """
 coor orie sele all end ! put the molecule at the origin
@@ -164,12 +153,8 @@ open write unit 21 file name gasp.@rand.dcd
 
 """
     gas_phase_6 = f'set nstep = {nstep} \nDYNA lang leap restart time 0.001 nstep @nstep -\n    nprint {nstout} iprfrq {round(nstep/20)} -\n    iunread 11 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -\n    nsavc {nstdcd} nsavv 0 -\n    rbuf 0. tbath @temp ilbfrq 0  firstt @temp -\n    echeck 0\n\nstop'  
-    gas_phase_file = f'{header}{gas_phase_1}{gas_phase_2}{gas_phase_3}{gas_phase_4}{gas_phase_5}{gas_phase_6}'
-    
-    parser(gas_phase_file,'/run_gasp_md.inp')
-    
-    ##### liquid phase vswitch ###### 
-    
+  
+    ##### waterbox ###### 
     liquid_phase_1 ="""
 set bxl 30.0
 
@@ -236,13 +221,19 @@ open write unit 21 file name prod_@{method}.@{rand}.dcd
 """
     liquid_phase_7 = f'DYNA lang leap restart time 0.001 nstep @nstep -\n    nprint {steps_for_equilibration} iprfrq {round(nstep/200)} -\n    iunread 11 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -\n    nsavc {nstdcd} nsavv 0 -\n    PCONSTANT pref 1.0  pmass @Pmass  pgamma   20.0 -\n    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -\n    echeck 0\n\nstop'
     
-    liquid_phase_vswitch = f'{liquid_phase_1}{VSWI}{liquid_phase_2}{liquid_phase_3}{liquid_phase_4}{liquid_phase_5}{liquid_phase_6}{liquid_phase_7}'
-    liquid_phase_vfswitch = f'{liquid_phase_1}{VFSW}{liquid_phase_2}{liquid_phase_3}{liquid_phase_4}{liquid_phase_5}{liquid_phase_6}{liquid_phase_7}'
-    
-    parser(liquid_phase_vswitch,'/run_liqp_md_vswi.inp')
-    parser(liquid_phase_vfswitch,'/run_liqp_md_vfsw.inp')
 
+
+    if envs == 'vacuum':
+        body = f'{gas_phase_1}{gas_phase_2}{gas_phase_3}{gas_phase_4}{gas_phase_5}{gas_phase_6}'
+        return body
+    elif envs == 'waterbox':
+        body_vswitch = f'{liquid_phase_1}{VSWI}{liquid_phase_2}{liquid_phase_3}{liquid_phase_4}{liquid_phase_5}{liquid_phase_6}{liquid_phase_7}'
+        body_vfswitch = f'{liquid_phase_1}{VFSW}{liquid_phase_2}{liquid_phase_3}{liquid_phase_4}{liquid_phase_5}{liquid_phase_6}{liquid_phase_7}'
+        return body_vswitch, body_vfswitch
+
+
+#testsuit
 configuration = load_config_yaml(config='config/test-2oj9-solvation-free-energy_dataclass.yaml',
                                     input_dir='data/', output_dir='.')
 
-charmm_factory(configuration)
+charmm_factory(configuration,'structure1')
