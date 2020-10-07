@@ -133,7 +133,7 @@ nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
 energy   inbfrq 1
 energy   inbfrq 0
 
-mini sd nstep 10
+mini sd nstep 100
 
 if @?rand .eq. 0 set rand 1
 
@@ -187,7 +187,7 @@ energy
 domdec gpu only
 energy
 
-mini sd nstep 10
+mini sd nstep 100
 
 ! from charmm-gui scripts -- CPT dynamics
 ! NPT dynamics:
