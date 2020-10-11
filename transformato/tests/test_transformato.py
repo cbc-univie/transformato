@@ -1225,24 +1225,7 @@ def test_bonded_mutation():
         for env in s1.envs:
             original_psf[env] = copy.deepcopy(s1.psfs[env])
 
-        if "neopentane-methane" in conf:
-            s1_to_s2.propose_common_core()
-            s1_to_s2.finish_common_core(
-                connected_dummy_regions_cc1=[
-                    {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
-                ]
-            )
-        else:
-            s1_to_s2.calculate_common_core()
-
-        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-        i = IntermediateStateFactory(
-            system=s1,
-            configuration=configuration,
-        )
-
-        print(mutation_list)
-        # we select the bonded mutation which should be at postition [-1]
+        s1_to_s2.calculate_common_core()
 
         mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
         i = IntermediateStateFactory(
@@ -1305,151 +1288,119 @@ def test_bonded_mutation():
             output_files.append(output_file_base)
 
 
-# @pytest.mark.slowtest
-# def test_run_test_systems():
-#     for conf in [
-#         "transformato/tests/config/test-2oj9-solvation-free-energy.yaml",
-#         "transformato/tests/config/test-2oj9-binding-free-energy.yaml",
-#     ]:
-#         configuration = load_config_yaml(
-#             config=conf, input_dir="data/", output_dir="data/"
-#         )
+def _mutate_toluene_to_methane():
+    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
 
-#         # load systems
-#         s1 = SystemStructure(configuration, "structure1")
-#         s2 = SystemStructure(configuration, "structure2")
-#         a = ProposeMutationRoute(s1, s2)
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
 
-#         # generate mutation route
-#         mutation_list = a.generate_mutations_to_common_core_for_mol1(
-#             nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
-#         )
-#         # write intermediate states for systems
-#         i = IntermediateStateFactory(
-#             system=s1, mutation_list=mutation_list, configuration=configuration
-#         )
-#         i.generate_intermediate_states()
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
 
-#         # generate mutation route
-#         mutation_list = a.generate_mutations_to_common_core_for_mol2(
-#             nr_of_steps_for_electrostatic=5
-#         )
-#         # write intermediate states
-#         i = IntermediateStateFactory(
-#             system=s2, mutation_list=mutation_list, configuration=configuration
-#         )
-#         try:
-#             i.generate_intermediate_states()
-#             print(pathlib.Path(i.path).parent)
-#         finally:
-#             shutil.rmtree(pathlib.Path(i.path).parent)
+    output_files = []
+    # mutate everything else before touching bonded terms
+    intst = 0
+    charges = mutation_list["charge"]
+    intst += 1
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # Turn of hydrogens
+    intst += 1
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+    output_file_base = i.write_state(
+        mutation_conf=hydrogen_lj_mutations,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=mutation_list["lj"],
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # generate terminal lj
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=mutation_list["terminal-lj"],
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    m = mutation_list["transform"]
+    for lambda_value in np.linspace(0.25, 1, 3):
+        intst += 1
+        print(lambda_value)
+        # turn off charges
+        output_file_base = i.write_state(
+            mutation_conf=m,
+            common_core_transformation=1 - lambda_value,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+    return output_files, configuration
 
 
-# @pytest.mark.slowtest
-# @pytest.mark.skipif(
-#     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-# )
-# def test_run_example1_systems_solvation_free_energy():
-#     from transformato import FreeEnergyCalculator
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_run_example1_systems_solvation_free_energy():
+    from transformato import FreeEnergyCalculator
 
-#     for conf in ["transformato/tests/config/test-2oj9-solvation-free-energy.yaml"]:
-#         configuration = load_config_yaml(
-#             config=conf, input_dir="data/", output_dir="data/"
-#         )
+    output_files, configuration = _mutate_toluene_to_methane()
 
-#         # load systems
-#         s1 = SystemStructure(configuration, "structure1")
-#         s2 = SystemStructure(configuration, "structure2")
-#         a = ProposeMutationRoute(s1, s2)
+    for path in sorted(output_files):
+        # because path is object not string
+        print(f"Start sampling for: {path}")
+        try:
+            exe = subprocess.run(
+                ["bash", f"{str(path)}/simulation.sh", str(path)],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except TypeError:
+            exe = subprocess.run(
+                ["bash", f"{str(path)}/simulation.sh", str(path)],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+        print(exe.stdout)
+        print("Capture stderr")
+        print(exe.stderr)
 
-#         # generate mutation route
-#         mutation_list = a.generate_mutations_to_common_core_for_mol1(
-#             nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
-#         )
+        f = FreeEnergyCalculator(configuration, "toluene")
+        f.load_trajs(thinning=1)
+        f.calculate_dG_to_common_core()
+        ddG, dddG = f.end_state_free_energy_difference
+        print(f"Free energy difference: {ddG}")
+        print(f"Uncertanty: {dddG}")
+        # assert(ddG == 10.0)
 
-#         try:
-#             # write intermediate states for systems
-#             i = IntermediateStateFactory(
-#                 system=s1, mutation_list=mutation_list, configuration=configuration
-#             )
-#             i.generate_intermediate_states()
-#             paths = pathlib.Path(i.path).glob("**/*.sh")
-#             for path in sorted(paths):
-#                 run_dir = path.parent
-#                 # because path is object not string
-#                 print(f"Start sampling for: {path}")
-#                 print(f"In directory: {run_dir}")
-#                 try:
-#                     exe = subprocess.run(
-#                         ["bash", str(path), str(run_dir)],
-#                         check=True,
-#                         capture_output=True,
-#                         text=True,
-#                     )
-#                 except TypeError:
-#                     exe = subprocess.run(
-#                         ["bash", str(path), str(run_dir)],
-#                         check=True,
-#                         stdout=subprocess.PIPE,
-#                         stderr=subprocess.PIPE,
-#                         text=True,
-#                     )
-#                 print(exe.stdout)
-#                 print("Capture stderr")
-#                 print(exe.stderr)
-
-#             # generate mutation route
-#             mutation_list = a.generate_mutations_to_common_core_for_mol2(
-#                 nr_of_steps_for_electrostatic=5
-#             )
-#             # write intermediate states
-#             i = IntermediateStateFactory(
-#                 system=s2, mutation_list=mutation_list, configuration=configuration
-#             )
-#             i.generate_intermediate_states()
-
-#             paths = pathlib.Path(i.path).glob("**/*.sh")
-#             for path in sorted(paths):
-#                 run_dir = path.parent
-#                 # because path is object not string
-#                 print(f"Start sampling for: {path}")
-#                 print(f"In directory: {run_dir}")
-#                 try:
-#                     exe = subprocess.run(
-#                         ["bash", str(path), str(run_dir)],
-#                         check=True,
-#                         capture_output=True,
-#                         text=True,
-#                     )
-#                 except TypeError:
-#                     exe = subprocess.run(
-#                         ["bash", str(path), str(run_dir)],
-#                         check=True,
-#                         stdout=subprocess.PIPE,
-#                         stderr=subprocess.PIPE,
-#                         text=True,
-#                     )
-#                 print(exe.stdout)
-#                 print("Capture stderr")
-#                 print(exe.stderr)
-
-#             f = FreeEnergyCalculator(configuration, "2OJ9-e1")
-#             f.load_trajs(thinning=1)
-#             f.calculate_dG_to_common_core()
-#             ddG, dddG = f.end_state_free_energy_difference
-#             print(f"Free energy difference: {ddG}")
-#             print(f"Uncertanty: {dddG}")
-#             # assert(ddG == 10.0)
-
-#             f.show_summary()
-
-#             f = FreeEnergyCalculator(configuration, "2OJ9-e2")
-#             f.load_trajs(thinning=1)
-#             f.calculate_dG_to_common_core()
-
-#             f.show_summary()
-#         finally:
-#             shutil.rmtree(pathlib.Path(i.path).parent)
+        f.show_summary()
+        raise RuntimeError()
 
 
 # @pytest.mark.slowtest
