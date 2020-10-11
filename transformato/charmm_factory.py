@@ -1,6 +1,6 @@
 import os
 import datetime
-from utils import get_bin_dir,get_toppar_dir,load_config_yaml
+from transformato.utils import get_bin_dir,get_toppar_dir,load_config_yaml
 
 def parser(string, name):
         file_path = os.getcwd()
@@ -109,7 +109,7 @@ def header_string(type):
     header = f'{version}{streaming_file}{psf}{crd}'
     return header
 
-def  body_string(envs,nstep,nstout,nstdcd,steps_for_equilibration): 
+def  body_string(env,nstep,nstout,nstdcd,steps_for_equilibration): 
     """Body of the CHARMM file with option for gas pahse, waterbox with vswitch and vfswitch"""
 
     ##### gas phase ######
@@ -133,7 +133,7 @@ nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
 energy   inbfrq 1
 energy   inbfrq 0
 
-mini sd nstep 10
+mini sd nstep 100
 
 if @?rand .eq. 0 set rand 1
 
@@ -187,7 +187,7 @@ energy
 domdec gpu only
 energy
 
-mini sd nstep 10
+mini sd nstep 100
 
 ! from charmm-gui scripts -- CPT dynamics
 ! NPT dynamics:
@@ -223,10 +223,10 @@ open write unit 21 file name prod_@{method}.@{rand}.dcd
     
 
 
-    if envs == 'vacuum':
+    if env == 'vacuum':
         body = f'{gas_phase_1}{gas_phase_2}{gas_phase_3}{gas_phase_4}{gas_phase_5}{gas_phase_6}'
         return body
-    elif envs == 'waterbox':
+    elif env == 'waterbox':
         body_vswitch = f'{liquid_phase_1}{VSWI}{liquid_phase_2}{liquid_phase_3}{liquid_phase_4}{liquid_phase_5}{liquid_phase_6}{liquid_phase_7}'
         body_vfswitch = f'{liquid_phase_1}{VFSW}{liquid_phase_2}{liquid_phase_3}{liquid_phase_4}{liquid_phase_5}{liquid_phase_6}{liquid_phase_7}'
         return body_vswitch, body_vfswitch
