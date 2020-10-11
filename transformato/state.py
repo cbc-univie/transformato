@@ -60,8 +60,8 @@ class IntermediateStateFactory(object):
 
                 else:
                     mutation_type.print_details()
-                    print(f"Lambda electrostatics: {lambda_value_electrostatic}")
-                    print(f"Lambda vdw: {lambda_value_vdw}")
+                    logger.debug(f"Lambda electrostatics: {lambda_value_electrostatic}")
+                    logger.debug(f"Lambda vdw: {lambda_value_vdw}")
 
                     mutator = Mutation(
                         atoms_to_be_mutated=mutation_type.atoms_to_be_mutated,
@@ -79,8 +79,10 @@ class IntermediateStateFactory(object):
             self._write_psf(self.system.psfs[env], output_file_base, env)
         self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
-        self._write_toppar_str(output_file_base, self.system.tlc)
-        self._copy_files(output_file_base)
+        self._write_toppar_str(
+            output_file_base, self.system.tlc
+        )  # Note: this needs to be adopted for CHARMM
+        self._copy_files(output_file_base)  # Note: this needs to be adopted for CHARMM
         return output_file_base
 
     def _add_serializer(self, file):
@@ -155,6 +157,8 @@ outfile.close()
             omm_simulation_submit_script_source, omm_simulation_submit_script_target
         )
 
+        # copy production script for vacuum
+        # openMM
         omm_simulation_script_source = (
             f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
         )
@@ -163,6 +167,17 @@ outfile.close()
         )
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         self._add_serializer(omm_simulation_script_target)
+
+        # CHARMM # NOTE: A CHARMM vacuum script needs to be written
+        charmm_simulation_script_source = (
+            f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
+        )
+        charmm_simulation_script_target = (
+            f"{intermediate_state_file_path}/CHARMM_run_vacuum.inp"
+        )
+        shutil.copyfile(
+            charmm_simulation_script_source, charmm_simulation_script_target
+        )
 
     def _get_simulations_parameters(self):
         prms = {}
@@ -230,7 +245,7 @@ outfile.close()
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
         shutil.copyfile(ligand_prm, toppar_target)
 
-        # copy diverse set of helper functions
+        # copy diverse set of helper functions for openMM
         FILES = [
             "omm_barostat.py",
             "omm_readinputs.py",
@@ -246,7 +261,22 @@ outfile.close()
                 omm_target = f"{intermediate_state_file_path}/{f}"
                 shutil.copyfile(omm_source, omm_target)
             except OSError:
-                logger.debug(f"Could not find file: {f}")
+                logger.critical(f"Could not find file: {f}")
+                raise
+
+        # copy diverse set of helper files for CHARMM
+        FILES = [
+            "crystal_image.str",
+            "step3_pbcsetup.str",
+        ]
+        for f in FILES:
+            try:
+                CHARMM_source = f"{basedir}/waterbox/{f}"
+                CHARMM_target = f"{intermediate_state_file_path}/CHARMM_{f}"
+                shutil.copyfile(CHARMM_source, CHARMM_target)
+            except OSError:
+                logger.critical(f"Could not find file: {f}")
+                raise
 
         # copy toppar folder
         toppar_dir = get_toppar_dir()
@@ -258,14 +288,31 @@ outfile.close()
         omm_simulation_script_source = f"{basedir}/waterbox/openmm/openmm_run.py"
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
-
         # add serialization
         self._add_serializer(omm_simulation_script_target)
+
+        # copy charmm simulation script
+        CHARMM_simulation_script_source = f"{basedir}/waterbox/step5_production.inp"
+        CHARMM_simulation_script_target = (
+            f"{intermediate_state_file_path}/charmm_production.inp"
+        )
+        shutil.copyfile(
+            CHARMM_simulation_script_source, CHARMM_simulation_script_target
+        )
 
     def _overwrite_simulation_script_parameters(
         self, omm_simulation_parameter_source: str, omm_simulation_parameter_target: str
     ):
+        """
+        _overwrite_simulation_script_parameters Overwrites simulatioo parameters that are defined in omm_simulation_parameter_source
 
+        Parameters
+        ----------
+        omm_simulation_parameter_source : str
+            key:value pair file that defines parameters to overwrite
+        omm_simulation_parameter_target : str
+            new parameter file for simulation
+        """
         overwrite_parameters = self._get_simulations_parameters()
 
         input_simulation_parameter = open(omm_simulation_parameter_source, "r")
@@ -474,10 +521,7 @@ outfile.close()
             if any(
                 hasattr(atom, "initial_type") for atom in [atom1, atom2, atom3, atom4]
             ):
-                if (
-                    [atom1.type, atom2.type, atom3.type, atom4.type]
-                    in already_seen
-                ):
+                if [atom1.type, atom2.type, atom3.type, atom4.type] in already_seen:
                     continue
                 else:
                     already_seen.append(
@@ -576,7 +620,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 
     def _write_toppar_str(self, output_file_base, tlc):
 
-        toppar_format = """
+        toppar_format = f"""
 toppar/top_all36_prot.rtf
 toppar/par_all36m_prot.prm
 toppar/top_all36_na.rtf
@@ -604,17 +648,17 @@ toppar/toppar_all36_lipid_miscellaneous.str
 toppar/toppar_all36_lipid_model.str
 toppar/toppar_all36_lipid_prot.str
 toppar/toppar_all36_lipid_sphingo.str
-{}_g.rtf
-{}.prm
+{tlc.lower()}_g.rtf
+{tlc.lower()}.prm
 dummy_atom_definitions.rtf
 dummy_parameters.prm
-""".format(
-            tlc.lower(), tlc.lower()
-        )
+"""
 
         f = open(f"{output_file_base}/toppar.str", "w+")
         f.write(toppar_format)
         f.close()
+
+        # TODO write charmm toppar.str file: charmm_toppar.str
 
     def _write_psf(self, psf, output_file_base: str, env: str):
         """
