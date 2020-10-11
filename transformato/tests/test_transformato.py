@@ -583,7 +583,8 @@ def test_endpoint_mutation():
                 output_file_base = i.write_state(mutation_conf=[], intst_nr=0)
 
         finally:
-            shutil.rmtree(output_file_base)
+            pass
+            # shutil.rmtree(output_file_base)
 
 
 def test_charge_mutation_test_system1():
