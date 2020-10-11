@@ -172,7 +172,20 @@ outfile.close()
             CHARMM_simulation_script_source, CHARMM_simulation_script_target
         )
 
-    def _copy_omm_files(self, intermediate_state_file_path):
+    def _copy_omm_files(self, intermediate_state_file_path:str):
+        """
+        _copy_omm_files Copyies the files needed for the production runs with openMM in the intst* directories
+
+        Parameters
+        ----------
+        intermediate_state_file_path : str
+            [description]
+
+        Raises
+        ------
+        RuntimeError
+            [description]
+        """
         basedir = self.system.charmm_gui_base
 
         if (
