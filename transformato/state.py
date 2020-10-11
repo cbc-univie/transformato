@@ -105,120 +105,128 @@ outfile.close()
         )
         f.close()
 
-    def _copy_files_for_binding_free_energy_calculations(
-        self, basedir, intermediate_state_file_path
-    ):
-
-        # parse omm simulation paramter
-        for env in self.system.envs:
-            omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}"
-            omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-            self._overwrite_simulation_script_parameters(
-                omm_simulation_parameter_source, omm_simulation_parameter_target
-            )
-
-        omm_simulation_submit_script_source = (
-            f"{self.configuration['bin_dir']}/simulation-binding-free-energy.sh"
-        )
-        omm_simulation_submit_script_target = (
-            f"{intermediate_state_file_path}/simulation.sh"
-        )
-        shutil.copyfile(
-            omm_simulation_submit_script_source, omm_simulation_submit_script_target
-        )
-
-    def _copy_files_for_solvation_free_energy_calculations(
-        self, basedir, intermediate_state_file_path
-    ):
-
-        # parse omm simulation paramter
-        for env in self.system.envs:
-            if env == "waterbox":
-                omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}"
-                omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-                self._overwrite_simulation_script_parameters(
-                    omm_simulation_parameter_source, omm_simulation_parameter_target
-                )
-            else:  # vacuum
-                used_env = "waterbox"
-                omm_simulation_parameter_source = f"{basedir}/{used_env}/openmm/{self.configuration['system'][self.system.structure][used_env]['simulation_parameter']}"
-                omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
-                self._overwrite_simulation_script_parameters(
-                    omm_simulation_parameter_source, omm_simulation_parameter_target
-                )
-
-        omm_simulation_submit_script_source = (
-            f"{self.configuration['bin_dir']}/simulation-solvation-free-energy.sh"
-        )
-        omm_simulation_submit_script_target = (
-            f"{intermediate_state_file_path}/simulation.sh"
-        )
-        shutil.copyfile(
-            omm_simulation_submit_script_source, omm_simulation_submit_script_target
-        )
-
-        # copy production script for vacuum
-        # openMM
-        omm_simulation_script_source = (
-            f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
-        )
-        omm_simulation_script_target = (
-            f"{intermediate_state_file_path}/openmm_run_vacuum.py"
-        )
-        shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
-        self._add_serializer(omm_simulation_script_target)
-
-        # CHARMM # NOTE: A CHARMM vacuum script needs to be written
-        charmm_simulation_script_source = (
-            f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
-        )
-        charmm_simulation_script_target = (
-            f"{intermediate_state_file_path}/CHARMM_run_vacuum.inp"
-        )
-        shutil.copyfile(
-            charmm_simulation_script_source, charmm_simulation_script_target
-        )
-
     def _get_simulations_parameters(self):
         prms = {}
         for key in self.configuration["simulation"]["parameters"]:
             prms[key] = self.configuration["simulation"]["parameters"][key]
         return prms
 
-    def _copy_files(self, intermediate_state_file_path):
-        """
-        Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
-        """
-
+    def _copy_charmm_files(self, intermediate_state_file_path):
         basedir = self.system.charmm_gui_base
 
         if (
             self.configuration["simulation"]["free-energy-type"]
             == "solvation-free-energy"
         ):
-            self._copy_files_for_solvation_free_energy_calculations(
-                basedir, intermediate_state_file_path
+
+            # copy production script for vacuum
+            # openMM
+            omm_simulation_script_source = (
+                f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
+            )
+            omm_simulation_script_target = (
+                f"{intermediate_state_file_path}/openmm_run_vacuum.py"
+            )
+            shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
+            self._add_serializer(omm_simulation_script_target)
+
+            # CHARMM # NOTE: A CHARMM vacuum script needs to be written -- FOR NOW THIS IS THE OPNEMM script
+            charmm_simulation_script_source = (
+                f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
+            )
+            charmm_simulation_script_target = (
+                f"{intermediate_state_file_path}/CHARMM_run_vacuum.inp"
+            )
+            shutil.copyfile(
+                charmm_simulation_script_source, charmm_simulation_script_target
+            )
+
+        elif (
+            self.configuration["simulation"]["free-energy-type"]
+            == "binding-free-energy"
+        ):
+            pass
+        else:
+            pass
+
+        # copy diverse set of helper files for CHARMM
+        FILES = [
+            "crystal_image.str",
+            "step3_pbcsetup.str",
+        ]
+        for f in FILES:
+            try:
+                CHARMM_source = f"{basedir}/waterbox/{f}"
+                CHARMM_target = f"{intermediate_state_file_path}/CHARMM_{f}"
+                shutil.copyfile(CHARMM_source, CHARMM_target)
+            except OSError:
+                logger.critical(f"Could not find file: {f}")
+                raise
+
+        # copy charmm simulation script
+        CHARMM_simulation_script_source = f"{basedir}/waterbox/step5_production.inp"
+        CHARMM_simulation_script_target = (
+            f"{intermediate_state_file_path}/CHARMM_production.inp"
+        )
+        shutil.copyfile(
+            CHARMM_simulation_script_source, CHARMM_simulation_script_target
+        )
+
+    def _copy_omm_files(self, intermediate_state_file_path):
+        basedir = self.system.charmm_gui_base
+
+        if (
+            self.configuration["simulation"]["free-energy-type"]
+            == "solvation-free-energy"
+        ):
+            # parse omm simulation paramter
+            for env in self.system.envs:
+                if env == "waterbox":
+                    omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}"
+                    omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
+                    self._overwrite_simulation_script_parameters(
+                        omm_simulation_parameter_source, omm_simulation_parameter_target
+                    )
+                else:  # vacuum
+                    used_env = "waterbox"
+                    omm_simulation_parameter_source = f"{basedir}/{used_env}/openmm/{self.configuration['system'][self.system.structure][used_env]['simulation_parameter']}"
+                    omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
+                    self._overwrite_simulation_script_parameters(
+                        omm_simulation_parameter_source, omm_simulation_parameter_target
+                    )
+
+            omm_simulation_submit_script_source = (
+                f"{self.configuration['bin_dir']}/simulation-solvation-free-energy.sh"
+            )
+            omm_simulation_submit_script_target = (
+                f"{intermediate_state_file_path}/simulation.sh"
+            )
+            shutil.copyfile(
+                omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
         elif (
             self.configuration["simulation"]["free-energy-type"]
             == "binding-free-energy"
         ):
-            self._copy_files_for_binding_free_energy_calculations(
-                basedir, intermediate_state_file_path
+            # parse omm simulation paramter
+            for env in self.system.envs:
+                omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}"
+                omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
+                self._overwrite_simulation_script_parameters(
+                    omm_simulation_parameter_source, omm_simulation_parameter_target
+                )
+
+            omm_simulation_submit_script_source = (
+                f"{self.configuration['bin_dir']}/simulation-binding-free-energy.sh"
+            )
+            omm_simulation_submit_script_target = (
+                f"{intermediate_state_file_path}/simulation.sh"
+            )
+            shutil.copyfile(
+                omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
         else:
             raise RuntimeError(f"Only solvation/binding free energies implemented")
-
-        # copy rst files
-        for env in self.system.envs:
-            rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
-            rst_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
-            try:
-                shutil.copyfile(rst_file_source, rst_file_target)
-            except FileNotFoundError:
-                logger.warning(
-                    f"No restart file found for {env} -- starting simulation from crd file."
-                )
 
         # copy crd files
         for env in self.system.envs:
@@ -233,17 +241,16 @@ outfile.close()
                 crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
                 pm.charmm.CharmmCrdFile.write(self.system.psfs[env], crd_file_target)
 
-        # copy ligand rtf file
-        ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
-        toppar_target = (
-            f"{intermediate_state_file_path}/{self.system.tlc.lower()}_g.rtf"
-        )
-        shutil.copyfile(ligand_rtf, toppar_target)
-
-        # copy ligand prm file
-        ligand_prm = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
-        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
-        shutil.copyfile(ligand_prm, toppar_target)
+        # copy rst files
+        for env in self.system.envs:
+            rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
+            rst_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
+            try:
+                shutil.copyfile(rst_file_source, rst_file_target)
+            except FileNotFoundError:
+                logger.warning(
+                    f"No restart file found for {env} -- starting simulation from crd file."
+                )
 
         # copy diverse set of helper functions for openMM
         FILES = [
@@ -264,26 +271,6 @@ outfile.close()
                 logger.critical(f"Could not find file: {f}")
                 raise
 
-        # copy diverse set of helper files for CHARMM
-        FILES = [
-            "crystal_image.str",
-            "step3_pbcsetup.str",
-        ]
-        for f in FILES:
-            try:
-                CHARMM_source = f"{basedir}/waterbox/{f}"
-                CHARMM_target = f"{intermediate_state_file_path}/CHARMM_{f}"
-                shutil.copyfile(CHARMM_source, CHARMM_target)
-            except OSError:
-                logger.critical(f"Could not find file: {f}")
-                raise
-
-        # copy toppar folder
-        toppar_dir = get_toppar_dir()
-        toppar_source = f"{toppar_dir}"
-        toppar_target = f"{intermediate_state_file_path}/toppar"
-        shutil.copytree(toppar_source, toppar_target)
-
         # copy omm simulation script
         omm_simulation_script_source = f"{basedir}/waterbox/openmm/openmm_run.py"
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
@@ -291,14 +278,33 @@ outfile.close()
         # add serialization
         self._add_serializer(omm_simulation_script_target)
 
-        # copy charmm simulation script
-        CHARMM_simulation_script_source = f"{basedir}/waterbox/step5_production.inp"
-        CHARMM_simulation_script_target = (
-            f"{intermediate_state_file_path}/charmm_production.inp"
+    def _copy_files(self, intermediate_state_file_path):
+        """
+        Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
+        """
+
+        basedir = self.system.charmm_gui_base
+
+        # copy ligand rtf file
+        ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
+        toppar_target = (
+            f"{intermediate_state_file_path}/{self.system.tlc.lower()}_g.rtf"
         )
-        shutil.copyfile(
-            CHARMM_simulation_script_source, CHARMM_simulation_script_target
-        )
+        shutil.copyfile(ligand_rtf, toppar_target)
+
+        # copy ligand prm file
+        ligand_prm = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
+        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
+        shutil.copyfile(ligand_prm, toppar_target)
+
+        # copy toppar folder
+        toppar_dir = get_toppar_dir()
+        toppar_source = f"{toppar_dir}"
+        toppar_target = f"{intermediate_state_file_path}/toppar"
+        shutil.copytree(toppar_source, toppar_target)
+
+        self._copy_omm_files(intermediate_state_file_path)
+        self._copy_charmm_files(intermediate_state_file_path)
 
     def _overwrite_simulation_script_parameters(
         self, omm_simulation_parameter_source: str, omm_simulation_parameter_target: str
