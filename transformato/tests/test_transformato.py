@@ -1391,16 +1391,16 @@ def test_run_example1_systems_solvation_free_energy():
         print("Capture stderr")
         print(exe.stderr)
 
-        f = FreeEnergyCalculator(configuration, "toluene")
-        f.load_trajs(thinning=1)
-        f.calculate_dG_to_common_core()
-        ddG, dddG = f.end_state_free_energy_difference
-        print(f"Free energy difference: {ddG}")
-        print(f"Uncertanty: {dddG}")
-        # assert(ddG == 10.0)
+    f = FreeEnergyCalculator(configuration, "toluene")
+    f.load_trajs(thinning=1)
+    f.calculate_dG_to_common_core()
+    ddG, dddG = f.end_state_free_energy_difference
+    print(f"Free energy difference: {ddG}")
+    print(f"Uncertanty: {dddG}")
+    # assert(ddG == 10.0)
 
-        f.show_summary()
-        raise RuntimeError()
+    f.show_summary()
+    raise RuntimeError()
 
 
 # @pytest.mark.slowtest
