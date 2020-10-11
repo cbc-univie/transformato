@@ -1364,7 +1364,7 @@ def _mutate_toluene_to_methane():
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_example1_systems_solvation_free_energy():
+def test_run_example1_systems_solvation_free_energy_with_openMM():
     from transformato import FreeEnergyCalculator
 
     output_files, configuration = _mutate_toluene_to_methane()
@@ -1397,10 +1397,8 @@ def test_run_example1_systems_solvation_free_energy():
     ddG, dddG = f.end_state_free_energy_difference
     print(f"Free energy difference: {ddG}")
     print(f"Uncertanty: {dddG}")
-    # assert(ddG == 10.0)
-
+    np.isclose(ddG, 8.9984, rtol=1e-2)
     f.show_summary()
-    raise RuntimeError()
 
 
 # @pytest.mark.slowtest
