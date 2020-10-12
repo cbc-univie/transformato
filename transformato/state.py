@@ -153,7 +153,7 @@ outfile.close()
                 if env == "waterbox":
                     CHARMM_input = charmm_factory(configuration = self.configuration, structure = self.system.structure, env = "waterbox")
                     try:
-                        with open(f"{intermediate_state_file_path}/CHARMM_lig_in_waterbox.inp", "w") as f:
+                        with open(f"{intermediate_state_file_path}/CHARMM_run_waterbox.inp", "w") as f:
                             f.write(CHARMM_input)
                             f.close()
                     except IOError:
@@ -162,7 +162,7 @@ outfile.close()
                 else:  # vacuum
                     CHARMM_input = charmm_factory(configuration = self.configuration, structure = self.system.structure, env = "vacuum")
                     try:
-                        with open(f"{intermediate_state_file_path}/CHARMM_lig_in_vacuum.inp", "w") as f:
+                        with open(f"{intermediate_state_file_path}/CHARMM_run_vacuum.inp", "w") as f:
                             f.write(CHARMM_input)
                             f.close()
                     except IOError:

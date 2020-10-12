@@ -266,14 +266,6 @@ DYNA CPT leap restart time 0.002 nstep @nstep -
      HOOVER    reft @temp  tmass 2000.0  tbath   @temp  firstt @temp
      echeck 0
 
-DYNA lang leap restart time 0.001 nstep @nstep -
-    nprint {steps_for_equilibration} iprfrq {round(nstep/200)} -
-    iunread 11 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
-    nsavc {nstdcd} nsavv 0 -
-    PCONSTANT pref 1.0  pmass @Pmass  pgamma   20.0 -
-    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
-    echeck 0
-
 stop"""
 
     if env == "vacuum":
