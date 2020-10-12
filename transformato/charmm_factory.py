@@ -31,8 +31,16 @@ def charmm_factory(configuration: dict, structure: str, env: str):
     nstout = configuration["simulation"]["parameters"]["nstout"]
     nstdcd = configuration["simulation"]["parameters"]["nstdcd"]
     steps_for_equilibration = configuration["solvation"]["steps_for_equilibration"]
-    GPU = True
-    switch = "vfswitch"
+    try:
+        GPU = configuration["simulation"]["parameters"]["GPU"]
+    except:
+        GPU = False
+        pass
+    try:
+        switch = configuration["simulation"]["parameters"]["switch"]
+    except:
+        switch = "vswitch"
+        pass
 
     # building a reduced toppar file and including dummy rtf and prm
     #toppar = build_reduced_toppar(tlc)
