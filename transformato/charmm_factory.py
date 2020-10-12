@@ -3,7 +3,7 @@ import datetime
 from transformato.utils import get_bin_dir, get_toppar_dir, load_config_yaml
 
 
-def parser(string, name):
+def parser(string: str, name: str):
     file_path = os.getcwd()
     file_name = name
     tmp_path = file_path + file_name
@@ -18,14 +18,16 @@ def parser(string, name):
         pass
 
 
-def charmm_factory(configuration, structure,env):
+def charmm_factory(configuration: dict, structure: str, env: str):
     """Function to build the string needed to create a CHARMM input and streaming file"""
 
-    if env == 'vacuum':
+    if env == "vacuum":
         env_dir = configuration["system"][structure]["vacuum"]["intermediate-filename"]
-    elif env == 'waterbox':
-        env_dir = configuration["system"][structure]["waterbox"]["intermediate-filename"]
-        
+    elif env == "waterbox":
+        env_dir = configuration["system"][structure]["waterbox"][
+            "intermediate-filename"
+        ]
+
     tlc = configuration["system"][structure]["tlc"]
     nstep = configuration["simulation"]["parameters"]["nstep"]
     nstout = configuration["simulation"]["parameters"]["nstout"]
@@ -36,15 +38,19 @@ def charmm_factory(configuration, structure,env):
 
     # building a reduced toppar file and including dummy rtf and prm
     toppar = build_reduced_toppar(tlc)
-    parser(toppar, '/toppar_CHARMM.str')
+    parser(toppar, "/toppar_CHARMM.str")
 
     # building whole file
-    if env == 'vacuum':
-        vacuum_CHARMM = CHARMM_string(env,env_dir,nstep,nstout,nstdcd,steps_for_equilibration,switch,GPU)
-        parser(vacuum_CHARMM, '/run_gasp_md.inp')
-    elif env == 'waterbox':
-        waterbox_CHARMM = CHARMM_string(env,env_dir,nstep,nstout, nstdcd,steps_for_equilibration,switch,GPU)
-        parser(waterbox_CHARMM, f'/run_liqp_md_{switch}.inp')
+    if env == "vacuum":
+        vacuum_CHARMM = CHARMM_string(
+            env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
+        )
+        parser(vacuum_CHARMM, "/run_gasp_md.inp")
+    elif env == "waterbox":
+        waterbox_CHARMM = CHARMM_string(
+            env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
+        )
+        parser(waterbox_CHARMM, f"/run_liqp_md_{switch}.inp")
 
 
 # toppar file
@@ -112,10 +118,20 @@ read para unit 10 append flex
 """
     return toppar
 
-def CHARMM_string(env,env_dir,nstep,nstout,nstdcd,steps_for_equilibration,switch="vswitch",GPU=False):
+
+def CHARMM_string(
+    env: str,
+    env_dir: str,
+    nstep: int,
+    nstout: int,
+    nstdcd: int,
+    steps_for_equilibration: int,
+    switch: str = "vswitch",
+    GPU: bool = False,
+):
     """Body of the CHARMM file with option for gas pahse, waterbox with vswitch and vfswitch"""
     if GPU == True:
-        GPU = f"""domdec gpu only"""   
+        GPU = f"""domdec gpu only"""
     else:
         GPU = ""
 
@@ -269,4 +285,4 @@ configuration = load_config_yaml(
     output_dir=".",
 )
 
-charmm_factory(configuration, "structure1","waterbox")
+charmm_factory(configuration, "structure1", "waterbox")
