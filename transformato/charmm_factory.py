@@ -24,11 +24,9 @@ def charmm_factory(configuration: dict, structure: str, env: str):
     if env == "vacuum":
         env_dir = configuration["system"][structure]["vacuum"]["intermediate-filename"]
     elif env == "waterbox":
-        env_dir = configuration["system"][structure]["waterbox"][
-            "intermediate-filename"
-        ]
+        env_dir = configuration["system"][structure]["waterbox"]["intermediate-filename"]
 
-    tlc = configuration["system"][structure]["tlc"]
+    #tlc = configuration["system"][structure]["tlc"]
     nstep = configuration["simulation"]["parameters"]["nstep"]
     nstout = configuration["simulation"]["parameters"]["nstout"]
     nstdcd = configuration["simulation"]["parameters"]["nstdcd"]
@@ -37,20 +35,22 @@ def charmm_factory(configuration: dict, structure: str, env: str):
     switch = "vfswitch"
 
     # building a reduced toppar file and including dummy rtf and prm
-    toppar = build_reduced_toppar(tlc)
-    parser(toppar, "/toppar_CHARMM.str")
+    #toppar = build_reduced_toppar(tlc)
+    #parser(toppar, "/toppar_CHARMM.str")
 
     # building whole file
     if env == "vacuum":
         vacuum_CHARMM = CHARMM_string(
             env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
         )
-        parser(vacuum_CHARMM, "/run_gasp_md.inp")
+        return vacuum_CHARMM
+        #parser(vacuum_CHARMM, "/run_gasp_md.inp")
     elif env == "waterbox":
         waterbox_CHARMM = CHARMM_string(
             env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
         )
-        parser(waterbox_CHARMM, f"/run_liqp_md_{switch}.inp")
+        return waterbox_CHARMM
+        #parser(waterbox_CHARMM, f"/run_liqp_md_{switch}.inp")
 
 
 # toppar file
@@ -279,10 +279,10 @@ stop"""
 
 
 # testsuit
-configuration = load_config_yaml(
-    config="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-    input_dir="data/",
-    output_dir=".",
-)
+#configuration = load_config_yaml(
+    #config="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
+    #input_dir="data/",
+    #output_dir=".",
+#)
 
-charmm_factory(configuration, "structure1", "waterbox")
+#charmm_factory(configuration, "structure1", "waterbox")
