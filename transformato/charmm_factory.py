@@ -38,7 +38,7 @@ def charmm_factory(configuration, structure,env):
     toppar = build_reduced_toppar(tlc)
     parser(toppar, '/toppar_CHARMM.str')
 
-    # gas phase
+    # building whole file
     if env == 'vacuum':
         vacuum_CHARMM = CHARMM_string(env,env_dir,nstep,nstout,nstdcd,steps_for_equilibration,switch,GPU)
         parser(vacuum_CHARMM, '/run_gasp_md.inp')
