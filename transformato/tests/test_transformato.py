@@ -1288,7 +1288,7 @@ def test_bonded_mutation():
             output_files.append(output_file_base)
 
 
-def _mutate_toluene_to_methane():
+def _mutate_toluene_to_methane_cc():
     conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
     s1 = SystemStructure(configuration, "structure1")
@@ -1360,14 +1360,54 @@ def _mutate_toluene_to_methane():
     return output_files, configuration
 
 
+def _mutate_methane_to_methane_cc():
+    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+    )
+
+    output_files = []
+    # mutate everything else before touching bonded terms
+    intst = 0
+    charges = mutation_list["charge"]
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # generate terminal lj
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=mutation_list["terminal-lj"],
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    return output_files, configuration
+
+
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_example1_systems_solvation_free_energy_with_openMM():
+def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
     from transformato import FreeEnergyCalculator
 
-    output_files, configuration = _mutate_toluene_to_methane()
+    output_files, configuration = _mutate_toluene_to_methane_cc()
 
     for path in sorted(output_files):
         # because path is object not string
@@ -1392,6 +1432,47 @@ def test_run_example1_systems_solvation_free_energy_with_openMM():
         print(exe.stderr)
 
     f = FreeEnergyCalculator(configuration, "toluene")
+    f.load_trajs(thinning=1)
+    f.calculate_dG_to_common_core()
+    ddG, dddG = f.end_state_free_energy_difference
+    print(f"Free energy difference: {ddG}")
+    print(f"Uncertanty: {dddG}")
+    np.isclose(ddG, 8.9984, rtol=1e-2)
+    f.show_summary()
+
+
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
+    from transformato import FreeEnergyCalculator
+
+    output_files, configuration = _mutate_methane_to_methane_cc()
+
+    for path in sorted(output_files):
+        # because path is object not string
+        print(f"Start sampling for: {path}")
+        try:
+            exe = subprocess.run(
+                ["bash", f"{str(path)}/simulation.sh", str(path)],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except TypeError:
+            exe = subprocess.run(
+                ["bash", f"{str(path)}/simulation.sh", str(path)],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+        print(exe.stdout)
+        print("Capture stderr")
+        print(exe.stderr)
+
+    f = FreeEnergyCalculator(configuration, "methane")
     f.load_trajs(thinning=1)
     f.calculate_dG_to_common_core()
     ddG, dddG = f.end_state_free_energy_difference
