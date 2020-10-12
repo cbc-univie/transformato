@@ -41,6 +41,27 @@ class IntermediateStateFactory(object):
         lambda_value_vdw: float = 1.0,
         common_core_transformation: float = 1.0,
     ):
+        """
+        write_state Defines everything that is written to the intermediate state directories
+
+        Parameters
+        ----------
+        mutation_conf : List
+            [description]
+        intst_nr : int
+            [description]
+        lambda_value_electrostatic : float, optional
+            [description], by default 1.0
+        lambda_value_vdw : float, optional
+            [description], by default 1.0
+        common_core_transformation : float, optional
+            [description], by default 1.0
+
+        Returns
+        -------
+        [type]
+            [description]
+        """
 
         logger.info("#########################################")
         logger.info("#########################################")
@@ -81,8 +102,8 @@ class IntermediateStateFactory(object):
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_toppar_str(
             output_file_base, self.system.tlc
-        )  # Note: this needs to be adopted for CHARMM
-        self._copy_files(output_file_base)  # Note: this needs to be adopted for CHARMM
+        )  # NOTE for BB: this needs to be adopted for CHARMM
+        self._copy_files(output_file_base)  # NOTE FOR BB: this is the main method
         return output_file_base
 
     def _add_serializer(self, file):
@@ -111,7 +132,15 @@ outfile.close()
             prms[key] = self.configuration["simulation"]["parameters"][key]
         return prms
 
-    def _copy_charmm_files(self, intermediate_state_file_path):
+    def _copy_charmm_files(self, intermediate_state_file_path: str):
+        """
+        _copy_charmm_files Copy CHARMM specific files in running directories
+
+        Parameters
+        ----------
+        intermediate_state_file_path : [type]
+            [description]
+        """
         basedir = self.system.charmm_gui_base
 
         if (
@@ -119,28 +148,13 @@ outfile.close()
             == "solvation-free-energy"
         ):
 
-            # copy production script for vacuum
-            # openMM
-            omm_simulation_script_source = (
-                f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
-            )
-            omm_simulation_script_target = (
-                f"{intermediate_state_file_path}/openmm_run_vacuum.py"
-            )
-            shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
-            self._add_serializer(omm_simulation_script_target)
-
-            # CHARMM # NOTE: A CHARMM vacuum script needs to be written -- FOR NOW THIS IS THE OPNEMM script
-            charmm_simulation_script_source = (
-                f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
-            )
-            charmm_simulation_script_target = (
-                f"{intermediate_state_file_path}/CHARMM_run_vacuum.inp"
-            )
-            shutil.copyfile(
-                charmm_simulation_script_source, charmm_simulation_script_target
-            )
-
+            for env in self.system.envs:
+                if env == "waterbox":
+                    # NOTE for BB: write the CHARMM production script
+                    pass
+                else:  # vacuum
+                    pass
+                    # CHARMM # NOTE for BB: A CHARMM vacuum script needs to be written -- FOR NOW THIS IS THE OPNEMM script
         elif (
             self.configuration["simulation"]["free-energy-type"]
             == "binding-free-energy"
@@ -163,16 +177,40 @@ outfile.close()
                 logger.critical(f"Could not find file: {f}")
                 raise
 
-        # copy charmm simulation script
-        CHARMM_simulation_script_source = f"{basedir}/waterbox/step5_production.inp"
-        CHARMM_simulation_script_target = (
-            f"{intermediate_state_file_path}/CHARMM_production.inp"
-        )
-        shutil.copyfile(
-            CHARMM_simulation_script_source, CHARMM_simulation_script_target
-        )
+        # copy crd files
+        for env in self.system.envs:
+            crd_file_source = f"{basedir}/{env}/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.crd"
+            crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
+            try:
+                shutil.copyfile(crd_file_source, crd_file_target)
+            except FileNotFoundError:
+                logger.warning(
+                    f"No crd file found for {env} -- using parmed system structure to create crd file."
+                )
+                crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
+                pm.charmm.CharmmCrdFile.write(self.system.psfs[env], crd_file_target)
 
-    def _copy_omm_files(self, intermediate_state_file_path:str):
+        # copy rst files
+        for env in self.system.envs:
+            rst_file_source = f"{basedir}/{env}/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
+            rst_file_target = f"{intermediate_state_file_path}/lig_in_{env}.rst"
+            try:
+                shutil.copyfile(rst_file_source, rst_file_target)
+            except FileNotFoundError:
+                logger.warning(
+                    f"No restart file found for {env} -- starting simulation from crd file."
+                )
+
+        # # copy charmm simulation script
+        # CHARMM_simulation_script_source = f"{basedir}/waterbox/step5_production.inp"
+        # CHARMM_simulation_script_target = (
+        #     f"{intermediate_state_file_path}/CHARMM_production.inp"
+        # )
+        # shutil.copyfile(
+        #     CHARMM_simulation_script_source, CHARMM_simulation_script_target
+        # )
+
+    def _copy_omm_files(self, intermediate_state_file_path: str):
         """
         _copy_omm_files Copyies the files needed for the production runs with openMM in the intst* directories
 
@@ -208,6 +246,7 @@ outfile.close()
                         omm_simulation_parameter_source, omm_simulation_parameter_target
                     )
 
+            # copy simulation bash script
             omm_simulation_submit_script_source = (
                 f"{self.configuration['bin_dir']}/simulation-solvation-free-energy.sh"
             )
@@ -229,6 +268,7 @@ outfile.close()
                     omm_simulation_parameter_source, omm_simulation_parameter_target
                 )
 
+            # copy simulation bash script
             omm_simulation_submit_script_source = (
                 f"{self.configuration['bin_dir']}/simulation-binding-free-energy.sh"
             )
@@ -291,12 +331,9 @@ outfile.close()
         # add serialization
         self._add_serializer(omm_simulation_script_target)
 
-    def _copy_files(self, intermediate_state_file_path):
-        """
-        Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
-        """
-
-        basedir = self.system.charmm_gui_base
+    def _copy_ligand_specific_top_and_par(
+        self, basedir: str, intermediate_state_file_path: str
+    ):
 
         # copy ligand rtf file
         ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
@@ -310,7 +347,18 @@ outfile.close()
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
         shutil.copyfile(ligand_prm, toppar_target)
 
-        # copy toppar folder
+    def _copy_files(
+        self, intermediate_state_file_path: str
+    ):  # NOTE FOR BB: this is the main thing
+        """
+        Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
+        """
+
+        basedir = self.system.charmm_gui_base
+
+        self._copy_ligand_specific_top_and_par(basedir, intermediate_state_file_path)
+
+        # copy central toppar folder
         toppar_dir = get_toppar_dir()
         toppar_source = f"{toppar_dir}"
         toppar_target = f"{intermediate_state_file_path}/toppar"
@@ -677,7 +725,7 @@ dummy_parameters.prm
         f.write(toppar_format)
         f.close()
 
-        # TODO write charmm toppar.str file: charmm_toppar.str
+        # TODO for BB: write charmm toppar.str file: CHARMM_toppar.str
 
     def _write_psf(self, psf, output_file_base: str, env: str):
         """
