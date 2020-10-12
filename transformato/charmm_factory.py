@@ -140,7 +140,7 @@ def CHARMM_string(
 *
 
 ! Read topology and parameter files 
-stream toppar_CHARMM.str 
+stream CHARMM_toppar.str 
 
 ! Read PSF 
 open read unit 10 card name {env_dir}.psf 
@@ -177,12 +177,12 @@ mini sd nstep 100
 set nstep = {nstep} 
 set temp = 300.0
 
-open write unit 12 card name gas_eq_CHARMM.rst
+open write unit 12 card name CHARMM_gas_eq.rst
 scalar fbeta set 5. sele all end
 
-open read  unit 11 card name gas_equil1_CHARMM.rst
-open write unit 12 card name gasp_CHARMM.rst
-open write unit 21 file name gasp_CHARMM.dcd
+open read  unit 11 card name CHARMM_gas_equil1.rst
+open write unit 12 card name CHARMM_gasp.rst
+open write unit 21 file name CHARMM_gasp.dcd
  
 DYNA lang leap restart time 0.001 nstep @nstep -
     nprint {nstout} iprfrq {round(nstep/20)} -
@@ -196,10 +196,16 @@ stop"""
     ##### waterbox ######
     liquid_phase = f"""
 !
+! Setup PBC (Periodic Boundary Condition)
+!
+
+stream CHARMM_step3_pbcsetup.str
+
+!
 ! Image Setup
 !
 
-open read unit 10 card name crystal_image.str
+open read unit 10 card name CHARMM_crystal_image.str
 CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
@@ -249,8 +255,8 @@ set temp = 303.15
 shak bonh para fast sele segi SOLV end
 
 calc pcnt = @cnt - 1
-if pcnt .eq. 0 open read  unit 11 card name lig_in_waterbox_CHARMM.rst 
-open write unit 13 file name lig_in_waterbox_CHARMM.dcd 
+if pcnt .eq. 0 open read  unit 11 card name CHARMM_lig_in_waterbox.rst 
+open write unit 13 file name CHARMM_lig_in_waterbox.dcd 
 
 DYNA CPT leap restart time 0.002 nstep @nstep -
      nprint {steps_for_equilibration} iprfrq {steps_for_equilibration} ntrfrq {steps_for_equilibration} -
