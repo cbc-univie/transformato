@@ -5,7 +5,7 @@
 DIMENS CHSIZE 5000000 MAXRES 3000000
 
 ! Read topology and parameter files
-stream toppar.str ! MW-comment: toppar_CHARMM.str
+stream toppar.str ! MW-comment: CHARMM_toppar.str
 
 ! Read PSF
 open read unit 10 card name step3_pbcsetup.psf ! MW-comment: lig_in_waterbox.psf
@@ -38,6 +38,7 @@ if pcnt .gt. 0 then
     calc C = ?XTLC
 endif
 ! MW-comment: DELTE !!!
+
 !
 ! Image Setup
 !
