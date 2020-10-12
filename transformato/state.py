@@ -7,6 +7,7 @@ import transformato
 
 from .utils import get_toppar_dir
 from .mutate import Mutation
+from transformato.charmm_factory import charmm_factory, build_reduced_toppar
 
 from typing import List
 import types
@@ -150,9 +151,10 @@ outfile.close()
 
             for env in self.system.envs:
                 if env == "waterbox":
-                    # NOTE for BB: write the CHARMM production script
+                    charmm_factory(configuration = self.configuration, structure = self.system.structure, env = "waterbox")
                     pass
                 else:  # vacuum
+                    charmm_factory(configuration = self.configuration, structure = self.system.structure, env = "vacuum")
                     pass
                     # CHARMM # NOTE for BB: A CHARMM vacuum script needs to be written -- FOR NOW THIS IS THE OPNEMM script
         elif (
@@ -726,6 +728,12 @@ dummy_parameters.prm
         f.close()
 
         # TODO for BB: write charmm toppar.str file: CHARMM_toppar.str
+        toppar_CHARMM = build_reduced_toppar(tlc.lower())
+
+        f = open(f"{output_file_base}/toppar_CHARMM.str", "w+")
+        f.write(toppar_CHARMM)
+        f.close()
+
 
     def _write_psf(self, psf, output_file_base: str, env: str):
         """
