@@ -33,12 +33,12 @@ def charmm_factory(configuration: dict, structure: str, env: str):
     steps_for_equilibration = configuration["solvation"]["steps_for_equilibration"]
     try:
         GPU = configuration["simulation"]["parameters"]["GPU"]
-    except:
+    except KeyError:
         GPU = False
         pass
     try:
         switch = configuration["simulation"]["parameters"]["switch"]
-    except:
+    except KeyError:
         switch = "vswitch"
         pass
 
