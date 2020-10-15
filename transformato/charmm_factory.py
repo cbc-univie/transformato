@@ -178,13 +178,12 @@ set nstep = {nstep}
 set temp = 300.0
 
 scalar fbeta set 5. sele all end
-
 open write unit 12 card name charmm_gasp.rst
 open write unit 21 file name charmm_gasp.dcd
  
 DYNA lang leap start time 0.001 nstep @nstep -
     nprint {nstout} iprfrq {round(nstep/20)} -
-    iunread 11 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
+    iunread -1 iunwri -1 iuncrd 21 iunvel -1 kunit -1 -
     nsavc {nstdcd} nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     echeck 0
