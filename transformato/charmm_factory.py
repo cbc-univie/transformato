@@ -101,19 +101,19 @@ stream ./toppar/toppar_water_ions.str
 
 ! Read {tlc} RTF 
 open read unit 10 card name {tlc}_g.rtf 
-read rtf unit 10 append
+read rtf card unit 10 append
 
 ! Read {tlc} prm 
 open read unit 10 card name {tlc}.prm 
-read para unit 10 append flex
+read para card unit 10 append flex
 
 ! Read dummy_atom RTF 
 open read unit 10 card name dummy_atom_definitions.rtf 
-read rtf unit 10 append
+read rtf card unit 10 append
 
 ! Read dummy_atom prm 
 open read unit 10 card name dummy_parameters.prm 
-read para unit 10 append flex
+read para card unit 10 append flex
 
 """
     return toppar
