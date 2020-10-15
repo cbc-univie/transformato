@@ -38,16 +38,13 @@ mini sd nstep 100
 set nstep = 2000 
 set temp = 300.0
 
-open write unit 12 card name charmm_gas_eq.rst
 scalar fbeta set 5. sele all end
-
-open read  unit 11 card name charmm_gas_equil1.rst
 open write unit 12 card name charmm_gasp.rst
 open write unit 21 file name charmm_gasp.dcd
  
-DYNA lang leap restart time 0.001 nstep @nstep -
+DYNA lang leap start time 0.001 nstep @nstep -
     nprint 50 iprfrq 100 -
-    iunread 11 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
+    iunread -1 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
     nsavc 5 nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     echeck 0
