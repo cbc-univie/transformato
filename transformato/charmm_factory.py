@@ -42,30 +42,22 @@ def charmm_factory(configuration: dict, structure: str, env: str):
         switch = "vswitch"
         pass
 
-    # building a reduced toppar file and including dummy rtf and prm
-    #toppar = build_reduced_toppar(tlc)
-    #parser(toppar, "/toppar_CHARMM.str")
-
     # building whole file
     if env == "vacuum":
-        vacuum_CHARMM = CHARMM_string(
+        charmm_vacuum = charmm_string(
             env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
         )
-        return vacuum_CHARMM
-        #parser(vacuum_CHARMM, "/run_gasp_md.inp")
+        return charmm_vacuum
     elif env == "waterbox":
-        waterbox_CHARMM = CHARMM_string(
+        charmm_waterbox = charmm_string(
             env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
         )
-        return waterbox_CHARMM
-        #parser(waterbox_CHARMM, f"/run_liqp_md_{switch}.inp")
-
+        return charmm_waterbox
 
 # toppar file
 def build_reduced_toppar(tlc):
     date = datetime.date.today()
-    toppar = f"""
-* Simplified toppar script 
+    toppar = f"""* Simplified toppar script 
 * Version from {date} 
 *
 
@@ -127,7 +119,7 @@ read para unit 10 append flex
     return toppar
 
 
-def CHARMM_string(
+def charmm_string(
     env: str,
     env_dir: str,
     nstep: int,
@@ -148,7 +140,7 @@ def CHARMM_string(
 *
 
 ! Read topology and parameter files 
-stream CHARMM_toppar.str 
+stream charmm_toppar.str 
 
 ! Read PSF 
 open read unit 10 card name {env_dir}.psf 
@@ -185,12 +177,12 @@ mini sd nstep 100
 set nstep = {nstep} 
 set temp = 300.0
 
-open write unit 12 card name CHARMM_gas_eq.rst
+open write unit 12 card name charmm_gas_eq.rst
 scalar fbeta set 5. sele all end
 
-open read  unit 11 card name CHARMM_gas_equil1.rst
-open write unit 12 card name CHARMM_gasp.rst
-open write unit 21 file name CHARMM_gasp.dcd
+open read  unit 11 card name charmm_gas_equil1.rst
+open write unit 12 card name charmm_gasp.rst
+open write unit 21 file name charmm_gasp.dcd
  
 DYNA lang leap restart time 0.001 nstep @nstep -
     nprint {nstout} iprfrq {round(nstep/20)} -
@@ -207,13 +199,13 @@ stop"""
 ! Setup PBC (Periodic Boundary Condition)
 !
 
-stream CHARMM_step3_pbcsetup.str
+stream charmm_step3_pbcsetup.str
 
 !
 ! Image Setup
 !
 
-open read unit 10 card name CHARMM_crystal_image.str
+open read unit 10 card name charmm_crystal_image.str
 CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
@@ -263,8 +255,8 @@ set temp = 303.15
 shak bonh para fast sele segi SOLV end
 
 calc pcnt = @cnt - 1
-if pcnt .eq. 0 open read  unit 11 card name CHARMM_lig_in_waterbox.rst 
-open write unit 13 file name CHARMM_lig_in_waterbox.dcd 
+if pcnt .eq. 0 open read  unit 11 card name charmm_lig_in_waterbox.rst 
+open write unit 13 file name charmm_lig_in_waterbox.dcd 
 
 DYNA CPT leap restart time 0.002 nstep @nstep -
      nprint {steps_for_equilibration} iprfrq {steps_for_equilibration} ntrfrq {steps_for_equilibration} -
@@ -277,18 +269,8 @@ DYNA CPT leap restart time 0.002 nstep @nstep -
 stop"""
 
     if env == "vacuum":
-        vacuum_CHARMM = f"{header}{gas_phase}"
-        return vacuum_CHARMM
+        charmm_vacuum = f"{header}{gas_phase}"
+        return charmm_vacuum
     elif env == "waterbox":
-        waterbox_CHARMM = f"{header}{liquid_phase}"
-        return waterbox_CHARMM
-
-
-# testsuit
-#configuration = load_config_yaml(
-    #config="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-    #input_dir="data/",
-    #output_dir=".",
-#)
-
-#charmm_factory(configuration, "structure1", "waterbox")
+        charmm_waterbox = f"{header}{liquid_phase}"
+        return charmm_waterbox
