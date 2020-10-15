@@ -151,38 +151,38 @@ outfile.close()
 
             for env in self.system.envs:
                 if env == "waterbox":
-                    CHARMM_input = charmm_factory(
+                    charmm_input = charmm_factory(
                         configuration=self.configuration,
                         structure=self.system.structure,
                         env="waterbox",
                     )
                     try:
                         with open(
-                            f"{intermediate_state_file_path}/CHARMM_run_waterbox.inp",
+                            f"{intermediate_state_file_path}/charmm_run_waterbox.inp",
                             "w",
                         ) as f:
-                            f.write(CHARMM_input)
+                            f.write(charmm_input)
                             f.close()
                     except IOError:
                         logger.info(
-                            f"Data class could not be created: CHARMM_lig_in_{env}.inp"
+                            f"Data class could not be created: charmm_lig_in_{env}.inp"
                         )
                     pass
                 else:  # vacuum
-                    CHARMM_input = charmm_factory(
+                    charmm_input = charmm_factory(
                         configuration=self.configuration,
                         structure=self.system.structure,
                         env="vacuum",
                     )
                     try:
                         with open(
-                            f"{intermediate_state_file_path}/CHARMM_run_vacuum.inp", "w"
+                            f"{intermediate_state_file_path}/charmm_run_vacuum.inp", "w"
                         ) as f:
-                            f.write(CHARMM_input)
+                            f.write(charmm_input)
                             f.close()
                     except IOError:
                         logger.info(
-                            f"Data class could not be created: CHARMM_lig_in_{env}.inp"
+                            f"Data class could not be created: charmm_lig_in_{env}.inp"
                         )
                     pass
                     # CHARMM # NOTE for BB: A CHARMM vacuum script needs to be written -- FOR NOW THIS IS THE OPNEMM script
@@ -201,9 +201,9 @@ outfile.close()
         ]
         for f in FILES:
             try:
-                CHARMM_source = f"{basedir}/waterbox/{f}"
-                CHARMM_target = f"{intermediate_state_file_path}/CHARMM_{f}"
-                shutil.copyfile(CHARMM_source, CHARMM_target)
+                charmm_source = f"{basedir}/waterbox/{f}"
+                charmm_target = f"{intermediate_state_file_path}/charmm_{f}"
+                shutil.copyfile(charmm_source, charmm_target)
             except OSError:
                 logger.critical(f"Could not find file: {f}")
                 raise
@@ -233,12 +233,12 @@ outfile.close()
                 )
 
         # # copy charmm simulation script
-        # CHARMM_simulation_script_source = f"{basedir}/waterbox/step5_production.inp"
-        # CHARMM_simulation_script_target = (
-        #     f"{intermediate_state_file_path}/CHARMM_production.inp"
+        # charmm_simulation_script_source = f"{basedir}/waterbox/step5_production.inp"
+        # charmm_simulation_script_target = (
+        #     f"{intermediate_state_file_path}/charmm_production.inp"
         # )
         # shutil.copyfile(
-        #     CHARMM_simulation_script_source, CHARMM_simulation_script_target
+        #     charmm_simulation_script_source, charmm_simulation_script_target
         # )
 
     def _copy_omm_files(self, intermediate_state_file_path: str):
@@ -764,11 +764,11 @@ dummy_parameters.prm
         f.write(toppar_format)
         f.close()
 
-        # TODO for BB: write charmm toppar.str file: CHARMM_toppar.str
-        toppar_CHARMM = build_reduced_toppar(tlc.lower())
+        # TODO for BB: write charmm toppar.str file: charmm_toppar.str
+        charmm_toppar = build_reduced_toppar(tlc.lower())
 
-        f = open(f"{output_file_base}/CHARMM_toppar.str", "w+")
-        f.write(toppar_CHARMM)
+        f = open(f"{output_file_base}/charmm_toppar.str", "w+")
+        f.write(charmm_toppar)
         f.close()
 
     def _write_psf(self, psf, output_file_base: str, env: str):
