@@ -42,7 +42,7 @@ system:
 simulation:
   ################
   parameters:
-    nstep: 2000
+    nstep: 1000
     nstdcd: 5
     nstout: 50
     dt: 0.001

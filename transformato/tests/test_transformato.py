@@ -1377,7 +1377,7 @@ def _mutate_methane_to_methane_cc():
 
     output_files = []
     # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
     charges = mutation_list["charge"]
     # turn off charges
     output_file_base = i.write_state(
