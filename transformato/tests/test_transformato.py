@@ -491,7 +491,7 @@ def test_common_core_system1():
     for conf in [
         "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
         "transformato/tests/config/test-neopentane-methane-solvation-free-energy.yaml",
-        "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml",
+        "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
     ]:
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
@@ -521,7 +521,7 @@ def test_mutation_list():
         [
             "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
             "transformato/tests/config/test-neopentane-methane-solvation-free-energy.yaml",
-            "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
         ],
         ["toluene-methane", "neopentane-methane", "ethane-ethanol"],
     ):
@@ -532,7 +532,7 @@ def test_mutation_list():
 
         s1_to_s2 = ProposeMutationRoute(s1, s2)
 
-        if system_name == "ethane-ethanol":
+        if system_name == "ethane-methanol":
             s1_to_s2.calculate_common_core()
             mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
             assert set(mutation_list.keys()) == set(
@@ -565,7 +565,7 @@ def test_endpoint_mutation():
 
     for conf in [
         "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-        "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml",
+        "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
     ]:
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
@@ -594,7 +594,7 @@ def test_charge_mutation_test_system1():
     for conf, system_name in zip(
         [
             "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-            "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
         ],
         ["toluene-methane" "ethane-ethanol"],
     ):
