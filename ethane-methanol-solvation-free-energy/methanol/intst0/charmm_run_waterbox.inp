@@ -40,7 +40,7 @@ nbonds atom vatom vswitch bycb -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
 
 energy
-
+domdec gpu only
 energy
 
 !

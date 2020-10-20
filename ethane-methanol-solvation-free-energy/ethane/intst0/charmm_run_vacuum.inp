@@ -30,7 +30,7 @@ nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
   inbfrq 1 
 
 energy   inbfrq 1
-
+domdec gpu only
 energy   inbfrq 0
 
 mini sd nstep 100

@@ -19,6 +19,7 @@ from omm_readparams import *
 from omm_vfswitch import *
 from omm_barostat import *
 from omm_restraints import *
+from omm_hmr import *
 from omm_rewrap import *
 
 from simtk.unit import *
@@ -38,6 +39,7 @@ parser.add_argument('-opdb', metavar='PDBFILE', dest='opdb', help='Output PDB fi
 parser.add_argument('-orst', metavar='RSTFILE', dest='orst', help='Output restart file (optional)', default=None)
 parser.add_argument('-ochk', metavar='CHKFILE', dest='ochk', help='Output checkpoint file (optional)', default=None)
 parser.add_argument('-odcd', metavar='DCDFILE', dest='odcd', help='Output trajectory file (optional)', default=None)
+parser.add_argument('-hmr', dest='hmr', help='Apply Hydrogen Mass Repartitioning (optional)', action='store_true', default=False)
 parser.add_argument('-rewrap', dest='rewrap', help='Re-wrap the coordinates in a molecular basis (optional)', action='store_true', default=False)
 args = parser.parse_args()
 
@@ -61,6 +63,7 @@ system = psf.createSystem(params, nonbondedMethod=inputs.coulomb,
 if inputs.vdw == 'Force-switch': system = vfswitch(system, psf, inputs)
 if inputs.pcouple == 'yes':      system = barostat(system, inputs)
 if inputs.rest == 'yes':         system = restraints(system, crd, inputs)
+if args.hmr:                     system = HydrogenMassRepartition(system, psf)
 integrator = LangevinIntegrator(inputs.temp*kelvin, inputs.fric_coeff/picosecond, inputs.dt*picoseconds)
 
 # Set platform
@@ -114,7 +117,16 @@ if inputs.nstep > 0:
         StateDataReporter(sys.stdout, inputs.nstout, step=True, time=True, potentialEnergy=True, temperature=True, progress=True,
                           remainingTime=True, speed=True, totalSteps=inputs.nstep, separator='\t')
     )
-    simulation.step(inputs.nstep)
+    # Simulated annealing?
+    if inputs.annealing == 'yes':
+        interval = inputs.interval
+        temp = inputs.temp_init
+        for i in range(inputs.nstep):
+            integrator.setTemperature(temp*kelvin)
+            simulation.step(1)
+            temp += interval
+    else:
+        simulation.step(inputs.nstep)
 
 # Write restart file
 if not (args.orst or args.ochk): args.orst = 'output.rst'

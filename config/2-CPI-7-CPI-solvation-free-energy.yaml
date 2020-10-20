@@ -75,7 +75,7 @@ simulation:
     nstout: 5000
     cons: None
     dt: 0.001
-    switch : "vfswitch"
+    switch : "vswitch"
   GPU : True
   free-energy-type:
     'solvation-free-energy'

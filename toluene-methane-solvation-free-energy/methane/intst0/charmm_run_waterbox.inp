@@ -40,7 +40,7 @@ nbonds atom vatom vswitch bycb -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
 
 energy
-
+domdec gpu only
 energy
 
 !
@@ -66,7 +66,7 @@ END
 scalar mass stat
 calc Pmass = int ( ?stot  /  50.0 )
 
-set nstep = 2000
+set nstep = 1000
 set temp = 303.15
 
 !shak bonh para fast sele segi WAT end

@@ -80,6 +80,8 @@ simulation:
       None
     dt:
       0.002
+    switch : "vswitch"
+  GPU : True
   free-energy-type:
     'binding-free-energy'
     #'solvation-free-energy'

@@ -30,12 +30,12 @@ nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
   inbfrq 1 
 
 energy   inbfrq 1
-
+domdec gpu only
 energy   inbfrq 0
 
 mini sd nstep 100
 
-set nstep = 2000 
+set nstep = 1000 
 set temp = 300.0
 
 scalar fbeta set 5. sele all end
@@ -43,7 +43,7 @@ open write unit 12 card name charmm_gasp.rst
 open write unit 21 file name charmm_gasp.dcd
  
 DYNA lang leap start time 0.001 nstep @nstep -
-    nprint 50 iprfrq 100 -
+    nprint 50 iprfrq 50 -
     iunread -1 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
     nsavc 5 nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -

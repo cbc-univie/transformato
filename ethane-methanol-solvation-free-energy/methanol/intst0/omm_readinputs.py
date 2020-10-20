@@ -55,6 +55,10 @@ class _OpenMMReadInputs():
         self.fc_ldih          = 0.0                                       # Dihedral restraint force constant for lipids (kJ/mol/rad^2)
         self.fc_cdih          = 0.0                                       # Dihedral restraint force constant for carbohydrates (kJ/mol/rad^2)
 
+        self.annealing        = 'no'                                      # Turn on/off simulated annealing
+        self.temp_init        = 0.0                                       # Inital temperature of simulated annealing
+        self.interval         = 0.0                                       # Annealing temperature increment
+
     def read(self, inputFile):
         for line in open(inputFile, 'r'):
             if line.find('#') >= 0: line = line.split('#')[0]
@@ -135,6 +139,10 @@ class _OpenMMReadInputs():
                     if input_param == 'FC_LPOS':                        self.fc_lpos          = float(input_value)
                     if input_param == 'FC_LDIH':                        self.fc_ldih          = float(input_value)
                     if input_param == 'FC_CDIH':                        self.fc_cdih          = float(input_value)
+                    if input_param == 'ANNEALING':
+                        if input_value.upper() == 'YES':                self.annealing        = 'yes'
+                    if input_param == 'TEMP_INIT':                        self.temp_init = float(input_value)
+                    if input_param == 'INTERVAL':                       self.interval = float(input_value)
         return self
 
 def read_inputs(inputFile):
