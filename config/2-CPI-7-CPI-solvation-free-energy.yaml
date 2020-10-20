@@ -70,16 +70,13 @@ system:
 simulation:
 ################
   parameters:
-    nstep:
-      5000000
-    nstdcd:
-      5000
-    nstout:
-      5000
-    cons:
-      None
-    dt:
-      0.001
+    nstep: 5000000
+    nstdcd: 5000
+    nstout: 5000
+    cons: None
+    dt: 0.001
+    switch : "vfswitch"
+  GPU : True
   free-energy-type:
     'solvation-free-energy'
 ################
