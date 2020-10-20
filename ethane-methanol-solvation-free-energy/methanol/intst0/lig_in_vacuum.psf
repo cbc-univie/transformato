@@ -1,0 +1,49 @@
+PSF CHEQ EXT XPLOR
+
+         1 !NTITLE
+
+
+         6 !NATOM
+         1 HETA     900      UNK      C        CG331   -0.040000       12.0110           
+         2 HETA     900      UNK      H1       HGA3     0.090000        1.0080           
+         3 HETA     900      UNK      H2       HGA3     0.090000        1.0080           
+         4 HETA     900      UNK      H3       HGA3     0.090000        1.0080           
+         5 HETA     900      UNK      O        OG311   -0.650000       15.9994           
+         6 HETA     900      UNK      H4       HGP1     0.420000        1.0080           
+
+         5 !NBOND: bonds
+         1         2         1         3         1         4         1         5
+         5         6
+
+         7 !NTHETA: angles
+         2         1         3         2         1         4         2         1         5
+         3         1         4         3         1         5         4         1         5
+         1         5         6
+
+         3 !NPHI: dihedrals
+         2         1         5         6         3         1         5         6
+         4         1         5         6
+
+         0 !NIMPHI: impropers
+
+
+         0 !NDON: donors
+
+
+         0 !NACC: acceptors
+
+
+         0 !NNB
+
+         0         0         0         0         0         0
+
+         1         0 !NGRP NST2
+         0         1         0
+
+         1 !MOLNT
+         1         1         1         1         1         1
+
+         0         0 !NUMLP NUMLPH
+
+         0 !NCRTERM: cross-terms
+

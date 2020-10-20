@@ -1,4 +1,4 @@
-nstep                     = 2000                      # Number of steps to run        
+nstep                     = 1000                      # Number of steps to run        
 dt                        = 0.001                     # Time-step (ps)                
 
 nstout                    = 50                        # Writing output frequency (steps)

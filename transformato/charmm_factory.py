@@ -1,22 +1,4 @@
-import os
 import datetime
-from transformato.utils import get_bin_dir, get_toppar_dir, load_config_yaml
-
-
-def parser(string: str, name: str):
-    file_path = os.getcwd()
-    file_name = name
-    tmp_path = file_path + file_name
-
-    try:
-        with open(tmp_path, "w") as f:
-            f.write(string)
-            f.close()
-    except IOError:
-        print(f"CHARMM input for {file_name} could not be created.")
-        # logger.info(f"Data class could not be created: {file_name}")
-        pass
-
 
 def charmm_factory(configuration: dict, structure: str, env: str):
     """Function to build the string needed to create a CHARMM input and streaming file"""
@@ -31,20 +13,18 @@ def charmm_factory(configuration: dict, structure: str, env: str):
     nstout = configuration["simulation"]["parameters"]["nstout"]
     nstdcd = configuration["simulation"]["parameters"]["nstdcd"]
     steps_for_equilibration = configuration["solvation"]["steps_for_equilibration"]
-    switch = configuration["simulation"]["parameters"]["switch"]
-    GPU = configuration["simulation"]["GPU"]
-    """try:
-        GPU = configuration["simulation"]["parameters"]["GPU"]
-        print (GPU)
+    #switch = configuration["simulation"]["parameters"]["switch"]
+    #GPU = configuration["simulation"]["GPU"]
+    try:
+        GPU = configuration["simulation"]["GPU"]
     except KeyError:
-        GPU = True
+        GPU = False
         pass
     try:
         switch = configuration["simulation"]["parameters"]["switch"]
-        print (switch)
     except KeyError:
         switch = "vswitch"
-        pass"""
+        pass
 
     # building whole file
     if env == "vacuum":
@@ -130,8 +110,8 @@ def charmm_string(
     nstout: int,
     nstdcd: int,
     steps_for_equilibration: int,
-    switch: str = "vswitch",
-    GPU: bool = False,
+    switch: str,
+    GPU: bool,
 ):
     """Body of the CHARMM file with option for gas pahse, waterbox with vswitch and vfswitch"""
     if GPU == True:

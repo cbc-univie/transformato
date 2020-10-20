@@ -40,12 +40,12 @@ read para card unit 20 append flex
 ! Additional topologies and parameters for water and ions 
 stream ./toppar/toppar_water_ions.str
 
-! Read lig RTF 
-open read unit 10 card name lig_g.rtf 
+! Read unk RTF 
+open read unit 10 card name unk_g.rtf 
 read rtf card unit 10 append
 
-! Read lig prm 
-open read unit 10 card name lig.prm 
+! Read unk prm 
+open read unit 10 card name unk.prm 
 read para card unit 10 append flex
 
 ! Read dummy_atom RTF 
