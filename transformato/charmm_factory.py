@@ -31,16 +31,20 @@ def charmm_factory(configuration: dict, structure: str, env: str):
     nstout = configuration["simulation"]["parameters"]["nstout"]
     nstdcd = configuration["simulation"]["parameters"]["nstdcd"]
     steps_for_equilibration = configuration["solvation"]["steps_for_equilibration"]
-    try:
+    switch = configuration["simulation"]["parameters"]["switch"]
+    GPU = configuration["simulation"]["GPU"]
+    """try:
         GPU = configuration["simulation"]["parameters"]["GPU"]
+        print (GPU)
     except KeyError:
-        GPU = False
+        GPU = True
         pass
     try:
         switch = configuration["simulation"]["parameters"]["switch"]
+        print (switch)
     except KeyError:
         switch = "vswitch"
-        pass
+        pass"""
 
     # building whole file
     if env == "vacuum":

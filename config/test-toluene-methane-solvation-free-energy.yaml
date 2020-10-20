@@ -46,6 +46,8 @@ simulation:
     nstdcd: 500
     nstout: 5000
     dt: 0.001
+    switch : "vfswitch"
+  GPU : True
   free-energy-type: "solvation-free-energy"
 ################
 solvation:
