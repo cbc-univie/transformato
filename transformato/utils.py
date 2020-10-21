@@ -108,28 +108,3 @@ def psf_correction(str_object: StringIO):
             new_str += f"{line}\n"
 
     return new_str
-    #         if "!NBOND" in line:
-    #             new_file = f"{new_file}{line}"
-    #             flag = False
-    #         else:
-    #             line = line.split()
-    #             if len(line) != 11:
-    #                 new_file = f"{new_file}\n"
-    #             else:
-    #                 space = " "
-    #                 a = 10 - len(line[0])
-    #                 b = 1
-    #                 c = 9 - len(line[1])
-    #                 d = 9 - len(line[2])
-    #                 e = 9 - len(line[3])
-    #                 f = 9 - len(line[4])
-    #                 g = 17 - len(line[6]) - len(line[5])
-    #                 h = 14 - len(line[7])
-    #                 i = 12 - len(line[8])
-    #                 j = 10 - len(line[9])
-    #                 k = 18 - len(line[10])
-    #                 new_line = f"{space*a}{line[0]}{space*b}{line[1]}{space*c}{line[2]}{space*d}{line[3]}{space*e}{line[4]}{space*f}{line[5]}{space*g}{line[6]}{space*h}{line[7]}{space*i}{line[8]}{space*j}{line[9]}{space*k}{line[10]}\n"
-    #                 if len(new_line) == 119:
-    #                     new_file = f"{new_file}{new_line}"
-    #                 else:
-    #                     print("Error")
