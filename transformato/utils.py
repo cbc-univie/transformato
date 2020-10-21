@@ -85,7 +85,7 @@ def load_config_yaml(config, input_dir, output_dir):
 def psf_correction(str_object: StringIO):
     """Correcting the issue with 2 missing spaces in the waterbox psf files"""
     str_object = str_object.getvalue()  # get the values as a long string
-
+    new_str = ""
     correction_on = False
     for line in str_object.split("\n"):  # split on newline charactar
         if "!NATOM" in line:  # if !NATOM is found start correction mode
@@ -99,11 +99,13 @@ def psf_correction(str_object: StringIO):
             correction_on == True
         ):  # if in correction mode take the string, split on whitespace and put the values in a newly formated string
             values = line.split()
-            corrected_string = f"         1 HETA     1        UNL      C1       CG331   -0.270000       12.0110           0   0.00000     -0.301140E-02"
-            corrected_string = f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10.6}{values[7]:>14.4}{values[8]:>8} {values[9]:1}{values[10]:>10.5}{values[11]:>18}"
-            new_str += corrected_string
+            if len(values) != 11:
+                new_str += f"{line}\n"
+            else:
+                corrected_string = f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
+                new_str += corrected_string
         else:  # otherwise add line to new_str
-            new_str += line
+            new_str += f"{line}\n"
 
     return new_str
     #         if "!NBOND" in line:
