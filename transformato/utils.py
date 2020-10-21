@@ -100,6 +100,7 @@ def psf_correction(str_object: StringIO):
         ):  # if in correction mode take the string, split on whitespace and put the values in a newly formated string
             values = line.split()
             corrected_string = f"         1 HETA     1        UNL      C1       CG331   -0.270000       12.0110           0   0.00000     -0.301140E-02"
+            corrected_string = f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10.6}{values[7]:>14.4}{values[8]:>8} {values[9]:1}{values[10]:>10.5}{values[11]:>18}"
             new_str += corrected_string
         else:  # otherwise add line to new_str
             new_str += line

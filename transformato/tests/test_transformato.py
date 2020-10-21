@@ -15,7 +15,6 @@ import parmed as pm
 import pytest
 
 from io import StringIO
-import io 
 import filecmp
 
 # Import package, test suite, and other packages as needed
