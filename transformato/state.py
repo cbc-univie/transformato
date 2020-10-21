@@ -204,7 +204,7 @@ outfile.close()
                 charmm_source = f"{basedir}/waterbox/{f}"
                 charmm_target = f"{intermediate_state_file_path}/charmm_{f}"
                 shutil.copyfile(charmm_source, charmm_target)
-            except OSError:
+            except FileNotFoundError:
                 logger.critical(f"Could not find file: {f}")
                 raise
 

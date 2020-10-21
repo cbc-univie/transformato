@@ -642,9 +642,9 @@ def test_charge_mutation_test_system2():
         [
             "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
             "transformato/tests/config/test-neopentane-methane-solvation-free-energy.yaml",
-            "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
         ],
-        ["toluene-methane", "neopentane-methane", "ethane-ethanol"],
+        ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
 
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
@@ -707,9 +707,9 @@ def test_vdw_mutation_for_hydrogens_system1():
         [
             "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
             "transformato/tests/config/test-neopentane-methane-solvation-free-energy.yaml",
-            "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
         ],
-        ["toluene-methane", "neopentane-methane", "ethane-ethanol"],
+        ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
@@ -866,9 +866,9 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
         [
             "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
             "transformato/tests/config/test-neopentane-methane-solvation-free-energy.yaml",
-            "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
         ],
-        ["toluene-methane", "neopentane-methane", "ethane-ethanol"],
+        ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
@@ -1019,9 +1019,9 @@ def test_full_mutation_system1():
         [
             "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
             "transformato/tests/config/test-neopentane-methane-solvation-free-energy.yaml",
-            "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml",
+            "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
         ],
-        ["toluene-methane", "neopentane-methane", "ethane-ethanol"],
+        ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
