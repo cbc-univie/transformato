@@ -99,7 +99,7 @@ def psf_correction(str_object: StringIO):
             correction_on == True
         ):  # if in correction mode take the string, split on whitespace and put the values in a newly formated string
             values = line.split()
-            if len(values) != 11:
+            if len(values) != 11: # skip empty lines
                 new_str += f"{line}\n"
             else:
                 corrected_string = f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
