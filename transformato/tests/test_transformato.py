@@ -14,6 +14,9 @@ import numpy as np
 import parmed as pm
 import pytest
 
+from io import StringIO
+import io 
+
 # Import package, test suite, and other packages as needed
 import transformato
 
@@ -24,6 +27,7 @@ from transformato import (
     ProposeMutationRoute,
     SystemStructure,
     load_config_yaml,
+    psf_correction
 )
 
 
@@ -68,6 +72,24 @@ def test_read_yaml():
 
     assert settingsMap["system"]["name"] == "toluene-methane-solvation-free-energy"
 
+def test_psf_files():
+    test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
+    output = StringIO()
+    test_psf.write_psf("transformato/tests/config/test_input_wrong.psf")
+    test_psf.write_psf(output)
+    corrected_psf = psf_correction(output)
+    f = open("transformato/tests/config/test_input_corrected.psf", "w+")
+    f.write (corrected_psf)
+    f.close()
+
+    assert(filecmp.cmp("transformato/tests/config/test_input.psf","transformato/tests/config/test_input_corrected.psf") == True)
+    assert(filecmp.cmp("transformato/tests/config/test_input.psf","transformato/tests/config/test_input_wrong.psf") == False)
+
+    if os.path.exists("transformato/tests/config/test_input_corrected.psf"):
+        os.remove("transformato/tests/config/test_input_corrected.psf")
+
+    if os.path.exists("transformato/tests/config/test_input_wrong.psf"):
+        os.remove("transformato/tests/config/test_input_wrong.psf")    
 
 def test_initialize_systems():
     configuration = load_config_yaml(
