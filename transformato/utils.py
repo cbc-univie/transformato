@@ -89,6 +89,7 @@ def psf_correction(str_object: StringIO):
     correction_on = False
     for line in str_object.split("\n"):  # split on newline charactar
         if "!NATOM" in line:  # if !NATOM is found start correction mode
+            new_str += f"{line}\n"
             correction_on = True
             continue
 

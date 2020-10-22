@@ -84,9 +84,10 @@ def test_psf_files():
 
     assert(filecmp.cmp("transformato/tests/config/test_input.psf","transformato/tests/config/test_input_corrected.psf") == True)
     assert(filecmp.cmp("transformato/tests/config/test_input.psf","transformato/tests/config/test_input_wrong.psf") == False)
+    assert(filecmp.cmp("transformato/tests/config/test_input_corrected.psf","transformato/tests/config/test_input_wrong.psf") == False)
 
-    if os.path.exists("transformato/tests/config/test_input_corrected.psf"):
-        os.remove("transformato/tests/config/test_input_corrected.psf")
+    #if os.path.exists("transformato/tests/config/test_input_corrected.psf"):
+        #os.remove("transformato/tests/config/test_input_corrected.psf")
 
     if os.path.exists("transformato/tests/config/test_input_wrong.psf"):
         os.remove("transformato/tests/config/test_input_wrong.psf")    

@@ -1,11 +1,12 @@
 import logging
 import os
 import shutil
+from io import StringIO
 
 import parmed as pm
 import transformato
 
-from .utils import get_toppar_dir
+from .utils import get_toppar_dir, psf_correction
 from .mutate import Mutation
 from transformato.charmm_factory import charmm_factory, build_reduced_toppar
 
@@ -773,10 +774,17 @@ dummy_parameters.prm
 
     def _write_psf(self, psf, output_file_base: str, env: str):
         """
-        Writes the new psf.
+        Writes the new psf and pdb file.
         """
-
-        psf.write_psf(f"{output_file_base}/lig_in_{env}.psf")
+        if env == "waterbox":
+            string_object = StringIO()
+            psf.write_psf(string_object)
+            corrected_psf = psf_correction(string_object)
+            f = open(f"{output_file_base}/lig_in_{env}.psf", "w+")
+            f.write(corrected_psf)
+            f.close()
+        else:
+            psf.write_psf(f"{output_file_base}/lig_in_{env}.psf")
         psf.write_pdb(f"{output_file_base}/lig_in_{env}.pdb")
 
     def _init_intermediate_state_dir(self, nr: int):
