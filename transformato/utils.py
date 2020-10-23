@@ -1,10 +1,12 @@
 import os
+import logging
 
 import parmed as pm
 import yaml
 
 from io import StringIO
 
+logger = logging.getLogger(__name__)
 
 def get_bin_dir():
     """Returns the bin directory of this package"""
@@ -100,11 +102,17 @@ def psf_correction(str_object: StringIO):
             correction_on == True
         ):  # if in correction mode take the string, split on whitespace and put the values in a newly formated string
             values = line.split()
-            if len(values) != 11: # skip empty lines
-                new_str += f"{line}\n"
-            else:
+            if len(values) == 11: # skip empty lines
                 corrected_string = f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
-                new_str += corrected_string
+                new_str += corrected_string  
+            elif len(values) == 8: 
+                values.extend(["0", "0.00000", "0.00000000000"])
+                corrected_string = f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
+                new_str += corrected_string  
+            elif len(values) == 0:
+                new_str += f"{line}\n"
+            else: 
+                logger.debug(f"Error with the psf file")
         else:  # otherwise add line to new_str
             new_str += f"{line}\n"
 
