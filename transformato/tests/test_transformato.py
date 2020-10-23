@@ -75,22 +75,26 @@ def test_read_yaml():
 def test_psf_files():
     test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
     output = StringIO()
-    test_psf.write_psf("transformato/tests/config/test_input_wrong.psf")
     test_psf.write_psf(output)
     corrected_psf = psf_correction(output)
-    f = open("transformato/tests/config/test_input_corrected.psf", "w+")
-    f.write (corrected_psf)
-    f.close()
+    correction_on = False
+    for line in corrected_psf.split("\n"):  # split on newline charactar
+        if "!NATOM" in line:  # if !NATOM is found start correction mode
+            correction_on = True
+            continue
 
-    assert(filecmp.cmp("transformato/tests/config/test_input.psf","transformato/tests/config/test_input_corrected.psf") == True)
-    assert(filecmp.cmp("transformato/tests/config/test_input.psf","transformato/tests/config/test_input_wrong.psf") == False)
-    assert(filecmp.cmp("transformato/tests/config/test_input_corrected.psf","transformato/tests/config/test_input_wrong.psf") == False)
+        if "!NBOND" in line:  # if !NBOND is found exit correction mode
+            correction_on = False
 
-    #if os.path.exists("transformato/tests/config/test_input_corrected.psf"):
-        #os.remove("transformato/tests/config/test_input_corrected.psf")
-
-    if os.path.exists("transformato/tests/config/test_input_wrong.psf"):
-        os.remove("transformato/tests/config/test_input_wrong.psf")    
+        if (
+            correction_on == True
+        ):  # if in correction mode take the string, split on whitespace and put the values in a newly formated string
+            if len(line) == 0:
+                pass
+            else:
+                assert(len(line)==118)
+                values = line.split()
+                assert(len(values)==11)   
 
 def test_initialize_systems():
     configuration = load_config_yaml(
