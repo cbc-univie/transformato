@@ -235,7 +235,7 @@ set temp = 303.15
 !shak bonh para fast sele segi WAT end
 shak bonh para fast sele segi SOLV end
 
-calc pcnt = @cnt - 1
+set pcnt = 1
 if pcnt .eq. 0 open read  unit 11 card name charmm_lig_in_waterbox.rst 
 open write unit 13 file name charmm_lig_in_waterbox.dcd 
 
