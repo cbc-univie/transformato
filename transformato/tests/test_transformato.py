@@ -1511,6 +1511,47 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
     f.show_summary()
 
 
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM():
+    from transformato import FreeEnergyCalculator
+
+    output_files, configuration = _mutate_methane_to_methane_cc()
+
+    for path in sorted(output_files):
+        # because path is object not string
+        print(f"Start sampling for: {path}")
+        try:
+            exe = subprocess.run(
+                ["bash", f"{str(path)}/simulation_charmm.sh", str(path)],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except TypeError:
+            exe = subprocess.run(
+                ["bash", f"{str(path)}/simulation_charmm.sh", str(path)],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+        print(exe.stdout)
+        print("Capture stderr")
+        print(exe.stderr)
+
+    # f = FreeEnergyCalculator(configuration, "methane")
+    # f.load_trajs(thinning=1)
+    # f.calculate_dG_to_common_core()
+    # ddG, dddG = f.end_state_free_energy_difference
+    # print(f"Free energy difference: {ddG}")
+    # print(f"Uncertanty: {dddG}")
+    # np.isclose(ddG, 8.9984, rtol=1e-2)
+    # f.show_summary()
+
+
 # @pytest.mark.slowtest
 # @pytest.mark.skipif(
 #     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
