@@ -1511,6 +1511,12 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
     f.show_summary()
 
 
+def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_null():
+    from transformato import FreeEnergyCalculator
+
+    output_files, configuration = _mutate_methane_to_methane_cc()
+
+
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
