@@ -113,6 +113,7 @@ def psf_correction(str_object: StringIO):
                 new_str += f"{line}\n"
             else: 
                 logger.debug(f"Error with the psf file")
+                raise RuntimeError()
         else:  # otherwise add line to new_str
             new_str += f"{line}\n"
 

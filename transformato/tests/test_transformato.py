@@ -27,7 +27,7 @@ from transformato import (
     ProposeMutationRoute,
     SystemStructure,
     load_config_yaml,
-    psf_correction
+    psf_correction,
 )
 
 
@@ -72,6 +72,7 @@ def test_read_yaml():
 
     assert settingsMap["system"]["name"] == "toluene-methane-solvation-free-energy"
 
+
 def test_psf_files():
     test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
     output = StringIO()
@@ -92,9 +93,10 @@ def test_psf_files():
             if len(line) == 0:
                 pass
             else:
-                assert(len(line)==118)
+                assert len(line) == 118
                 values = line.split()
-                assert(len(values)==11)   
+                assert len(values) == 11
+
 
 def test_initialize_systems():
     configuration = load_config_yaml(

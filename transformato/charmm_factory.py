@@ -1,20 +1,18 @@
 import datetime
 
-def charmm_factory(configuration: dict, structure: str, env: str):
+
+def charmm_factory(configuration: dict, structure: str, env: str) -> str:
     """Function to build the string needed to create a CHARMM input and streaming file"""
 
-    if env == "vacuum":
-        env_dir = configuration["system"][structure]["vacuum"]["intermediate-filename"]
-    elif env == "waterbox":
-        env_dir = configuration["system"][structure]["waterbox"]["intermediate-filename"]
+    # get env_dir
+    env_dir = configuration["system"][structure][env]["intermediate-filename"]
 
-    #tlc = configuration["system"][structure]["tlc"]
+    # tlc = configuration["system"][structure]["tlc"]
     nstep = configuration["simulation"]["parameters"]["nstep"]
     nstout = configuration["simulation"]["parameters"]["nstout"]
     nstdcd = configuration["simulation"]["parameters"]["nstdcd"]
     steps_for_equilibration = configuration["solvation"]["steps_for_equilibration"]
-    #switch = configuration["simulation"]["parameters"]["switch"]
-    #GPU = configuration["simulation"]["GPU"]
+
     try:
         GPU = configuration["simulation"]["GPU"]
     except KeyError:
@@ -27,19 +25,14 @@ def charmm_factory(configuration: dict, structure: str, env: str):
         pass
 
     # building whole file
-    if env == "vacuum":
-        charmm_vacuum = charmm_string(
-            env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
-        )
-        return charmm_vacuum
-    elif env == "waterbox":
-        charmm_waterbox = charmm_string(
-            env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
-        )
-        return charmm_waterbox
+    charmm_str = charmm_string(
+        env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
+    )
+    return charmm_str
+
 
 # toppar file
-def build_reduced_toppar(tlc):
+def build_reduced_toppar(tlc: str) -> str:
     date = datetime.date.today()
     toppar = f"""* Simplified toppar script 
 * Version from {date} 
@@ -114,6 +107,7 @@ def charmm_string(
     GPU: bool,
 ):
     """Body of the CHARMM file with option for gas pahse, waterbox with vswitch and vfswitch"""
+
     if GPU == True:
         GPU = f"""domdec gpu only"""
     else:
@@ -250,8 +244,10 @@ DYNA CPT leap restart time 0.002 nstep @nstep -
 stop"""
 
     if env == "vacuum":
-        charmm_vacuum = f"{header}{gas_phase}"
-        return charmm_vacuum
+        charmm_str = f"{header}{gas_phase}"
     elif env == "waterbox":
-        charmm_waterbox = f"{header}{liquid_phase}"
-        return charmm_waterbox
+        charmm_str = f"{header}{liquid_phase}"
+    else:
+        raise RuntimeError(f"Something went wrong. {env} not availalbe.")
+
+    return charmm_str
