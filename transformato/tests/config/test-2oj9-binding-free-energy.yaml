@@ -75,7 +75,7 @@ simulation:
     nstdcd:
       50
     nstout:
-      50
+      1000
     cons:
       None
     dt:
