@@ -1389,9 +1389,14 @@ def _mutate_toluene_to_methane_cc():
     return output_files, configuration
 
 
-def _mutate_methane_to_methane_cc():
+def _mutate_methane_to_methane_cc(charmm_test=False):
     conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    if charmm_test == True:
+        configuration["test"] = True
+    else:
+        pass
+
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -1514,7 +1519,7 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
 def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_null():
     from transformato import FreeEnergyCalculator
 
-    output_files, configuration = _mutate_methane_to_methane_cc()
+    output_files, configuration = _mutate_methane_to_methane_cc(charmm_test=True)
 
 
 @pytest.mark.slowtest

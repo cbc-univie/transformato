@@ -164,18 +164,25 @@ outfile.close()
                         structure=self.system.structure,
                         env="waterbox",
                     )
-                    try:
-                        with open(
-                            f"{intermediate_state_file_path}/charmm_run_waterbox.inp",
-                            "w",
-                        ) as f:
-                            f.write(charmm_input)
+                    
+                    if len(charmm_input) == 2:
+                        try:
+                            with open(f"{intermediate_state_file_path}/charmm_run_waterbox_vfswitch.inp","w") as f:
+                                f.write(charmm_input[0])
+                                f.close()
+                            with open(f"{intermediate_state_file_path}/charmm_run_waterbox_vfswitch.inp","w") as f:
+                                f.write(charmm_input[1])
+                                f.close()
+                        except IOError:
+                            logger.info(
+                                f"Data class could not be created: charmm_lig_in_{env}.inp")
+                            pass
+                    
+                    else:
+                        with open(f"{intermediate_state_file_path}/charmm_run_waterbox.inp","w") as f:
+                            f.write(charmm_input[0])
                             f.close()
-                    except IOError:
-                        logger.info(
-                            f"Data class could not be created: charmm_lig_in_{env}.inp"
-                        )
-                    pass
+                    
                 else:  # vacuum
                     charmm_input = charmm_factory(
                         configuration=self.configuration,
@@ -186,7 +193,7 @@ outfile.close()
                         with open(
                             f"{intermediate_state_file_path}/charmm_run_vacuum.inp", "w"
                         ) as f:
-                            f.write(charmm_input)
+                            f.write(charmm_input[0])
                             f.close()
                     except IOError:
                         logger.info(
