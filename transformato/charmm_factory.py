@@ -11,7 +11,7 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
     nstep = configuration["simulation"]["parameters"]["nstep"]
     nstout = configuration["simulation"]["parameters"]["nstout"]
     nstdcd = configuration["simulation"]["parameters"]["nstdcd"]
-    steps_for_equilibration = configuration["solvation"]["steps_for_equilibration"]
+    print_frq = configuration["solvation"]["steps_for_equilibration"]
 
     try:
         GPU = configuration["simulation"]["GPU"]
@@ -26,7 +26,7 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
 
     # building whole file
     charmm_str = charmm_string(
-        env, env_dir, nstep, nstout, nstdcd, steps_for_equilibration, switch, GPU
+        env, env_dir, nstep, nstout, nstdcd, print_frq, switch, GPU
     )
     return charmm_str
 
@@ -102,7 +102,7 @@ def charmm_string(
     nstep: int,
     nstout: int,
     nstdcd: int,
-    steps_for_equilibration: int,
+    print_frq: int,
     switch: str,
     GPU: bool,
 ):
@@ -147,7 +147,6 @@ nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
   inbfrq 1 
 
 energy   inbfrq 1
-{GPU}
 energy   inbfrq 0
 
 mini sd nstep 200
@@ -160,7 +159,7 @@ open write unit 12 card name charmm_gasp.rst
 open write unit 21 file name charmm_gasp.dcd
  
 DYNA lang leap start time 0.001 nstep @nstep -
-    nprint {nstout} iprfrq {round(nstep/20)} -
+    nprint {print_frq} iprfrq {print_frq} -
     iunread -1 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
     nsavc {nstdcd} nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
@@ -230,13 +229,11 @@ set temp = 303.15
 
 !shak bonh para fast sele segi WAT end
 shak bonh para fast sele segi SOLV end
-
-set pcnt = 1
-if pcnt .eq. 0 open read  unit 11 card name charmm_lig_in_waterbox.rst 
+ 
 open write unit 13 file name charmm_lig_in_waterbox.dcd 
 
 DYNA CPT leap restart time 0.001 nstep @nstep -
-     nprint {steps_for_equilibration} iprfrq {steps_for_equilibration} ntrfrq {steps_for_equilibration} -
+     nprint {print_frq} iprfrq {print_frq} ntrfrq {print_frq} -
      iunread 11 iunwri 12 iuncrd 13 iunvel -1 kunit -1 -
      nsavc {nstdcd} nsavv 0 -
      PCONSTANT pref   1.0  pmass @Pmass  pgamma   20.0 -
