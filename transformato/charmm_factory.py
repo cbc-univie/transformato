@@ -150,7 +150,7 @@ energy   inbfrq 1
 {GPU}
 energy   inbfrq 0
 
-mini sd nstep 100
+mini sd nstep 200
 
 set nstep = {nstep} 
 set temp = 300.0
@@ -164,7 +164,6 @@ DYNA lang leap start time 0.001 nstep @nstep -
     iunread -1 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
     nsavc {nstdcd} nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
-    echeck 0
     
 stop"""
 
@@ -210,6 +209,9 @@ GEO rcm sphere -
     harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
 END
 
+mini SD nstep 500
+mini ABNR nstep 500
+
 !
 ! NPT dynamics:
 ! you can change
@@ -233,13 +235,12 @@ set pcnt = 1
 if pcnt .eq. 0 open read  unit 11 card name charmm_lig_in_waterbox.rst 
 open write unit 13 file name charmm_lig_in_waterbox.dcd 
 
-DYNA CPT leap restart time 0.002 nstep @nstep -
+DYNA CPT leap restart time 0.001 nstep @nstep -
      nprint {steps_for_equilibration} iprfrq {steps_for_equilibration} ntrfrq {steps_for_equilibration} -
      iunread 11 iunwri 12 iuncrd 13 iunvel -1 kunit -1 -
      nsavc {nstdcd} nsavv 0 -
      PCONSTANT pref   1.0  pmass @Pmass  pgamma   20.0 -
      HOOVER    reft @temp  tmass 2000.0  tbath   @temp  firstt @temp
-     echeck 0
 
 stop"""
 
