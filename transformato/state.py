@@ -149,6 +149,15 @@ outfile.close()
             self.configuration["simulation"]["free-energy-type"]
             == "solvation-free-energy"
         ):
+            # copy simulation bash script
+            charmm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation-solvation-free-energy_charmm.sh"
+            charmm_simulation_submit_script_target = (
+                f"{intermediate_state_file_path}/simulation_charmm.sh"
+            )
+            shutil.copyfile(
+                charmm_simulation_submit_script_source,
+                charmm_simulation_submit_script_target,
+            )
 
             for env in self.system.envs:
                 if env == "waterbox":
@@ -232,15 +241,6 @@ outfile.close()
                 logger.warning(
                     f"No restart file found for {env} -- starting simulation from crd file."
                 )
-
-        # # copy charmm simulation script
-        # charmm_simulation_script_source = f"{basedir}/waterbox/step5_production.inp"
-        # charmm_simulation_script_target = (
-        #     f"{intermediate_state_file_path}/charmm_production.inp"
-        # )
-        # shutil.copyfile(
-        #     charmm_simulation_script_source, charmm_simulation_script_target
-        # )
 
     def _copy_omm_files(self, intermediate_state_file_path: str):
         """
