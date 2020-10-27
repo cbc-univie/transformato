@@ -102,10 +102,8 @@ class IntermediateStateFactory(object):
             self._write_psf(self.system.psfs[env], output_file_base, env)
         self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
-        self._write_toppar_str(
-            output_file_base, self.system.tlc
-        )  # NOTE for BB: this needs to be adopted for CHARMM
-        self._copy_files(output_file_base)  # NOTE FOR BB: this is the main method
+        self._write_toppar_str(output_file_base, self.system.tlc)
+        self._copy_files(output_file_base)
         return output_file_base
 
     def _add_serializer(self, file):
@@ -218,19 +216,6 @@ outfile.close()
                 logger.critical(f"Could not find file: {f}")
                 raise
 
-        # copy crd files
-        for env in self.system.envs:
-            crd_file_source = f"{basedir}/{env}/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.crd"
-            crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
-            try:
-                shutil.copyfile(crd_file_source, crd_file_target)
-            except FileNotFoundError:
-                logger.warning(
-                    f"No crd file found for {env} -- using parmed system structure to create crd file."
-                )
-                crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
-                pm.charmm.CharmmCrdFile.write(self.system.psfs[env], crd_file_target)
-
         # copy rst files
         for env in self.system.envs:
             rst_file_source = f"{basedir}/{env}/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
@@ -313,19 +298,6 @@ outfile.close()
         else:
             raise RuntimeError(f"Only solvation/binding free energies implemented")
 
-        # copy crd files
-        for env in self.system.envs:
-            crd_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.crd"
-            crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
-            try:
-                shutil.copyfile(crd_file_source, crd_file_target)
-            except FileNotFoundError:
-                logger.warning(
-                    f"No crd file found for {env} -- using parmed system structure to create crd file."
-                )
-                crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
-                pm.charmm.CharmmCrdFile.write(self.system.psfs[env], crd_file_target)
-
         # copy rst files
         for env in self.system.envs:
             rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
@@ -387,9 +359,23 @@ outfile.close()
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
         shutil.copyfile(ligand_prm, toppar_target)
 
-    def _copy_files(
-        self, intermediate_state_file_path: str
-    ):  # NOTE FOR BB: this is the main thing
+    def _copy_crd_file(self, intermediate_state_file_path: str):
+
+        basedir = self.system.charmm_gui_base
+        # copy crd files
+        for env in self.system.envs:
+            crd_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['crd_file_name']}.crd"
+            crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
+            try:
+                shutil.copyfile(crd_file_source, crd_file_target)
+            except FileNotFoundError:
+                logger.warning(
+                    f"No crd file found for {env} -- using parmed system structure to create crd file."
+                )
+                crd_file_target = f"{intermediate_state_file_path}/lig_in_{env}.crd"
+                pm.charmm.CharmmCrdFile.write(self.system.psfs[env], crd_file_target)
+
+    def _copy_files(self, intermediate_state_file_path: str):
         """
         Copy the files from the original CHARMM-GUI output folder in the intermediate directories.
         """
@@ -404,6 +390,10 @@ outfile.close()
         toppar_target = f"{intermediate_state_file_path}/toppar"
         shutil.copytree(toppar_source, toppar_target)
 
+        # copy crd file
+        self._copy_crd_file((intermediate_state_file_path))
+
+        # copy openMM and charmm specific scripts
         self._copy_omm_files(intermediate_state_file_path)
         self._copy_charmm_files(intermediate_state_file_path)
 
