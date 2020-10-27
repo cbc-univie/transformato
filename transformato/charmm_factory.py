@@ -24,9 +24,7 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
         pass
 
     # building whole file
-    charmm_str = charmm_string(
-        env, env_dir, nstep, print_frq, nstdcd, switch, GPU
-    )
+    charmm_str = charmm_string(env, env_dir, nstep, print_frq, nstdcd, switch, GPU)
     return charmm_str
 
 
@@ -230,7 +228,7 @@ shak bonh para fast sele segi SOLV end
  
 open write unit 13 file name charmm_lig_in_waterbox.dcd 
 
-DYNA CPT leap restart time 0.001 nstep @nstep -
+DYNA CPT leap start time 0.001 nstep @nstep -
      nprint {print_frq} iprfrq {print_frq} ntrfrq {print_frq} -
      iunread 11 iunwri 12 iuncrd 13 iunvel -1 kunit -1 -
      nsavc {nstdcd} nsavv 0 -
