@@ -22,9 +22,20 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
     except KeyError:
         switch = "vswitch"
         pass
+    try:
+        test = configuration["test"]
+    except KeyError:
+        test = False
+        pass
 
     # building whole file
-    charmm_str = charmm_string(env, env_dir, nstep, print_frq, nstdcd, switch, GPU)
+    if test == True and env == "waterbox":
+        charmm_str1 = charmm_string(env, env_dir, nstep, print_frq, nstdcd, "vswitch", GPU)
+        charmm_str2 = charmm_string(env, env_dir, nstep, print_frq, nstdcd, "vfswitch", GPU)
+        charmm_str = [charmm_str1,charmm_str2]
+    else:
+        charmm_str1 = charmm_string(env, env_dir, nstep, print_frq, nstdcd, switch, GPU)
+        charmm_str = [charmm_str1]
     return charmm_str
 
 
