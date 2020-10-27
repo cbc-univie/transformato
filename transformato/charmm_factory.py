@@ -9,9 +9,8 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
 
     # tlc = configuration["system"][structure]["tlc"]
     nstep = configuration["simulation"]["parameters"]["nstep"]
-    nstout = configuration["simulation"]["parameters"]["nstout"]
+    print_frq = configuration["simulation"]["parameters"]["nstout"]
     nstdcd = configuration["simulation"]["parameters"]["nstdcd"]
-    print_frq = configuration["solvation"]["steps_for_equilibration"]
 
     try:
         GPU = configuration["simulation"]["GPU"]
@@ -26,7 +25,7 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
 
     # building whole file
     charmm_str = charmm_string(
-        env, env_dir, nstep, nstout, nstdcd, print_frq, switch, GPU
+        env, env_dir, nstep, print_frq, nstdcd, switch, GPU
     )
     return charmm_str
 
@@ -100,9 +99,8 @@ def charmm_string(
     env: str,
     env_dir: str,
     nstep: int,
-    nstout: int,
-    nstdcd: int,
     print_frq: int,
+    nstdcd: int,
     switch: str,
     GPU: bool,
 ):
