@@ -28,14 +28,7 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
         test = False
         pass
 
-    # building whole file
-    if test == True and env == "waterbox":
-        charmm_str1 = charmm_string(env, env_dir, nstep, print_frq, nstdcd, "vswitch", GPU)
-        charmm_str2 = charmm_string(env, env_dir, nstep, print_frq, nstdcd, "vfswitch", GPU)
-        charmm_str = [charmm_str1,charmm_str2]
-    else:
-        charmm_str1 = charmm_string(env, env_dir, nstep, print_frq, nstdcd, switch, GPU)
-        charmm_str = [charmm_str1]
+    charmm_str = charmm_string(env, env_dir, nstep, print_frq, nstdcd, switch, GPU)
     return charmm_str
 
 
@@ -161,13 +154,12 @@ mini sd nstep 200
 set nstep = {nstep} 
 set temp = 300.0
 
-scalar fbeta set 5. sele all end
-open write unit 12 card name charmm_gasp.rst
-open write unit 21 file name charmm_gasp.dcd
+scalar fbeta set 5. sele all end  # 
+open write unit 21 file name lig_in_vacuum.dcd
  
 DYNA lang leap start time 0.001 nstep @nstep -
     nprint {print_frq} iprfrq {print_frq} -
-    iunread -1 iunwri 12 iuncrd 21 iunvel -1 kunit -1 -
+    iunread -1 iunwri -1 iuncrd 21 iunvel -1 kunit -1 -
     nsavc {nstdcd} nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     
@@ -237,7 +229,7 @@ set temp = 303.15
 !shak bonh para fast sele segi WAT end
 shak bonh para fast sele segi SOLV end
  
-open write unit 13 file name charmm_lig_in_waterbox.dcd 
+open write unit 13 file name lig_in_waterbox.dcd 
 
 DYNA CPT leap start time 0.001 nstep @nstep -
      nprint {print_frq} iprfrq {print_frq} ntrfrq {print_frq} -
