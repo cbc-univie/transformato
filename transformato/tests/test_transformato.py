@@ -1535,7 +1535,7 @@ def test_generate_CHARMM_output_for_different_switches_methane_cc_solvation_free
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM():
+def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_trajs():
     from transformato import FreeEnergyCalculator
 
     output_files, configuration = _mutate_methane_to_methane_cc()
@@ -1562,9 +1562,26 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM():
         print("Capture stderr")
         print(exe.stderr)
 
-    # f = FreeEnergyCalculator(configuration, "methane")
-    # f.load_trajs(thinning=1)
-    # f.calculate_dG_to_common_core()
+
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocessing():
+    from transformato import FreeEnergyCalculator
+
+    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    modifier = ""
+    if modifier:
+        # building whole file
+        if "switch" in modifier:
+            configuration["simulation"]["parameters"]["switch"] = modifier
+
+    f = FreeEnergyCalculator(configuration, "methane")
+    f.load_trajs(nr_of_max_snapshots=300)
+    f.calculate_dG_to_common_core(engine="CHARMM")
     # ddG, dddG = f.end_state_free_energy_difference
     # print(f"Free energy difference: {ddG}")
     # print(f"Uncertanty: {dddG}")

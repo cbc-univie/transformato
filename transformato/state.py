@@ -169,6 +169,16 @@ outfile.close()
                     ) as f:
                         f.write(charmm_input)
 
+                    # copy evaluation script
+                    charmm_simulation_submit_script_source = (
+                        f"{self.configuration['bin_dir']}/evaluate_energy_in_solv.inp"
+                    )
+                    charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp"
+                    shutil.copyfile(
+                        charmm_simulation_submit_script_source,
+                        charmm_simulation_submit_script_target,
+                    )
+
                 else:  # vacuum
                     charmm_input = charmm_factory(
                         configuration=self.configuration,
@@ -179,6 +189,17 @@ outfile.close()
                         f"{intermediate_state_file_path}/charmm_run_vacuum.inp", "w"
                     ) as f:
                         f.write(charmm_input)
+
+                    # copy evaluation script
+                    charmm_simulation_submit_script_source = (
+                        f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
+                    )
+                    charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
+                    shutil.copyfile(
+                        charmm_simulation_submit_script_source,
+                        charmm_simulation_submit_script_target,
+                    )
+
         elif (
             self.configuration["simulation"]["free-energy-type"]
             == "binding-free-energy"

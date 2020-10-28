@@ -1,0 +1,65 @@
+"""*Version September 2020 
+*Run script for CHARMM jobs from transformato 
+*
+
+! Read topology and parameter files 
+stream charmm_toppar.str 
+
+! Read PSF 
+open read unit 10 card name @{top}.psf 
+read psf  unit 10 card
+
+! Read Coordinate 
+open read unit 10 card name @{top}.crd 
+read coor unit 10 card
+
+
+stream charmm_step3_pbcsetup.str
+
+!
+! Image Setup
+!
+
+open read unit 10 card name charmm_crystal_image.str
+CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
+CRYSTAL READ UNIT 10 CARD
+
+!Image centering by residue
+IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+
+!
+! Nonbonded Options
+!
+
+nbonds atom vatom @{switch} bycb -
+       ctonnb 10.0 ctofnb 12.0 cutnb 16.0 cutim 16.0 -
+       inbfrq -1 imgfrq -1 wmin 1.0 cdie eps 1.0 -
+       ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
+
+energy
+
+!
+!use a restraint to place center of mass of the molecules near the origin
+!
+
+MMFP
+GEO rcm sphere -
+    Xref @xcen Yref @ycen Zref @zcen XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
+    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
+END
+
+
+open read file unit 41 name traj.dcd
+traj query unit 41
+set nframes ?nfile
+traj firstu 41 nunit 1
+set idx 1
+label loop1
+traj read
+energy lrc bycb
+echo ?ener
+calc idx = @idx + 1
+if @idx .lt. @nframes goto loop1
+        
+  
+stop

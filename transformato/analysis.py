@@ -14,6 +14,9 @@ from simtk.openmm import System, XmlSerializer
 from simtk.openmm.app import CharmmPsfFile, Simulation
 from simtk.openmm.vec3 import Vec3
 from tqdm import tqdm
+import subprocess
+
+from transformato.utils import get_structure_name
 
 logger = logging.getLogger(__name__)
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
@@ -60,14 +63,7 @@ class FreeEnergyCalculator(object):
         self.structure_name = structure_name
         self.envs: set = ()
         # decide if the name of the system corresponds to structure1 or structure2
-        if configuration["system"]["structure1"]["name"] == self.structure_name:
-            structure = "structure1"
-        elif configuration["system"]["structure2"]["name"] == self.structure_name:
-            structure = "structure2"
-        else:
-            raise RuntimeError(
-                f"Could not finde structure entry for : {self.structure_name}"
-            )
+        structure = get_structure_name(configuration, structure_name)
 
         if configuration["simulation"]["free-energy-type"] == "solvation-free-energy":
             self.envs = ("vacuum", "waterbox")
@@ -87,15 +83,37 @@ class FreeEnergyCalculator(object):
         self.N_k = []
         self.thinning = -1
 
-    def load_trajs(self, thinning: int = 10):
+    def load_trajs(self, nr_of_max_snapshots: int = 300):
         """
         load trajectories, thin trajs and merge themn.
         Also calculate N_k for mbar.
         """
 
-        assert type(thinning) == int
-        self.thinning = thinning
+        assert type(nr_of_max_snapshots) == int
+        self.nr_of_max_snapshots = nr_of_max_snapshots
         self.snapshost, self.nr_of_states, self.N_k = self._merge_trajs()
+
+    def _generate_openMM_system(self, env: str, lambda_state: int) -> Simulation:
+        # read in necessary files
+        conf_sub = self.configuration["system"][self.structure][env]
+        file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_system.xml"
+        system = XmlSerializer.deserialize(open(file_name).read())
+        file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_integrator.xml"
+        integrator = XmlSerializer.deserialize(open(file_name).read())
+        psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
+        psf = CharmmPsfFile(psf_file_path)
+
+        # generate simulations object and set states
+        simulation = Simulation(psf.topology, system, integrator)
+        simulation.context.setState(
+            XmlSerializer.deserialize(
+                open(
+                    f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.rst",
+                    "r",
+                ).read()
+            )
+        )
+        return simulation
 
     def _merge_trajs(self) -> (dict, int, list):
         """
@@ -116,16 +134,20 @@ class FreeEnergyCalculator(object):
             confs = []
             conf_sub = self.configuration["system"][self.structure][env]
             N_k = []
-            for i in tqdm(range(1, nr_of_states + 1)):
+            for lambda_state in tqdm(range(1, nr_of_states + 1)):
                 traj = mdtraj.load(
-                    f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.dcd",
-                    top=f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.psf",
+                    f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd",
+                    top=f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
                 )
 
                 # NOTE: removing the first 25% confs and thinning
                 start = int(len(traj) / 25)
-                traj = traj[start :: self.thinning]
-                if len(traj) < 10:
+                # thinning
+                further_thinning = max(
+                    int((len(traj) - len(traj) / 4) / self.nr_of_max_snapshots), 1
+                )
+                traj = traj[start::further_thinning][: self.nr_of_max_snapshots]
+                if len(traj) < 100:
                     raise RuntimeError(
                         f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
                     )
@@ -146,8 +168,9 @@ class FreeEnergyCalculator(object):
         snapshots: mdtraj.Trajectory,
         nr_of_states: int,
         save_results: bool,
+        engine: str,
     ):
-        def _energy_at_ts(simulation: Simulation, coordinates, bxl):
+        def _energy_at_ts(simulation: Simulation, coordinates: mdtraj.Trajectory, bxl):
             """
             Calculates the potential energy with the correct periodic boundary conditions.
             """
@@ -160,30 +183,13 @@ class FreeEnergyCalculator(object):
             state = simulation.context.getState(getEnergy=True)
             return state.getPotentialEnergy()
 
-        def _evaluated_e_on_all_snapshots(snapshots, i: int, env: str):
+        def _evaluated_e_on_all_snapshots_openMM(
+            snapshots: mdtraj.Trajectory, lambda_state: int, env: str
+        ):
 
-            # read in necessary files
-            conf_sub = self.configuration["system"][self.structure][env]
-            file_name = f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}_system.xml"
-            system = XmlSerializer.deserialize(open(file_name).read())
-            file_name = f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}_integrator.xml"
-            integrator = XmlSerializer.deserialize(open(file_name).read())
-            psf_file_path = (
-                f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.psf"
+            simulation = self._generate_openMM_system(
+                env=env, lambda_state=lambda_state
             )
-            psf = CharmmPsfFile(psf_file_path)
-
-            # generate simulations object and set states
-            simulation = Simulation(psf.topology, system, integrator)
-            simulation.context.setState(
-                XmlSerializer.deserialize(
-                    open(
-                        f"{self.base_path}/intst{i}/{conf_sub['intermediate-filename']}.rst",
-                        "r",
-                    ).read()
-                )
-            )
-
             energies = []
             for ts in tqdm(range(snapshots.n_frames)):
                 if env == "vacuum":
@@ -200,13 +206,92 @@ class FreeEnergyCalculator(object):
                 energies.append(red_e)
             return np.array(energies)
 
-        # main
-        u_kn = np.stack(
-            [
-                _evaluated_e_on_all_snapshots(snapshots, i, env)
-                for i in range(1, self.nr_of_states + 1)
+        def _evaluate_traj_with_CHARMM(path: str, env: str):
+
+            if env == "waterbox":
+                script_name = "charmm_evaluate_energy_in_solv.inp"
+            elif env == "vacuum":
+                script_name = "charmm_evaluate_energy_in_vac.inp"
+
+            top = self.configuration["system"][self.structure][env][
+                "intermediate-filename"
             ]
-        )
+
+            try:
+                exe = subprocess.run(
+                    [
+                        "bash",
+                        f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",
+                        str(path),
+                        str(top),
+                        str(script_name),
+                    ],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                    encoding="latin1",
+                )
+            except TypeError:
+                exe = subprocess.run(
+                    [
+                        "bash",
+                        f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",
+                        str(path),
+                        str(top),
+                        str(script_name),
+                    ],
+                    check=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                    encoding="latin1",
+                )
+
+            print(exe.stdout)
+            print("Capture stderr")
+            print(exe.stderr)
+            raise RuntimeError()
+
+        def _evaluated_e_on_all_snapshots_CHARMM(
+            snapshots: mdtraj.Trajectory, lambda_state: int, env: str
+        ):
+
+            snapshots.save_dcd(f"{self.base_path}/intst{lambda_state}/traj.dcd")
+            if env == "solv":
+                _evaluate_traj_with_CHARMM(
+                    path=f"{self.base_path}/intst{lambda_state}/",
+                    env=env,
+                )
+            elif env == "vacuum":
+                _evaluate_traj_with_CHARMM(
+                    path=f"{self.base_path}/intst{lambda_state}/",
+                    env=env,
+                )
+            else:
+                raise RuntimeError(f"{env}")
+
+        #########################################################
+        #########################################################
+        # main
+        print(f"Evaluating with {engine}")
+        if engine == "openMM":
+            u_kn = np.stack(
+                [
+                    _evaluated_e_on_all_snapshots_openMM(snapshots, lambda_state, env)
+                    for lambda_state in range(1, self.nr_of_states + 1)
+                ]
+            )
+
+        elif engine == "CHARMM":
+            u_kn = np.stack(
+                [
+                    _evaluated_e_on_all_snapshots_CHARMM(snapshots, lambda_state, env)
+                    for lambda_state in range(1, self.nr_of_states + 1)
+                ]
+            )
+
+        else:
+            raise RuntimeError(f"Either openMM or CHARMM engine, not {engine}")
 
         if save_results:
             file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
@@ -216,7 +301,9 @@ class FreeEnergyCalculator(object):
 
         return mbar.MBAR(u_kn, self.N_k)
 
-    def calculate_dG_to_common_core(self, save_results=True):
+    def calculate_dG_to_common_core(
+        self, save_results: bool = True, engine: str = "openMM"
+    ):
         """
         Calculate mbar results or load save results from a serialized mbar results.
         """
@@ -228,7 +315,7 @@ class FreeEnergyCalculator(object):
         for env in self.envs:
             logger.info(f"Generating results for {env}.")
             self.mbar_results[env] = self._analyse_results_using_mbar(
-                env, self.snapshost[env], self.nr_of_states, save_results
+                env, self.snapshost[env], self.nr_of_states, save_results, engine
             )
 
     def load_waterbox_results(self, file):
@@ -318,7 +405,7 @@ class FreeEnergyCalculator(object):
         """matrix of free energy differences"""
         return self.free_energy_overlap(env="vacuum")
 
-    def plot_free_energy_overlap(self, env):
+    def plot_free_energy_overlap(self, env: str):
         plt.figure(figsize=[8, 8], dpi=300)
         if env == "vacuum":
             ax = sns.heatmap(
@@ -343,7 +430,7 @@ class FreeEnergyCalculator(object):
         plt.show()
         plt.close()
 
-    def plot_free_energy(self, env):
+    def plot_free_energy(self, env: str):
 
         if env == "vacuum":
             x = [

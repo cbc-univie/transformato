@@ -5,7 +5,7 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
     """Function to build the string needed to create a CHARMM input and streaming file"""
 
     # get env_dir
-    env_dir = configuration["system"][structure][env]["intermediate-filename"]
+    intermediate_filename = configuration["system"][structure][env]["intermediate-filename"]
 
     # tlc = configuration["system"][structure]["tlc"]
     nstep = configuration["simulation"]["parameters"]["nstep"]
@@ -28,7 +28,7 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
         test = False
         pass
 
-    charmm_str = charmm_string(env, env_dir, nstep, print_frq, nstdcd, switch, GPU)
+    charmm_str = charmm_string(env, intermediate_filename, nstep, print_frq, nstdcd, switch, GPU)
     return charmm_str
 
 
@@ -99,7 +99,7 @@ read para card unit 10 append flex
 
 def charmm_string(
     env: str,
-    env_dir: str,
+    intermediate_filename: str,
     nstep: int,
     print_frq: int,
     nstdcd: int,
@@ -121,14 +121,16 @@ def charmm_string(
 stream charmm_toppar.str 
 
 ! Read PSF 
-open read unit 10 card name {env_dir}.psf 
+open read unit 10 card name {intermediate_filename}.psf 
 read psf  unit 10 card
 
 ! Read Coordinate 
-open read unit 10 card name {env_dir}.crd 
+open read unit 10 card name {intermediate_filename}.crd 
 read coor unit 10 card
 """
+
     ##### gas phase ######
+    
     gas_phase = f"""
 coor orie sele all end ! put the molecule at the origin
 
