@@ -17,6 +17,7 @@ from tqdm import tqdm
 import subprocess
 
 from transformato.utils import get_structure_name
+from transformato.constants import temperature
 
 logger = logging.getLogger(__name__)
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
@@ -202,11 +203,18 @@ class FreeEnergyCalculator(object):
                 # calculate the potential energy
                 e = _energy_at_ts(simulation, snapshots.openmm_positions(ts), bxl)
                 # obtain the reduced potential (for NpT)
-                red_e = return_reduced_potential(e, volumn, 303.15 * unit.kelvin)
+                red_e = return_reduced_potential(e, volumn, temperature)
                 energies.append(red_e)
             return np.array(energies)
 
-        def _evaluate_traj_with_CHARMM(path: str, env: str):
+        def _parse_CHARMM_energy_output(path: str):
+            pot_energies = []
+            with open(f"{path}/ener.log", "r") as f:
+                for line in f.readlines():
+                    pot_energies.append(float(line) * unit.kilocalorie_per_mole)
+            return pot_energies
+
+        def _evaluate_traj_with_CHARMM(path: str, env: str, volumn_list: list = []):
 
             if env == "waterbox":
                 script_name = "charmm_evaluate_energy_in_solv.inp"
@@ -250,20 +258,48 @@ class FreeEnergyCalculator(object):
             print(exe.stdout)
             print("Capture stderr")
             print(exe.stderr)
-            raise RuntimeError()
+
+            pot_energies = _parse_CHARMM_energy_output(path)
+            print(len(pot_energies))
+            print(len(volumn_list))
+            if volumn_list:
+                return [
+                    return_reduced_potential(e, volume=V, temperature=temperature)
+                    for e, V in zip(pot_energies, volumn_list)
+                ]
+            else:
+                return [
+                    return_reduced_potential(e, volume=None, temperature=temperature)
+                    for e in pot_energies
+                ]
 
         def _evaluated_e_on_all_snapshots_CHARMM(
             snapshots: mdtraj.Trajectory, lambda_state: int, env: str
         ):
 
             snapshots.save_dcd(f"{self.base_path}/intst{lambda_state}/traj.dcd")
-            if env == "solv":
-                _evaluate_traj_with_CHARMM(
+            for ts in tqdm(range(snapshots.n_frames)):
+                if env == "vacuum":
+                    bxl = None
+                    volumn = None
+                else:
+                    # extract the box size at the given ts
+                    bxl = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
+                    volumn = bxl ** 3
+
+            if env == "waterbox":
+                volumn_list = [
+                    (snapshots.unitcell_lengths[ts][0] * (unit.nanometer)) ** 3
+                    for ts in range(snapshots.n_frames)
+                ]
+
+                return _evaluate_traj_with_CHARMM(
                     path=f"{self.base_path}/intst{lambda_state}/",
                     env=env,
+                    volumn_list=volumn_list,
                 )
             elif env == "vacuum":
-                _evaluate_traj_with_CHARMM(
+                return _evaluate_traj_with_CHARMM(
                     path=f"{self.base_path}/intst{lambda_state}/",
                     env=env,
                 )

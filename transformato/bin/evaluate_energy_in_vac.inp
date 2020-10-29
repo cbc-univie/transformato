@@ -30,19 +30,27 @@ nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
   inbfrq 1 
 
 
-scalar fbeta set 5. sele all end  # 
+scalar fbeta set 5. sele all end
 
 open read file unit 41 name traj.dcd
 traj query unit 41
-set nframes 100 !?nfile
-traj firstu 41 nunit 1
-set idx 1
+
+set start ?start
+set nframes ?nfile
+set skip ?skip
+
+set nframes @nframes !?nfile
+traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
+
+open form writ unit 51 name ener.log
+echu 51
+set idx 0
 label loop
 traj read
 energy
 echo ?ener
 incr idx by 1
 if @idx .lt. @nframes goto loop
-        
+   
   
 stop
