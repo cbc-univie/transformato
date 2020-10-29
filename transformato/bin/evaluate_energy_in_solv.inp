@@ -1,4 +1,4 @@
-"""*Version September 2020 
+*Version September 2020 
 *Run script for CHARMM jobs from transformato 
 *
 
@@ -51,15 +51,23 @@ END
 
 open read file unit 41 name traj.dcd
 traj query unit 41
+
+set start ?start
 set nframes ?nfile
-traj firstu 41 nunit 1
-set idx 1
-label loop1
+set skip ?skip
+
+set nframes @nframes !?nfile
+traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
+
+open form writ unit 51 name ener.log
+echu 51
+set idx 0
+label loop
 traj read
-energy lrc bycb
+energy
 echo ?ener
-calc idx = @idx + 1
-if @idx .lt. @nframes goto loop1
+incr idx by 1
+if @idx .lt. @nframes goto loop
         
   
 stop

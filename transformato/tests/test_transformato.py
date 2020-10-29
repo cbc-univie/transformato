@@ -1468,7 +1468,7 @@ def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
         print(exe.stderr)
 
     f = FreeEnergyCalculator(configuration, "toluene")
-    f.load_trajs(thinning=1)
+    f.load_trajs(nr_of_max_snapshots=300)
     f.calculate_dG_to_common_core()
     ddG, dddG = f.end_state_free_energy_difference
     print(f"Free energy difference: {ddG}")
@@ -1509,7 +1509,7 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
         print(exe.stderr)
 
     f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(thinning=1)
+    f.load_trajs(nr_of_max_snapshots=300)
     f.calculate_dG_to_common_core()
     ddG, dddG = f.end_state_free_energy_difference
     print(f"Free energy difference: {ddG}")
@@ -1582,11 +1582,12 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocess
     f = FreeEnergyCalculator(configuration, "methane")
     f.load_trajs(nr_of_max_snapshots=300)
     f.calculate_dG_to_common_core(engine="CHARMM")
-    # ddG, dddG = f.end_state_free_energy_difference
-    # print(f"Free energy difference: {ddG}")
-    # print(f"Uncertanty: {dddG}")
-    # np.isclose(ddG, 8.9984, rtol=1e-2)
-    # f.show_summary()
+    ddG, dddG = f.end_state_free_energy_difference
+    print(f"Free energy difference: {ddG}")
+    print(f"Uncertanty: {dddG}")
+    np.isclose(ddG, 8.9984, rtol=1e-2)
+    f.show_summary()
+    raise RuntimeError()
 
 
 # @pytest.mark.slowtest
