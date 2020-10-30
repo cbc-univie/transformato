@@ -20,17 +20,29 @@ def get_toppar_dir():
 
 
 def map_lj_mutations_to_atom_idx(lj_mutations: list) -> dict:
+    """
+    map_lj_mutations_to_atom_idx
+    returns a mapping between the mutations and the atom idx
 
+    Parameters
+    ----------
+    lj_mutations : list of lj mutation objects
+        [description]
+
+    Returns
+    -------
+    dict
+    """
     d = {}
     for lj in lj_mutations:
-        key = lj.atoms_to_be_mutated
+        key = lj.vdw_atom_idx
         d[tuple(key)] = lj
 
     return d
 
 
 def print_mutations(mutation: dict):
-
+    # TODO: this needs to be finished!
     if "charge" in mutation.keys():
         for charge_mutation in mutation["charge"]:
             print("Charge mutation")
@@ -123,7 +135,7 @@ def psf_correction(str_object: StringIO):
                 new_str += f"{line}\n"
             else:
                 logger.debug(f"Error with the psf file")
-                raise RuntimeError()
+                raise RuntimeError(f"Error with the psf file")
         else:  # otherwise add line to new_str
             new_str += f"{line}\n"
 

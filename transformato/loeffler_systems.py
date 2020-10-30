@@ -1,6 +1,25 @@
-def _mutate_methane_to_methane_cc(modifier: str = ""):
-    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+import numpy as np
+
+import transformato
+from transformato.mutate import ProposeMutationRoute
+from transformato.state import IntermediateStateFactory
+from transformato.system import SystemStructure
+from transformato.utils import load_config_yaml
+
+transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
+
+
+def mutate_methane_to_methane_cc(conf: str = "", modifier: str = ""):
+
+    if conf:
+        configuration = load_config_yaml(
+            config=conf, input_dir=transformato_systems_dir, output_dir="."
+        )
+    else:
+        conf = f"{transformato_systems_dir}/config/toluene-methane-solvation-free-energy.yaml"
+        configuration = load_config_yaml(
+            config=conf, input_dir=transformato_systems_dir, output_dir="."
+        )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -14,8 +33,8 @@ def _mutate_methane_to_methane_cc(modifier: str = ""):
         configuration=configuration,
     )
 
+    # using different switching functinos for CHARMM
     if modifier:
-        # building whole file
         if "switch" in modifier:
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
@@ -45,11 +64,18 @@ def _mutate_methane_to_methane_cc(modifier: str = ""):
     return output_files, configuration
 
 
+def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
 
+    if conf:
+        configuration = load_config_yaml(
+            config=conf, input_dir=transformato_systems_dir, output_dir="."
+        )
+    else:
+        conf = f"{transformato_systems_dir}/config/toluene-methane-solvation-free-energy.yaml"
+        configuration = load_config_yaml(
+            config=conf, input_dir=transformato_systems_dir, output_dir="."
+        )
 
-def _mutate_toluene_to_methane_cc():
-    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -61,7 +87,13 @@ def _mutate_toluene_to_methane_cc():
         system=s1,
         configuration=configuration,
     )
+    # using different switching functinos for CHARMM
+    if modifier:
+        if "switch" in modifier:
+            configuration["simulation"]["parameters"]["switch"] = modifier
+        i.path += f"-{modifier}"
 
+    # start with charges
     output_files = []
     # mutate everything else before touching bonded terms
     intst = 0
@@ -86,10 +118,38 @@ def _mutate_toluene_to_methane_cc():
     output_files.append(output_file_base)
 
     # turn off heavy atoms
+    d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
+    m = [d[(13,)]]
+
+    # turn off heavy atoms
     intst += 1
 
     output_file_base = i.write_state(
-        mutation_conf=mutation_list["lj"],
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    m = [d[(11,)], d[(9,)]]
+
+    # turn off heavy atoms
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    m = [d[(3,)], d[(1,)]]
+
+    # turn off heavy atoms
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
         lambda_value_vdw=0.0,
         intst_nr=intst,
     )

@@ -1436,14 +1436,44 @@ def _mutate_methane_to_methane_cc(modifier: str = ""):
     return output_files, configuration
 
 
+def test_generate_output_for_methane_cc_solvation_free_energy():
+    from transformato.loeffler_systems import mutate_methane_to_methane_cc
+
+    output_files, configuration = mutate_methane_to_methane_cc()
+
+
+def test_generate_output_for_toluene_cc_solvation_free_energy():
+    from transformato.loeffler_systems import mutate_toluene_to_methane_cc
+
+    output_files, configuration = mutate_toluene_to_methane_cc()
+
+
+def test_generate_output_for_toluene_cc_solvation_free_energy_with_test_conf():
+    from transformato.loeffler_systems import mutate_toluene_to_methane_cc
+
+    output_files, configuration = mutate_toluene_to_methane_cc(
+        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    )
+
+
+def test_generate_CHARMM_output_for_different_switches_methane_cc_solvation_free_energy():
+    from transformato.loeffler_systems import mutate_methane_to_methane_cc
+
+    for switch in ["vfswitch", "vswitch"]:
+        output_files, configuration = mutate_methane_to_methane_cc(modifier=switch)
+
+
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
 def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
     from transformato import FreeEnergyCalculator
+    from transformato.loeffler_systems import mutate_toluene_to_methane_cc
 
-    output_files, configuration = _mutate_toluene_to_methane_cc()
+    output_files, configuration = mutate_toluene_to_methane_cc(
+        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    )
 
     for path in sorted(output_files):
         # because path is object not string
@@ -1483,8 +1513,11 @@ def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
 )
 def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
     from transformato import FreeEnergyCalculator
+    from transformato.loeffler_systems import mutate_methane_to_methane_cc
 
-    output_files, configuration = _mutate_methane_to_methane_cc()
+    output_files, configuration = mutate_methane_to_methane_cc(
+        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    )
 
     for path in sorted(output_files):
         # because path is object not string
@@ -1518,27 +1551,16 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
     f.show_summary()
 
 
-def test_generate_CHARMM_output_for_methane_cc_solvation_free_energy():
-    from transformato import FreeEnergyCalculator
-
-    output_files, configuration = _mutate_methane_to_methane_cc()
-
-
-def test_generate_CHARMM_output_for_different_switches_methane_cc_solvation_free_energy():
-    from transformato import FreeEnergyCalculator
-
-    for switch in ["vfswitch", "vswitch"]:
-        output_files, configuration = _mutate_methane_to_methane_cc(switch)
-
-
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
 def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_trajs():
-    from transformato import FreeEnergyCalculator
+    from transformato.loeffler_systems import mutate_methane_to_methane_cc
 
-    output_files, configuration = _mutate_methane_to_methane_cc()
+    output_files, configuration = mutate_methane_to_methane_cc(
+        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    )
 
     for path in sorted(output_files):
         # because path is object not string
