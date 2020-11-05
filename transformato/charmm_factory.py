@@ -22,11 +22,11 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
     except KeyError:
         switch = "vswitch"
         pass
-    try:
-        test = configuration["test"]
-    except KeyError:
-        test = False
-        pass
+    #try:
+        #test = configuration["test"]
+    #except KeyError:
+        #test = False
+        #pass
 
     charmm_str = charmm_string(env, intermediate_filename, nstep, print_frq, nstdcd, switch, GPU)
     return charmm_str
@@ -196,8 +196,6 @@ nbonds atom vatom {switch} bycb -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
 
 energy
-{GPU}
-energy
 
 !
 !use a restraint to place center of mass of the molecules near the origin
@@ -208,6 +206,9 @@ GEO rcm sphere -
     Xref @xcen Yref @ycen Zref @zcen XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
     harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
 END
+
+!shak bonh para fast sele segi WAT end
+shak bonh para fast sele segi SOLV end
 
 mini SD nstep 500
 mini ABNR nstep 500
@@ -225,11 +226,12 @@ mini ABNR nstep 500
 scalar mass stat
 calc Pmass = int ( ?stot  /  50.0 )
 
+energy
+{GPU}
+energy
+
 set nstep = {nstep}
 set temp = 303.15
-
-!shak bonh para fast sele segi WAT end
-shak bonh para fast sele segi SOLV end
  
 open write unit 13 file name lig_in_waterbox.dcd 
 
@@ -238,7 +240,8 @@ DYNA CPT leap start time 0.001 nstep @nstep -
      iunread 11 iunwri 12 iuncrd 13 iunvel -1 kunit -1 -
      nsavc {nstdcd} nsavv 0 -
      PCONSTANT pref   1.0  pmass @Pmass  pgamma   20.0 -
-     HOOVER    reft @temp  tmass 2000.0  tbath   @temp  firstt @temp
+     HOOVER    reft @temp  tmass 2000.0  tbath   @temp  firstt @temp -
+     ECHECK 0
 
 stop"""
 
