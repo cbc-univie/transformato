@@ -1,5 +1,6 @@
 import datetime
-
+from transformato.constants import temperature
+from simtk import unit
 
 def charmm_factory(configuration: dict, structure: str, env: str) -> str:
     """Function to build the string needed to create a CHARMM input and streaming file"""
@@ -154,7 +155,7 @@ energy   inbfrq 0
 mini sd nstep 200
 
 set nstep = {nstep} 
-set temp = 300.0
+set temp = {temperature.value_in_unit(unit.kelvin)}
 
 scalar fbeta set 5. sele all end  # 
 open write unit 21 file name lig_in_vacuum.dcd
@@ -231,7 +232,7 @@ energy
 energy
 
 set nstep = {nstep}
-set temp = 303.15
+set temp = {temperature.value_in_unit(unit.kelvin)}
  
 open write unit 13 file name lig_in_waterbox.dcd 
 
