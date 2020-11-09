@@ -83,6 +83,7 @@ class FreeEnergyCalculator(object):
         self.nr_of_states = -1
         self.N_k = []
         self.thinning = -1
+        self.save_results_to_path = f"{self.configuration['system_dir']}/results/"
 
     def load_trajs(self, nr_of_max_snapshots: int = 300):
         """
@@ -345,7 +346,6 @@ class FreeEnergyCalculator(object):
         """
         if save_results:
             os.makedirs(f"{self.configuration['system_dir']}/results/", exist_ok=True)
-            self.save_results_to_path = f"{self.configuration['system_dir']}/results/"
             logger.info(f"Saving results in {self.save_results_to_path}")
 
         for env in self.envs:
