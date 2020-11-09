@@ -463,6 +463,8 @@ class FreeEnergyCalculator(object):
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
         plt.ylabel("lambda state (0 to 1)", fontsize=15)
         plt.legend()
+        plt.savefig(f"{self.save_results_to_path}/ddG_to_common_core_overlap.png")
+
         plt.show()
         plt.close()
 
@@ -498,6 +500,7 @@ class FreeEnergyCalculator(object):
         plt.title(f"Free energy estimate for ligand in {env}", fontsize=15)
         plt.ylabel("Free energy estimate in kT", fontsize=15)
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
+        plt.savefig(f"{self.save_results_to_path}/ddG_to_common_core_line_plot.png")
         plt.show()
         plt.close()
 
