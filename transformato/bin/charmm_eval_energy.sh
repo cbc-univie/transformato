@@ -15,4 +15,4 @@ cd ${path}
 pwd
 hostname
 
-/home/mwieder/Work/Software/charmm/exec/gnu/charmm top:${top} switch:${switch} -i ${script}
+charmm top:${top} switch:${switch} -i ${script}
