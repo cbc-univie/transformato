@@ -6,7 +6,7 @@ from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
 from transformato.utils import load_config_yaml
 
-transformato_systems_dir = "/home/master/transformato-systems"
+transformato_systems_dir = "/scratch/braunsfeld/transformato-systems"
 
 
 def mutate_methane_to_methane_cc(conf: str = "", modifier: str = ""):
