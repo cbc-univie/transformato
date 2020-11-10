@@ -212,7 +212,10 @@ class FreeEnergyCalculator(object):
             pot_energies = []
             with open(f"{path}/ener.log", "r") as f:
                 for line in f.readlines():
-                    pot_energies.append(float(line) * unit.kilocalorie_per_mole)
+                    try: 
+                        pot_energies.append(float(line) * unit.kilocalorie_per_mole)
+                    except ValueError:
+                         pot_energies.append(float(99999.99) * unit.kilocalorie_per_mole)
             return pot_energies
 
         def _evaluate_traj_with_CHARMM(path: str, env: str, volumn_list: list = []):
