@@ -30,10 +30,11 @@ IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
 !
 ! Nonbonded Options
 !
+cons fix sele segi solv end
 
 nbonds atom vatom @{switch} bycb -
-       ctonnb 10.0 ctofnb 12.0 cutnb 16.0 cutim 16.0 -
-       inbfrq -1 imgfrq -1 wmin 1.0 cdie eps 1.0 -
+       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
+       inbfrq 1 imgfrq 1 wmin 1.0 cdie eps 1.0 -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
 
 energy
@@ -41,13 +42,6 @@ energy
 !
 !use a restraint to place center of mass of the molecules near the origin
 !
-
-MMFP
-GEO rcm sphere -
-    Xref @xcen Yref @ycen Zref @zcen XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
-    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
-END
-
 
 open read file unit 41 name traj.dcd
 traj query unit 41
@@ -59,7 +53,7 @@ set skip ?skip
 set nframes @nframes !?nfile
 traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
 
-open form writ unit 51 name ener.log
+open form writ unit 51 name ener_solv.log
 echu 51
 set idx 0
 label loop
