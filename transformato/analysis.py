@@ -476,7 +476,7 @@ class FreeEnergyCalculator(object):
         plt.legend()
         plt.savefig(f"{self.save_results_to_path}/ddG_to_common_core_overlap_{env}.png")
 
-        #plt.show()
+        plt.show()
         plt.close()
 
     def plot_free_energy(self, env: str):
@@ -512,7 +512,7 @@ class FreeEnergyCalculator(object):
         plt.ylabel("Free energy estimate in kT", fontsize=15)
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
         plt.savefig(f"{self.save_results_to_path}/ddG_to_common_core_line_plot_{env}.png")
-        #plt.show()
+        plt.show()
         plt.close()
 
     def plot_vacuum_free_energy_overlap(self):
