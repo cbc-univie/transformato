@@ -17,4 +17,4 @@ input=charmm_run_vacuum
 charmm -i ${input}.inp > log_vac.out
 
 input=charmm_run_waterbox
-charmm -i ${input}.inp > log_solv.out
+OMP_NUM_THREADS=8 charmm -i ${input}.inp > log_solv.out
