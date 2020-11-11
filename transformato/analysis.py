@@ -208,14 +208,22 @@ class FreeEnergyCalculator(object):
                 energies.append(red_e)
             return np.array(energies)
 
-        def _parse_CHARMM_energy_output(path: str):
+        def _parse_CHARMM_energy_output(path: str, env: str):
             pot_energies = []
-            with open(f"{path}/ener.log", "r") as f:
-                for line in f.readlines():
-                    try: 
-                        pot_energies.append(float(line) * unit.kilocalorie_per_mole)
-                    except ValueError:
-                         pot_energies.append(float(99999.99) * unit.kilocalorie_per_mole)
+            if env == "waterbox":
+                with open(f"{path}/ener_solv.log", "r") as f:
+                    for line in f.readlines():
+                        try: 
+                            pot_energies.append(float(line) * unit.kilocalorie_per_mole)
+                        except ValueError:
+                            pot_energies.append(float(99999.99) * unit.kilocalorie_per_mole)
+            elif env == "vacuum":
+                with open(f"{path}/ener_vac.log", "r") as f:
+                    for line in f.readlines():
+                        try: 
+                            pot_energies.append(float(line) * unit.kilocalorie_per_mole)
+                        except ValueError:
+                            pot_energies.append(float(99999.99) * unit.kilocalorie_per_mole)
             return pot_energies
 
         def _evaluate_traj_with_CHARMM(path: str, env: str, volumn_list: list = []):
@@ -263,7 +271,7 @@ class FreeEnergyCalculator(object):
             print("Capture stderr")
             print(exe.stderr)
 
-            pot_energies = _parse_CHARMM_energy_output(path)
+            pot_energies = _parse_CHARMM_energy_output(path,env)
             print(len(pot_energies))
             print(len(volumn_list))
             if volumn_list:
