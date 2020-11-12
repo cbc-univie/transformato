@@ -21,7 +21,7 @@ from transformato.constants import temperature
 
 logger = logging.getLogger(__name__)
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
-
+kT = kB * temperature
 
 def return_reduced_potential(
     potential_energy: unit.Quantity, volume: unit.Quantity, temperature: unit.Quantity
