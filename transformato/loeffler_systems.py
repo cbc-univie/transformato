@@ -96,11 +96,6 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
     # write out endpoint
     output_files = []
     intst = 1
-
-    i = IntermediateStateFactory(
-        system=system,
-        configuration=configuration,
-    )
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
 
     charges = mutation_list["charge"]
