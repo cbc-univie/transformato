@@ -215,6 +215,7 @@ def mutate_ethane_to_methane_cc(conf: str = "", modifier: str = ""):
     output_files = []
     intst = 1
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
     intst += 1
@@ -294,6 +295,7 @@ def mutate_methanol_to_methane_cc(conf: str = "", modifier: str = ""):
     output_files = []
     intst = 1
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
     intst += 1
@@ -373,6 +375,7 @@ def mutate_ethane_to_methanol_cc(conf: str = "", modifier: str = ""):
     output_files = []
     intst = 1
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
     intst += 1
@@ -452,6 +455,7 @@ def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
     output_files = []
     intst = 1
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
     intst += 1
@@ -531,6 +535,7 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", modifier: str = ""):
     output_files = []
     intst = 1
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
     intst += 1
@@ -636,6 +641,7 @@ def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
     output_files = []
     intst = 1
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
     intst += 1
@@ -741,6 +747,7 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", modifier: str = ""):
     output_files = []
     intst = 1
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
     intst += 1
