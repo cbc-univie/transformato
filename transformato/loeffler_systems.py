@@ -97,6 +97,7 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
     output_files = []
     intst = 1
     output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
     intst += 1
