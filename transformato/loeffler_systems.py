@@ -6,7 +6,7 @@ from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
 from transformato.utils import load_config_yaml
 
-transformato_systems_dir = "/scratch/braunsfeld/transformato-systems"
+transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems"
 
 
 def mutate_methane_to_methane_cc(conf: str = "", modifier: str = ""):
@@ -93,12 +93,19 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
-    # start with charges
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
+
+    i = IntermediateStateFactory(
+        system=system,
+        configuration=configuration,
+    )
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+
     charges = mutation_list["charge"]
     intst += 1
+    # start with charges
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -107,7 +114,7 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    # Turn of hydrogens
+    # Turn off hydrogens
     intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
     output_file_base = i.write_state(
@@ -177,6 +184,7 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
         )
         output_files.append(output_file_base)
     return output_files, configuration
+
 
 def mutate_ethane_to_methane_cc(conf: str = "", modifier: str = ""):
 
@@ -254,6 +262,7 @@ def mutate_ethane_to_methane_cc(conf: str = "", modifier: str = ""):
         output_files.append(output_file_base)
     return output_files, configuration
 
+
 def mutate_methanol_to_methane_cc(conf: str = "", modifier: str = ""):
 
     if conf:
@@ -329,6 +338,7 @@ def mutate_methanol_to_methane_cc(conf: str = "", modifier: str = ""):
         )
         output_files.append(output_file_base)
     return output_files, configuration
+
 
 def mutate_ethane_to_methanol_cc(conf: str = "", modifier: str = ""):
 
@@ -406,6 +416,7 @@ def mutate_ethane_to_methanol_cc(conf: str = "", modifier: str = ""):
         output_files.append(output_file_base)
     return output_files, configuration
 
+
 def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
 
     if conf:
@@ -481,6 +492,7 @@ def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
         )
         output_files.append(output_file_base)
     return output_files, configuration
+
 
 def mutate_2_methylfuran_to_methane_cc(conf: str = "", modifier: str = ""):
 
@@ -584,6 +596,7 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", modifier: str = ""):
         output_files.append(output_file_base)
     return output_files, configuration
 
+
 def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
 
     if conf:
@@ -686,6 +699,7 @@ def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
         output_files.append(output_file_base)
     return output_files, configuration
 
+
 def mutate_2_methylindole_to_methane_cc(conf: str = "", modifier: str = ""):
 
     if conf:
@@ -764,7 +778,7 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", modifier: str = ""):
         intst_nr=intst,
     )
     output_files.append(output_file_base)
-    
+
     m = [d[(3,)], d[(2,)]]
 
     # turn off heavy atoms
@@ -776,7 +790,7 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", modifier: str = ""):
         intst_nr=intst,
     )
     output_files.append(output_file_base)
-    
+
     m = [d[(5,)], d[(0,)]]
 
     # turn off heavy atoms

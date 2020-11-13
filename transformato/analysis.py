@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
 kT = kB * temperature
 
+
 def return_reduced_potential(
     potential_energy: unit.Quantity, volume: unit.Quantity, temperature: unit.Quantity
 ):
@@ -211,19 +212,17 @@ class FreeEnergyCalculator(object):
         def _parse_CHARMM_energy_output(path: str, env: str):
             pot_energies = []
             if env == "waterbox":
-                with open(f"{path}/ener_solv.log", "r") as f:
-                    for line in f.readlines():
-                        try: 
-                            pot_energies.append(float(line) * unit.kilocalorie_per_mole)
-                        except ValueError:
-                            pot_energies.append(float(99999.99) * unit.kilocalorie_per_mole)
+                file_name = f"{path}/ener_solv.log"
             elif env == "vacuum":
-                with open(f"{path}/ener_vac.log", "r") as f:
-                    for line in f.readlines():
-                        try: 
-                            pot_energies.append(float(line) * unit.kilocalorie_per_mole)
-                        except ValueError:
-                            pot_energies.append(float(99999.99) * unit.kilocalorie_per_mole)
+                file_name = f"{path}/ener_vac.log"
+
+            with open(file_name, "r") as f:
+                for line in f.readlines():
+                    try:
+                        pot_energies.append(float(line) * unit.kilocalorie_per_mole)
+                    except ValueError:
+                        pot_energies.append(float(999999.99) * unit.kilocalorie_per_mole)
+
             return pot_energies
 
         def _evaluate_traj_with_CHARMM(path: str, env: str, volumn_list: list = []):
@@ -271,7 +270,7 @@ class FreeEnergyCalculator(object):
             print("Capture stderr")
             print(exe.stderr)
 
-            pot_energies = _parse_CHARMM_energy_output(path,env)
+            pot_energies = _parse_CHARMM_energy_output(path, env)
             print(len(pot_energies))
             print(len(volumn_list))
             if volumn_list:
@@ -511,7 +510,9 @@ class FreeEnergyCalculator(object):
         plt.title(f"Free energy estimate for ligand in {env}", fontsize=15)
         plt.ylabel("Free energy estimate in kT", fontsize=15)
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
-        plt.savefig(f"{self.save_results_to_path}/ddG_to_common_core_line_plot_{env}.png")
+        plt.savefig(
+            f"{self.save_results_to_path}/ddG_to_common_core_line_plot_{env}.png"
+        )
         plt.show()
         plt.close()
 
