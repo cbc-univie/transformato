@@ -210,12 +210,14 @@ def mutate_ethane_to_methane_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
-    # start with charges
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+
     charges = mutation_list["charge"]
     intst += 1
+    # start with charges
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -224,7 +226,7 @@ def mutate_ethane_to_methane_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    # Turn of hydrogens
+    # Turn off hydrogens
     intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
     output_file_base = i.write_state(
@@ -287,12 +289,14 @@ def mutate_methanol_to_methane_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
-    # start with charges
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+
     charges = mutation_list["charge"]
     intst += 1
+    # start with charges
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -301,7 +305,7 @@ def mutate_methanol_to_methane_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    # Turn of hydrogens
+    # Turn off hydrogens
     intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
     output_file_base = i.write_state(
@@ -364,12 +368,14 @@ def mutate_ethane_to_methanol_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
-    # start with charges
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+
     charges = mutation_list["charge"]
     intst += 1
+    # start with charges
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -378,7 +384,7 @@ def mutate_ethane_to_methanol_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    # Turn of hydrogens
+    # Turn off hydrogens
     intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
     output_file_base = i.write_state(
@@ -441,12 +447,14 @@ def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
-    # start with charges
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+
     charges = mutation_list["charge"]
     intst += 1
+    # start with charges
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -455,7 +463,7 @@ def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    # Turn of hydrogens
+    # Turn off hydrogens
     intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
     output_file_base = i.write_state(
@@ -518,12 +526,14 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
-    # start with charges
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+
     charges = mutation_list["charge"]
     intst += 1
+    # start with charges
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -532,7 +542,7 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    # Turn of hydrogens
+    # Turn off hydrogens
     intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
     output_file_base = i.write_state(
@@ -621,12 +631,14 @@ def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
-    # start with charges
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+
     charges = mutation_list["charge"]
     intst += 1
+    # start with charges
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -635,7 +647,7 @@ def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    # Turn of hydrogens
+    # Turn off hydrogens
     intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
     output_file_base = i.write_state(
@@ -724,12 +736,14 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
-    # start with charges
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+
     charges = mutation_list["charge"]
     intst += 1
+    # start with charges
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -738,7 +752,7 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    # Turn of hydrogens
+    # Turn off hydrogens
     intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
     output_file_base = i.write_state(
