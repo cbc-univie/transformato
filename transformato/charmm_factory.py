@@ -157,7 +157,7 @@ mini sd nstep 200
 set nstep = {nstep} 
 set temp = {temperature.value_in_unit(unit.kelvin)}
 
-scalar fbeta set 5. sele all end  # 
+scalar fbeta set 5. sele all end  
 open write unit 21 file name lig_in_vacuum.dcd
  
 DYNA lang leap start time 0.001 nstep @nstep -
