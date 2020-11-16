@@ -6,7 +6,7 @@ from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
 from transformato.utils import load_config_yaml
 
-transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems"
+transformato_systems_dir = "/home/master/transformato-systems"
 
 
 def mutate_methane_to_methane_cc(conf: str = "", modifier: str = ""):
@@ -39,10 +39,14 @@ def mutate_methane_to_methane_cc(conf: str = "", modifier: str = ""):
             configuration["simulation"]["parameters"]["switch"] = modifier
         i.path += f"-{modifier}"
 
+    # write out endpoint
     output_files = []
-    # mutate everything else before touching bonded terms
     intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
+
     charges = mutation_list["charge"]
+    intst += 1
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
@@ -429,7 +433,7 @@ def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
             config=conf, input_dir=transformato_systems_dir, output_dir="."
         )
     else:
-        conf = f"{transformato_systems_dir}/config/toluene-methane-solvation-free-energy.yaml"
+        conf = f"{transformato_systems_dir}/config/2-CPI-7-CPI-solvation-free-energy.yaml"
         configuration = load_config_yaml(
             config=conf, input_dir=transformato_systems_dir, output_dir="."
         )
@@ -624,7 +628,12 @@ def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
     s2 = SystemStructure(configuration, "structure2")
 
     s1_to_s2 = ProposeMutationRoute(s1, s2)
-    s1_to_s2.calculate_common_core()
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core(
+        connected_dummy_regions_cc1=[
+            {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+            ]
+        )
 
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
     i = IntermediateStateFactory(
