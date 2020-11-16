@@ -6,8 +6,7 @@ channels:
   - defaults
 dependencies:
   # Base depends
-  - python
-  - pip
+  - python = 3
   - openmm
   - numpy
   - pymbar
@@ -25,6 +24,3 @@ dependencies:
   - pytest
   - pytest-cov
   - codecov
-    # Pip-only installs
-  - pip:
-      - dataclass
