@@ -118,6 +118,16 @@ class FreeEnergyCalculator(object):
         )
         return simulation
 
+    def _thinning_traj(self, traj):
+        lenght = int(len(traj))
+        start = int(lenght / 4)
+        traj = traj[start:]  # remove the first 25% confs
+        new_length = int(len(traj))
+        further_thinning = max(
+            int(new_length / self.nr_of_max_snapshots), 1
+        )  # thinning
+        return traj[start::further_thinning][: self.nr_of_max_snapshots]
+
     def _merge_trajs(self) -> (dict, int, list):
         """
         load trajectories, thin trajs and merge themn.
@@ -142,12 +152,8 @@ class FreeEnergyCalculator(object):
                     f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd",
                     top=f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
                 )
-
+                traj = self._thinning_traj(traj)
                 # NOTE: removing the first 25% confs and thinning
-                start = int(len(traj) / 4)  # remove the first 25% confs
-                # thinning
-                further_thinning = max(int(traj[start:]) / self.nr_of_max_snapshots, 1)
-                traj = traj[start::further_thinning][: self.nr_of_max_snapshots]
                 if len(traj) < 100:
                     raise RuntimeError(
                         f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
