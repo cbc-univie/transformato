@@ -127,8 +127,6 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
     # turn off heavy atoms
     d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
     m = [d[(13,)]]
-
-    # turn off heavy atoms
     intst += 1
 
     output_file_base = i.write_state(
@@ -138,9 +136,8 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    m = [d[(11,)], d[(9,)]]
-
     # turn off heavy atoms
+    m = [d[(11,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -150,9 +147,30 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
     )
     output_files.append(output_file_base)
 
-    m = [d[(3,)], d[(1,)]]
+    # turn off heavy atoms
+    m = [d[(9,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
 
     # turn off heavy atoms
+    m = [d[(3,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    m = [d[(1,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -173,7 +191,7 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
+    for lambda_value in np.linspace(0.25, 1, 4):
         intst += 1
         print(lambda_value)
         # turn off charges
