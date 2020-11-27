@@ -144,11 +144,9 @@ class FreeEnergyCalculator(object):
                 )
 
                 # NOTE: removing the first 25% confs and thinning
-                start = int(len(traj) / 25)
+                start = int(len(traj) / 4)  # remove the first 25% confs
                 # thinning
-                further_thinning = max(
-                    int((len(traj) - len(traj) / 4) / self.nr_of_max_snapshots), 1
-                )
+                further_thinning = max(int(traj[start:]) / self.nr_of_max_snapshots, 1)
                 traj = traj[start::further_thinning][: self.nr_of_max_snapshots]
                 if len(traj) < 100:
                     raise RuntimeError(
@@ -221,7 +219,9 @@ class FreeEnergyCalculator(object):
                     try:
                         pot_energies.append(float(line) * unit.kilocalorie_per_mole)
                     except ValueError:
-                        pot_energies.append(float(999999.99) * unit.kilocalorie_per_mole)
+                        pot_energies.append(
+                            float(999999.99) * unit.kilocalorie_per_mole
+                        )
 
             return pot_energies
 
