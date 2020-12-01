@@ -126,7 +126,7 @@ class FreeEnergyCalculator(object):
         further_thinning = max(
             int(new_length / self.nr_of_max_snapshots), 1
         )  # thinning
-        return traj[start::further_thinning][: self.nr_of_max_snapshots]
+        return traj[::further_thinning][: self.nr_of_max_snapshots]
 
     def _merge_trajs(self) -> (dict, int, list):
         """
@@ -190,6 +190,16 @@ class FreeEnergyCalculator(object):
             state = simulation.context.getState(getEnergy=True)
             return state.getPotentialEnergy()
 
+        def _get_V_for_ts(snpshots: mdtraj.Trajectory, env: str):
+            if env == "vacuum":
+                bxl = None
+                volumn = None
+            else:
+                # extract the box size at the given ts
+                bxl = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
+                volumn = bxl ** 3
+            return volumn, bxl
+
         def _evaluated_e_on_all_snapshots_openMM(
             snapshots: mdtraj.Trajectory, lambda_state: int, env: str
         ):
@@ -199,13 +209,7 @@ class FreeEnergyCalculator(object):
             )
             energies = []
             for ts in tqdm(range(snapshots.n_frames)):
-                if env == "vacuum":
-                    bxl = None
-                    volumn = None
-                else:
-                    # extract the box size at the given ts
-                    bxl = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
-                    volumn = bxl ** 3
+                volumn, bxl = _get_V_for_ts(snapshots, env)
                 # calculate the potential energy
                 e = _energy_at_ts(simulation, snapshots.openmm_positions(ts), bxl)
                 # obtain the reduced potential (for NpT)
@@ -296,13 +300,7 @@ class FreeEnergyCalculator(object):
 
             snapshots.save_dcd(f"{self.base_path}/intst{lambda_state}/traj.dcd")
             for ts in tqdm(range(snapshots.n_frames)):
-                if env == "vacuum":
-                    bxl = None
-                    volumn = None
-                else:
-                    # extract the box size at the given ts
-                    bxl = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
-                    volumn = bxl ** 3
+                volumn, _ = _get_V_for_ts(snapshots, env)
 
             if env == "waterbox":
                 volumn_list = [
