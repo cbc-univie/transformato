@@ -233,15 +233,16 @@ energy
 
 set nstep = {nstep}
 set temp = {temperature.value_in_unit(unit.kelvin)}
- 
+
+scalar fbeta set 5. sele all end 
 open write unit 13 file name lig_in_waterbox.dcd 
 
 DYNA CPT leap start time 0.001 nstep @nstep -
-     nprint {print_frq} iprfrq {print_frq} ntrfrq {print_frq} -
-     iunread 11 iunwri 12 iuncrd 13 iunvel -1 kunit -1 -
+     nprint {print_frq} iprfrq {print_frq} -
+     iunread -1 iunwri -1 iuncrd 13 iunvel -1 kunit -1 -
      nsavc {nstdcd} nsavv 0 -
      PCONSTANT pref   1.0  pmass @Pmass  pgamma   20.0 -
-     HOOVER    reft @temp  tmass 2000.0  tbath   @temp  firstt @temp -
+     lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
      ECHECK 0
 
 stop"""
