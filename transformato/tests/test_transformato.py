@@ -888,6 +888,18 @@ def test_vdw_mutation_for_hydrogens_system2():
                 shutil.rmtree(output_file_base)
 
 
+def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
+    from transformato import FreeEnergyCalculator
+
+    conf = (
+        "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
+    )
+
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    f = FreeEnergyCalculator(configuration, "toluene")
+
+
 def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
     from rdkit.Chem import rdFMCS
 
@@ -1454,6 +1466,7 @@ def test_generate_output_for_toluene_cc_solvation_free_energy_with_test_conf():
     output_files, configuration = mutate_toluene_to_methane_cc(
         conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
     )
+    print(output_files)
 
 
 def test_generate_CHARMM_output_for_different_switches_methane_cc_solvation_free_energy():
@@ -1559,7 +1572,8 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_tr
     from transformato.loeffler_systems import mutate_methane_to_methane_cc
 
     output_files, configuration = mutate_methane_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
+        output_dir=".",
     )
 
     for path in sorted(output_files):
@@ -1584,6 +1598,14 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_tr
         print("Capture stderr")
         print(exe.stderr)
 
+    f = FreeEnergyCalculator(configuration, "methane")
+    f.load_trajs(nr_of_max_snapshots=300)
+    f.calculate_dG_to_common_core(engine="CHARMM")
+    ddG, dddG = f.end_state_free_energy_difference
+    print(f"Free energy difference: {ddG}")
+    print(f"Uncertanty: {dddG}")
+    f.show_summary()
+
 
 @pytest.mark.slowtest
 @pytest.mark.skipif(
@@ -1593,13 +1615,9 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocess
     from transformato import FreeEnergyCalculator
 
     conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-
-    modifier = ""
-    if modifier:
-        # building whole file
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
 
     f = FreeEnergyCalculator(configuration, "methane")
     f.load_trajs(nr_of_max_snapshots=300)
@@ -1607,7 +1625,7 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocess
     ddG, dddG = f.end_state_free_energy_difference
     print(f"Free energy difference: {ddG}")
     print(f"Uncertanty: {dddG}")
-    np.isclose(ddG, 8.9984, rtol=1e-2)
+    np.isclose(ddG, -1.2102764838282152, rtol=1e-2)
     f.show_summary()
     raise RuntimeError()
 
