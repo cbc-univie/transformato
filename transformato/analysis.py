@@ -80,7 +80,7 @@ class FreeEnergyCalculator(object):
         self.base_path = f"{self.configuration['system_dir']}/{self.structure_name}/"
         self.structure = structure
         self.mbar_results = {"waterbox": None, "vacuum": None, "complex": None}
-        self.snapshost = []
+        self.snapshots = []
         self.nr_of_states = -1
         self.N_k = []
         self.thinning = -1
@@ -94,7 +94,7 @@ class FreeEnergyCalculator(object):
 
         assert type(nr_of_max_snapshots) == int
         self.nr_of_max_snapshots = nr_of_max_snapshots
-        self.snapshost, self.nr_of_states, self.N_k = self._merge_trajs()
+        self.snapshots, self.nr_of_states, self.N_k = self._merge_trajs()
 
     def _generate_openMM_system(self, env: str, lambda_state: int) -> Simulation:
         # read in necessary files
@@ -142,7 +142,7 @@ class FreeEnergyCalculator(object):
         nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
 
         logger.info(f"Evaluating {nr_of_states} states.")
-        snapshost = {}
+        snapshots = {}
         for env in self.envs:
             confs = []
             conf_sub = self.configuration["system"][self.structure][env]
@@ -152,11 +152,13 @@ class FreeEnergyCalculator(object):
                     f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd",
                     top=f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
                 )
+                print(f"Before: {len(traj)}")
+                logger.info(f"Before: {len(traj)}")
                 traj = self._thinning_traj(traj)
                 # NOTE: removing the first 25% confs and thinning
                 if len(traj) < 100:
                     raise RuntimeError(
-                        f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
+                        f"Below 100 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
                     )
 
                 confs.append(traj)
@@ -165,9 +167,9 @@ class FreeEnergyCalculator(object):
 
             joined_trajs = mdtraj.join(confs, check_topology=True)
             logger.info(f"Combined nr of snapshots: {len(joined_trajs)}")
-            snapshost[env] = joined_trajs
+            snapshots[env] = joined_trajs
 
-        return snapshost, nr_of_states, N_k
+        return snapshots, nr_of_states, N_k
 
     def _analyse_results_using_mbar(
         self,
@@ -362,7 +364,7 @@ class FreeEnergyCalculator(object):
         for env in self.envs:
             logger.info(f"Generating results for {env}.")
             self.mbar_results[env] = self._analyse_results_using_mbar(
-                env, self.snapshost[env], self.nr_of_states, save_results, engine
+                env, self.snapshots[env], self.nr_of_states, save_results, engine
             )
 
     def load_waterbox_results(self, file):
