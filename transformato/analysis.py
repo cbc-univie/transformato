@@ -190,7 +190,7 @@ class FreeEnergyCalculator(object):
             state = simulation.context.getState(getEnergy=True)
             return state.getPotentialEnergy()
 
-        def _get_V_for_ts(snpshots: mdtraj.Trajectory, env: str):
+        def _get_V_for_ts(snpshots: mdtraj.Trajectory, env: str, ts: int):
             if env == "vacuum":
                 bxl = None
                 volumn = None
@@ -209,7 +209,7 @@ class FreeEnergyCalculator(object):
             )
             energies = []
             for ts in tqdm(range(snapshots.n_frames)):
-                volumn, bxl = _get_V_for_ts(snapshots, env)
+                volumn, bxl = _get_V_for_ts(snapshots, env, ts)
                 # calculate the potential energy
                 e = _energy_at_ts(simulation, snapshots.openmm_positions(ts), bxl)
                 # obtain the reduced potential (for NpT)
@@ -299,12 +299,9 @@ class FreeEnergyCalculator(object):
         ):
 
             snapshots.save_dcd(f"{self.base_path}/intst{lambda_state}/traj.dcd")
-            for ts in tqdm(range(snapshots.n_frames)):
-                volumn, _ = _get_V_for_ts(snapshots, env)
-
             if env == "waterbox":
                 volumn_list = [
-                    (snapshots.unitcell_lengths[ts][0] * (unit.nanometer)) ** 3
+                    _get_V_for_ts(snapshots, env, ts)[0]
                     for ts in range(snapshots.n_frames)
                 ]
 
