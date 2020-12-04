@@ -13,7 +13,6 @@ read psf  unit 10 card
 open read unit 10 card name @{top}.crd 
 read coor unit 10 card
 
-
 stream charmm_step3_pbcsetup.str
 
 !
@@ -32,16 +31,12 @@ IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
 !
 cons fix sele segi solv end
 
-nbonds atom vatom @{switch} bycb -
-       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
+nbonds atom vatom VSWItch bycb -                               ! hard coded switching function
+       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -         ! Add comment why this works
        inbfrq 1 imgfrq 1 wmin 1.0 cdie eps 1.0 -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
 
 energy
-
-!
-!use a restraint to place center of mass of the molecules near the origin
-!
 
 open read file unit 41 name traj.dcd
 traj query unit 41
@@ -62,6 +57,5 @@ energy
 echo ?ener
 incr idx by 1
 if @idx .lt. @nframes goto loop
-        
   
 stop

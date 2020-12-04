@@ -6,13 +6,16 @@
 #$ -o /data/shared/projects/SGE_LOG/
 #$ -l gpu=1
 
-path=$1
-top=$2
-script=$3
-switch=$4
+path=$1     # path in which the simulation will start
+top=$2      # top file to use
+script=$3   # which script is called
 
 cd ${path}
 pwd
 hostname
 
-charmm top:${top} switch:${switch} -i ${script}
+echo 'Path: ' ${path}
+echo 'top: ' ${top}
+echo 'script: ' ${script}
+
+charmm top:${top} path:${path} -i ${script}
