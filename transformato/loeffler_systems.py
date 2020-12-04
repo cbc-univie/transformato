@@ -9,19 +9,11 @@ from transformato.utils import load_config_yaml
 transformato_systems_dir = "/scratch/braunsfeld/transformato-systems"
 
 
-def mutate_methane_to_methane_cc(
-    conf: str = "", modifier: str = "", output_dir: str = "."
-):
+def mutate_methane_to_methane_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-        )
-    else:
-        conf = f"{transformato_systems_dir}/config/toluene-methane-solvation-free-energy.yaml"
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -34,12 +26,6 @@ def mutate_methane_to_methane_cc(
         system=s2,
         configuration=configuration,
     )
-
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
 
     # write out endpoint
     output_files = []
@@ -70,17 +56,11 @@ def mutate_methane_to_methane_cc(
     return output_files, configuration
 
 
-def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
+def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
-    else:
-        conf = f"{transformato_systems_dir}/config/toluene-methane-solvation-free-energy.yaml"
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -93,11 +73,6 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
         system=s1,
         configuration=configuration,
     )
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
 
     # write out endpoint
     output_files = []
@@ -206,17 +181,11 @@ def mutate_toluene_to_methane_cc(conf: str = "", modifier: str = ""):
     return output_files, configuration
 
 
-def mutate_ethane_to_methane_cc(conf: str = "", modifier: str = ""):
+def mutate_ethane_to_methane_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
-    else:
-        conf = f"{transformato_systems_dir}/config/ethane-methane-solvation-free-energy.yaml"
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -229,11 +198,6 @@ def mutate_ethane_to_methane_cc(conf: str = "", modifier: str = ""):
         system=s1,
         configuration=configuration,
     )
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
 
     # write out endpoint
     output_files = []
@@ -286,17 +250,11 @@ def mutate_ethane_to_methane_cc(conf: str = "", modifier: str = ""):
     return output_files, configuration
 
 
-def mutate_methanol_to_methane_cc(conf: str = "", modifier: str = ""):
+def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
-    else:
-        conf = f"{transformato_systems_dir}/config/methanol-methane-solvation-free-energy.yaml"
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -309,11 +267,6 @@ def mutate_methanol_to_methane_cc(conf: str = "", modifier: str = ""):
         system=s1,
         configuration=configuration,
     )
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
 
     # write out endpoint
     output_files = []
@@ -366,17 +319,11 @@ def mutate_methanol_to_methane_cc(conf: str = "", modifier: str = ""):
     return output_files, configuration
 
 
-def mutate_ethane_to_methanol_cc(conf: str = "", modifier: str = ""):
+def mutate_ethane_to_methanol_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
-    else:
-        conf = f"{transformato_systems_dir}/config/ethane-methanol-solvation-free-energy.yaml"
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -389,11 +336,6 @@ def mutate_ethane_to_methanol_cc(conf: str = "", modifier: str = ""):
         system=s1,
         configuration=configuration,
     )
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
 
     # write out endpoint
     output_files = []
@@ -446,19 +388,11 @@ def mutate_ethane_to_methanol_cc(conf: str = "", modifier: str = ""):
     return output_files, configuration
 
 
-def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
+def mutate_2_CPI_7_CPI_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
-    else:
-        conf = (
-            f"{transformato_systems_dir}/config/2-CPI-7-CPI-solvation-free-energy.yaml"
-        )
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -471,12 +405,6 @@ def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
         system=s1,
         configuration=configuration,
     )
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
-
     # write out endpoint
     output_files = []
     intst = 1
@@ -528,17 +456,11 @@ def mutate_2_CPI_7_CPI_cc(conf: str = "", modifier: str = ""):
     return output_files, configuration
 
 
-def mutate_2_methylfuran_to_methane_cc(conf: str = "", modifier: str = ""):
+def mutate_2_methylfuran_to_methane_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
-    else:
-        conf = f"{transformato_systems_dir}/config/2-methylfuran-methane-solvation-free-energy.yaml"
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -551,11 +473,6 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", modifier: str = ""):
         system=s1,
         configuration=configuration,
     )
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
 
     # write out endpoint
     output_files = []
@@ -634,17 +551,11 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", modifier: str = ""):
     return output_files, configuration
 
 
-def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
+def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
-    else:
-        conf = f"{transformato_systems_dir}/config/neopentane-methane-solvation-free-energy.yaml"
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -660,11 +571,6 @@ def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
         system=s1,
         configuration=configuration,
     )
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
 
     # write out endpoint
     output_files = []
@@ -743,17 +649,11 @@ def mutate_neopentane_to_methane_cc(conf: str = "", modifier: str = ""):
     return output_files, configuration
 
 
-def mutate_2_methylindole_to_methane_cc(conf: str = "", modifier: str = ""):
+def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
 
-    if conf:
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
-    else:
-        conf = f"{transformato_systems_dir}/config/2-methylindole-methane-solvation-free-energy.yaml"
-        configuration = load_config_yaml(
-            config=conf, input_dir=transformato_systems_dir, output_dir="."
-        )
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -766,12 +666,6 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", modifier: str = ""):
         system=s1,
         configuration=configuration,
     )
-    # using different switching functinos for CHARMM
-    if modifier:
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
-
     # write out endpoint
     output_files = []
     intst = 1
