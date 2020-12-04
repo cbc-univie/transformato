@@ -255,3 +255,131 @@ stop"""
         raise RuntimeError(f"Something went wrong. {env} not availalbe.")
 
     return charmm_str
+
+def charmm_evaluation(
+    env: str,
+    intermediate_filename: str,
+    switch: str,
+):
+
+    date = datetime.date.today()
+    header = f"""*Version from {date} 
+*Run script for CHARMM jobs from transformato 
+*
+
+! Read topology and parameter files 
+stream charmm_toppar.str 
+
+! Read PSF 
+open read unit 10 card name {intermediate_filename}.psf 
+read psf  unit 10 card
+
+! Read Coordinate 
+open read unit 10 card name {intermediate_filename}.crd 
+read coor unit 10 card"""
+
+    ##### gas phase ######
+    
+    gas_phase = f"""
+coor orie sele all end ! put the molecule at the origin
+
+set ctofnb 990.
+set ctonnb 980.
+set cutnb  1000.
+
+nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
+  atom swit vatom vswitch -
+  inbfrq 1 
+
+energy
+
+energy inbfrq 0
+
+scalar fbeta set 5. sele all end
+
+open read file unit 41 name traj.dcd
+traj query unit 41
+
+set start ?start
+set nframes ?nfile
+set skip ?skip
+
+set nframes @nframes !?nfile
+traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
+
+open form writ unit 51 name ener_vac.log
+echu 51
+set idx 0
+label loop
+traj read
+energy
+echo ?ener
+incr idx by 1
+if @idx .lt. @nframes goto loop
+   
+  
+stop"""
+
+    ##### solv phase ######
+    
+    solv_phase = f"""
+stream charmm_step3_pbcsetup.str
+
+!
+! Image Setup
+!
+
+open read unit 10 card name charmm_crystal_image.str
+CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
+CRYSTAL READ UNIT 10 CARD
+
+!Image centering by residue
+IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+
+!
+! Nonbonded Options
+!
+cons fix sele segi solv end
+
+nbonds atom vatom {switch} bycb -
+       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
+       inbfrq 1 imgfrq 1 wmin 1.0 cdie eps 1.0 -
+       ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
+
+energy
+
+!
+!use a restraint to place center of mass of the molecules near the origin
+!
+
+open read file unit 41 name traj.dcd
+traj query unit 41
+
+set start ?start
+set nframes ?nfile
+set skip ?skip
+
+set nframes @nframes !?nfile
+traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
+
+open form writ unit 51 name ener_solv.log
+echu 51
+set idx 0
+label loop
+traj read
+energy
+echo ?ener
+incr idx by 1
+if @idx .lt. @nframes goto loop
+        
+  
+stop"""
+
+    if env == "vacuum":
+        charmm_evaluation_str = f"{header}{gas_phase}"
+    elif env == "waterbox":
+        charmm_evaluation_str = f"{header}{solv_phase}"
+    else:
+        raise RuntimeError(f"Something went wrong. {env} not availalbe.")
+
+    return charmm_evaluation_str
