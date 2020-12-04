@@ -34,7 +34,7 @@ energy   inbfrq 0
 
 mini sd nstep 200
 
-set nstep = 5000 
+set nstep = 2000 
 set temp = 300.0
 
 scalar fbeta set 5. sele all end  
