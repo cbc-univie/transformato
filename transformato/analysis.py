@@ -266,7 +266,7 @@ class FreeEnergyCalculator(object):
                 exe = subprocess.run(
                     [
                         "bash",
-                        f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",
+                        f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",  # path=$1, top=$2, script=$3
                         str(path),
                         str(top),
                         str(script_name),
@@ -277,6 +277,9 @@ class FreeEnergyCalculator(object):
                     text=True,
                     encoding="latin1",
                 )
+                # path=$1     # path in which the simulation will start
+                # top=$2      # top file to use
+                # script=$3   # which script is called
 
             print(exe.stdout)
             print("Capture stderr")

@@ -2,11 +2,14 @@ import datetime
 from transformato.constants import temperature
 from simtk import unit
 
+
 def charmm_factory(configuration: dict, structure: str, env: str) -> str:
     """Function to build the string needed to create a CHARMM input and streaming file"""
 
     # get env_dir
-    intermediate_filename = configuration["system"][structure][env]["intermediate-filename"]
+    intermediate_filename = configuration["system"][structure][env][
+        "intermediate-filename"
+    ]
 
     # tlc = configuration["system"][structure]["tlc"]
     nstep = configuration["simulation"]["parameters"]["nstep"]
@@ -18,18 +21,12 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
     except KeyError:
         GPU = False
         pass
-    try:
-        switch = configuration["simulation"]["parameters"]["switch"]
-    except KeyError:
-        switch = "vswitch"
-        pass
-    #try:
-        #test = configuration["test"]
-    #except KeyError:
-        #test = False
-        #pass
 
-    charmm_str = charmm_string(env, intermediate_filename, nstep, print_frq, nstdcd, switch, GPU)
+    switch = "VSWItch"  # hard coded switch
+
+    charmm_str = charmm_string(
+        env, intermediate_filename, nstep, print_frq, nstdcd, switch, GPU
+    )
     return charmm_str
 
 
@@ -131,7 +128,7 @@ read coor unit 10 card
 """
 
     ##### gas phase ######
-    
+
     gas_phase = f"""
 coor orie sele all end ! put the molecule at the origin
 
@@ -208,7 +205,6 @@ GEO rcm sphere -
     harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
 END
 
-!shak bonh para fast sele segi WAT end
 shak bonh para fast sele segi SOLV end
 
 mini SD nstep 500
