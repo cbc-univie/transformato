@@ -114,7 +114,7 @@ def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     # turn off heavy atoms
-    m = [d[(11,)]]
+    m = [d[(11,)],d[(9,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -124,30 +124,9 @@ def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
     )
     output_files.append(output_file_base)
 
-    # turn off heavy atoms
-    m = [d[(9,)]]
-    intst += 1
-
-    output_file_base = i.write_state(
-        mutation_conf=m,
-        lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
 
     # turn off heavy atoms
-    m = [d[(3,)]]
-    intst += 1
-
-    output_file_base = i.write_state(
-        mutation_conf=m,
-        lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
-
-    # turn off heavy atoms
-    m = [d[(1,)]]
+    m = [d[(3,)],d[(1,)]]
     intst += 1
 
     output_file_base = i.write_state(
