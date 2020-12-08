@@ -114,7 +114,18 @@ def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     # turn off heavy atoms
-    m = [d[(11,)],d[(9,)]]
+    m = [d[(11,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    m = [d[(9,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -126,7 +137,18 @@ def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
 
 
     # turn off heavy atoms
-    m = [d[(3,)],d[(1,)]]
+    m = [d[(3,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    m = [d[(1,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -216,7 +238,7 @@ def mutate_ethane_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
+    for lambda_value in np.linspace(0.25, 1, 4):
         intst += 1
         print(lambda_value)
         # turn off charges
@@ -285,7 +307,7 @@ def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
+    for lambda_value in np.linspace(0.25, 1, 4):
         intst += 1
         print(lambda_value)
         # turn off charges
@@ -298,7 +320,7 @@ def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
     return output_files, configuration
 
 
-def mutate_ethane_to_methanol_cc(conf: str = "", output_dir: str = "."):
+def mutate_ethane_to_methanol_cc(conf: str = "", output_dir: str = "."): #not a loeffler system
 
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
@@ -354,7 +376,7 @@ def mutate_ethane_to_methanol_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
+    for lambda_value in np.linspace(0.25, 1, 4):
         intst += 1
         print(lambda_value)
         # turn off charges
@@ -367,7 +389,7 @@ def mutate_ethane_to_methanol_cc(conf: str = "", output_dir: str = "."):
     return output_files, configuration
 
 
-def mutate_2_CPI_7_CPI_cc(conf: str = "", output_dir: str = "."):
+def mutate_2_CPI_7_CPI_cc(conf: str = "", output_dir: str = "."): #will be tested later on
 
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
@@ -422,7 +444,7 @@ def mutate_2_CPI_7_CPI_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
+    for lambda_value in np.linspace(0.25, 1, 4):
         intst += 1
         print(lambda_value)
         # turn off charges
@@ -482,9 +504,9 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", output_dir: str = "."):
 
     # turn off heavy atoms
     d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
-    m = [d[(10,)], d[(8,)]]
 
     # turn off heavy atoms
+    m = [d[(10,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -494,9 +516,30 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", output_dir: str = "."):
     )
     output_files.append(output_file_base)
 
-    m = [d[(2,)], d[(0,)]]
+    # turn off heavy atoms
+    m = [d[(8,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
 
     # turn off heavy atoms
+    m = [d[(2,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    m = [d[(0,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -517,7 +560,7 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
+    for lambda_value in np.linspace(0.25, 1, 4):
         intst += 1
         print(lambda_value)
         # turn off charges
@@ -580,9 +623,9 @@ def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
 
     # turn off heavy atoms
     d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
-    m = [d[(13,)]]
 
     # turn off heavy atoms
+    m = [d[(13,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -592,9 +635,19 @@ def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
     )
     output_files.append(output_file_base)
 
-    m = [d[(9,)], d[(5,)]]
+    # turn off heavy atoms
+    m = [d[(9,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
 
     # turn off heavy atoms
+    m = [d[(5,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -615,7 +668,7 @@ def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
+    for lambda_value in np.linspace(0.25, 1, 4):
         intst += 1
         print(lambda_value)
         # turn off charges
@@ -674,9 +727,9 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
 
     # turn off heavy atoms
     d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
-    m = [d[(17,)], d[(15,)]]
 
     # turn off heavy atoms
+    m = [d[(17,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -686,9 +739,8 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
     )
     output_files.append(output_file_base)
 
-    m = [d[(9,)], d[(7,)]]
-
     # turn off heavy atoms
+    m = [d[(15,)]]
     intst += 1
 
     output_file_base = i.write_state(
@@ -698,9 +750,19 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
     )
     output_files.append(output_file_base)
 
-    m = [d[(3,)], d[(2,)]]
+    # turn off heavy atoms
+    m = [d[(9,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)    
 
     # turn off heavy atoms
+    m = [d[(7,)]]    
     intst += 1
 
     output_file_base = i.write_state(
@@ -710,9 +772,41 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
     )
     output_files.append(output_file_base)
 
-    m = [d[(5,)], d[(0,)]]
+    # turn off heavy atoms
+    m = [d[(3,)]]    
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
 
     # turn off heavy atoms
+    m = [d[(2,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    m = [d[(5,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    m = [d[(0,)]]    
     intst += 1
 
     output_file_base = i.write_state(
@@ -733,7 +827,7 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
+    for lambda_value in np.linspace(0.25, 1, 4):
         intst += 1
         print(lambda_value)
         # turn off charges
