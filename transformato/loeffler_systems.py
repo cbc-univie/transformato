@@ -710,6 +710,16 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
+        lambda_value_electrostatic=0.5,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
         lambda_value_electrostatic=0.0,
         intst_nr=intst,
     )
