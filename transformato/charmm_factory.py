@@ -162,6 +162,7 @@ DYNA lang leap start time 0.001 nstep @nstep -
     iunread -1 iunwri -1 iuncrd 21 iunvel -1 kunit -1 -
     nsavc {nstdcd} nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
+    ECHECK 0
     
 stop"""
 
