@@ -51,7 +51,6 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocess
     print(f"Uncertanty: {dddG}")
     np.isclose(ddG, -1.2102764838282152, rtol=1e-8)
     f.show_summary()
-    raise RuntimeError()
 
 
 def test_postprocessing_thinning():

@@ -282,13 +282,14 @@ class FreeEnergyCalculator(object):
                 # top=$2      # top file to use
                 # script=$3   # which script is called
 
-            print(exe.stdout)
-            print("Capture stderr")
-            print(exe.stderr)
+            logger.info("Capture stdout")
+            logger.info(exe.stdout)
+            logger.info("Capture stderr")
+            logger.info(exe.stderr)
 
             pot_energies = _parse_CHARMM_energy_output(path, env)
-            print(len(pot_energies))
-            print(len(volumn_list))
+            logger.info(len(pot_energies))
+            logger.info(len(volumn_list))
             if volumn_list:
                 return [
                     return_reduced_potential(e, volume=V, temperature=temperature)
@@ -364,7 +365,7 @@ class FreeEnergyCalculator(object):
         u_kn_ = copy.deepcopy(u_kn)
         start = 0
         for d in range(u_kn.shape[0] - 1):
-            print(f"{d}->{d+1}")
+            print(f"{d}->{d+1} [kT]")
             nr_of_snapshots = self.N_k[d] + self.N_k[d + 1]
             u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
 
@@ -372,7 +373,7 @@ class FreeEnergyCalculator(object):
             print(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
             start += self.N_k[d]
 
-        print('#######################################')
+        print("#######################################")
         return mbar.MBAR(u_kn, self.N_k)
 
     def calculate_dG_to_common_core(
