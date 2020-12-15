@@ -222,9 +222,9 @@ class FreeEnergyCalculator(object):
         def _parse_CHARMM_energy_output(path: str, env: str):
             pot_energies = []
             if env == "waterbox":
-                file_name = f"{path}/ener_solv.log"
+                file_name: str = f"{path}/ener_solv.log"
             elif env == "vacuum":
-                file_name = f"{path}/ener_vac.log"
+                file_name: str = f"{path}/ener_vac.log"
 
             with open(file_name, "r") as f:
                 for line in f.readlines():
@@ -239,10 +239,11 @@ class FreeEnergyCalculator(object):
 
         def _evaluate_traj_with_CHARMM(path: str, env: str, volumn_list: list = []):
 
+            script_name: str = ""
             if env == "waterbox":
-                script_name = "charmm_evaluate_energy_in_solv.inp"
+                script_name: str = "charmm_evaluate_energy_in_solv.inp"
             elif env == "vacuum":
-                script_name = "charmm_evaluate_energy_in_vac.inp"
+                script_name: str = "charmm_evaluate_energy_in_vac.inp"
 
             top = self.configuration["system"][self.structure][env][
                 "intermediate-filename"
@@ -327,6 +328,7 @@ class FreeEnergyCalculator(object):
         #########################################################
         # main
         print(f"Evaluating with {engine}")
+
         if engine == "openMM":
             u_kn = np.stack(
                 [
@@ -346,12 +348,31 @@ class FreeEnergyCalculator(object):
         else:
             raise RuntimeError(f"Either openMM or CHARMM engine, not {engine}")
 
+        import copy
+
         if save_results:
             file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
             logger.info(f"Saving results: {file}")
             results = {"u_kn": u_kn, "N_k": self.N_k}
             pickle.dump(results, open(file, "wb+"))
 
+        print("#######################################")
+        print("#######################################")
+        print("Pairwise Free Energy Estimate")
+        print("#######################################")
+        print("#######################################")
+        u_kn_ = copy.deepcopy(u_kn)
+        start = 0
+        for d in range(u_kn.shape[0] - 1):
+            print(f"{d}->{d+1}")
+            nr_of_snapshots = self.N_k[d] + self.N_k[d + 1]
+            u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
+
+            m = mbar.MBAR(u_kn_, self.N_k[d : d + 2])
+            print(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
+            start += self.N_k[d]
+
+        print('#######################################')
         return mbar.MBAR(u_kn, self.N_k)
 
     def calculate_dG_to_common_core(
