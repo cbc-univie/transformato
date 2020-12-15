@@ -57,83 +57,6 @@ def generate_psf(output_file_base, env):
     return target_psf
 
 
-def test_transformato_imported():
-    """Sample test, will always pass so long as import statement worked"""
-    assert "transformato" in sys.modules
-
-
-def test_read_yaml():
-    """Sample test, will check ability to read yaml files"""
-    settingsMap = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-        input_dir=".",
-        output_dir="data/",
-    )
-
-    assert settingsMap["system"]["name"] == "toluene-methane-solvation-free-energy"
-
-
-def test_psf_files():
-    test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
-    output = StringIO()
-    test_psf.write_psf(output)
-    corrected_psf = psf_correction(output)
-    correction_on = False
-    for line in corrected_psf.split("\n"):  # split on newline charactar
-        if "!NATOM" in line:  # if !NATOM is found start correction mode
-            correction_on = True
-            continue
-
-        if "!NBOND" in line:  # if !NBOND is found exit correction mode
-            correction_on = False
-
-        if (
-            correction_on == True
-        ):  # if in correction mode take the string, split on whitespace and put the values in a newly formated string
-            if len(line) == 0:
-                pass
-            else:
-                assert len(line) == 118
-                values = line.split()
-                assert len(values) == 11
-
-
-def test_initialize_systems():
-    configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-        input_dir="data/",
-        output_dir=".",
-    )
-
-    s1 = SystemStructure(configuration, "structure1")
-    assert int(s1.offset["waterbox"]) == 0
-    assert int(s1.offset["vacuum"]) == 0
-
-    s2 = SystemStructure(configuration, "structure2")
-    assert int(s2.offset["waterbox"]) == 0
-    assert int(s2.offset["vacuum"]) == 0
-
-    assert "vacuum" in s1.envs and "vacuum" in s2.envs
-    assert "waterbox" in s1.envs and "waterbox" in s2.envs
-
-    configuration = load_config_yaml(
-        config="transformato/tests/config/test-2oj9-binding-free-energy.yaml",
-        input_dir="data/",
-        output_dir=".",
-    )
-
-    s1 = SystemStructure(configuration, "structure1")
-    assert int(s1.offset["waterbox"]) == 0
-    assert int(s1.offset["complex"]) == 4811
-
-    s2 = SystemStructure(configuration, "structure2")
-    assert int(s2.offset["waterbox"]) == 0
-    assert int(s2.offset["complex"]) == 4692
-
-    assert "complex" in s1.envs and "complex" in s2.envs
-    assert "waterbox" in s1.envs and "waterbox" in s2.envs
-
-
 def test_proposed_mutation_mcs():
 
     from rdkit.Chem import rdFMCS
@@ -888,16 +811,85 @@ def test_vdw_mutation_for_hydrogens_system2():
                 shutil.rmtree(output_file_base)
 
 
-def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
-    from transformato import FreeEnergyCalculator
+@pytest.mark.slowtest
+def test_bonded_mutation():
 
-    conf = (
+    for conf in [
         "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-    )
+    ]:
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
 
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
 
-    f = FreeEnergyCalculator(configuration, "toluene")
+        original_psf = {}
+        original_psf = {}
+        output_files = []
+        for env in s1.envs:
+            original_psf[env] = copy.deepcopy(s1.psfs[env])
+
+        s1_to_s2.calculate_common_core()
+
+        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+        i = IntermediateStateFactory(
+            system=s1,
+            configuration=configuration,
+        )
+
+        # mutate everything else before touching bonded terms
+        intst = 0
+        charges = mutation_list["charge"]
+        intst += 1
+        # turn off charges
+        output_file_base = i.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=0.0,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+        # Turn of hydrogens
+        intst += 1
+        hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+        output_file_base = i.write_state(
+            mutation_conf=hydrogen_lj_mutations,
+            lambda_value_vdw=0.0,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+        # turn off heavy atoms
+        intst += 1
+
+        output_file_base = i.write_state(
+            mutation_conf=mutation_list["lj"],
+            lambda_value_vdw=0.0,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+        # generate terminal lj
+        intst += 1
+
+        output_file_base = i.write_state(
+            mutation_conf=mutation_list["terminal-lj"],
+            lambda_value_vdw=0.0,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+        m = mutation_list["transform"]
+        for lambda_value in np.linspace(0.25, 1, 3):
+            intst += 1
+            print(lambda_value)
+            # turn off charges
+            output_file_base = i.write_state(
+                mutation_conf=m,
+                common_core_transformation=1 - lambda_value,
+                intst_nr=intst,
+            )
+            output_files.append(output_file_base)
 
 
 def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
@@ -1246,526 +1238,3 @@ def test_full_mutation_system2():
         finally:
             for output_file_base in output_files:
                 shutil.rmtree(output_file_base)
-
-
-@pytest.mark.slowtest
-def test_bonded_mutation():
-
-    for conf in [
-        "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-    ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
-
-        s1_to_s2 = ProposeMutationRoute(s1, s2)
-
-        original_psf = {}
-        original_psf = {}
-        output_files = []
-        for env in s1.envs:
-            original_psf[env] = copy.deepcopy(s1.psfs[env])
-
-        s1_to_s2.calculate_common_core()
-
-        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-        i = IntermediateStateFactory(
-            system=s1,
-            configuration=configuration,
-        )
-
-        # mutate everything else before touching bonded terms
-        intst = 0
-        charges = mutation_list["charge"]
-        intst += 1
-        # turn off charges
-        output_file_base = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=0.0,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
-
-        # Turn of hydrogens
-        intst += 1
-        hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-        output_file_base = i.write_state(
-            mutation_conf=hydrogen_lj_mutations,
-            lambda_value_vdw=0.0,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
-
-        # turn off heavy atoms
-        intst += 1
-
-        output_file_base = i.write_state(
-            mutation_conf=mutation_list["lj"],
-            lambda_value_vdw=0.0,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
-
-        # generate terminal lj
-        intst += 1
-
-        output_file_base = i.write_state(
-            mutation_conf=mutation_list["terminal-lj"],
-            lambda_value_vdw=0.0,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
-
-        m = mutation_list["transform"]
-        for lambda_value in np.linspace(0.25, 1, 3):
-            intst += 1
-            print(lambda_value)
-            # turn off charges
-            output_file_base = i.write_state(
-                mutation_conf=m,
-                common_core_transformation=1 - lambda_value,
-                intst_nr=intst,
-            )
-            output_files.append(output_file_base)
-
-
-def _mutate_toluene_to_methane_cc():
-    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-    s1 = SystemStructure(configuration, "structure1")
-    s2 = SystemStructure(configuration, "structure2")
-
-    s1_to_s2 = ProposeMutationRoute(s1, s2)
-    s1_to_s2.calculate_common_core()
-
-    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-    i = IntermediateStateFactory(
-        system=s1,
-        configuration=configuration,
-    )
-
-    output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 0
-    charges = mutation_list["charge"]
-    intst += 1
-    # turn off charges
-    output_file_base = i.write_state(
-        mutation_conf=charges,
-        lambda_value_electrostatic=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
-
-    # Turn of hydrogens
-    intst += 1
-    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-    output_file_base = i.write_state(
-        mutation_conf=hydrogen_lj_mutations,
-        lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
-
-    # turn off heavy atoms
-    intst += 1
-
-    output_file_base = i.write_state(
-        mutation_conf=mutation_list["lj"],
-        lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
-
-    # generate terminal lj
-    intst += 1
-
-    output_file_base = i.write_state(
-        mutation_conf=mutation_list["terminal-lj"],
-        lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
-
-    m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 3):
-        intst += 1
-        print(lambda_value)
-        # turn off charges
-        output_file_base = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=1 - lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
-    return output_files, configuration
-
-
-def _mutate_methane_to_methane_cc(modifier: str = ""):
-    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-
-    s1 = SystemStructure(configuration, "structure1")
-    s2 = SystemStructure(configuration, "structure2")
-
-    s1_to_s2 = ProposeMutationRoute(s1, s2)
-    s1_to_s2.calculate_common_core()
-
-    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
-    i = IntermediateStateFactory(
-        system=s2,
-        configuration=configuration,
-    )
-
-    if modifier:
-        # building whole file
-        if "switch" in modifier:
-            configuration["simulation"]["parameters"]["switch"] = modifier
-        i.path += f"-{modifier}"
-
-    output_files = []
-    # mutate everything else before touching bonded terms
-    intst = 1
-    charges = mutation_list["charge"]
-    # turn off charges
-    output_file_base = i.write_state(
-        mutation_conf=charges,
-        lambda_value_electrostatic=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
-
-    # generate terminal lj
-    intst += 1
-
-    output_file_base = i.write_state(
-        mutation_conf=mutation_list["terminal-lj"],
-        lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
-
-    return output_files, configuration
-
-
-def test_generate_output_for_methane_cc_solvation_free_energy():
-    from transformato.loeffler_systems import mutate_methane_to_methane_cc
-
-    output_files, configuration = mutate_methane_to_methane_cc()
-
-
-def test_generate_output_for_toluene_cc_solvation_free_energy():
-    from transformato.loeffler_systems import mutate_toluene_to_methane_cc
-
-    output_files, configuration = mutate_toluene_to_methane_cc()
-
-
-def test_generate_output_for_toluene_cc_solvation_free_energy_with_test_conf():
-    from transformato.loeffler_systems import mutate_toluene_to_methane_cc
-
-    output_files, configuration = mutate_toluene_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    )
-    print(output_files)
-
-
-def test_generate_CHARMM_output_for_different_switches_methane_cc_solvation_free_energy():
-    from transformato.loeffler_systems import mutate_methane_to_methane_cc
-
-    for switch in ["vfswitch", "vswitch"]:
-        output_files, configuration = mutate_methane_to_methane_cc(modifier=switch)
-
-
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
-    from transformato import FreeEnergyCalculator
-    from transformato.loeffler_systems import mutate_toluene_to_methane_cc
-
-    output_files, configuration = mutate_toluene_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    )
-
-    for path in sorted(output_files):
-        # because path is object not string
-        print(f"Start sampling for: {path}")
-        try:
-            exe = subprocess.run(
-                ["bash", f"{str(path)}/simulation.sh", str(path)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except TypeError:
-            exe = subprocess.run(
-                ["bash", f"{str(path)}/simulation.sh", str(path)],
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-        print(exe.stdout)
-        print("Capture stderr")
-        print(exe.stderr)
-
-    f = FreeEnergyCalculator(configuration, "toluene")
-    f.load_trajs(nr_of_max_snapshots=300)
-    f.calculate_dG_to_common_core()
-    ddG, dddG = f.end_state_free_energy_difference
-    print(f"Free energy difference: {ddG}")
-    print(f"Uncertanty: {dddG}")
-    np.isclose(ddG, 8.9984, rtol=1e-2)
-    f.show_summary()
-
-
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
-    from transformato import FreeEnergyCalculator
-    from transformato.loeffler_systems import mutate_methane_to_methane_cc
-
-    output_files, configuration = mutate_methane_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    )
-
-    for path in sorted(output_files):
-        # because path is object not string
-        print(f"Start sampling for: {path}")
-        try:
-            exe = subprocess.run(
-                ["bash", f"{str(path)}/simulation.sh", str(path)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except TypeError:
-            exe = subprocess.run(
-                ["bash", f"{str(path)}/simulation.sh", str(path)],
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-        print(exe.stdout)
-        print("Capture stderr")
-        print(exe.stderr)
-
-    f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=300)
-    f.calculate_dG_to_common_core()
-    ddG, dddG = f.end_state_free_energy_difference
-    print(f"Free energy difference: {ddG}")
-    print(f"Uncertanty: {dddG}")
-    np.isclose(ddG, 8.9984, rtol=1e-2)
-    f.show_summary()
-
-
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_trajs():
-    from transformato.loeffler_systems import mutate_methane_to_methane_cc
-
-    output_files, configuration = mutate_methane_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-        output_dir=".",
-    )
-
-    for path in sorted(output_files):
-        # because path is object not string
-        print(f"Start sampling for: {path}")
-        try:
-            exe = subprocess.run(
-                ["bash", f"{str(path)}/simulation_charmm.sh", str(path)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-        except TypeError:
-            exe = subprocess.run(
-                ["bash", f"{str(path)}/simulation_charmm.sh", str(path)],
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-            )
-        print(exe.stdout)
-        print("Capture stderr")
-        print(exe.stderr)
-
-    f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=300)
-    f.calculate_dG_to_common_core(engine="CHARMM")
-    ddG, dddG = f.end_state_free_energy_difference
-    print(f"Free energy difference: {ddG}")
-    print(f"Uncertanty: {dddG}")
-    f.show_summary()
-
-
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocessing():
-    from transformato import FreeEnergyCalculator
-
-    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="data"
-    )  # NOTE: for preprocessing input_dir is the output dir
-
-    f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=300)
-    f.calculate_dG_to_common_core(engine="CHARMM")
-    ddG, dddG = f.end_state_free_energy_difference
-    print(f"Free energy difference: {ddG}")
-    print(f"Uncertanty: {dddG}")
-    np.isclose(ddG, -1.2102764838282152, rtol=1e-2)
-    f.show_summary()
-
-
-def test_postprocessing_thinning():
-    from transformato import FreeEnergyCalculator
-
-    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="data"
-    )  # NOTE: for preprocessing input_dir is the output dir
-
-    f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=1000)
-    assert len(f.snapshots.keys()) == 2  # entry for vacuum and waterbox
-    assert f.nr_of_states == 3  # nr of lambda states
-
-    print(f.snapshots["vacuum"])
-    assert (
-        len(f.snapshots["vacuum"]) == 2250
-    )  # total:3000 frames, 75%: 2250 ---> for the individual traj: 1000 frames, 75% are 750, and we take all of these
-    assert len(f.snapshots["waterbox"]) == 2250  # total:3000 frames, 75%: 2250
-
-    f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=500)
-
-    print(f.snapshots["vacuum"])
-    assert (
-        len(f.snapshots["vacuum"]) == 1500
-    )  # input had length of 1000, 25% removed gives 750 frames, taking only 500 of these we end up with 1500 frames
-    assert len(f.snapshots["waterbox"]) == 1500  #
-
-
-# @pytest.mark.slowtest
-# @pytest.mark.skipif(
-#     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-# )
-# def test_run_example2_systems_solvation_free_energy():
-#     from transformato import FreeEnergyCalculator
-
-#     for conf in [
-#         "transformato/tests/config/test-ethane-ethanol-solvation-free-energy.yaml"
-#     ]:
-#         configuration = load_config_yaml(
-#             config=conf, input_dir="data/", output_dir="data/"
-#         )
-
-#         # load systems
-#         s1 = SystemStructure(configuration, "structure1")
-#         s2 = SystemStructure(configuration, "structure2")
-#         a = ProposeMutationRoute(s1, s2)
-
-#         # manually matching Oxygen (0) with Hydrogen (4)
-#         a.add_idx_to_common_core_of_mol1(4)
-#         a.add_idx_to_common_core_of_mol2(0)
-
-#         # generate mutation route
-#         mutation_list = a.generate_mutations_to_common_core_for_mol1(
-#             nr_of_steps_for_electrostatic=5, nr_of_steps_for_cc_transformation=5
-#         )
-
-#         try:
-#             # write intermediate states for systems
-#             i = IntermediateStateFactory(
-#                 system=s1, mutation_list=mutation_list, configuration=configuration
-#             )
-#             i.generate_intermediate_states()
-#             paths = pathlib.Path(i.path).glob("**/*.sh")
-#             for path in sorted(paths):
-#                 run_dir = path.parent
-#                 # because path is object not string
-#                 print(f"Start sampling for: {path}")
-#                 print(f"In directory: {run_dir}")
-#                 try:
-#                     exe = subprocess.run(
-#                         ["bash", str(path), str(run_dir)],
-#                         check=True,
-#                         capture_output=True,
-#                         text=True,
-#                     )
-#                 except TypeError:
-#                     exe = subprocess.run(
-#                         ["bash", str(path), str(run_dir)],
-#                         check=True,
-#                         stdout=subprocess.PIPE,
-#                         stderr=subprocess.PIPE,
-#                     )
-#                 print(exe.stdout)
-#                 print("Capture stderr")
-#                 print(exe.stderr)
-
-#             # generate mutation route
-#             mutation_list = a.generate_mutations_to_common_core_for_mol2(
-#                 nr_of_steps_for_electrostatic=5
-#             )
-#             # write intermediate states
-#             i = IntermediateStateFactory(
-#                 system=s2, mutation_list=mutation_list, configuration=configuration
-#             )
-#             i.generate_intermediate_states()
-
-#             paths = pathlib.Path(i.path).glob("**/*.sh")
-#             for path in sorted(paths):
-#                 run_dir = path.parent
-#                 # because path is object not string
-#                 print(f"Start sampling for: {path}")
-#                 print(f"In directory: {run_dir}")
-#                 try:
-#                     exe = subprocess.run(
-#                         ["bash", str(path), str(run_dir)],
-#                         check=True,
-#                         capture_output=True,
-#                         text=True,
-#                     )
-#                 except TypeError:
-#                     exe = subprocess.run(
-#                         ["bash", str(path), str(run_dir)],
-#                         check=True,
-#                         stdout=subprocess.PIPE,
-#                         stderr=subprocess.PIPE,
-#                     )
-#                 print(exe.stdout)
-#                 print("Capture stderr")
-#                 print(exe.stderr)
-
-#             f = FreeEnergyCalculator(configuration, "ethane")
-#             f.load_trajs(thinning=2)
-#             f.calculate_dG_to_common_core()
-#             ddG, dddG = f.end_state_free_energy_difference
-#             print(f"Free energy difference: {ddG}")
-#             print(f"Uncertanty: {dddG}")
-#             # assert(ddG == 10.0)
-#             f.show_summary()
-
-#             f = FreeEnergyCalculator(configuration, "ethanol")
-#             f.load_trajs(thinning=2)
-#             f.calculate_dG_to_common_core()
-#             ddG, dddG = f.end_state_free_energy_difference
-#             print(f"Free energy difference: {ddG}")
-#             print(f"Uncertanty: {dddG}")
-#             f.show_summary()
-#         finally:
-#             pass
-#             # shutil.rmtree(pathlib.Path(i.path).parent)
