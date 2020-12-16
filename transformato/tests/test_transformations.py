@@ -14,20 +14,13 @@ import numpy as np
 import parmed as pm
 import pytest
 
-from io import StringIO
-import filecmp
 
 # Import package, test suite, and other packages as needed
 import transformato
 
 # read in specific topology with parameters
-from parmed.charmm.parameters import CharmmParameterSet
 from transformato import (
-    IntermediateStateFactory,
-    ProposeMutationRoute,
-    SystemStructure,
     load_config_yaml,
-    psf_correction,
 )
 
 
@@ -36,34 +29,36 @@ def test_transformato_imported():
     assert "transformato" in sys.modules
 
 
-def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
-    from transformato import FreeEnergyCalculator
-
-    conf = (
-        "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
-    )
-
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-
-    f = FreeEnergyCalculator(configuration, "toluene")
-
-
 def test_generate_output_for_methane_cc_solvation_free_energy():
     from transformato.loeffler_systems import mutate_methane_to_methane_cc
 
-    output_files, configuration = mutate_methane_to_methane_cc()
+    output_files, configuration = mutate_methane_to_methane_cc(
+        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    )
 
 
 def test_generate_output_for_toluene_cc_solvation_free_energy():
     from transformato.loeffler_systems import mutate_toluene_to_methane_cc
 
-    output_files, configuration = mutate_toluene_to_methane_cc()
-
-
-def test_generate_output_for_toluene_cc_solvation_free_energy_with_test_conf():
-    from transformato.loeffler_systems import mutate_toluene_to_methane_cc
-
     output_files, configuration = mutate_toluene_to_methane_cc(
         conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    )
+    print(output_files)
+
+
+def test_generate_output_for_neopentane_cc_solvation_free_energy():
+    from transformato.loeffler_systems import mutate_neopentane_to_methane_cc
+
+    output_files, configuration = mutate_neopentane_to_methane_cc(
+        conf="transformato/tests/config/test-neopentane-methane-solvation-free-energy.yaml"
+    )
+    print(output_files)
+
+
+def test_generate_output_for_methanol_cc_solvation_free_energy():
+    from transformato.loeffler_systems import mutate_methanol_to_methane_cc
+
+    output_files, _ = mutate_methanol_to_methane_cc(
+        conf="transformato/tests/config/test-methanol-methane-solvation-free-energy.yaml"
     )
     print(output_files)
