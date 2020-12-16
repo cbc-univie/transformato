@@ -79,8 +79,8 @@ def load_config_yaml(config, input_dir, output_dir):
                 "nsteps size and nstdcd size in config file does not match"
             )
     #making tlc caps always uppercase
-    settingsMap["system"]["structure1"]["tlc"].upper()
-    settingsMap["system"]["structure2"]["tlc"].upper()
+    settingsMap["system"]["structure1"]["tlc"] = settingsMap["system"]["structure1"]["tlc"].upper()
+    settingsMap["system"]["structure2"]["tlc"] = settingsMap["system"]["structure2"]["tlc"].upper()
     # set the bin, data and analysis dir
     settingsMap["bin_dir"] = get_bin_dir()
     settingsMap["analysis_dir_base"] = os.path.abspath(f"{output_dir}")
