@@ -56,7 +56,7 @@ def print_mutations(mutation: dict):
         pass
 
 
-def load_config_yaml(config, input_dir, output_dir):
+def load_config_yaml(config, input_dir, output_dir) -> dict:
 
     with open(f"{config}", "r") as stream:
         try:
