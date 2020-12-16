@@ -4,7 +4,7 @@ system:
   ################
   structure1:
     name: "toluene"
-    tlc: "UNL"
+    tlc: "unl"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_charmm2omm"
