@@ -281,6 +281,46 @@ def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
     # turn off charges
     output_file_base = i.write_state(
         mutation_conf=charges,
+        lambda_value_electrostatic=0.8,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.6,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.4,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.2,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
         lambda_value_electrostatic=0.0,
         intst_nr=intst,
     )
@@ -601,6 +641,47 @@ def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.8,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.6,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.4,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.2,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
     intst += 1
     # start with charges
     # turn off charges
