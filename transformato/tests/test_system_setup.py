@@ -2,20 +2,11 @@
 Unit and regression test for the transformato package.
 """
 
-import copy
-import logging
-import os
-import pathlib
-import shutil
-import subprocess
-import sys
-
 import numpy as np
 import parmed as pm
 import pytest
 
 from io import StringIO
-import filecmp
 
 # Import package, test suite, and other packages as needed
 import transformato
@@ -23,8 +14,6 @@ import transformato
 # read in specific topology with parameters
 from parmed.charmm.parameters import CharmmParameterSet
 from transformato import (
-    IntermediateStateFactory,
-    ProposeMutationRoute,
     SystemStructure,
     load_config_yaml,
     psf_correction,
