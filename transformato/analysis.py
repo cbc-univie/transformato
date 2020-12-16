@@ -233,9 +233,10 @@ class FreeEnergyCalculator(object):
                         v = float(line) * unit.kilocalorie_per_mole
                     except ValueError:
                         v = float(999999.99) * unit.kilocalorie_per_mole
-                pot_energies.append(v)
-            
-            assert len(pot_energies) > 100
+                    pot_energies.append(v)
+
+            print(len(pot_energies))
+            assert len(pot_energies) > 50
             return pot_energies
 
         def _evaluate_traj_with_CHARMM(path: str, env: str, volumn_list: list = []):
@@ -267,7 +268,7 @@ class FreeEnergyCalculator(object):
             # top=$2      # top file to use
             # script=$3   # which script is called
 
-            with open(f"eval_charmm_{env}.log") as f:
+            with open(f"{path}/eval_charmm_{env}.log", "w+") as f:
                 f.write("Capture stdout")
                 f.write(exe.stdout)
                 f.write("Capture stderr")
@@ -279,10 +280,10 @@ class FreeEnergyCalculator(object):
             logger.info(exe.stderr)
 
             pot_energies = _parse_CHARMM_energy_output(path, env)
-            
-            logger.info(f'Number of entries in pot_energies list: {len(pot_energies)}')
-            logger.info(f'Number of entries in pot_energies list: {len(volumn_list)}')
-            
+
+            logger.info(f"Number of entries in pot_energies list: {len(pot_energies)}")
+            logger.info(f"Number of entries in pot_energies list: {len(volumn_list)}")
+
             if volumn_list:
                 assert len(volumn_list) == len(pot_energies)
                 return [
