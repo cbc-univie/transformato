@@ -40,7 +40,7 @@ def test_read_yaml():
     )
 
     assert settingsMap["system"]["name"] == "toluene-methane-solvation-free-energy"
-
+    assert settingsMap["system"]["structure1"]["tlc"] == "UNL"
 
 def test_psf_files():
     test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
