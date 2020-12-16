@@ -307,7 +307,7 @@ def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.25, 1, 4):
+    for lambda_value in np.linspace(0.25, 1, 5):
         intst += 1
         print(lambda_value)
         # turn off charges
