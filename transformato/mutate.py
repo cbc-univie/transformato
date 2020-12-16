@@ -4,7 +4,7 @@ import os
 from collections import namedtuple
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Tuple
 
 import networkx as nx
 import numpy as np
@@ -639,7 +639,7 @@ class ProposeMutationRoute(object):
         return transformations
 
     @staticmethod
-    def _find_terminal_atom(cc_idx: list, mol: Chem.Mol):
+    def _find_terminal_atom(cc_idx: list, mol: Chem.Mol) ->Tuple[list,list]:
         """
         Find atoms that connect the  the molecule to the common core.
 
