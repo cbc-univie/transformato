@@ -221,20 +221,21 @@ class FreeEnergyCalculator(object):
 
         def _parse_CHARMM_energy_output(path: str, env: str):
             pot_energies = []
+            file_name: str = ""
             if env == "waterbox":
-                file_name: str = f"{path}/ener_solv.log"
+                file_name = f"{path}/ener_solv.log"
             elif env == "vacuum":
-                file_name: str = f"{path}/ener_vac.log"
+                file_name = f"{path}/ener_vac.log"
 
             with open(file_name, "r") as f:
                 for line in f.readlines():
                     try:
-                        pot_energies.append(float(line) * unit.kilocalorie_per_mole)
+                        v = float(line) * unit.kilocalorie_per_mole
                     except ValueError:
-                        pot_energies.append(
-                            float(999999.99) * unit.kilocalorie_per_mole
-                        )
-
+                        v = float(999999.99) * unit.kilocalorie_per_mole
+                pot_energies.append(v)
+            
+            assert len(pot_energies) > 100
             return pot_energies
 
         def _evaluate_traj_with_CHARMM(path: str, env: str, volumn_list: list = []):
@@ -249,38 +250,28 @@ class FreeEnergyCalculator(object):
                 "intermediate-filename"
             ]
 
-            try:
-                exe = subprocess.run(
-                    [
-                        "bash",
-                        f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",
-                        str(path),
-                        str(top),
-                        str(script_name),
-                    ],
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                    encoding="latin1",
-                )
-            except TypeError:
-                exe = subprocess.run(
-                    [
-                        "bash",
-                        f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",  # path=$1, top=$2, script=$3
-                        str(path),
-                        str(top),
-                        str(script_name),
-                    ],
-                    check=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    encoding="latin1",
-                )
-                # path=$1     # path in which the simulation will start
-                # top=$2      # top file to use
-                # script=$3   # which script is called
+            exe = subprocess.run(
+                [
+                    "bash",
+                    f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",
+                    str(path),
+                    str(top),
+                    str(script_name),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="latin1",
+            )
+            # path=$1     # path in which the simulation will start
+            # top=$2      # top file to use
+            # script=$3   # which script is called
+
+            with open(f"eval_charmm_{env}.log") as f:
+                f.write("Capture stdout")
+                f.write(exe.stdout)
+                f.write("Capture stderr")
+                f.write(exe.stderr)
 
             logger.info("Capture stdout")
             logger.info(exe.stdout)
@@ -288,9 +279,12 @@ class FreeEnergyCalculator(object):
             logger.info(exe.stderr)
 
             pot_energies = _parse_CHARMM_energy_output(path, env)
-            logger.info(len(pot_energies))
-            logger.info(len(volumn_list))
+            
+            logger.info(f'Number of entries in pot_energies list: {len(pot_energies)}')
+            logger.info(f'Number of entries in pot_energies list: {len(volumn_list)}')
+            
             if volumn_list:
+                assert len(volumn_list) == len(pot_energies)
                 return [
                     return_reduced_potential(e, volume=V, temperature=temperature)
                     for e, V in zip(pot_energies, volumn_list)
