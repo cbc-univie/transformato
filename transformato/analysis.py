@@ -367,6 +367,8 @@ class FreeEnergyCalculator(object):
 
             m = mbar.MBAR(u_kn_, self.N_k[d : d + 2])
             print(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
+            print(m.getFreeEnergyDifferences(return_dict=True)["dDelta_f"][0, 1])
+
             start += self.N_k[d]
 
         print("#######################################")
