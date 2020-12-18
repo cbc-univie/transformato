@@ -296,11 +296,8 @@ class FreeEnergyCalculator(object):
                     for e in pot_energies
                 ]
 
-        def _evaluated_e_on_all_snapshots_CHARMM(
-            snapshots: mdtraj.Trajectory, lambda_state: int, env: str
-        ):
+        def _evaluated_e_on_all_snapshots_CHARMM(lambda_state: int, env: str):
 
-            snapshots.save_dcd(f"{self.base_path}/intst{lambda_state}/traj.dcd")
             if env == "waterbox":
                 volumn_list = [
                     _get_V_for_ts(snapshots, env, ts)[0]
@@ -334,12 +331,16 @@ class FreeEnergyCalculator(object):
             )
 
         elif engine == "CHARMM":
+            # write out traj in self.base_path
+            snapshots.save_dcd(f"{self.base_path}/traj.dcd")
             u_kn = np.stack(
                 [
-                    _evaluated_e_on_all_snapshots_CHARMM(snapshots, lambda_state, env)
+                    _evaluated_e_on_all_snapshots_CHARMM(lambda_state, env)
                     for lambda_state in range(1, self.nr_of_states + 1)
                 ]
             )
+            # remove merged traj
+            os.remove(f"{self.base_path}/traj.dcd")
 
         else:
             raise RuntimeError(f"Either openMM or CHARMM engine, not {engine}")
