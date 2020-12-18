@@ -122,9 +122,6 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_tr
             capture_output=True,
             text=True,
         )
-        print(exe.stdout)
-        print("Capture stderr")
-        print(exe.stderr)
 
     f = FreeEnergyCalculator(configuration, "methane")
     f.load_trajs(nr_of_max_snapshots=300)

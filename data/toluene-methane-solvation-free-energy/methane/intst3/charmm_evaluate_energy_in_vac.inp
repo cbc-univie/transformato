@@ -29,7 +29,7 @@ energy inbfrq 0
 
 scalar fbeta set 5. sele all end
 
-open read file unit 41 name traj.dcd
+open read file unit 41 name ../traj.dcd
 traj query unit 41
 
 set start ?start
