@@ -647,7 +647,7 @@ def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
     # turn off charges
     charges = mutation_list["charge"]
     nr_of_mutation_steps_charge = (
-        10  # defines the number of mutation steps for charge mutation
+        20  # defines the number of mutation steps for charge mutation
     )
     for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_charge + 1)[1:]:
         intst += 1
