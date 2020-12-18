@@ -296,9 +296,7 @@ class FreeEnergyCalculator(object):
                     for e in pot_energies
                 ]
 
-        def _evaluated_e_on_all_snapshots_CHARMM(
-            lambda_state: int, env: str
-        ):
+        def _evaluated_e_on_all_snapshots_CHARMM(lambda_state: int, env: str):
 
             if env == "waterbox":
                 volumn_list = [
@@ -341,6 +339,8 @@ class FreeEnergyCalculator(object):
                     for lambda_state in range(1, self.nr_of_states + 1)
                 ]
             )
+            # remove merged traj
+            os.remove(f"{self.base_path}/traj.dcd")
 
         else:
             raise RuntimeError(f"Either openMM or CHARMM engine, not {engine}")
