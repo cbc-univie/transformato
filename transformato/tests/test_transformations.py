@@ -29,6 +29,8 @@ def test_generate_output_for_methane_cc_solvation_free_energy():
     output_files, configuration = mutate_methane_to_methane_cc(
         conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
     )
+    
+    assert len(output_files) == 3
 
 
 def test_generate_output_for_toluene_cc_solvation_free_energy():
