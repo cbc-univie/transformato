@@ -220,6 +220,8 @@ class FreeEnergyCalculator(object):
             return np.array(energies)
 
         def _parse_CHARMM_energy_output(path: str, env: str):
+            import math
+
             pot_energies = []
             file_name: str = ""
             if env == "waterbox":
@@ -230,9 +232,16 @@ class FreeEnergyCalculator(object):
             with open(file_name, "r") as f:
                 for line in f.readlines():
                     try:
-                        v = float(line) * unit.kilocalorie_per_mole
+                        v = float(line)
                     except ValueError:
-                        v = float(999999.99) * unit.kilocalorie_per_mole
+                        print(line)
+                        v = float(999999.99)
+
+                    if math.isinf(v) or math.isnan(v):
+                        print(line)
+                        v = float(999999.99)
+
+                    v *= unit.kilocalorie_per_mole
                     pot_energies.append(v)
 
             print(len(pot_energies))
@@ -299,23 +308,23 @@ class FreeEnergyCalculator(object):
         def _evaluated_e_on_all_snapshots_CHARMM(lambda_state: int, env: str):
 
             if env == "waterbox":
+
                 volumn_list = [
                     _get_V_for_ts(snapshots, env, ts)[0]
                     for ts in range(snapshots.n_frames)
                 ]
+                volumn_list = []  # Note: for now we are descarding the V list
 
-                return _evaluate_traj_with_CHARMM(
-                    path=f"{self.base_path}/intst{lambda_state}/",
-                    env=env,
-                    volumn_list=volumn_list,
-                )
             elif env == "vacuum":
-                return _evaluate_traj_with_CHARMM(
-                    path=f"{self.base_path}/intst{lambda_state}/",
-                    env=env,
-                )
+                volumn_list = []
             else:
                 raise RuntimeError(f"{env}")
+
+            return _evaluate_traj_with_CHARMM(
+                path=f"{self.base_path}/intst{lambda_state}/",
+                env=env,
+                volumn_list=volumn_list,
+            )
 
         #########################################################
         #########################################################
