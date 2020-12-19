@@ -298,7 +298,8 @@ class ProposeMutationRoute(object):
             logger.debug(f"Atoms for which charge is set to zero: {atoms_to_be_mutated}")
             logger.debug('############################')
             
-            m = Mutation(atoms_to_be_mutated=atoms_to_be_mutated, common_core=cc_idx, dummy_region=dummy_region)
+            m = Mutation(atoms_to_be_mutated=atoms_to_be_mutated, 
+                         dummy_region=dummy_region)
             m.mutate(psf, lambda_value_electrostatic=0.0)
             charge_transformed_psfs.append(psf)
         return charge_transformed_psfs[0], charge_transformed_psfs[1]
@@ -876,7 +877,7 @@ class CommonCoreTransformation(object):
                         if 'DDX' in ligand1_atom.type:
                             logger.warning('This is the terminal LJ atom. If everything went correct, this does not have to change atom types.')
                         else:
-                            self._modify_type(ligand1_atom, psf)
+                            self._modify_type_in_cc(ligand1_atom, psf)
                             logger.debug(f"Modifying atom: {ligand1_atom}")
                             logger.debug(f"Template atom: {ligand2_atom}")
 
@@ -1071,23 +1072,23 @@ class CommonCoreTransformation(object):
             # scale torsions
             self._mutate_torsions(psf, lambda_value)
 
-    def _modify_type(self, atom: pm.Atom, psf: pm.charmm.CharmmPsfFile):
+    @staticmethod
+    def _modify_type_in_cc(atom: pm.Atom, psf: pm.charmm.CharmmPsfFile):
 
         if (hasattr(atom, 'initial_type')):
             # only change parameters
             pass
         else:
             logger.info(f"Setting RRR atomtype for atom: {atom}.")
-            atom.type = f"RRR{psf.number_of_dummys}"
             atom.initial_type = atom.type
             psf.number_of_dummys += 1
+            atom.type = f"RRR{psf.number_of_dummys}"
 
 
 class Mutation(object):
 
     def __init__(self, 
                  atoms_to_be_mutated: list,
-                 common_core: list,
                  dummy_region: DummyRegion):
 
         assert(type(atoms_to_be_mutated) == list)
@@ -1134,18 +1135,16 @@ class Mutation(object):
             atom = psf[i + offset]
             if to_default:
                 logger.info('Mutate to default')
-                psf.mutations_to_default += 1
-                atom_type = f'DDX{psf.mutations_to_default}'
+                atom_type_suffix = 'DDX'
                 atom.rmin = 1.5
                 atom.epsilon = -0.15
             else:
                 logger.info('Mutate to dummy')
-                psf.number_of_dummys += 1
-                atom_type = f"DDD{psf.number_of_dummys}"
+                atom_type_suffix = f"DDD"
                 self._scale_epsilon(atom, lambda_value)
                 self._scale_rmin(atom, lambda_value)
             # NOTEthere is always a type change
-            self._modify_type(atom, psf, atom_type)
+            self._modify_type(atom, psf, atom_type_suffix)
 
     def mutate(self,
                psf: pm.charmm.CharmmPsfFile,
@@ -1231,12 +1230,19 @@ class Mutation(object):
         logger.debug(atom.initial_rmin)
         atom.rmin = atom.initial_rmin * lambda_value
 
-    def _modify_type(self, atom, psf, new_type: str):
+    @staticmethod
+    def _modify_type(atom, psf, atom_type_suffix: str):
 
         if (hasattr(atom, 'initial_type')):
             # only change parameters
             pass
         else:
             atom.initial_type = atom.type
+            if atom_type_suffix == 'DDD':
+                psf.number_of_dummys += 1
+                new_type = f"{atom_type_suffix}{psf.number_of_dummys}"
+            elif atom_type_suffix == 'DDX':
+                psf.mutations_to_default += 1
+                new_type = f"{atom_type_suffix}{psf.mutations_to_default}"
+
             atom.type = new_type
-            psf.number_of_dummys += 1
