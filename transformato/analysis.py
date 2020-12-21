@@ -381,7 +381,7 @@ class FreeEnergyCalculator(object):
             start += self.N_k[d]
 
         print("#######################################")
-        return mbar.MBAR(u_kn, self.N_k, initialize="BAR")
+        return mbar.MBAR(u_kn, self.N_k, initialize="BAR", verbose=True)
 
     def calculate_dG_to_common_core(
         self, save_results: bool = True, engine: str = "openMM"
@@ -410,7 +410,9 @@ class FreeEnergyCalculator(object):
 
     def _load_mbar_results(self, file):
         results = pickle.load(open(file, "rb"))
-        return mbar.MBAR(results["u_kn"], results["N_k"], initialize='BAR')
+        return mbar.MBAR(
+            results["u_kn"], results["N_k"], initialize="BAR", verbose=True
+        )
 
     def free_energy_differences(self, env="vacuum"):
         """matrix of free energy differences"""
