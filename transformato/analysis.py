@@ -235,11 +235,11 @@ class FreeEnergyCalculator(object):
                         v = float(line)
                     except ValueError:
                         print(line)
-                        v = float(999999.99)
+                        v = float(999999.0)
 
                     if math.isinf(v) or math.isnan(v):
                         print(line)
-                        v = float(999999.99)
+                        v = float(999999.0)
 
                     v *= unit.kilocalorie_per_mole
                     pot_energies.append(v)
@@ -381,7 +381,7 @@ class FreeEnergyCalculator(object):
             start += self.N_k[d]
 
         print("#######################################")
-        return mbar.MBAR(u_kn, self.N_k)
+        return mbar.MBAR(u_kn, self.N_k, initialize="BAR")
 
     def calculate_dG_to_common_core(
         self, save_results: bool = True, engine: str = "openMM"
@@ -410,7 +410,7 @@ class FreeEnergyCalculator(object):
 
     def _load_mbar_results(self, file):
         results = pickle.load(open(file, "rb"))
-        return mbar.MBAR(results["u_kn"], results["N_k"])
+        return mbar.MBAR(results["u_kn"], results["N_k"], initialize='BAR')
 
     def free_energy_differences(self, env="vacuum"):
         """matrix of free energy differences"""
