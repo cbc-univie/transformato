@@ -364,10 +364,6 @@ class ProposeMutationRoute(object):
     def _find_mcs(self,
                   mol1_name: str,
                   mol2_name: str,
-                  maximizeBonds: bool = True,
-                  matchValences: bool = False,
-                  completeRingsOnly: bool = False,
-                  ringMatchesRingOnly: bool = True
 
                   ):
         """
