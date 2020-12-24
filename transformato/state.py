@@ -88,7 +88,6 @@ class IntermediateStateFactory(object):
 
                     mutator = Mutation(
                         atoms_to_be_mutated=mutation_type.atoms_to_be_mutated,
-                        common_core=mutation_type.common_core,
                         dummy_region=mutation_type.dummy_region,
                     )
 
