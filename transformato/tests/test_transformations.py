@@ -29,7 +29,7 @@ def test_generate_output_for_methane_cc_solvation_free_energy():
     output_files, configuration = mutate_methane_to_methane_cc(
         conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
     )
-    
+
     assert len(output_files) == 3
 
 
@@ -56,5 +56,14 @@ def test_generate_output_for_methanol_cc_solvation_free_energy():
 
     output_files, _ = mutate_methanol_to_methane_cc(
         conf="transformato/tests/config/test-methanol-methane-solvation-free-energy.yaml"
+    )
+    print(output_files)
+
+
+def test_generate_output_for_2_CPI_solvation_free_energy():
+    from transformato.loeffler_systems import mutate_2_CPI_to_7_CPI_cc
+
+    output_files, _ = mutate_2_CPI_to_7_CPI_cc(
+        conf="transformato/tests/config/test-7-CPI-2-CPI-solvation-free-energy.yaml"
     )
     print(output_files)
