@@ -67,3 +67,12 @@ def test_generate_output_for_2_CPI_solvation_free_energy():
         conf="transformato/tests/config/test-7-CPI-2-CPI-solvation-free-energy.yaml"
     )
     print(output_files)
+
+
+def test_generate_output_for_7_CPI_solvation_free_energy():
+    from transformato.loeffler_systems import mutate_7_CPI_to_2_CPI_cc
+
+    output_files, _ = mutate_7_CPI_to_2_CPI_cc(
+        conf="transformato/tests/config/test-7-CPI-2-CPI-solvation-free-energy.yaml"
+    )
+    print(output_files)

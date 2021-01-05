@@ -430,6 +430,103 @@ def mutate_ethane_to_methanol_cc(
     return output_files, configuration
 
 
+def mutate_7_CPI_to_2_CPI_cc(
+    conf: str = "", output_dir: str = "."
+):  # will be tested later on
+
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.completeRingsOnly = True
+    s1_to_s2.propose_common_core()
+    s1_to_s2.remove_idx_from_common_core_of_mol1([14])
+    s1_to_s2.remove_idx_from_common_core_of_mol2([6])
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+    )
+    # write out endpoint
+    output_files = []
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
+
+    # start with charges
+    # turn off charges
+    charges = mutation_list["charge"]
+    for lambda_value in np.linspace(1, 0, 4)[1:]:
+        print(lambda_value)
+        intst += 1
+        output_file_base = i.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+    # Turn off hydrogens
+    intst += 1
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+    output_file_base = i.write_state(
+        mutation_conf=hydrogen_lj_mutations,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
+    print(d)
+    # turn off heavy atoms
+    for m in [
+        [d[(13,)]],
+        [d[(11,)], d[(8,)]],
+        [d[(0,)]],
+        [d[(2,)], d[(10,)]],
+        [d[(4,)], d[(7,)]],
+    ]:
+        intst += 1
+
+        output_file_base = i.write_state(
+            mutation_conf=m,
+            lambda_value_vdw=0.0,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+    # generate terminal lj
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=mutation_list["terminal-lj"],
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    m = mutation_list["transform"]
+    for lambda_value in np.linspace(1, 0, 5)[1:]:
+        intst += 1
+        print(lambda_value)
+        # turn off charges
+        output_file_base = i.write_state(
+            mutation_conf=m,
+            common_core_transformation=lambda_value,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+    return output_files, configuration
+
+
 def mutate_2_CPI_to_7_CPI_cc(
     conf: str = "", output_dir: str = "."
 ):  # will be tested later on
