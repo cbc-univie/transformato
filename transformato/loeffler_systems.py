@@ -513,17 +513,6 @@ def mutate_7_CPI_to_2_CPI_cc(
     )
     output_files.append(output_file_base)
 
-    m = mutation_list["transform"]
-    for lambda_value in np.linspace(1, 0, 5)[1:]:
-        intst += 1
-        print(lambda_value)
-        # turn off charges
-        output_file_base = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
     return output_files, configuration
 
 
