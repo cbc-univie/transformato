@@ -53,6 +53,25 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocess
     f.show_summary()
 
 
+def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM_postprocessing():
+    from transformato import FreeEnergyCalculator
+
+    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "methane")
+    f.load_trajs(nr_of_max_snapshots=300)
+    f.calculate_dG_to_common_core()
+    ddG, dddG = f.end_state_free_energy_difference
+    print(f"Free energy difference: {ddG}")
+    print(f"Uncertanty: {dddG}")
+    print(ddG)
+    np.isclose(ddG, -1.2102764838282152, rtol=1e-8)
+    f.show_summary()
+
+
 def test_postprocessing_thinning():
     from transformato import FreeEnergyCalculator
 
