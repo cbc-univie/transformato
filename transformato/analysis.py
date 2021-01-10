@@ -10,7 +10,7 @@ import parmed as pm
 import seaborn as sns
 from pymbar import mbar
 from simtk import unit
-from simtk.openmm import System, XmlSerializer
+from simtk.openmm import XmlSerializer
 from simtk.openmm.app import CharmmPsfFile, Simulation
 from simtk.openmm.vec3 import Vec3
 from tqdm import tqdm
@@ -54,8 +54,7 @@ def return_reduced_potential(
 
     beta = 1.0 / (unit.BOLTZMANN_CONSTANT_kB * temperature)
     reduced_potential = potential_energy / unit.AVOGADRO_CONSTANT_NA
-    if volume is not None:
-        reduced_potential += pressure * volume
+    reduced_potential += pressure * volume
     return beta * reduced_potential
 
 
@@ -175,32 +174,36 @@ class FreeEnergyCalculator(object):
         self,
         env: str,
         snapshots: mdtraj.Trajectory,
-        nr_of_states: int,
         save_results: bool,
         engine: str,
     ):
-        def _energy_at_ts(simulation: Simulation, coordinates: mdtraj.Trajectory, bxl):
+        def _energy_at_ts(
+            simulation: Simulation, traj: mdtraj.Trajectory, ts: int, env: str
+        ):
             """
             Calculates the potential energy with the correct periodic boundary conditions.
             """
-            if bxl:
-                a = Vec3(bxl.value_in_unit(unit.nanometer), 0.0, 0.0)
-                b = Vec3(0.0, bxl.value_in_unit(unit.nanometer), 0.0)
-                c = Vec3(0.0, 0.0, bxl.value_in_unit(unit.nanometer))
-                simulation.context.setPeriodicBoxVectors(a, b, c)
-            simulation.context.setPositions((coordinates))
+            if env != "vacuum":
+                simulation.context.setPeriodicBoxVectors(
+                    traj.unitcell_vectors[ts][0],
+                    traj.unitcell_vectors[ts][1],
+                    traj.unitcell_vectors[ts][2],
+                )
+            simulation.context.setPositions(traj.openmm_positions(ts))
             state = simulation.context.getState(getEnergy=True)
             return state.getPotentialEnergy()
 
-        def _get_V_for_ts(snpshots: mdtraj.Trajectory, env: str, ts: int):
+        def _get_V_for_ts(snapshots: mdtraj.Trajectory, env: str, ts: int):
             if env == "vacuum":
-                bxl = None
-                volumn = None
+                volumn = (0.0 * unit.nanometer) ** 3
             else:
                 # extract the box size at the given ts
-                bxl = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
-                volumn = bxl ** 3
-            return volumn, bxl
+                bxl_x = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
+                bxl_y = snapshots.unitcell_lengths[ts][1] * (unit.nanometer)
+                bxl_z = snapshots.unitcell_lengths[ts][2] * (unit.nanometer)
+
+                volumn = bxl_x * bxl_y * bxl_z
+            return volumn
 
         def _evaluated_e_on_all_snapshots_openMM(
             snapshots: mdtraj.Trajectory, lambda_state: int, env: str
@@ -211,9 +214,9 @@ class FreeEnergyCalculator(object):
             )
             energies = []
             for ts in tqdm(range(snapshots.n_frames)):
-                volumn, bxl = _get_V_for_ts(snapshots, env, ts)
+                volumn = _get_V_for_ts(snapshots, env, ts)
                 # calculate the potential energy
-                e = _energy_at_ts(simulation, snapshots.openmm_positions(ts), bxl)
+                e = _energy_at_ts(simulation, snapshots, ts, env)
                 # obtain the reduced potential (for NpT)
                 red_e = return_reduced_potential(e, volumn, temperature)
                 energies.append(red_e)
@@ -301,7 +304,9 @@ class FreeEnergyCalculator(object):
                 ]
             else:
                 return [
-                    return_reduced_potential(e, volume=None, temperature=temperature)
+                    return_reduced_potential(
+                        e, volume=(0.0 * unit.nanometer) ** 3, temperature=temperature
+                    )
                     for e in pot_energies
                 ]
 
@@ -396,7 +401,7 @@ class FreeEnergyCalculator(object):
         for env in self.envs:
             logger.info(f"Generating results for {env}.")
             self.mbar_results[env] = self._analyse_results_using_mbar(
-                env, self.snapshots[env], self.nr_of_states, save_results, engine
+                env, self.snapshots[env], save_results, engine
             )
 
     def load_waterbox_results(self, file):
