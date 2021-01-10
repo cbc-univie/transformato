@@ -9,6 +9,7 @@ import numpy as np
 import parmed as pm
 import pytest
 
+
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
@@ -83,6 +84,31 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
+def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM_generate_trajs():
+    from transformato.loeffler_systems import mutate_methane_to_methane_cc
+
+    output_files, configuration = mutate_methane_to_methane_cc(
+        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+    )
+    print(output_files)
+    for path in sorted(output_files):
+        # because path is object not string
+        print(f"Start sampling for: {path}")
+        exe = subprocess.run(
+            ["bash", f"{str(path)}/simulation.sh", str(path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        print(exe.stdout)
+        print("Capture stderr")
+        print(exe.stderr)
+
+
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
 def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_trajs():
     from transformato.loeffler_systems import mutate_methane_to_methane_cc
     from transformato import FreeEnergyCalculator
@@ -109,4 +135,3 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_tr
     print(f"Free energy difference: {ddG}")
     print(f"Uncertanty: {dddG}")
     f.show_summary()
-
