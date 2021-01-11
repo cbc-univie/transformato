@@ -6,7 +6,7 @@ from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
 from transformato.utils import load_config_yaml
 
-transformato_systems_dir = "/scratch/braunsfeld/transformato-systems"
+transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems"
 
 
 def mutate_methane_to_methane_cc(conf: str = "", output_dir: str = "."):
@@ -54,6 +54,86 @@ def mutate_methane_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     return output_files, configuration
+
+
+def testing_mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
+
+    configuration = load_config_yaml(
+        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+
+    # write out endpoint
+    output_files = []
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
+
+    charges = mutation_list["charge"]
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # Turn off hydrogens
+    intst += 1
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+    output_file_base = i.write_state(
+        mutation_conf=hydrogen_lj_mutations,
+        lambda_value_vdw=0.5,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # Turn off hydrogens
+    intst += 1
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+    output_file_base = i.write_state(
+        mutation_conf=hydrogen_lj_mutations,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
+    m = [d[(13,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.5,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off heavy atoms
+    d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
+    m = [d[(13,)]]
+    intst += 1
+
+    output_file_base = i.write_state(
+        mutation_conf=m,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
 
 
 def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
