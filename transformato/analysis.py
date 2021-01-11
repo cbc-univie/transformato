@@ -1,18 +1,16 @@
 import logging
 import os
 import pickle
-from collections import defaultdict, namedtuple
+from collections import namedtuple
 
 import matplotlib.pyplot as plt
 import mdtraj
 import numpy as np
-import parmed as pm
 import seaborn as sns
 from pymbar import mbar
 from simtk import unit
 from simtk.openmm import XmlSerializer
 from simtk.openmm.app import CharmmPsfFile, Simulation
-from simtk.openmm.vec3 import Vec3
 from tqdm import tqdm
 import subprocess
 
