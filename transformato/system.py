@@ -59,7 +59,7 @@ class SystemStructure(object):
         elif configuration["simulation"]["free-energy-type"] == "solvation-free-energy":
             self.envs: set = set(["waterbox", "vacuum"])
             for env in self.envs:
-                parameter = self._read_parameters(configuration, env)
+                parameter = self._read_parameters(env)
                 # set up system
                 self.psfs[env] = self._initialize_system(configuration, env)
                 # load parameters
