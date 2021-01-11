@@ -9,7 +9,7 @@ import numpy as np
 import seaborn as sns
 from pymbar import mbar
 from simtk import unit
-from simtk.openmm import XmlSerializer
+from simtk.openmm import XmlSerializer, Platform
 from simtk.openmm.app import CharmmPsfFile, Simulation
 from tqdm import tqdm
 import subprocess
@@ -104,7 +104,14 @@ class FreeEnergyCalculator(object):
         psf = CharmmPsfFile(psf_file_path)
 
         # generate simulations object and set states
-        simulation = Simulation(psf.topology, system, integrator)
+        platform = Platform.getPlatformByName(
+            "CUDA"
+        )  # NOTE: FIXME: this needs to be set dynamically
+        platformProperties = {"CudaPrecision": "double"}
+
+        simulation = Simulation(
+            psf.topology, system, integrator, platform, platformProperties
+        )
         simulation.context.setState(
             XmlSerializer.deserialize(
                 open(
