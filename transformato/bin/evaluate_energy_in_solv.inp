@@ -31,7 +31,7 @@ IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
 !
 cons fix sele segi solv end
 
-nbonds atom vatom VSWItch bycb -                               ! hard coded switching function
+nbonds atom vatom VFSWItch bycb -                               ! hard coded switching function
        ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -         ! Add comment why this works
        inbfrq 1 imgfrq 1 wmin 1.0 cdie eps 1.0 -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
