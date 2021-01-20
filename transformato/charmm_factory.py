@@ -22,7 +22,7 @@ def charmm_factory(configuration: dict, structure: str, env: str) -> str:
         GPU = False
         pass
 
-    switch = "VSWItch"  # hard coded switch
+    switch = "VFSWItch"  # hard coded switch
 
     charmm_str = charmm_string(
         env, intermediate_filename, nstep, print_frq, nstdcd, switch, GPU
