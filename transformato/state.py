@@ -334,11 +334,14 @@ outfile.close()
                 raise
 
         # copy omm simulation script
+        # start with waterbox
         omm_simulation_script_source = f"{basedir}/waterbox/openmm/openmm_run.py"
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
         self._add_serializer(omm_simulation_script_target)
+        self._check_platform(omm_simulation_script_target)
+        # continue with vacuum
         omm_simulation_script_source = (
             f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
         )
@@ -347,6 +350,38 @@ outfile.close()
         )
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         self._add_serializer(omm_simulation_script_target)
+        self._check_platform(omm_simulation_script_target)
+
+    def _check_platform(self, file):
+        # changin input script
+        f = open(file, "r")
+        g = open(f"{file}_tmp", "w+")
+        i = 0  # counting lines
+
+        if self.configuration["simulation"]["GPU"]:
+            for line in f.readlines():
+                if "CudaPrecision" in line and i == 0:
+                    i += 1
+                    g.write("prop = dict(CudaPrecision='mixed')\n")
+                else:
+                    g.write(line)
+        else:
+            for line in f.readlines():
+                if "# Set platform" in line and i == 0:
+                    i += 1
+                    g.write(line)
+                elif i == 1:
+                    i += 1
+                    g.write("platform = Platform.getPlatformByName('CPU')\n")
+                elif i == 2:
+                    i += 2
+                    g.write("prop = dict()\n")
+                else:
+                    g.write(line)
+
+        f.close()
+        g.close()
+        shutil.move(f"{file}_tmp", file)
 
     def _copy_ligand_specific_top_and_par(
         self, basedir: str, intermediate_state_file_path: str
