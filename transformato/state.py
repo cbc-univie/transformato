@@ -450,12 +450,32 @@ outfile.close()
         omm_simulation_parameter_target : str
             new parameter file for simulation
         """
-        overwrite_parameters = self._get_simulations_parameters()
+        import copy
+
+        overwrite_parameters = copy.deepcopy(self._get_simulations_parameters())
 
         input_simulation_parameter = open(omm_simulation_parameter_source, "r")
         output_simulation_parameter = open(
             omm_simulation_parameter_target + ".inp", "w+"
         )
+
+        common_keywords = [
+            "nstep",
+            "nstdcd",
+            "nstout",
+            "cons",
+            "dt",
+            "switch",
+            "mini_nstep",
+        ]
+        if not all(elem in overwrite_parameters.keys() for elem in common_keywords):
+            for elem in common_keywords:
+                if elem not in overwrite_parameters.keys():
+                    logger.critical(f"###################")
+                    logger.critical(
+                        f"{elem} is not set in config yaml. Was this a mistake?"
+                    )
+                    logger.critical(f"###################")
 
         for l in input_simulation_parameter.readlines():
             if l.strip():
@@ -466,11 +486,20 @@ outfile.close()
                 comment = comment.strip()
                 if t1 in overwrite_parameters.keys():
                     t2 = overwrite_parameters[t1]
+                    del overwrite_parameters[t1]  # remove from dict
                 output_simulation_parameter.write(
                     f"{t1:<25} = {t2:<25} # {comment:<30}\n"
                 )
             else:
                 output_simulation_parameter.write("\n")
+
+        # set parameters that have no equivalent in the pregenerated parameter file
+        for t1 in overwrite_parameters.keys():
+            t2 = overwrite_parameters[t1]
+            output_simulation_parameter.write(
+                f"{t1:<25} = {t2:<25} # some new options\n"
+            )
+
         input_simulation_parameter.close()
         output_simulation_parameter.close()
 
