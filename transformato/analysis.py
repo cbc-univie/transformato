@@ -104,7 +104,7 @@ class FreeEnergyCalculator(object):
         psf = CharmmPsfFile(psf_file_path)
 
         # generate simulations object and set states
-        if self.configuration['simulation']['GPU'] == True:
+        if self.configuration["simulation"]["GPU"] == True:
             platform = Platform.getPlatformByName(
                 "CUDA"
             )  # NOTE: FIXME: this needs to be set dynamically
@@ -117,9 +117,7 @@ class FreeEnergyCalculator(object):
             platform = Platform.getPlatformByName(
                 "CPU"
             )  # NOTE: FIXME: this needs to be set dynamically
-            simulation = Simulation(
-                psf.topology, system, integrator, platform
-            )
+            simulation = Simulation(psf.topology, system, integrator, platform)
 
         simulation.context.setState(
             XmlSerializer.deserialize(
@@ -161,6 +159,13 @@ class FreeEnergyCalculator(object):
             conf_sub = self.configuration["system"][self.structure][env]
             N_k = []
             for lambda_state in tqdm(range(1, nr_of_states + 1)):
+
+                if not os.path.isfile(
+                    f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd",
+                ):
+                    raise RuntimeError(
+                        f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd does not exist."
+                    )
                 traj = mdtraj.load(
                     f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd",
                     top=f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
@@ -329,7 +334,7 @@ class FreeEnergyCalculator(object):
             if env == "waterbox":
 
                 volumn_list = [
-                    _get_V_for_ts(snapshots, env, ts)[0]
+                    _get_V_for_ts(snapshots, env, ts)
                     for ts in range(snapshots.n_frames)
                 ]
                 volumn_list = []  # Note: for now we are descarding the V list
