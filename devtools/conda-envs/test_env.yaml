@@ -6,7 +6,7 @@ channels:
   - defaults
 dependencies:
   # Base depends
-  - python = 3
+  - python
   - openmm
   - numpy
   - pymbar
