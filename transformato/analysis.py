@@ -1,7 +1,7 @@
+from collections import defaultdict
 import logging
 import os
 import pickle
-from collections import namedtuple
 
 import matplotlib.pyplot as plt
 import mdtraj
@@ -13,13 +13,12 @@ from simtk.openmm import XmlSerializer, Platform
 from simtk.openmm.app import CharmmPsfFile, Simulation
 from tqdm import tqdm
 import subprocess
-
+from typing import Set, Tuple, List
 from transformato.utils import get_structure_name
 from transformato.constants import temperature
+import copy
 
 logger = logging.getLogger(__name__)
-kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
-kT = kB * temperature
 
 
 def return_reduced_potential(
@@ -57,10 +56,19 @@ def return_reduced_potential(
 
 
 class FreeEnergyCalculator(object):
+    """
+    FreeEnergyCalculator [summary]
+
+    Parameters
+    ----------
+    object : [type]
+        [description]
+    """
+
     def __init__(self, configuration: dict, structure_name: str):
         self.configuration = configuration
         self.structure_name = structure_name
-        self.envs: set = ()
+        self.envs: Tuple = ()
         # decide if the name of the system corresponds to structure1 or structure2
         structure = get_structure_name(configuration, structure_name)
 
@@ -76,12 +84,12 @@ class FreeEnergyCalculator(object):
 
         self.base_path = f"{self.configuration['system_dir']}/{self.structure_name}/"
         self.structure = structure
-        self.mbar_results = {"waterbox": None, "vacuum": None, "complex": None}
-        self.snapshots = []
-        self.nr_of_states = -1
-        self.N_k = []
-        self.thinning = -1
-        self.save_results_to_path = f"{self.configuration['system_dir']}/results/"
+        self.mbar_results: dict = {"waterbox": None, "vacuum": None, "complex": None}
+        self.snapshots: dict = {}
+        self.nr_of_states: int = 0
+        self.N_k: dict = {}
+        self.thinning: int = 0
+        self.save_results_to_path: str = f"{self.configuration['system_dir']}/results/"
 
     def load_trajs(self, nr_of_max_snapshots: int = 300):
         """
@@ -139,7 +147,7 @@ class FreeEnergyCalculator(object):
         )  # thinning
         return traj[::further_thinning][: self.nr_of_max_snapshots]
 
-    def _merge_trajs(self) -> (dict, int, list):
+    def _merge_trajs(self) -> Tuple[dict, int, dict]:
         """
         load trajectories, thin trajs and merge themn.
         Also calculate N_k for mbar.
@@ -153,11 +161,11 @@ class FreeEnergyCalculator(object):
         nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
 
         logger.info(f"Evaluating {nr_of_states} states.")
-        snapshots = {}
+        snapshots: dict = {}
+        N_k: dict = defaultdict(list)
         for env in self.envs:
             confs = []
             conf_sub = self.configuration["system"][self.structure][env]
-            N_k = []
             for lambda_state in tqdm(range(1, nr_of_states + 1)):
 
                 if not os.path.isfile(
@@ -181,13 +189,13 @@ class FreeEnergyCalculator(object):
 
                 confs.append(traj)
                 logger.info(f"Nr of snapshots: {len(traj)}")
-                N_k.append(len(traj))
+                N_k[env].append(len(traj))
 
             joined_trajs = mdtraj.join(confs, check_topology=True)
             logger.info(f"Combined nr of snapshots: {len(joined_trajs)}")
             snapshots[env] = joined_trajs
 
-        return snapshots, nr_of_states, N_k
+        return (snapshots, nr_of_states, N_k)
 
     def _analyse_results_using_mbar(
         self,
@@ -226,7 +234,7 @@ class FreeEnergyCalculator(object):
 
         def _evaluated_e_on_all_snapshots_openMM(
             snapshots: mdtraj.Trajectory, lambda_state: int, env: str
-        ):
+        ) -> np.ndarray:
 
             simulation = self._generate_openMM_system(
                 env=env, lambda_state=lambda_state
@@ -241,7 +249,7 @@ class FreeEnergyCalculator(object):
                 energies.append(red_e)
             return np.array(energies)
 
-        def _parse_CHARMM_energy_output(path: str, env: str):
+        def _parse_CHARMM_energy_output(path: str, env: str) -> list:
             import math
 
             pot_energies = []
@@ -266,7 +274,6 @@ class FreeEnergyCalculator(object):
                     v *= unit.kilocalorie_per_mole
                     pot_energies.append(v)
 
-            print(len(pot_energies))
             assert len(pot_energies) > 50
             return pot_energies
 
@@ -378,8 +385,6 @@ class FreeEnergyCalculator(object):
         else:
             raise RuntimeError(f"Either openMM or CHARMM engine, not {engine}")
 
-        import copy
-
         if save_results:
             file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
             logger.info(f"Saving results: {file}")
@@ -394,18 +399,19 @@ class FreeEnergyCalculator(object):
         u_kn_ = copy.deepcopy(u_kn)
         start = 0
         for d in range(u_kn.shape[0] - 1):
+            print(self.N_k)
             print(f"{d}->{d+1} [kT]")
-            nr_of_snapshots = self.N_k[d] + self.N_k[d + 1]
+            nr_of_snapshots = self.N_k[env][d] + self.N_k[env][d + 1]
             u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
 
-            m = mbar.MBAR(u_kn_, self.N_k[d : d + 2])
+            m = mbar.MBAR(u_kn_, self.N_k[env][d : d + 2])
             print(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
             print(m.getFreeEnergyDifferences(return_dict=True)["dDelta_f"][0, 1])
 
-            start += self.N_k[d]
+            start += self.N_k[env][d]
 
         print("#######################################")
-        return mbar.MBAR(u_kn, self.N_k, initialize="BAR", verbose=True)
+        return mbar.MBAR(u_kn, self.N_k[env], initialize="BAR", verbose=True)
 
     def calculate_dG_to_common_core(
         self, save_results: bool = True, engine: str = "openMM"
@@ -423,16 +429,17 @@ class FreeEnergyCalculator(object):
                 env, self.snapshots[env], save_results, engine
             )
 
-    def load_waterbox_results(self, file):
+    def load_waterbox_results(self, file: str):
         self.mbar_results["waterbox"] = self._load_mbar_results(file)
 
-    def load_complex_results(self, file):
+    def load_complex_results(self, file: str):
         self.mbar_results["complex"] = self._load_mbar_results(file)
 
-    def load_vacuum_results(self, file):
+    def load_vacuum_results(self, file: str):
         self.mbar_results["vacuum"] = self._load_mbar_results(file)
 
-    def _load_mbar_results(self, file):
+    @staticmethod
+    def _load_mbar_results(file: str):
         results = pickle.load(open(file, "rb"))
         return mbar.MBAR(
             results["u_kn"], results["N_k"], initialize="BAR", verbose=True

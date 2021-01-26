@@ -5,9 +5,8 @@ from collections import namedtuple
 
 import networkx as nx
 import parmed as pm
-import rdkit
+from typing import Tuple
 from rdkit import Chem
-from simtk import unit
 from collections import defaultdict
 from .utils import get_toppar_dir
 
@@ -33,10 +32,11 @@ class SystemStructure(object):
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
         self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
-        self.parameter = self._read_parameters('waterbox')
+        self.parameter = self._read_parameters("waterbox")
+        self.envs: set
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "binding-free-energy":
-            self.envs: set = set(["complex", "waterbox"])
+            self.envs = set(["complex", "waterbox"])
             for env in self.envs:
                 parameter = self._read_parameters(env)
                 # set up system
@@ -57,7 +57,7 @@ class SystemStructure(object):
             self.graph: nx.Graph = self._mol_to_nx(self.mol)
 
         elif configuration["simulation"]["free-energy-type"] == "solvation-free-energy":
-            self.envs: set = set(["waterbox", "vacuum"])
+            self.envs = set(["waterbox", "vacuum"])
             for env in self.envs:
                 parameter = self._read_parameters(env)
                 # set up system
@@ -73,14 +73,13 @@ class SystemStructure(object):
 
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
-                "waterbox", self.psfs['waterbox'][f":{self.tlc}"]
+                "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
             )
             self.graph: nx.Graph = self._mol_to_nx(self.mol)
         else:
             raise NotImplementedError(
                 "only binding and solvation free energy implemented."
             )
-
 
     def _mol_to_nx(self, mol: Chem.Mol):
         G = nx.Graph()
@@ -104,9 +103,7 @@ class SystemStructure(object):
             )
         return G
 
-    def _read_parameters(
-        self, env: str
-    ) -> pm.charmm.CharmmParameterSet:
+    def _read_parameters(self, env: str) -> pm.charmm.CharmmParameterSet:
         """
         Reads in topparameters from a toppar dir and ligand specific parameters.
         Parameters
@@ -298,7 +295,7 @@ class SystemStructure(object):
 
     def generate_atom_tables_from_psf(
         self, psf: pm.charmm.CharmmPsfFile
-    ) -> (dict, dict, dict, dict):
+    ) -> Tuple[dict, dict, dict, dict]:
         """
         Generate mapping dictionaries for a molecule in a psf.
         Parameters

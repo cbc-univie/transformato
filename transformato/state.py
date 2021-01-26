@@ -9,7 +9,6 @@ import transformato
 from .utils import get_toppar_dir, psf_correction
 from .mutate import Mutation
 from transformato.charmm_factory import charmm_factory, build_reduced_toppar
-
 from typing import List
 import types
 
@@ -17,7 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class IntermediateStateFactory(object):
-    def __init__(self, system: transformato.system, configuration: dict):
+    def __init__(
+        self, system: transformato.system.SystemStructure, configuration: dict
+    ):
         """
         Generate the intermediate directories with for the provided systems with the provided mutations.
         Parameters
@@ -784,7 +785,8 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
         else:
             os.makedirs(self.path)
 
-    def _write_toppar_str(self, output_file_base, tlc):
+    @staticmethod
+    def _write_toppar_str(output_file_base, tlc):
 
         toppar_format = f"""
 toppar/top_all36_prot.rtf
@@ -831,7 +833,8 @@ dummy_parameters.prm
         f.write(charmm_toppar)
         f.close()
 
-    def _write_psf(self, psf, output_file_base: str, env: str):
+    @staticmethod
+    def _write_psf(psf, output_file_base: str, env: str):
         """
         Writes the new psf and pdb file.
         """
