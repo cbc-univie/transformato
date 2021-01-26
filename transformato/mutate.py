@@ -1,20 +1,16 @@
-import io
 import logging
-import os
 from collections import namedtuple
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import List, Tuple
 
-import networkx as nx
 import numpy as np
 import parmed as pm
-import rdkit
 from IPython.core.display import display
 from rdkit import Chem
 from rdkit.Chem import AllChem, Draw, rdFMCS
-from rdkit.Chem.Draw import IPythonConsole, rdMolDraw2D
-from simtk import unit
+from rdkit.Chem.Draw import rdMolDraw2D
+from simtk.openmm.app.charmmpsffile import CharmmPsfFile 
 
 from transformato.system import SystemStructure
 
@@ -88,20 +84,20 @@ class ProposeMutationRoute(object):
         self.s1_tlc = s1.tlc
         self.s2_tlc = s2.tlc
 
-        self.terminal_real_atom_cc1 = -1
-        self.terminal_real_atom_cc2 = -1
-        self.terminal_dummy_atom_cc1 = -1
-        self.terminal_dummy_atom_cc2 = -1
+        self.terminal_real_atom_cc1:list = []
+        self.terminal_real_atom_cc2:list = []
+        self.terminal_dummy_atom_cc1:list = []
+        self.terminal_dummy_atom_cc2:list = []
 
         self.bondCompare = rdFMCS.BondCompare.CompareAny
         self.atomCompare = rdFMCS.AtomCompare.CompareElements
-        self.maximizeBonds = True
-        self.matchValences = False
-        self.completeRingsOnly = False
-        self.ringMatchesRingOnly = True
+        self.maximizeBonds:bool = True
+        self.matchValences:bool = False
+        self.completeRingsOnly:bool = False
+        self.ringMatchesRingOnly:bool = True
 
-        self.dummy_region_cc1 = None
-        self.dummy_region_cc2 = None
+        self.dummy_region_cc1:DummyRegion
+        self.dummy_region_cc2:DummyRegion
 
 
     def _match_terminal_real_and_dummy_atoms_for_mol1(self):
@@ -111,7 +107,7 @@ class ProposeMutationRoute(object):
         """
         return self._match_terminal_real_and_dummy_atoms(self.mols['m1'], self.terminal_real_atom_cc1, self.terminal_dummy_atom_cc1)
 
-    def _match_terminal_real_and_dummy_atoms_for_mol2(self):
+    def _match_terminal_real_and_dummy_atoms_for_mol2(self)->dict:
         """
         Matches the terminal real and dummy atoms and returns a dict with real atom idx as key and a set of dummy atoms that connect
         to this real atom as a set
@@ -177,10 +173,10 @@ class ProposeMutationRoute(object):
         self.matching_terminal_atoms_between_cc = matching_terminal_atoms_between_cc
 
     def _match_terminal_dummy_atoms_between_common_cores(self, 
-                                                         match_terminal_atoms_cc1:list, 
-                                                         match_terminal_atoms_cc2:list,
+                                                         match_terminal_atoms_cc1:dict, 
+                                                         match_terminal_atoms_cc2:dict,
                                                          connected_dummy_regions_cc1:list,
-                                                         connected_dummy_regions_cc2:list) -> (list, list):
+                                                         connected_dummy_regions_cc2:list) -> Tuple[list, list]:
         
         cc1_idx = self._substructure_match['m1']
         cc2_idx = self._substructure_match['m2']
@@ -216,7 +212,9 @@ class ProposeMutationRoute(object):
         mcs = self._find_mcs('m1', 'm2')
         return mcs
 
-    def finish_common_core(self, connected_dummy_regions_cc1:list=[], connected_dummy_regions_cc2:list=[]):
+    def finish_common_core(self, 
+                           connected_dummy_regions_cc1:list=[], 
+                           connected_dummy_regions_cc2:list=[]):
         # set the teriminal real/dummy atom indices
         self._set_common_core_parameters()
         # match the real/dummy atoms
@@ -544,13 +542,11 @@ class ProposeMutationRoute(object):
             list of mutations
 
         """
-        if self.terminal_real_atom_cc1 == -1:
+        if not self.terminal_real_atom_cc1:
             raise RuntimeError('First generate the MCS. Aborting.')
         
-      
         m = self._mutate_to_common_core(self.dummy_region_cc1, self.get_common_core_idx_mol1())
         m['transform'] = self._transform_common_core()
-
         return m
 
     def generate_mutations_to_common_core_for_mol2(self) -> dict:
@@ -561,7 +557,7 @@ class ProposeMutationRoute(object):
         mutations: list
             list of mutations        
         """
-        if self.terminal_real_atom_cc1 == -1:
+        if not self.terminal_real_atom_cc1:
             raise RuntimeError('First generate the MCS')
 
         m = self._mutate_to_common_core(self.dummy_region_cc2, self.get_common_core_idx_mol2())
@@ -785,21 +781,21 @@ class CommonCoreTransformation(object):
         tlc_cc2 : str
             three letter code of ligand in cc2
         """
-        self.cc1_indicies = cc1_indicies
-        self.cc2_indicies = cc2_indicies
-        self.ligand2_psf = ligand2_psf
-        self.ligand1_psf = ligand1_psf
-        self.tlc_cc1 = tlc_cc1
-        self.tlc_cc2 = tlc_cc2
+        self.cc1_indicies:list = cc1_indicies
+        self.cc2_indicies:list = cc2_indicies
+        self.ligand2_psf:pm.charmm.CharmmPsfFile = ligand2_psf
+        self.ligand1_psf:pm.charmm.CharmmPsfFile = ligand1_psf
+        self.tlc_cc1:str = tlc_cc1
+        self.tlc_cc2:str = tlc_cc2
         self.atom_names_mapping  = self._get_atom_mapping()
-        self.charge_mutation = charge_mutation
-        self.bonded_terms_mutation = bonded_terms_mutation
-        self.charge_compensated_ligand2_psf = charge_compensated_ligand2_psf
+        self.charge_mutation:bool = charge_mutation
+        self.bonded_terms_mutation:bool = bonded_terms_mutation
+        self.charge_compensated_ligand2_psf:pm.charmm.CharmmPsfFile = charge_compensated_ligand2_psf
 
         logger.info(f'Bonded terms mutation: {bonded_terms_mutation}')
         logger.info(f'Charge mutation: {charge_mutation}')
 
-    def _get_atom_mapping(self)->list:
+    def _get_atom_mapping(self)->dict:
         """
         _get_atom_mapping -- match the atom names of the common cores
 
@@ -996,6 +992,8 @@ class CommonCoreTransformation(object):
 
         # get all torsions present in initial topology
         for cc1_torsion in psf.view[f":{self.tlc_cc1}"].dihedrals:
+            
+            found:bool = False
             ligand1_atom1_name = cc1_torsion.atom1.name
             ligand1_atom2_name = cc1_torsion.atom2.name
             cc1_a3 = cc1_torsion.atom3.name
@@ -1035,6 +1033,7 @@ class CommonCoreTransformation(object):
                                                       torsion_t.scee, torsion_t.scnb))
 
                     cc1_torsion.mod_type = mod_types
+            
             if not found:
                 logger.critical(cc1_torsion)
                 raise RuntimeError('No corresponding torsion in cc2 found')
@@ -1215,13 +1214,15 @@ class Mutation(object):
 
         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
             raise RuntimeError(f'Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}.')
-
-    def _scale_epsilon(self, atom, lambda_value):
+    
+    @staticmethod
+    def _scale_epsilon(atom, lambda_value:float):
         logger.debug(atom)
         logger.debug(atom.initial_epsilon)
         atom.epsilon = atom.initial_epsilon * lambda_value
 
-    def _scale_rmin(self, atom, lambda_value):
+    @staticmethod
+    def _scale_rmin(atom, lambda_value:float):
         logger.debug(atom)
         logger.debug(atom.initial_rmin)
         atom.rmin = atom.initial_rmin * lambda_value

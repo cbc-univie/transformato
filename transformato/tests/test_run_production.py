@@ -6,7 +6,6 @@ import os
 import subprocess
 
 import numpy as np
-import parmed as pm
 import pytest
 
 
@@ -36,7 +35,7 @@ def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
         print(exe.stderr)
 
     f = FreeEnergyCalculator(configuration, "toluene")
-    f.load_trajs(nr_of_max_snapshots=300)
+    f.load_trajs(nr_of_max_snapshots=100)
     f.calculate_dG_to_common_core()
     ddG, dddG = f.end_state_free_energy_difference
     print(f"Free energy difference: {ddG}")

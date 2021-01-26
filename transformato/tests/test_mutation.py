@@ -3,19 +3,12 @@ Unit and regression test for the transformato package.
 """
 
 import copy
-import logging
 import os
-import pathlib
 import shutil
-import subprocess
-import sys
 
 import numpy as np
 import parmed as pm
 import pytest
-
-from io import StringIO
-import filecmp
 
 # Import package, test suite, and other packages as needed
 import transformato
@@ -27,7 +20,6 @@ from transformato import (
     ProposeMutationRoute,
     SystemStructure,
     load_config_yaml,
-    psf_correction,
 )
 
 
@@ -438,7 +430,6 @@ def test_find_connected_dummy_regions2():
 
 
 def test_common_core_system1():
-    from rdkit.Chem import rdFMCS
 
     for conf in [
         "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
