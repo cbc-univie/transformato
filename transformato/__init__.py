@@ -4,7 +4,7 @@ Workflow to set up a relative free energy calculation of ligands with a common c
 """
 
 # Add imports here
-from .utils import load_config_yaml
+from .utils import load_config_yaml, psf_correction
 from .system import SystemStructure
 from .state import IntermediateStateFactory
 from .mutate import ProposeMutationRoute

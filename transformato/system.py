@@ -33,12 +33,12 @@ class SystemStructure(object):
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
         self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
-        self.parameter = self._read_parameters(configuration, 'waterbox')
+        self.parameter = self._read_parameters('waterbox')
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "binding-free-energy":
             self.envs: set = set(["complex", "waterbox"])
             for env in self.envs:
-                parameter = self._read_parameters(configuration, env)
+                parameter = self._read_parameters(env)
                 # set up system
                 self.psfs[env] = self._initialize_system(configuration, env)
                 # load parameters
@@ -59,7 +59,7 @@ class SystemStructure(object):
         elif configuration["simulation"]["free-energy-type"] == "solvation-free-energy":
             self.envs: set = set(["waterbox", "vacuum"])
             for env in self.envs:
-                parameter = self._read_parameters(configuration, env)
+                parameter = self._read_parameters(env)
                 # set up system
                 self.psfs[env] = self._initialize_system(configuration, env)
                 # load parameters
@@ -105,14 +105,12 @@ class SystemStructure(object):
         return G
 
     def _read_parameters(
-        self, configuration: dict, env: str
+        self, env: str
     ) -> pm.charmm.CharmmParameterSet:
         """
         Reads in topparameters from a toppar dir and ligand specific parameters.
         Parameters
         ----------
-        configuration: dict
-            the configuration dictionary obtained with utils.load_config_yaml
         env: str
             waterbox,complex or vacuum
         Returns
