@@ -75,11 +75,13 @@ simulation:
     nstdcd:
       50
     nstout:
-      50
+      1000
     cons:
       None
     dt:
       0.001
+    switch : "vswitch"
+  GPU : True
 
   free-energy-type:
     'solvation-free-energy'

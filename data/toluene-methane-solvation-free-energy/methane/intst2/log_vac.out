@@ -1,0 +1,852 @@
+1
+                 Chemistry at HARvard Macromolecular Mechanics
+           (CHARMM) - Developmental Version 43a1     August 15, 2017            
+                            Git commit ID 99c728297                             
+       Copyright(c) 1984-2014  President and Fellows of Harvard College
+                              All Rights Reserved
+     Current operating system: Linux-5.6.13-100.fc30.x86_64(x86_64)@a7pc99      
+                 Created on 12/2/20 at 12:49:36 by user: mwieder     
+
+            Maximum number of ATOMS:    360720, and RESidues:      120240
+ RDTITL> *VERSION SEPTEMBER 2020
+ RDTITL> *RUN SCRIPT FOR CHARMM JOBS FROM TRANSFORMATO
+ RDTITL> *
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read topology and parameter files
+ CHARMM>    stream charmm_toppar.str
+ VOPEN> Attempting to open::charmm_toppar.str::
+ OPNLGU> Unit 99 opened for READONLY access to charmm_toppar.str
+
+                    INPUT STREAM SWITCHING TO UNIT    99
+ RDTITL> * SIMPLIFIED TOPPAR SCRIPT
+ RDTITL> * VERSION FROM 2020-12-02
+ RDTITL> *
+ Parameter: IN1 <- "" <empty>
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read Protein Topology and Parameter
+ CHARMM>    open read card unit 10 name ./toppar/top_all36_prot.rtf
+ VOPEN> Attempting to open::./toppar/top_all36_prot.rtf::
+ OPNLGU> Unit 10 opened for READONLY access to ./toppar/top_all36_prot.rtf
+  
+ CHARMM>    read  rtf card unit 10
+ MAINIO> Residue topology file being read from unit  10.
+ TITLE> *>>>>>>>>CHARMM36 ALL-HYDROGEN TOPOLOGY FILE FOR PROTEINS <<<<<<
+ TITLE> *>>>>> INCLUDES PHI, PSI CROSS TERM MAP (CMAP) CORRECTION <<<<<<<
+ TITLE> *>>>>>>>>>>>>>>>>>>>>>>>>>> MAY 2011 <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ TITLE> * ALL COMMENTS TO THE CHARMM WEB SITE: WWW.CHARMM.ORG
+ TITLE> *             PARAMETER SET DISCUSSION FORUM
+ TITLE> *
+  
+ CHARMM>     
+  
+ CHARMM>    open read card unit 20 name ./toppar/par_all36m_prot.prm
+ VOPEN> Attempting to open::./toppar/par_all36m_prot.prm::
+ OPNLGU> Unit 20 opened for READONLY access to ./toppar/par_all36m_prot.prm
+  
+ CHARMM>    read para card unit 20 flex
+
+          PARAMETER FILE BEING READ FROM UNIT 20
+ TITLE> *>>>> CHARMM36 ALL-HYDROGEN PARAMETER FILE FOR PROTEINS <<<<<<<<<<
+ TITLE> *>>>>> INCLUDES PHI, PSI CROSS TERM MAP (CMAP) CORRECTION <<<<<<<<
+ TITLE> *>>>>>>>>>>>>>>>>>>>>>>>>>> JAN. 2016 <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ TITLE> * ALL COMMENTS TO THE CHARMM WEB SITE: WWW.CHARMM.ORG
+ TITLE> *             PARAMETER SET DISCUSSION FORUM
+ TITLE> *
+ PARRDR> Error: Repeated ANGLE parameter (    13): NH2   CT2   CD   is replaced
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read Nucleic Acids
+ CHARMM>    open read card unit 10 name ./toppar/top_all36_na.rtf
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::./toppar/top_all36_na.rtf::
+ OPNLGU> Unit 10 opened for READONLY access to ./toppar/top_all36_na.rtf
+  
+ CHARMM>    read  rtf card unit 10 append
+ MAINIO> Residue topology file being read from unit  10.
+ TITLE> *  \\\\ CHARMM36 ALL-HYDROGEN NUCLEIC ACID TOPOLOGY FILE ////
+ TITLE> *   ALEXANDER D. MACKERELL JR. AND COWORKERS
+ TITLE> *                      APRIL 2011
+ TITLE> * ALL COMMENTS TO THE CHARMM WEB SITE: WWW.CHARMM.ORG
+ TITLE> *           PARAMETER SET DISCUSSION FORUM
+ TITLE> *
+  
+ CHARMM>     
+  
+ CHARMM>    open read card unit 20 name ./toppar/par_all36_na.prm
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   20 with status "KEEP"
+ VOPEN> Attempting to open::./toppar/par_all36_na.prm::
+ OPNLGU> Unit 20 opened for READONLY access to ./toppar/par_all36_na.prm
+  
+ CHARMM>    read para card unit 20 append flex
+
+          PARAMETER FILE BEING READ FROM UNIT 20
+ TITLE> * \\\\ CHARMM36 ALL-HYDROGEN NUCLEIC ACID PARAMETER FILE ////
+ TITLE> *         ALEXANDER D. MACKERELL JR. AND COWORKERS
+ TITLE> *                        APRIL 2011
+ TITLE> * ALL COMMENTS TO THE CHARMM WEB SITE: WWW.CHARMM.ORG PARAMETER
+ TITLE> *                     SET DISCUSSION FORUM
+ TITLE> *
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read Carbohydrates
+ CHARMM>    open read card unit 10 name ./toppar/top_all36_carb.rtf
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::./toppar/top_all36_carb.rtf::
+ OPNLGU> Unit 10 opened for READONLY access to ./toppar/top_all36_carb.rtf
+  
+ CHARMM>    read  rtf card unit 10 append
+ MAINIO> Residue topology file being read from unit  10.
+ TITLE> * $ID: TOP_ALLXX_SUGAR.INP,V 1.106 2014/08/19 19:07:43 ALEX EXP $
+ TITLE> *>>>>>>>>>>>> ALL-HYDROGEN TOPOLOGIES USED IN THE <<<<<<<<<<<<<<<<
+ TITLE> *>>>>> DEVELOPMENT OF THE CHARMM CARBOHYDRATE  FORCE FIELD<<<<<<<<
+ TITLE> *>>>>>>>>>>>>>>>>>>>>>>>>> JUNE 2009 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ TITLE> *>>>>>>>> DIRECT COMMENTS TO ALEXANDER D. MACKERELL JR. <<<<<<<<<<
+ TITLE> *>>>>>>>>>> VIA THE CHARMM WEB SITE: WWW.CHARMM.ORG <<<<<<<<<<<<<<
+ TITLE> *>>>>>>>>>>>>>>> PARAMETER SET DISCUSSION FORUM <<<<<<<<<<<<<<<<<<
+ TITLE> *
+  
+ CHARMM>     
+  
+ CHARMM>    open read card unit 20 name ./toppar/par_all36_carb.prm
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   20 with status "KEEP"
+ VOPEN> Attempting to open::./toppar/par_all36_carb.prm::
+ OPNLGU> Unit 20 opened for READONLY access to ./toppar/par_all36_carb.prm
+  
+ CHARMM>    read para card unit 20 append flex
+
+          PARAMETER FILE BEING READ FROM UNIT 20
+ TITLE> * $ID: PAR_ALLXX_SUGAR.INP,V 1.132 2014/08/19 19:03:21 ALEX EXP $
+ TITLE> *>>>>>>>>>>>> ALL-HYDROGEN PARAMETERS USED IN THE <<<<<<<<<<<<<<<<
+ TITLE> *>>>>> DEVELOPMENT OF THE CHARMM CARBOHYDRATE  FORCE FIELD<<<<<<<<
+ TITLE> *>>>>>>>>>>>>>>>>>>>>>>>>> JUNE 2009 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+ TITLE> *>>>>>>>> DIRECT COMMENTS TO ALEXANDER D. MACKERELL JR. <<<<<<<<<<
+ TITLE> *>>>>>>>>>> VIA THE CHARMM WEB SITE: WWW.CHARMM.ORG <<<<<<<<<<<<<<
+ TITLE> *>>>>>>>>>>>>>>> PARAMETER SET DISCUSSION FORUM <<<<<<<<<<<<<<<<<<
+ TITLE> *
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read Lipids
+ CHARMM>    open read card unit 10 name ./toppar/top_all36_lipid.rtf
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::./toppar/top_all36_lipid.rtf::
+ OPNLGU> Unit 10 opened for READONLY access to ./toppar/top_all36_lipid.rtf
+  
+ CHARMM>    read  rtf card unit 10 append
+ MAINIO> Residue topology file being read from unit  10.
+ TITLE> *  \\\\\\\ CHARMM36 ALL-HYDROGEN LIPID TOPOLOGY FILE ///////
+ TITLE> *  ALL COMMENTS AND QUESTIONS SHOULD BE SUBMITTED TO THE
+ TITLE> *  PARAMETER FORUM AT THE CHARMM WEBSITE: WWW.CHARMM.ORG
+ TITLE> *
+  
+ CHARMM>     
+  
+ CHARMM>    open read card unit 20 name ./toppar/par_all36_lipid.prm
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   20 with status "KEEP"
+ VOPEN> Attempting to open::./toppar/par_all36_lipid.prm::
+ OPNLGU> Unit 20 opened for READONLY access to ./toppar/par_all36_lipid.prm
+  
+ CHARMM>    read para card unit 20 append flex
+
+          PARAMETER FILE BEING READ FROM UNIT 20
+ TITLE> *  \\\\\\\ CHARMM36 ALL-HYDROGEN LIPID PARAMETER FILE ///////
+ TITLE> *  ALL COMMENTS AND QUESTIONS SHOULD BE SUBMITTED TO THE
+ TITLE> *  PARAMETER FORUM AT THE CHARMM WEBSITE: WWW.CHARMM.ORG
+ TITLE> *
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>     
+  
+ CHARMM>    !Read CGENFF
+ CHARMM>    open read card unit 10 name ./toppar/top_all36_cgenff.rtf
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::./toppar/top_all36_cgenff.rtf::
+ OPNLGU> Unit 10 opened for READONLY access to ./toppar/top_all36_cgenff.rtf
+  
+ CHARMM>    read  rtf card unit 10 append
+ MAINIO> Residue topology file being read from unit  10.
+ TITLE> *  --------------------------------------------------------------------------  *
+ TITLE> *          CGENFF: TOPOLOGY FOR THE CHARMM GENERAL FORCE FIELD V. 4.3          *
+ TITLE> *                    FOR SMALL MOLECULE DRUG DESIGN                            *
+ TITLE> *  --------------------------------------------------------------------------  *
+ TITLE> *
+
+ DRUDES PARTICLES WILL BE GENERATED AUTOMATICALLY FOR ALL ATOMS WITH NON-ZERO ALPHA
+ Thole-type dipole screening, Slater-Delta shape {S(u) = 1 - (1+u/2)*exp(-u)}, default radius =  1.300000
+ WARNING from DECODF -- Zero length string being converted to 0.
+  
+ CHARMM>     
+  
+ CHARMM>    open read card unit 20 name ./toppar/par_all36_cgenff.prm
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   20 with status "KEEP"
+ VOPEN> Attempting to open::./toppar/par_all36_cgenff.prm::
+ OPNLGU> Unit 20 opened for READONLY access to ./toppar/par_all36_cgenff.prm
+  
+ CHARMM>    read para card unit 20 append flex
+
+          PARAMETER FILE BEING READ FROM UNIT 20
+ TITLE> *  --------------------------------------------------------------------------  *
+ TITLE> *         CGENFF: PARAMETERS FOR THE CHARMM GENERAL FORCE FIELD V. 4.3         *
+ TITLE> *                    FOR SMALL MOLECULE DRUG DESIGN                            *
+ TITLE> *  --------------------------------------------------------------------------  *
+ TITLE> *  2017/8: IF PROTEIN, NUCLEIC ACID AND CARBOHYDRATE TOPOLOGY AND PARAMETER FILES
+ TITLE> *  ARE NOT READ PRIOR TO THE CGENFF FILES "WARNING: ATOMS IN NBFIX ' errors will
+ TITLE> *  BE ENCOUNTERED.  THESE CAN BE PASSED BY SETTING BOMLEV ( -2) PRIOR TO READING
+ TITLE> *  THIS FILE. IN ADDITION, WHEN GENERATING AROMATIC HALOGENS (CL, BR, I) WITH
+ TITLE> *  PRE C41B/C42A VERSIONS OF CHARMM "MISSING PARAMETER" ERRORS WILL BE
+ TITLE> *  ENCOUNTERED THAT ALSO REQUIRE SETTING BOMLEV ( -2).
+ TITLE> *
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>     
+  
+ CHARMM>    ! Additional topologies and parameters for water and ions
+ CHARMM>    stream ./toppar/toppar_water_ions.str
+ VOPEN> Attempting to open::./toppar/toppar_water_ions.str::
+ OPNLGU> Unit 98 opened for READONLY access to ./toppar/toppar_water_ions.str
+
+                    INPUT STREAM SWITCHING TO UNIT    98
+ RDTITL> * TOPLOGY AND PARAMETER INFORMATION FOR WATER AND IONS.
+ RDTITL> *
+ Parameter: IN1 <- "" <empty>
+  
+ CHARMM>     
+  
+ CHARMM>    !Testcase
+ CHARMM>    !test_water_ions.inp
+ CHARMM>     
+  
+ CHARMM>    ! IMPORTANT NOTE: this file contains NBFixes between carboxylates and sodium,
+ CHARMM>    ! which will only apply if the main files containing carboxylate atom types
+ CHARMM>    ! have been read in first!
+ CHARMM>     
+  
+ CHARMM>    !references
+ CHARMM>    !
+ CHARMM>    !TIP3P water model
+ CHARMM>    !
+ CHARMM>    !W.L. Jorgensen; J.Chandrasekhar; J.D. Madura; R.W. Impey;
+ CHARMM>    !M.L. Klein; "Comparison of simple potential functions for
+ CHARMM>    !simulating liquid water", J. Chem. Phys. 79 926-935 (1983).
+ CHARMM>    !
+ CHARMM>    !IONS
+ CHARMM>    !
+ CHARMM>    !Ions from Roux and coworkers
+ CHARMM>    !
+ CHARMM>    !Beglov, D. and Roux, B., Finite Representation of an Infinite
+ CHARMM>    !Bulk System: Solvent Boundary Potential for Computer Simulations,
+ CHARMM>    !Journal of Chemical Physics, 1994, 100: 9050-9063
+ CHARMM>    !
+ CHARMM>    !ZINC
+ CHARMM>    !
+ CHARMM>    !Stote, R.H. and Karplus, M. Zinc Binding in Proteins and
+ CHARMM>    !Solution: A Simple but Accurate Nonbonded Representation, PROTEINS:
+ CHARMM>    !Structure, Function, and Genetics 23:12-31 (1995)
+ CHARMM>     
+  
+ CHARMM>    !test "append" to determine if previous toppar files have been read and
+ CHARMM>    !add append to "read rtf card" if true
+ CHARMM>    set nat ?NATC
+ RDCMND substituted energy or value "?NATC" to "342"
+ Parameter: NAT <- "342"
+  
+ CHARMM>    set app
+ Parameter: APP <- "" <empty>
+  
+ CHARMM>    !We're exploiting what is arguably a bug in the parser. On the left hand side,
+ CHARMM>    !the quotes have priority, so NAT is correctly substituted. On the right hand
+ CHARMM>    !side, the ? has priority and NATC" (sic) is not a valid substitution...
+ CHARMM>    if "@NAT" ne "?NATC" if @nat ne 0 set app append
+ Parameter: NAT -> "342"
+ Parameter: NAT -> "342"
+ RDCMND: can not substitute energy "?NATC""
+ Comparing ""342"" and ""?NATC"".
+ IF test evaluated as true.  Performing command
+ Comparing "342" and "0".
+ IF test evaluated as true.  Performing command
+ Parameter: APP <- "APPEND"
+  
+ CHARMM>     
+  
+ CHARMM>    read rtf card @app
+ Parameter: APP -> "APPEND"
+ MAINIO> Residue topology file being read from unit  98.
+ RDTITL> * TOPOLOGY FOR WATER AND IONS
+ RDTITL> *
+  
+ CHARMM>     
+  
+ CHARMM>    read para card flex @app
+ Parameter: APP -> "APPEND"
+
+          PARAMETER FILE BEING READ FROM UNIT 98
+ RDTITL> * PARAMETERS FOR WATER AND IONS
+ RDTITL> *
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>     
+  
+ CHARMM>    ! The following section contains NBFixes for sodium interacting with
+ CHARMM>    ! carboxylate oxygens of various CHARMM force fields. It will generate
+ CHARMM>    ! level -1 warnings whenever any of these force fields have not been
+ CHARMM>    ! read prior to the current stream file. Since we don't want to force
+ CHARMM>    ! the user to always read all the force fields, we're suppressing the
+ CHARMM>    ! warnings. The only side effect is that you will have "most severe
+ CHARMM>    ! warning was at level 0" at the end of your output. Also note that
+ CHARMM>    ! the user is responsible for reading the current file last if they
+ CHARMM>    ! want the NBFixes to apply. A more elegant solution would require new
+ CHARMM>    ! features to be added to CHARMM.
+ CHARMM>    ! parallel fix, to avoid duplicated messages in the log
+ CHARMM>    set para
+ Parameter: PARA <- "" <empty>
+  
+ CHARMM>    if ?NUMNODE gt 1 set para node 0
+ RDCMND substituted energy or value "?NUMNODE" to "1"
+ Comparing "1" and "1".
+ IF test evaluated as false.  Skipping command
+  
+ CHARMM>     
+  
+ CHARMM>    set wrn ?WRNLEV
+ RDCMND substituted energy or value "?WRNLEV" to "5"
+ Parameter: WRN <- "5"
+  
+ CHARMM>    ! Some versions of CHARMM don't seem to initialize wrnlev...
+ CHARMM>    if "@WRN" eq "?WRNLEV" set wrn 5
+ Parameter: WRN -> "5"
+ RDCMND: can not substitute energy "?WRNLEV""
+ Comparing ""5"" and ""?WRNLEV"".
+ IF test evaluated as false.  Skipping command
+  
+ CHARMM>    set bom ?bomlev
+ RDCMND substituted energy or value "?BOMLEV" to "0"
+ Parameter: BOM <- "0"
+  
+ CHARMM>    WRNLEV -1 @PARA
+ Parameter: PARA -> "" <empty>
+  
+ CHARMM>    BOMLEV -1 @PARA
+ Parameter: PARA -> "" <empty>
+  
+ CHARMM>    read para card flex append
+
+          PARAMETER FILE BEING READ FROM UNIT 98
+ RDTITL> * NBFIX BETWEEN CARBOXYLATE AND SODIUM
+ RDTITL> *
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>    BOMLEV @bom @PARA
+ Parameter: BOM -> "0"
+ Parameter: PARA -> "" <empty>
+  
+ CHARMM>    WRNLEV @wrn @PARA
+ Parameter: WRN -> "5"
+ Parameter: PARA -> "" <empty>
+  
+ CHARMM>     
+  
+ CHARMM>    return
+ VCLOSE: Closing unit   98 with status "KEEP"
+
+                    RETURNING TO INPUT STREAM    99
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read lig RTF
+ CHARMM>    open read unit 10 card name lig_g.rtf
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::lig_g.rtf::
+ OPNLGU> Unit 10 opened for READONLY access to lig_g.rtf
+  
+ CHARMM>    read rtf card unit 10 append
+ MAINIO> Residue topology file being read from unit  10.
+ TITLE> * TOPOLOGIES GENERATED BY
+ TITLE> * CHARMM GENERAL FORCE FIELD (CGENFF) PROGRAM VERSION 2.2.0
+ TITLE> *
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read lig prm
+ CHARMM>    open read unit 10 card name lig.prm
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::lig.prm::
+ OPNLGU> Unit 10 opened for READONLY access to lig.prm
+  
+ CHARMM>    read para card unit 10 append flex
+
+          PARAMETER FILE BEING READ FROM UNIT 10
+ TITLE> * PARAMETERS GENERATED BY ANALOGY BY
+ TITLE> * CHARMM GENERAL FORCE FIELD (CGENFF) PROGRAM VERSION 2.2.0
+ TITLE> *
+ PARRDR> Error: Repeated BOND parameter (   824): CG33  HGA3 is replaced
+ PARRDR> Error: Repeated ANGLE parameter (  2174): HGA3  CG33  HGA3 is replaced
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read dummy_atom RTF
+ CHARMM>    open read unit 10 card name dummy_atom_definitions.rtf
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::dummy_atom_definitions.rtf::
+ OPNLGU> Unit 10 opened for READONLY access to dummy_atom_definitions.rtf
+  
+ CHARMM>    read rtf card unit 10 append
+ MAINIO> Residue topology file being read from unit  10.
+ TITLE> * DUMMY ATOM PARAMETERS
+ TITLE> * GENERATED BY TRANSFORMATO
+ TITLE> *
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read dummy_atom prm
+ CHARMM>    open read unit 10 card name dummy_parameters.prm
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::dummy_parameters.prm::
+ OPNLGU> Unit 10 opened for READONLY access to dummy_parameters.prm
+  
+ CHARMM>    read para card unit 10 append flex
+
+          PARAMETER FILE BEING READ FROM UNIT 10
+ TITLE> * PARAMETERS GENERATED BY ANALOGY BY
+ TITLE> * CHARMM GENERAL FORCE FIELD (CGENFF) PROGRAM VERSION 1.0.0
+ TITLE> *
+ PARMIO> NONBOND, HBOND lists and IMAGE atoms cleared.
+  
+ CHARMM>     
+  
+ VCLOSE: Closing unit   99 with status "KEEP"
+
+                    RETURNING TO INPUT STREAM     5
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read PSF
+ CHARMM>    open read unit 10 card name lig_in_vacuum.psf
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::lig_in_vacuum.psf::
+ OPNLGU> Unit 10 opened for READONLY access to lig_in_vacuum.psf
+  
+ CHARMM>    read psf  unit 10 card
+ MAINIO> Protein structure file being read from unit  10.
+ PSFRD2> Reading PSF in the expanded format.
+ TITLE>  
+ TITLE>  *
+ PSFSUM> PSF modified: NONBOND lists and IMAGE atoms cleared.
+ PSFSUM> Summary of the structure file counters :
+         Number of segments      =        1   Number of residues   =        1
+         Number of atoms         =        5   Number of groups     =        1
+         Number of bonds         =        4   Number of angles     =        6
+         Number of dihedrals     =        0   Number of impropers  =        0
+         Number of cross-terms   =        0
+         Number of HB acceptors  =        0   Number of HB donors  =        0
+         Number of NB exclusions =        0   Total charge =   -0.00000
+  
+ CHARMM>     
+  
+ CHARMM>    ! Read Coordinate
+ CHARMM>    open read unit 10 card name lig_in_vacuum.crd
+ OPNLGU> Unit already open. The old file will be closed first.
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VOPEN> Attempting to open::lig_in_vacuum.crd::
+ OPNLGU> Unit 10 opened for READONLY access to lig_in_vacuum.crd
+  
+ CHARMM>    read coor unit 10 card
+          SPATIAL COORDINATES BEING READ FROM UNIT 10
+ TITLE> * GENERATED BY PARMED (HTTPS://GITHUB.COM/PARMED/PARMED)
+ TITLE> *
+  
+ CHARMM>     
+  
+ CHARMM>    coor orie sele all end ! put the molecule at the origin
+ SELRPN>      5 atoms have been selected out of      5
+
+ ORIENT THE COORDINATES TO ALIGN WITH AXIS
+
+ MOMENTS
+      1.65377527     -0.00588475      0.00890003
+                      1.63653151     -0.00465624
+                                      1.64388597
+
+ Transpose of the rotation matrix
+     0.496838   -0.288437    0.818509
+    -0.805274    0.198407    0.558721
+    -0.323553   -0.936717   -0.133695
+ CENTER OF ATOMS BEFORE TRANSLATION    14.99631    15.00305    15.00120
+ AXIS OF ROTATION IS  0.766361 -0.585268  0.264861  ANGLE IS  102.66
+
+ ALL COORDINATES ORIENTED IN THE MAIN SET BASED ON SELECTED ATOMS.
+
+  
+ CHARMM>     
+  
+ CHARMM>    MMFP
+
+      MISCELANEOUS MEAN FIELD POTENTIALS
+  
+   MMFP>    GEO rcm sphere -
+   MMFP>        Xref 0.0 Yref 0.0 Zref 0.0 XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
+   MMFP>        harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
+ GEO INITIALIZED, MAXGEO=    7
+ Center of mass constraint
+ Sphere constraint
+ SELRPN>      1 atoms have been selected out of      5
+ new constraints applied on    1 atoms
+ the total number of constraints is    1
+ the total number of atoms affected is    1
+  
+   MMFP>    END
+  
+ CHARMM>     
+  
+ CHARMM>    set ctofnb 990.
+ Parameter: CTOFNB <- "990."
+  
+ CHARMM>    set ctonnb 980.
+ Parameter: CTONNB <- "980."
+  
+ CHARMM>    set cutnb  1000.
+ Parameter: CUTNB <- "1000."
+  
+ CHARMM>     
+  
+ CHARMM>    nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
+ CHARMM>      atom swit vatom vswitch -
+ CHARMM>      inbfrq 1
+ Parameter: CTONNB -> "980."
+ Parameter: CTOFNB -> "990."
+ Parameter: CUTNB -> "1000."
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    CDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  =******* CTEXNB =999.000 CTONNB =980.000 CTOFNB =990.000
+ CGONNB =  0.000 CGOFNB = 10.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are        0 atom  pairs and        0 atom  exclusions.
+ There are        0 group pairs and        0 group exclusions.
+ <MAKINB> with mode   5 found     10 exclusions and      0 interactions(1-4)
+ <MAKGRP> found      0 group exclusions.
+ Generating nonbond list with Exclusion mode = 5
+ == PRIMARY == SPACE FOR       11 ATOM PAIRS AND        0 GROUP PAIRS
+
+ General atom nonbond list generation found:
+        0 ATOM PAIRS WERE FOUND FOR ATOM LIST
+        0 GROUP PAIRS REQUIRED ATOM SEARCHES
+
+  
+ CHARMM>     
+  
+ CHARMM>    energy   inbfrq 1
+
+ NONBOND OPTION FLAGS: 
+     ELEC     VDW      ATOMs    CDIElec  SWITch   VATOm    VSWItch 
+     BYGRoup  NOEXtnd  NOEWald 
+ CUTNB  =******* CTEXNB =999.000 CTONNB =980.000 CTOFNB =990.000
+ CGONNB =  0.000 CGOFNB = 10.000
+ WMIN   =  1.500 WRNMXD =  0.500 E14FAC =  1.000 EPS    =  1.000
+ NBXMOD =      5
+ There are        0 atom  pairs and       10 atom  exclusions.
+ There are        0 group pairs and        0 group exclusions.
+ Generating nonbond list with Exclusion mode = 5
+ == PRIMARY == SPACE FOR       11 ATOM PAIRS AND        0 GROUP PAIRS
+
+ General atom nonbond list generation found:
+        0 ATOM PAIRS WERE FOUND FOR ATOM LIST
+        0 GROUP PAIRS REQUIRED ATOM SEARCHES
+
+ENER ENR:  Eval#     ENERgy      Delta-E         GRMS
+ENER INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+ENER MMFP:              GEO        MDIP           SSBP        SHEL       DROFfa
+ ----------       ---------    ---------    ---------    ---------    ---------
+ENER>        0      0.09272      0.00000      1.05528
+ENER INTERN>        0.00072      0.08695      0.00504      0.00000      0.00000
+ENER MMFP>          0.00001      0.00000      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+  
+ CHARMM>    energy   inbfrq 0
+ENER ENR:  Eval#     ENERgy      Delta-E         GRMS
+ENER INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+ENER MMFP:              GEO        MDIP           SSBP        SHEL       DROFfa
+ ----------       ---------    ---------    ---------    ---------    ---------
+ENER>        0      0.09272      0.00000      1.05528
+ENER INTERN>        0.00072      0.08695      0.00504      0.00000      0.00000
+ENER MMFP>          0.00001      0.00000      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+  
+ CHARMM>     
+  
+ CHARMM>    mini sd nstep 200
+
+
+ STEEPD> An energy minimization has been requested.
+
+ NSTEP  =          200   NPRINT =           10
+ STEP   =    0.0200000   TOLFUN =    0.0000000
+ TOLGRD =    0.0000000   TOLSTP =    0.0000000
+
+MINI MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+MINI INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+MINI MMFP:              GEO        MDIP           SSBP        SHEL       DROFfa
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>        0      0.09272      0.00000      1.05528      0.02000
+MINI INTERN>        0.00072      0.08695      0.00504      0.00000      0.00000
+MINI MMFP>          0.00001      0.00000      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       10      0.08096      0.01176      0.66523      0.00156
+MINI INTERN>        0.00201      0.07468      0.00427      0.00000      0.00000
+MINI MMFP>          0.00000      0.00000      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       20      0.07925      0.00171      0.23020      0.00029
+MINI INTERN>        0.00049      0.07449      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       30      0.07902      0.00023      0.04105      0.00005
+MINI INTERN>        0.00029      0.07446      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       40      0.07902      0.00001      0.01375      0.00001
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       50      0.07902      0.00000      0.00208      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       60      0.07902      0.00000      0.00010      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       70      0.07902      0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       80      0.07902      0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>       90      0.07902      0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      100      0.07902      0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      110      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      120      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      130      0.07902      0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      140      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      150      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      160      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      170      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      180      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      190      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+MINI>      200      0.07902     -0.00000      0.00000      0.00000
+MINI INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+ STEEPD> Minimization exiting with number of steps limit (       200) exceeded.
+
+STPD MIN: Cycle      ENERgy      Delta-E         GRMS    Step-size
+STPD INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+ ----------       ---------    ---------    ---------    ---------    ---------
+STPD>      200      0.07902     -0.00000      0.00000      0.00000
+STPD INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+  
+ CHARMM>     
+  
+ CHARMM>    set nstep = 5000
+ Parameter: NSTEP <- "5000"
+  
+ CHARMM>    set temp = 300.0
+ Parameter: TEMP <- "300.0"
+  
+ CHARMM>     
+  
+ CHARMM>    scalar fbeta set 5. sele all end
+ SELRPN>      5 atoms have been selected out of      5
+  
+ CHARMM>    open write unit 21 file name lig_in_vacuum.dcd
+ VOPEN> Attempting to open::lig_in_vacuum.dcd::
+ OPNLGU> Unit 21 opened for WRITE access to lig_in_vacuum.dcd
+  
+ CHARMM>     
+  
+ CHARMM>    DYNA lang leap start time 0.001 nstep @nstep -
+ CHARMM>        nprint 1000 iprfrq 1000 -
+ CHARMM>        iunread -1 iunwri -1 iuncrd 21 iunvel -1 kunit -1 -
+ CHARMM>        nsavc 5 nsavv 0 -
+ CHARMM>        rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
+ CHARMM>     
+ Parameter: NSTEP -> "5000"
+ Parameter: TEMP -> "300.0"
+ Parameter: TEMP -> "300.0"
+  IUNREA = -1         IUNWRI = -1          IUNOS = -1
+  IUNCRD = 21         IUNVEL = -1          KUNIT = -1
+ DCNTRL> Langevin integration requested.
+   NSTEP =     5000    NSAVC =        5    NSAVV =        0
+  ISCALE =        0   ISCVEL =        0   IASORS =        0
+  IASVEL =        1   ICHECW =        1   NTRFRQ =        0
+  IHTFRQ =        0   IEQFRQ =        0   NPRINT =     1000
+  INBFRQ =        0   IHBFRQ =        0   IPRFRQ =     5000
+  ILBFRQ =        0   IMGFRQ =        0
+  ISVFRQ =        0   NCYCLE =     5000    NSNOS =       10
+  FIRSTT =   300.000  TEMINC =     5.000  TSTRUC =  -999.000
+  FINALT =   298.150  TWINDH =    10.000  TWINDL =   -10.000
+
+  TIME STEP =  2.04548E-02 AKMA       1.00000E-03 PS
+
+  RANDOM NUM. GEN. SEED(S) = 16760427 16760427 16760427 16760427
+ NUMBER OF DEGREES OF FREEDOM =     15
+
+          GAUSSIAN OPTION                  IS            1
+          VELOCITIES ASSIGNED AT TEMPERATURE =    375.0000
+          SEED FOR RANDOM NUMBER GENERATOR IS:
+          SEEDS> 16760427 16760427 16760427 16760427
+
+     DETAILS ABOUT CENTRE OF MASS
+     POSITION          :  -7.28550729E-07   2.53885902E-06  -1.24615120E-06
+     VELOCITY          :  -3.01574520E-02  -0.19435739      -0.13563018    
+     ANGULAR MOMENTUM  :   3.64351829E-02   -1.1860314       0.47338580    
+     KINETIC ENERGY    :   0.45786573    
+ LNGFIL: TBATH =   300.000000  DELTA =    0.020455
+ LNGFIL: Langevin dynamics setup for       5 atoms
+ LNGFIL: RBUF =    0.000000
+ LNGFIL: SXREF =    0.000000 SYREF =    0.000000 SZREF =    0.000000
+DYNA DYN: Step         Time      TOTEner        TOTKe       ENERgy  TEMPerature
+DYNA PROP:             GRMS      HFCTote        HFCKe       EHFCor        VIRKe
+DYNA INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+DYNA PRESS:            VIRE         VIRI       PRESSE       PRESSI       VOLUme
+ ----------       ---------    ---------    ---------    ---------    ---------
+DYNA>        0      0.00000      2.46064      2.38162      0.07902    159.79826
+DYNA PROP>          8.14615      2.46755      2.38466      0.00691      0.00000
+DYNA INTERN>        0.00029      0.07445      0.00427      0.00000      0.00000
+DYNA PRESS>         0.00000     -0.00000      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+DYNA>     1000      1.00000      5.59132      2.83016      2.76116    189.89384
+DYNA PROP>         16.24666      5.67382      2.96315      0.08250      9.92330
+DYNA INTERN>        1.42843      0.97338      0.11476      0.00000      0.00000
+DYNA MMFP>          0.24458      0.00000      0.00000      0.00000      0.00000
+DYNA PRESS>        -0.16306     -6.45247      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+DYNA>     2000      2.00000      7.86617      5.09443      2.77174    341.81764
+DYNA PROP>         21.36264      7.88717      5.17710      0.02100     24.89524
+DYNA INTERN>        0.93428      1.49874      0.08713      0.00000      0.00000
+DYNA MMFP>          0.25159      0.00000      0.00000      0.00000      0.00000
+DYNA PRESS>        -0.16773    -16.42910      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+DYNA>     3000      3.00000      9.49913      5.00007      4.49906    335.48652
+DYNA PROP>         23.40581      9.59151      5.17508      0.09238     23.91358
+DYNA INTERN>        2.04783      1.55660      0.06877      0.00000      0.00000
+DYNA MMFP>          0.82586      0.00000      0.00000      0.00000      0.00000
+DYNA PRESS>        -0.55057    -15.39181      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+DYNA>     4000      4.00000      7.81448      2.65885      5.15563    178.39899
+DYNA PROP>         26.12304      7.82204      2.87110      0.00756    -15.62374
+DYNA INTERN>        2.22173      1.06126      0.10678      0.00000      0.00000
+DYNA MMFP>          1.76587      0.00000      0.00000      0.00000      0.00000
+DYNA PRESS>        -1.17724     11.59307      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+   1000   COORDINATE SETS STARTING FROM
+     STEP NO        5   FOR EVERY     5  STEPS
+     WRITTEN ON UNIT   21
+
+ VCLOSE: Closing unit   21 with status "KEEP"
+DYNA>     5000      5.00000      8.17994      3.73209      4.44785    250.40977
+DYNA PROP>         12.65390      8.10948      3.83779     -0.07046    -13.07959
+DYNA INTERN>        0.72846      2.19592      0.16054      0.00000      0.00000
+DYNA MMFP>          1.36293      0.00000      0.00000      0.00000      0.00000
+DYNA PRESS>        -0.90862      9.62834      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+ DYNAMC> Averages for the last 5000 steps:
+AVER DYN: Step         Time      TOTEner        TOTKe       ENERgy  TEMPerature
+AVER PROP:             GRMS      HFCTote        HFCKe       EHFCor        VIRKe
+AVER INTERN:          BONDs       ANGLes       UREY-b    DIHEdrals    IMPRopers
+AVER MMFP:              GEO        MDIP           SSBP        SHEL       DROFfa
+AVER PRESS:            VIRE         VIRI       PRESSE       PRESSI       VOLUme
+ ----------       ---------    ---------    ---------    ---------    ---------
+AVER>     5000      5.00000      7.51477      3.99719      3.51758    268.19680
+AVER PROP>         18.14268      7.55666      4.12405      0.04189      4.25598
+AVER INTERN>        1.36289      1.22845      0.11358      0.00000      0.00000
+AVER MMFP>          0.81266      0.00000      0.00000      0.00000      0.00000
+AVER PRESS>        -0.54177     -2.29555      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+ DYNAMC> RMS fluctuations for the last 5000 steps:
+FLUC>     5000      5.00000      1.95392      1.43359      1.37930     96.18881
+FLUC PROP>          5.51245      1.96605      1.43101      0.08289     19.69954
+FLUC INTERN>        0.88703      0.65403      0.06332      0.00000      0.00000
+FLUC MMFP>          0.66323      0.00000      0.00000      0.00000      0.00000
+FLUC PRESS>         0.44215     13.12475      0.00000      0.00000      0.00000
+ ----------       ---------    ---------    ---------    ---------    ---------
+
+     DRIFT/STEP (LAST-TOTAL):    9.12880556E-04   9.12880556E-04
+     E AT STEP 0            :     5.2740024        5.2740024    
+     CORR. COEFFICIENT      :    0.67019285       0.67019285    
+
+     DETAILS ABOUT CENTRE OF MASS
+     POSITION          :    1.0503084        1.0392075      -0.74901110    
+     VELOCITY          :  -0.16570797       0.15447450      -0.16896417    
+     ANGULAR MOMENTUM  :    1.0431721      -0.66409692        2.5743235    
+     KINETIC ENERGY    :   0.64068035    
+  
+ CHARMM>    stop
+ VCLOSE: Closing unit   10 with status "KEEP"
+ VCLOSE: Closing unit   20 with status "KEEP"
+$$$$$$  New timer profile $$$$$
+   First List                      0.00 Other:            0.00
+         Save shake coords               0.00 Other:            0.00
+         Heuristic check                 0.00 Other:            0.00
+         Temp and virial calc            0.00 Other:            0.00
+      dynamc                          0.04 Other:            0.03
+   Dynamics total                  0.05 Other:            0.01
+   List time                       0.00 Other:            0.00
+         Electrostatic & VDW             0.00 Other:            0.00
+      Nonbond force                   0.02 Other:            0.01
+         Bond energy                     0.01 Other:            0.00
+         Angle energy                    0.01 Other:            0.00
+         Dihedral energy                 0.01 Other:            0.00
+         Restraints energy               0.00 Other:            0.00
+      INTRNL energy                   0.04 Other:            0.02
+   Energy time                     0.07 Other:            0.02
+ Total time                      1.02 Other:            0.90
+
+                    NORMAL TERMINATION BY NORMAL STOP
+                    NO WARNINGS WERE ISSUED
+
+                    $$$$$ JOB ACCOUNTING INFORMATION $$$$$
+                     ELAPSED TIME:     1.02  SECONDS 
+                         CPU TIME:     0.96  SECONDS 

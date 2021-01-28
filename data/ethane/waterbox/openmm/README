@@ -17,7 +17,7 @@ set istep = step4_equilibration
 
 python -u openmm_run.py -i ${istep}.inp -t toppar.str -p ${init}.psf -c ${init}.crd -b ${init}.str -orst ${istep}.rst -odcd ${istep}.dcd > ${istep}.out
 
-
+exit
 # Production
 
 # The OpenMM check point file (.chk) cannot be used in a different machine environment.
