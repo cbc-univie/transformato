@@ -457,7 +457,6 @@ def test_common_core_system1():
 
 
 def test_mutation_list():
-    from ..utils import print_mutations
     from rdkit.Chem import rdFMCS
 
     for conf, system_name in zip(
@@ -575,6 +574,23 @@ def test_charge_mutation_test_system1():
                         )
             finally:
                 shutil.rmtree(output_file_base)
+
+
+def test_setup_dual_junction_system():
+    from transformato import (
+        ProposeMutationRoute,
+        SystemStructure,
+        load_config_yaml,
+    )
+
+    conf = "transformato/tests/config/test-2oj9-solvation-free-energy.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    a = ProposeMutationRoute(s1, s2)
+
+    a.calculate_common_core()
 
 
 def test_charge_mutation_test_system2():
