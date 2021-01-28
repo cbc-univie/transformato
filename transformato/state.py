@@ -10,7 +10,6 @@ from .utils import get_toppar_dir, psf_correction
 from .mutate import Mutation
 from transformato.charmm_factory import charmm_factory, build_reduced_toppar
 from typing import List
-import types
 
 logger = logging.getLogger(__name__)
 

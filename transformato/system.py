@@ -1,4 +1,3 @@
-import io
 import logging
 import os
 from collections import namedtuple
@@ -257,13 +256,14 @@ class SystemStructure(object):
 
         for name in filenames:
             for dir_name in dir_names:
+                file = f"{charmm_gui_env}/{dir_name}/{name}.sdf"  # NOTE: maybe also tlc and tlc_lower for dir?
                 try:
-                    file = f"{charmm_gui_env}/{dir_name}/{name}.sdf"  # NOTE: maybe also tlc and tlc_lower for dir?
                     suppl = Chem.SDMolSupplier(file, removeHs=False)
                     mol = next(suppl)
+                    logger.info(f"SDF file loaded: {file}")
                     break
                 except IOError:
-                    logger.info(f"SDF file not found: {file}")
+                    logger.debug(f"SDF file not found: {file}")
                     pass
 
         (

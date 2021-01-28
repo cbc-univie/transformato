@@ -149,13 +149,8 @@ class ProposeMutationRoute(object):
 
     def _set_common_core_parameters(self):
         # find terminal atoms
-        terminal_atoms_cc1, terminal_real_atoms_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
-        terminal_atoms_cc2, terminal_real_atoms_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
-
-        self.terminal_real_atom_cc1 = terminal_real_atoms_cc1
-        self.terminal_real_atom_cc2 = terminal_real_atoms_cc2
-        self.terminal_dummy_atom_cc1 = terminal_atoms_cc1
-        self.terminal_dummy_atom_cc2 = terminal_atoms_cc2
+        self.terminal_dummy_atom_cc1, self.terminal_real_atom_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
+        self.terminal_dummy_atom_cc2, self.terminal_real_atom_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
 
         # match terminal real atoms between cc1 and cc2
         cc_idx_mol1 = self.get_common_core_idx_mol1()
@@ -163,7 +158,7 @@ class ProposeMutationRoute(object):
         matching_terminal_atoms_between_cc = list()
         
         for cc1_idx, cc2_idx in zip(cc_idx_mol1, cc_idx_mol2):
-            if cc1_idx in terminal_real_atoms_cc1 and cc2_idx in terminal_real_atoms_cc2:
+            if cc1_idx in self.terminal_real_atom_cc1 and cc2_idx in self.terminal_real_atom_cc2:
                 logger.info(f'Matching terminal real atoms from cc1 to cc2. cc1: {cc1_idx} : cc2: {cc2_idx}') 
                 matching_terminal_atoms_between_cc.append((cc1_idx, cc2_idx))
                 
@@ -184,14 +179,18 @@ class ProposeMutationRoute(object):
         lj_default_cc1 = []
         lj_default_cc2 = []
         
+        # iterate through the common core substracter (the order represents the matched atoms)
         for idx1, idx2 in zip(cc1_idx, cc2_idx):
+            # if both atoms are terminal atoms connected dummy regions can be identified
             if idx1 in match_terminal_atoms_cc1.keys() and idx2 in match_terminal_atoms_cc2.keys():
                 
                 connected_dummy_cc1 =  list(match_terminal_atoms_cc1[idx1])
                 connected_dummy_cc2 =  list(match_terminal_atoms_cc2[idx2])
                 
+                if len(connected_dummy_cc1) == 1 and len(connected_dummy_cc2) == 1:
+                    pass
                 # multiple, possible dummy regions
-                if len(connected_dummy_cc1) > 1 or len(connected_dummy_cc2) > 1:
+                elif len(connected_dummy_cc1) > 1 or len(connected_dummy_cc2) > 1:
                     logger.critical('There is a dual junction. Be careful.')
                     # NOTE: For now we are just taking the non hydrogen atom
                     for atom_idx in connected_dummy_cc1:
@@ -202,7 +201,13 @@ class ProposeMutationRoute(object):
                         if self.mols['m2'].GetAtomWithIdx(atom_idx).GetSymbol() != 'H':
                             connected_dummy_cc2 = [atom_idx]
                             break        
-                    
+                # hydrogen mutates to dummy atom (but not a LJ particle)
+                elif len(connected_dummy_cc1) == 0 or len(connected_dummy_cc2) == 0:
+                    logger.debug('Hydrogen to dummy mutation')
+                    raise NotImplementedError()
+                
+                
+                
                 lj_default_cc1.append(connected_dummy_cc1[0])
                 lj_default_cc2.append(connected_dummy_cc2[0])                
                 
@@ -375,17 +380,17 @@ class ProposeMutationRoute(object):
         """
 
         logger.info('MCS starting ...')
-        logger.info(f'bondCompare: {self.bondCompare}')
-        logger.info(f'atomCompare: {self.atomCompare}')
-        logger.info(f'maximizeBonds: {self.maximizeBonds}')
-        logger.info(f'matchValences: {self.matchValences} ')
-        logger.info(f'ringMatchesRingOnly: {self.ringMatchesRingOnly} ')
-        logger.info(f'completeRingsOnly: {self.completeRingsOnly} ')
+        logger.debug(f'bondCompare: {self.bondCompare}')
+        logger.debug(f'atomCompare: {self.atomCompare}')
+        logger.debug(f'maximizeBonds: {self.maximizeBonds}')
+        logger.debug(f'matchValences: {self.matchValences} ')
+        logger.debug(f'ringMatchesRingOnly: {self.ringMatchesRingOnly} ')
+        logger.debug(f'completeRingsOnly: {self.completeRingsOnly} ')
 
         m1, m2 = [deepcopy(self.mols[mol1_name]), deepcopy(self.mols[mol2_name])]
 
         for m in [m1, m2]:
-            logger.info('Mol in SMILES format: {}.'.format(Chem.MolToSmiles(m, True)))
+            logger.debug('Mol in SMILES format: {}.'.format(Chem.MolToSmiles(m, True)))
 
         # make copy of mols
         changed_mols = [Chem.Mol(x) for x in [m1, m2]]
@@ -400,15 +405,15 @@ class ProposeMutationRoute(object):
                              completeRingsOnly=self.completeRingsOnly,
                              ringMatchesRingOnly=self.ringMatchesRingOnly
                              )
-        logger.info('Substructure match: {}'.format(mcs.smartsString))
+        logger.debug('Substructure match: {}'.format(mcs.smartsString))
         # convert from SMARTS
         mcsp = Chem.MolFromSmarts(mcs.smartsString, False)
 
         s1 = (m1.GetSubstructMatch(mcsp))
-        logger.info('Substructere match idx: {}'.format(s1))
+        logger.debug('Substructere match idx: {}'.format(s1))
         self._display_mol(m1)
         s2 = (m2.GetSubstructMatch(mcsp))
-        logger.info('Substructere match idx: {}'.format(s2))
+        logger.debug('Substructere match idx: {}'.format(s2))
         self._display_mol(m2)
 
         self._substructure_match[mol1_name] = list(s1)
@@ -1099,14 +1104,15 @@ class Mutation(object):
 
         total_charge = int(round(sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms])))
         # scale the charge of all atoms
+        logger.info(f"Scaling charge on: {self.atoms_to_be_mutated}")
         for idx in self.atoms_to_be_mutated:
             odx = idx + offset
             atom = psf[odx]
-            logger.info(f"Scale charge on {atom}")
-            logger.info(f"Scaling charge with: {lambda_value}")
-            logger.info(f"Old charge: {atom.charge}")
+            logger.debug(f"Scale charge on {atom}")
+            logger.debug(f"Scaling charge with: {lambda_value}")
+            logger.debug(f"Old charge: {atom.charge}")
             atom.charge = atom.initial_charge * lambda_value
-            logger.info(f"New charge: {atom.charge}")
+            logger.debug(f"New charge: {atom.charge}")
 
         if lambda_value != 1:
             # compensate for the total change in charge the terminal atom
@@ -1189,24 +1195,27 @@ class Mutation(object):
 
         # get dummy retions
         connected_dummy_regions = self.dummy_region.connected_dummy_regions
-        
+        logger.debug(f'Compensating charge ...')
+
         # check for each dummy region how much charge has changed and compensate on atom that connects 
         # the real region with specific dummy regions
         for dummy_idx in connected_dummy_regions:
-            logger.info(f'Dummy idx region: {dummy_idx}')
+            logger.debug(f'Dummy idx region: {dummy_idx}')
             connecting_real_atom_for_this_dummy_region = self.dummy_region.return_connecting_real_atom(dummy_idx)
-            logger.info(f'Connecting atom: {connecting_real_atom_for_this_dummy_region}')
+            logger.debug(f'Connecting atom: {connecting_real_atom_for_this_dummy_region}')
         
             if connecting_real_atom_for_this_dummy_region is None:
                 raise RuntimeError('Something went wrong with the charge compensation. Aborting.')
+            
+            charge_acceptor = psf[connecting_real_atom_for_this_dummy_region+offset]
             
             charge_to_compenstate_for_region = 0.0
             for atom_idx in dummy_idx:
                 charge_to_compenstate_for_region += psf[atom_idx+offset].initial_charge - psf[atom_idx+offset].charge 
             
-            logger.info(f'Charge to compensate: {charge_to_compenstate_for_region}')
+            logger.debug(f'Charge to compensate: {charge_to_compenstate_for_region}')
             # adding charge difference to initial charge on real terminal atom
-            psf[connecting_real_atom_for_this_dummy_region+offset].charge = psf[connecting_real_atom_for_this_dummy_region+offset].initial_charge + charge_to_compenstate_for_region 
+            charge_acceptor.charge += charge_to_compenstate_for_region 
             
             
         # check if rest charge is missing        
