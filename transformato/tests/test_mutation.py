@@ -5,6 +5,7 @@ Unit and regression test for the transformato package.
 import copy
 import os
 import shutil
+import logging
 
 import numpy as np
 import parmed as pm
@@ -587,15 +588,42 @@ def test_setup_dual_junction_system():
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
-
     a = ProposeMutationRoute(s1, s2)
-
     a.calculate_common_core()
+    mutation_list = a.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    # write out endpoint
+    output_files = []
+    intst = 1
+    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_files.append(output_file_base)
+
+    charges = mutation_list["charge"]
+    intst += 1
+    # start with charges
+    # turn off charges
+    output_file_base = i.write_state(
+        mutation_conf=charges,
+        lambda_value_electrostatic=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # Turn off hydrogens
+    intst += 1
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+    output_file_base = i.write_state(
+        mutation_conf=hydrogen_lj_mutations,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
 
 
 def test_charge_mutation_test_system2():
-    from ..utils import print_mutations
-    from ..mutate import MutationDefinition
 
     for conf, system_name in zip(
         [
@@ -635,9 +663,9 @@ def test_charge_mutation_test_system2():
                 )
 
                 mutation_list = a.generate_mutations_to_common_core_for_mol1()
+                charges = mutation_list["charge"]
 
                 try:
-                    charges = mutation_list["charge"]
                     output_file_base = i.write_state(
                         mutation_conf=charges,
                         lambda_value_electrostatic=lambda_charge,
@@ -1052,8 +1080,28 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
                     shutil.rmtree(output_file_base)
 
 
-def test_full_mutation_system1():
-    from rdkit.Chem import rdFMCS
+def setup_2OJ9_tautomer_pair():
+    from ..mutate import mutate_pure_tautomers
+
+    conf = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
+    system_name = "2oj9-tautomer-pair"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
+    return mutate_pure_tautomers(s1_to_s2, s1, s2, configuration)
+
+
+def test_2OJ_tautomer_pair(caplog):
+    caplog.set_level(logging.DEBUG)
+    setup_2OJ9_tautomer_pair()
+
+
+def test_full_mutation_system1(caplog):
+    caplog.set_level(logging.WARNING)
 
     for conf, system_name in zip(
         [
@@ -1063,6 +1111,7 @@ def test_full_mutation_system1():
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
+        print(system_name)
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
@@ -1083,7 +1132,6 @@ def test_full_mutation_system1():
             system=s1,
             configuration=configuration,
         )
-
         intst = 0
         charges = mutation_list["charge"]
         try:
