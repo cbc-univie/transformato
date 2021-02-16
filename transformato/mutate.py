@@ -152,7 +152,7 @@ class ProposeMutationRoute(object):
         self.terminal_dummy_atom_cc1, self.terminal_real_atom_cc1 = self._find_terminal_atom(self.get_common_core_idx_mol1(), self.mols['m1'])
         self.terminal_dummy_atom_cc2, self.terminal_real_atom_cc2 = self._find_terminal_atom(self.get_common_core_idx_mol2(), self.mols['m2'])
 
-        # match terminal real atoms between cc1 and cc2
+        # match terminal real atoms between cc1 and cc2 that connect dummy atoms
         cc_idx_mol1 = self.get_common_core_idx_mol1()
         cc_idx_mol2 = self.get_common_core_idx_mol2()
         matching_terminal_atoms_between_cc = list()
@@ -163,7 +163,7 @@ class ProposeMutationRoute(object):
                 matching_terminal_atoms_between_cc.append((cc1_idx, cc2_idx))
                 
         if not matching_terminal_atoms_between_cc:
-            raise RuntimeError('No terminal real atoms were matched between the common cores. Aborting.')
+            logger.warning('No terminal real atoms were matched between the common cores. This is fine for tautomer pairs. Otherwise continue with caution.')
         
         self.matching_terminal_atoms_between_cc = matching_terminal_atoms_between_cc
 
@@ -1196,15 +1196,16 @@ class Mutation(object):
         # get dummy retions
         connected_dummy_regions = self.dummy_region.connected_dummy_regions
         logger.debug(f'Compensating charge ...')
-
+        # save the atoms that are used for charge compenstation. This is done because if two regions 
+        # use the same atom, a special handling needs to be invoced
+        compensating_on_this_real_atom = []
         # check for each dummy region how much charge has changed and compensate on atom that connects 
         # the real region with specific dummy regions
         for dummy_idx in connected_dummy_regions:
             logger.debug(f'Dummy idx region: {dummy_idx}')
             connecting_real_atom_for_this_dummy_region = self.dummy_region.return_connecting_real_atom(dummy_idx)
             logger.debug(f'Connecting atom: {connecting_real_atom_for_this_dummy_region}')
-        
-            if connecting_real_atom_for_this_dummy_region is None:
+            if connecting_real_atom_for_this_dummy_region == None:
                 raise RuntimeError('Something went wrong with the charge compensation. Aborting.')
             
             charge_acceptor = psf[connecting_real_atom_for_this_dummy_region+offset]
@@ -1215,9 +1216,13 @@ class Mutation(object):
             
             logger.debug(f'Charge to compensate: {charge_to_compenstate_for_region}')
             # adding charge difference to initial charge on real terminal atom
-            charge_acceptor.charge += charge_to_compenstate_for_region 
+            if connecting_real_atom_for_this_dummy_region in compensating_on_this_real_atom:
+                charge_acceptor.charge = charge_acceptor.charge +  charge_to_compenstate_for_region 
+            else:
+                charge_acceptor.charge = charge_acceptor.initial_charge +  charge_to_compenstate_for_region 
             
-            
+            compensating_on_this_real_atom.append(connecting_real_atom_for_this_dummy_region)
+
         # check if rest charge is missing        
         new_charge = sum([atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms])
 
@@ -1252,3 +1257,68 @@ class Mutation(object):
                 new_type = f"{atom_type_suffix}{psf.mutations_to_default}"
 
             atom.type = new_type
+
+
+def mutate_pure_tautomers(s1_to_s2:ProposeMutationRoute, system1:SystemStructure,system2:SystemStructure, configuration):
+    
+    from transformato import (
+    IntermediateStateFactory,
+)
+
+    #setup mutation and StateFactory
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=system1,
+        configuration=configuration,
+    )
+    
+    #write out states
+    #start with charge
+    intst = 0
+    charges = mutation_list["charge"]
+    output_files_t1 = []
+    for lambda_value in np.linspace(1, 0, 2):
+        print(lambda_value)
+        intst += 1
+        # turn off charges
+        o = i.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+            intst_nr=intst,
+        )
+        output_files_t1.append(o)
+    #transform common core
+    for lambda_value in np.linspace(0.75, 0, 4):
+        intst += 1
+        print(lambda_value)
+        # turn off charges
+        o = i.write_state(
+            mutation_conf=mutation_list["transform"],
+            common_core_transformation=lambda_value,
+            intst_nr=intst,
+        )        
+        output_files_t1.append(o)
+
+        
+    # setup other tautomer
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    i = IntermediateStateFactory(
+        system=system2,
+        configuration=configuration,
+    )
+    #write out states
+    #start with charge
+    intst = 0
+    output_files_t2=[]
+    charges = mutation_list["charge"]
+    for lambda_value in np.linspace(1, 0, 2):
+        intst += 1
+        # turn off charges
+        o = i.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+            intst_nr=intst,
+        )
+        output_files_t2.append(o)
+
+    return (output_files_t1,output_files_t2)
