@@ -4,9 +4,15 @@ Unit and regression test for the transformato package.
 
 import os
 import subprocess
+import logging
 
 import numpy as np
 import pytest
+from transformato import (
+    ProposeMutationRoute,
+    SystemStructure,
+    load_config_yaml,
+)
 
 
 @pytest.mark.slowtest
@@ -134,3 +140,22 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_tr
     print(f"Free energy difference: {ddG}")
     print(f"Uncertanty: {dddG}")
     f.show_summary()
+
+
+@pytest.mark.slowtest
+def test_run_2OJ_tautomer_pair(caplog):
+    caplog.set_level(logging.WARNING)
+    from .test_mutation import setup_2OJ9_tautomer_pair
+
+    output_files = setup_2OJ9_tautomer_pair()
+    output_files_t1 = output_files[0]
+    for path in sorted(output_files_t1):
+        # because path is object not string
+        print(f"Start sampling for: {path}")
+        exe = subprocess.run(
+            ["bash", f"{str(path)}/simulation.sh", str(path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        print(exe)
