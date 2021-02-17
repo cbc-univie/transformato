@@ -8,6 +8,7 @@ from typing import Tuple
 from rdkit import Chem
 from collections import defaultdict
 from .utils import get_toppar_dir
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ class SystemStructure(object):
         self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
         self.parameter = self._read_parameters("waterbox")
+        self.cgenff_version: float
         self.envs: set
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "binding-free-energy":
@@ -133,7 +135,17 @@ class SystemStructure(object):
             if os.path.isfile(file_path):
                 parameter_files += (file_path,)
             else:
-                logger.debug(f"Custom ligand parameters are not present in {file_path}")
+                logger.critical(
+                    f"Custom ligand parameters are not present in {file_path}"
+                )
+
+        if parameter_files:
+            with open(parameter_files[0]) as f:
+                _ = f.readline()
+                cgenff = f.readline().rstrip()
+                logger.info(f"CGenFF version: {cgenff}")
+                cgenff_version = re.findall("\d+\.\d+", cgenff)[0]
+                self.cgenff_version = float(cgenff_version)
 
         parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
         parameter_files += (f"{toppar_dir}/par_all36m_prot.prm",)

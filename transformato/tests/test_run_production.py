@@ -143,6 +143,9 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_tr
 
 
 @pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
 def test_run_2OJ_tautomer_pair(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair

@@ -4,7 +4,7 @@ system:
   ################
   structure1:
     name: "2OJ9-original"
-    tlc: "BMI"
+    tlc: "UNK"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_charmm2omm"
