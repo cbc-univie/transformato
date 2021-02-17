@@ -99,6 +99,16 @@ class ProposeMutationRoute(object):
         self.dummy_region_cc1:DummyRegion
         self.dummy_region_cc2:DummyRegion
 
+        self._check_cgenff_versions()
+       
+    def _check_cgenff_versions(self):
+        
+        cgenff_sys1 = self.system['system1'].cgenff_version
+        cgenff_sys2 = self.system['system2'].cgenff_version
+        if cgenff_sys1 == cgenff_sys2:
+            pass
+        else:
+            raise RuntimeError(f'CGenFF compatibility error. CGenFF: {cgenff_sys1} and CGenFF: {cgenff_sys2} are combined.')
 
     def _match_terminal_real_and_dummy_atoms_for_mol1(self):
         """
