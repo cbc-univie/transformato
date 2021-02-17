@@ -20,18 +20,9 @@ def restraints(system, crd, inputs):
     boxlz = system.getDefaultPeriodicBoxVectors()[2][2].value_in_unit(nanometers)
 
     if inputs.fc_bb > 0 or inputs.fc_sc > 0:
-        # position restraints for protein
-        posresPROT = CustomExternalForce('fc_ppos*(px^2+py^2+pz^2); \
-                                          px=min(dx, boxlx-dx); \
-                                          py=min(dy, boxly-dy); \
-                                          pz=min(dz, boxlz-dz); \
-                                          dx=abs(x-x0); \
-                                          dy=abs(y-y0); \
-                                          dz=abs(z-z0);')
-        posresPROT.addGlobalParameter('boxlx', boxlx)
-        posresPROT.addGlobalParameter('boxly', boxly)
-        posresPROT.addGlobalParameter('boxlz', boxlz)
-        posresPROT.addPerParticleParameter('fc_ppos')
+        # positional restraints for protein
+        posresPROT = CustomExternalForce('k*periodicdistance(x, y, z, x0, y0, z0)^2;')
+        posresPROT.addPerParticleParameter('k')
         posresPROT.addPerParticleParameter('x0')
         posresPROT.addPerParticleParameter('y0')
         posresPROT.addPerParticleParameter('z0')
@@ -39,9 +30,9 @@ def restraints(system, crd, inputs):
             segments = line.strip().split()
             atom1 = int(segments[0])
             state = segments[1]
-            xpos  = crd.positions[atom1].value_in_unit(angstroms)[0]/10
-            ypos  = crd.positions[atom1].value_in_unit(angstroms)[1]/10
-            zpos  = crd.positions[atom1].value_in_unit(angstroms)[2]/10
+            xpos  = crd.positions[atom1].value_in_unit(nanometers)[0]
+            ypos  = crd.positions[atom1].value_in_unit(nanometers)[1]
+            zpos  = crd.positions[atom1].value_in_unit(nanometers)[2]
             if state == 'BB' and inputs.fc_bb > 0:
                 fc_ppos = inputs.fc_bb
                 posresPROT.addParticle(atom1, [fc_ppos, xpos, ypos, zpos])
@@ -51,44 +42,63 @@ def restraints(system, crd, inputs):
         system.addForce(posresPROT)
 
     if inputs.fc_mpos > 0:
-        # position restraints for protein
-        posresMICE = CustomExternalForce('fc_mpos*(px^2+py^2+pz^2); \
-                                          px=min(dx, boxlx-dx); \
-                                          py=min(dy, boxly-dy); \
-                                          pz=min(dz, boxlz-dz); \
-                                          dx=abs(x-x0); \
-                                          dy=abs(y-y0); \
-                                          dz=abs(z-z0);')
-        posresMICE.addGlobalParameter('boxlx', boxlx)
-        posresMICE.addGlobalParameter('boxly', boxly)
-        posresMICE.addGlobalParameter('boxlz', boxlz)
-        posresMICE.addGlobalParameter('fc_mpos', inputs.fc_mpos)
+        # positional restraints for micelle lipid head group
+        posresMICE = CustomExternalForce('k*periodicdistance(x, y, z, x0, y0, z0)^2;')
+        posresMICE.addGlobalParameter('k', inputs.fc_mpos)
         posresMICE.addPerParticleParameter('x0')
         posresMICE.addPerParticleParameter('y0')
         posresMICE.addPerParticleParameter('z0')
         for line in open('restraints/lipid_pos.txt', 'r'):
             segments = line.strip().split()
             atom1 = int(segments[0])
-            xpos  = crd.positions[atom1].value_in_unit(angstroms)[0]/10
-            ypos  = crd.positions[atom1].value_in_unit(angstroms)[1]/10
-            zpos  = crd.positions[atom1].value_in_unit(angstroms)[2]/10
+            xpos  = crd.positions[atom1].value_in_unit(nanometers)[0]
+            ypos  = crd.positions[atom1].value_in_unit(nanometers)[1]
+            zpos  = crd.positions[atom1].value_in_unit(nanometers)[2]
             posresMICE.addParticle(atom1, [xpos, ypos, zpos])
         system.addForce(posresMICE)
 
     if inputs.fc_lpos > 0:
-        # position restraints for lipids
-        posresMEMB = CustomExternalForce('fc_lpos*(pz^2); \
-                                          pz=min(dz, boxlz-dz); \
-                                          dz=abs(z-z0);')
-        posresMEMB.addGlobalParameter('boxlz', boxlz)
-        posresMEMB.addGlobalParameter('fc_lpos', inputs.fc_lpos)
+        # positional restraints for bilayer lipid head group
+        posresMEMB = CustomExternalForce('k*periodicdistance(0, 0, z, 0, 0, z0)^2;')
+        posresMEMB.addGlobalParameter('k', inputs.fc_lpos)
         posresMEMB.addPerParticleParameter('z0')
         for line in open('restraints/lipid_pos.txt', 'r'):
             segments = line.strip().split()
             atom1 = int(segments[0])
-            zpos  = crd.positions[atom1].value_in_unit(angstroms)[2]/10
+            zpos  = crd.positions[atom1].value_in_unit(nanometers)[2]
             posresMEMB.addParticle(atom1, [zpos])
         system.addForce(posresMEMB)
+
+    if inputs.fc_hmmm > 0:
+        posresHMMM = CustomCentroidBondForce(1, 'k*(z1 - z0)^2')
+        posresHMMM.addGlobalParameter('k', inputs.fc_hmmm)
+        posresHMMM.addPerBondParameter('z0')
+
+        # add groups and bonds
+        for i, line in enumerate(open('restraints/hmmm_pos.txt', 'r')):
+            segments = line.strip().split()
+            atoms = list(map(int, segments[:-1]))
+            zpos  = float(segments[-1]) + boxlz / 2.0
+            posresHMMM.addGroup(atoms)
+            posresHMMM.addBond([i], [zpos])
+        posresHMMM.setUsesPeriodicBoundaryConditions(True)
+        system.addForce(posresHMMM)
+
+    if inputs.fc_dcle > 0:
+        posresDCLE = CustomCentroidBondForce(1, 'k*dr^2; \
+                                                dr=max(0, r-rfb); \
+                                                r=abs(z1 - z0);')
+        posresDCLE.addGlobalParameter('k',   inputs.fc_dcle)
+        posresDCLE.addGlobalParameter('rfb', inputs.fbres_rfb)
+        posresDCLE.addGlobalParameter('z0',  boxlz / 2.0)
+
+        # add groups and bonds
+        for i, line in enumerate(open('restraints/dcle_pos.txt', 'r')):
+            atoms = list(map(int, line.strip().split()))
+            posresDCLE.addGroup(atoms)
+            posresDCLE.addBond([i])
+        posresDCLE.setUsesPeriodicBoundaryConditions(True)
+        system.addForce(posresDCLE)
 
     if inputs.fc_ldih > 0:
         # dihedral restraints for lipids

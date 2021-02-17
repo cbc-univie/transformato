@@ -52,8 +52,15 @@ class _OpenMMReadInputs():
         self.fc_sc            = 0.0                                       # Positional restraint force constant for protein side-chain (kJ/mol/nm^2)
         self.fc_mpos          = 0.0                                       # Positional restraint force constant for micelle lipids (kJ/mol/nm^2)
         self.fc_lpos          = 0.0                                       # Positional restraint force constant for lipids (kJ/mol/nm^2)
+        self.fc_hmmm          = 0.0                                       # Planar restraint force constant for HMMM (kJ/mol/nm^2)
+        self.fc_dcle          = 0.0                                       # Flat-bottomed positional restraint force constant for HMMM DCLE (kJ/mol/nm^2)
         self.fc_ldih          = 0.0                                       # Dihedral restraint force constant for lipids (kJ/mol/rad^2)
         self.fc_cdih          = 0.0                                       # Dihedral restraint force constant for carbohydrates (kJ/mol/rad^2)
+        self.fbres_rfb        = 1.0                                       # Distance from the center for flat-bottomed positional restraint (nm)
+
+        self.annealing        = 'no'                                      # Turn on/off simulated annealing
+        self.temp_init        = 0.0                                       # Inital temperature of simulated annealing
+        self.interval         = 0.0                                       # Annealing temperature increment
 
     def read(self, inputFile):
         for line in open(inputFile, 'r'):
@@ -133,8 +140,15 @@ class _OpenMMReadInputs():
                     if input_param == 'FC_SC':                          self.fc_sc            = float(input_value)
                     if input_param == 'FC_MPOS':                        self.fc_mpos          = float(input_value)
                     if input_param == 'FC_LPOS':                        self.fc_lpos          = float(input_value)
+                    if input_param == 'FC_HMMM':                        self.fc_hmmm          = float(input_value)
+                    if input_param == 'FC_DCLE':                        self.fc_dcle          = float(input_value)
                     if input_param == 'FC_LDIH':                        self.fc_ldih          = float(input_value)
                     if input_param == 'FC_CDIH':                        self.fc_cdih          = float(input_value)
+                    if input_param == 'FBRES_RFB':                      self.fbres_rfb        = float(input_value)
+                    if input_param == 'ANNEALING':
+                        if input_value.upper() == 'YES':                self.annealing        = 'yes'
+                    if input_param == 'TEMP_INIT':                        self.temp_init = float(input_value)
+                    if input_param == 'INTERVAL':                       self.interval = float(input_value)
         return self
 
 def read_inputs(inputFile):
