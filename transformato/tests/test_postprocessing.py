@@ -2,33 +2,29 @@
 Unit and regression test for the transformato package.
 """
 
-import copy
-import logging
 import os
-import pathlib
-import shutil
-import subprocess
-import sys
 
 import numpy as np
-import parmed as pm
 import pytest
 
-from io import StringIO
-import filecmp
-
-# Import package, test suite, and other packages as needed
-import transformato
 
 # read in specific topology with parameters
-from parmed.charmm.parameters import CharmmParameterSet
 from transformato import (
-    IntermediateStateFactory,
-    ProposeMutationRoute,
-    SystemStructure,
     load_config_yaml,
-    psf_correction,
 )
+
+
+def postprocessing(configuration, name="methane", engine="openMM", max_snapshots=300):
+    from transformato import FreeEnergyCalculator
+
+    f = FreeEnergyCalculator(configuration, name)
+    f.load_trajs(nr_of_max_snapshots=max_snapshots)
+    f.calculate_dG_to_common_core(engine=engine)
+    ddG, dddG = f.end_state_free_energy_difference
+    print(f"Free energy difference: {ddG}")
+    print(f"Uncertanty: {dddG}")
+    f.show_summary()
+    return ddG, dddG
 
 
 @pytest.mark.slowtest
@@ -43,14 +39,10 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocess
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
 
-    f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=300)
-    f.calculate_dG_to_common_core(engine="CHARMM")
-    ddG, dddG = f.end_state_free_energy_difference
-    print(f"Free energy difference: {ddG}")
-    print(f"Uncertanty: {dddG}")
+    ddG, dddG = postprocessing(
+        configuration, name="methane", engine="CHARMM", max_snapshots=300
+    )
     np.isclose(ddG, -1.2102764838282152, rtol=1e-8)
-    f.show_summary()
 
 
 def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM_postprocessing():
@@ -60,16 +52,10 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM_postprocess
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
-
-    f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=300)
-    f.calculate_dG_to_common_core()
-    ddG, dddG = f.end_state_free_energy_difference
-    print(f"Free energy difference: {ddG}")
-    print(f"Uncertanty: {dddG}")
-    print(ddG)
+    ddG, dddG = postprocessing(
+        configuration, name="methane", engine="openMM", max_snapshots=300
+    )
     np.isclose(ddG, -1.2102764838282152, rtol=1e-8)
-    f.show_summary()
 
 
 def test_postprocessing_thinning():

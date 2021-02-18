@@ -56,7 +56,6 @@ def test_proposed_mutation_mcs():
 
     for conf in [
         "transformato/tests/config/test-2oj9-solvation-free-energy.yaml",
-        "transformato/tests/config/test-2oj9-binding-free-energy.yaml",
     ]:
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
@@ -66,7 +65,7 @@ def test_proposed_mutation_mcs():
         # find mcs
         a._find_mcs("m1", "m2")
 
-        assert str(a.s1_tlc) == "BMI"
+        assert str(a.s1_tlc) == "UNK"
         assert str(a.s2_tlc) == "UNK"
 
         cc1 = set(
@@ -159,7 +158,6 @@ def test_proposed_mutation_mcs():
         )
         assert set(a.get_common_core_idx_mol1()) == cc1
         assert set(a.get_common_core_idx_mol2()) == cc2
-
         a.bondCompare = rdFMCS.BondCompare.CompareOrder
         # find mcs
         a._find_mcs("m1", "m2")
