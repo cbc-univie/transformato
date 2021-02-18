@@ -2,17 +2,12 @@
 Unit and regression test for the transformato package.
 """
 
-import numpy as np
 import parmed as pm
-import pytest
 
 from io import StringIO
 
-# Import package, test suite, and other packages as needed
-import transformato
 
 # read in specific topology with parameters
-from parmed.charmm.parameters import CharmmParameterSet
 from transformato import (
     SystemStructure,
     load_config_yaml,
@@ -74,19 +69,3 @@ def test_initialize_systems():
     assert "vacuum" in s1.envs and "vacuum" in s2.envs
     assert "waterbox" in s1.envs and "waterbox" in s2.envs
 
-    configuration = load_config_yaml(
-        config="transformato/tests/config/test-2oj9-binding-free-energy.yaml",
-        input_dir="data/",
-        output_dir=".",
-    )
-
-    s1 = SystemStructure(configuration, "structure1")
-    assert int(s1.offset["waterbox"]) == 0
-    assert int(s1.offset["complex"]) == 4811
-
-    s2 = SystemStructure(configuration, "structure2")
-    assert int(s2.offset["waterbox"]) == 0
-    assert int(s2.offset["complex"]) == 4692
-
-    assert "complex" in s1.envs and "complex" in s2.envs
-    assert "waterbox" in s1.envs and "waterbox" in s2.envs
