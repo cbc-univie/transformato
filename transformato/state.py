@@ -63,6 +63,8 @@ class IntermediateStateFactory(object):
         -------
         [type]
             [description]
+        intst_nr : int
+            automatically incremented intst nr
         """
 
         logger.info("#########################################")
@@ -103,7 +105,7 @@ class IntermediateStateFactory(object):
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_toppar_str(output_file_base, self.system.tlc)
         self._copy_files(output_file_base)
-        return output_file_base
+        return output_file_base, intst_nr+1
 
     def _add_serializer(self, file):
         # adding serializer functions
@@ -441,7 +443,7 @@ outfile.close()
         self, omm_simulation_parameter_source: str, omm_simulation_parameter_target: str
     ):
         """
-        _overwrite_simulation_script_parameters Overwrites simulatioo parameters that are defined in omm_simulation_parameter_source
+        _overwrite_simulation_script_parameters changes parameters that are defined in omm_simulation_parameter_source
 
         Parameters
         ----------
@@ -465,9 +467,10 @@ outfile.close()
             "nstout",
             "cons",
             "dt",
-            "switch",
             "mini_nstep",
         ]
+
+        # test that common keywords are in yaml files
         if not all(elem in overwrite_parameters.keys() for elem in common_keywords):
             for elem in common_keywords:
                 if elem not in overwrite_parameters.keys():
