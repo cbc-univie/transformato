@@ -329,8 +329,6 @@ def test_find_connected_dummy_regions1():
     lj_default_cc1, lj_default_cc2 = a._match_terminal_dummy_atoms_between_common_cores(
         match_terminal_atoms_cc1,
         match_terminal_atoms_cc2,
-        connected_dummy_regions_cc1,
-        connected_dummy_regions_cc2,
     )
 
     print(connected_dummy_regions_cc1)
@@ -366,8 +364,6 @@ def test_find_connected_dummy_regions2():
     lj_default_cc1, lj_default_cc2 = a._match_terminal_dummy_atoms_between_common_cores(
         match_terminal_atoms_cc1,
         match_terminal_atoms_cc2,
-        connected_dummy_regions_cc1,
-        connected_dummy_regions_cc2,
     )
 
     dummy_region_m1 = transformato.mutate.DummyRegion(
@@ -456,7 +452,6 @@ def test_common_core_system1():
 
 
 def test_mutation_list():
-    from rdkit.Chem import rdFMCS
 
     for conf, system_name in zip(
         [
@@ -477,13 +472,13 @@ def test_mutation_list():
             s1_to_s2.calculate_common_core()
             mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
             assert set(mutation_list.keys()) == set(
-                ["charge", "terminal-lj", "transform"]
+                ["charge", "default-lj", "transform"]
             )
         if system_name == "toluene-methane":
             s1_to_s2.calculate_common_core()
             mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
             assert set(mutation_list.keys()) == set(
-                ["charge", "hydrogen-lj", "lj", "transform", "terminal-lj"]
+                ["charge", "hydrogen-lj", "lj", "transform", "default-lj"]
             )
 
         if system_name == "neopentane-methane":
@@ -495,7 +490,7 @@ def test_mutation_list():
             )
             mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
             assert set(mutation_list.keys()) == set(
-                ["charge", "hydrogen-lj", "lj", "transform", "terminal-lj"]
+                ["charge", "hydrogen-lj", "lj", "transform", "default-lj"]
             )
 
 
@@ -514,18 +509,15 @@ def test_endpoint_mutation():
 
         s1_to_s2 = ProposeMutationRoute(s1, s2)
         s2_to_s1 = ProposeMutationRoute(s2, s1)
-        try:
-            for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
-                a.calculate_common_core()
-                i = IntermediateStateFactory(
-                    system=system,
-                    configuration=configuration,
-                )
-                output_file_base = i.write_state(mutation_conf=[], intst_nr=0)
+        for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
+            a.calculate_common_core()
+            i = IntermediateStateFactory(
+                system=system,
+                configuration=configuration,
+            )
+            output_file_base, intst_nr = i.write_state(mutation_conf=[], intst_nr=0)
 
-        finally:
-            pass
-            # shutil.rmtree(output_file_base)
+        shutil.rmtree(output_file_base)
 
 
 def test_charge_mutation_test_system1():
@@ -544,7 +536,6 @@ def test_charge_mutation_test_system1():
         configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
-
         s1_to_s2 = ProposeMutationRoute(s1, s2)
         s2_to_s1 = ProposeMutationRoute(s2, s1)
         for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
@@ -552,27 +543,25 @@ def test_charge_mutation_test_system1():
                 system=system,
                 configuration=configuration,
             )
-            output_file_base = i.write_state(mutation_conf=[], intst_nr=0)
+            output_file_base, _ = i.write_state(mutation_conf=[], intst_nr=0)
 
             # original psfs without charge change
             original_psf = {}
             for env in system.envs:
                 original_psf[env] = copy.deepcopy(system.psfs[env])
 
-            try:
-                for env in system.envs:
-                    offset = system.offset[env]
+            for env in system.envs:
+                offset = system.offset[env]
 
-                    mutated_psf = generate_psf(output_file_base, env)
-                    for atom in system.mol.GetAtoms():
-                        idx = atom.GetIdx()
-                        assert np.isclose(
-                            original_psf[env].atoms[idx + offset].charge,
-                            mutated_psf.atoms[idx + offset].charge,
-                            rtol=1e-3,
-                        )
-            finally:
-                shutil.rmtree(output_file_base)
+                mutated_psf = generate_psf(output_file_base, env)
+                for atom in system.mol.GetAtoms():
+                    idx = atom.GetIdx()
+                    assert np.isclose(
+                        original_psf[env].atoms[idx + offset].charge,
+                        mutated_psf.atoms[idx + offset].charge,
+                        rtol=1e-3,
+                    )
+            shutil.rmtree(output_file_base)
 
 
 def test_setup_dual_junction_system():
@@ -595,15 +584,13 @@ def test_setup_dual_junction_system():
     )
     # write out endpoint
     output_files = []
-    intst = 1
-    output_file_base = i.write_state(mutation_conf=[], intst_nr=intst)
+    output_file_base, intst = i.write_state(mutation_conf=[], intst_nr=0)
     output_files.append(output_file_base)
 
     charges = mutation_list["charge"]
-    intst += 1
     # start with charges
     # turn off charges
-    output_file_base = i.write_state(
+    output_file_base, intst = i.write_state(
         mutation_conf=charges,
         lambda_value_electrostatic=0.0,
         intst_nr=intst,
@@ -611,14 +598,14 @@ def test_setup_dual_junction_system():
     output_files.append(output_file_base)
 
     # Turn off hydrogens
-    intst += 1
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-    output_file_base = i.write_state(
+    output_file_base, intst = i.write_state(
         mutation_conf=hydrogen_lj_mutations,
         lambda_value_vdw=0.0,
         intst_nr=intst,
     )
     output_files.append(output_file_base)
+    shutil.rmtree(output_files)
 
 
 def test_charge_mutation_test_system2():
@@ -662,26 +649,24 @@ def test_charge_mutation_test_system2():
 
                 mutation_list = a.generate_mutations_to_common_core_for_mol1()
                 charges = mutation_list["charge"]
+                output_file_base, intst_nr = i.write_state(
+                    mutation_conf=charges,
+                    lambda_value_electrostatic=lambda_charge,
+                    intst_nr=0,
+                )
+                for env in system.envs:
+                    offset = system.offset[env]
+                    # read in newly generated psf
+                    mutated_psf = generate_psf(output_file_base, env)
+                    for idx in charges[0].atoms_to_be_mutated:
+                        assert np.isclose(
+                            original_psf[env].atoms[idx + offset].charge
+                            * lambda_charge,
+                            mutated_psf.atoms[idx + offset].charge,
+                            rtol=1e-03,
+                        )
 
-                try:
-                    output_file_base = i.write_state(
-                        mutation_conf=charges,
-                        lambda_value_electrostatic=lambda_charge,
-                        intst_nr=0,
-                    )
-                    for env in system.envs:
-                        offset = system.offset[env]
-                        # read in newly generated psf
-                        mutated_psf = generate_psf(output_file_base, env)
-                        for idx in charges[0].atoms_to_be_mutated:
-                            assert np.isclose(
-                                original_psf[env].atoms[idx + offset].charge
-                                * lambda_charge,
-                                mutated_psf.atoms[idx + offset].charge,
-                                rtol=1e-03,
-                            )
-                finally:
-                    shutil.rmtree(output_file_base)
+                shutil.rmtree(output_file_base)
 
 
 def test_vdw_mutation_for_hydrogens_system1():
@@ -720,52 +705,48 @@ def test_vdw_mutation_for_hydrogens_system1():
         original_psf = {}
         for env in s1.envs:
             original_psf[env] = copy.deepcopy(s1.psfs[env])
+        terminal_lj_mutations = mutation_list["default-lj"]
+        output_file_base, intst_nr = i.write_state(
+            mutation_conf=terminal_lj_mutations,
+            lambda_value_vdw=0.0,
+            intst_nr=0,
+        )
+        print("Set epsilon/rmin to zero for selected atoms")
 
-        try:
-            terminal_lj_mutations = mutation_list["terminal-lj"]
-            output_file_base = i.write_state(
-                mutation_conf=terminal_lj_mutations,
-                lambda_value_vdw=0.0,
-                intst_nr=0,
-            )
-            print("Set epsilon/rmin to zero for selected atoms")
+        for env in s1.envs:
+            new_psf = generate_psf(output_file_base, env)
+            # are the terminal lj parameter correctly set?
+            offset = s1.offset[env]
+            for terminal_lj in terminal_lj_mutations:
+                for idx in terminal_lj.vdw_atom_idx:
+                    idxo = idx + offset
+                    assert np.isclose(
+                        -0.15,
+                        new_psf.atoms[idxo].epsilon,
+                        rtol=1e-3,
+                    )
+                    assert np.isclose(
+                        1.5,
+                        new_psf.atoms[idxo].rmin,
+                        rtol=1e-3,
+                    )
 
-            for env in s1.envs:
-                new_psf = generate_psf(output_file_base, env)
-                # are the terminal lj parameter correctly set?
-                offset = s1.offset[env]
-                for terminal_lj in terminal_lj_mutations:
-                    for idx in terminal_lj.vdw_atom_idx:
-                        idxo = idx + offset
-                        assert np.isclose(
-                            -0.15,
-                            new_psf.atoms[idxo].epsilon,
-                            rtol=1e-3,
-                        )
-                        assert np.isclose(
-                            1.5,
-                            new_psf.atoms[idxo].rmin,
-                            rtol=1e-3,
-                        )
+            # make sure that all other idx are not touched
+            for idx in range(len(original_psf[env].atoms)):
+                idxo = idx - offset  # NOTE: the '-'
+                if idxo not in terminal_lj.vdw_atom_idx:
+                    assert np.isclose(
+                        original_psf[env].atoms[idx].epsilon,
+                        new_psf.atoms[idx].epsilon,
+                        rtol=1e-3,
+                    )
+                    assert np.isclose(
+                        original_psf[env].atoms[idx].rmin,
+                        new_psf.atoms[idx].rmin,
+                        rtol=1e-3,
+                    )
 
-                # make sure that all other idx are not touched
-                for idx in range(len(original_psf[env].atoms)):
-                    idxo = idx - offset  # NOTE: the '-'
-                    if idxo not in terminal_lj.vdw_atom_idx:
-                        assert np.isclose(
-                            original_psf[env].atoms[idx].epsilon,
-                            new_psf.atoms[idx].epsilon,
-                            rtol=1e-3,
-                        )
-                        assert np.isclose(
-                            original_psf[env].atoms[idx].rmin,
-                            new_psf.atoms[idx].rmin,
-                            rtol=1e-3,
-                        )
-
-        finally:
-            pass
-            # shutil.rmtree(output_file_base)
+        shutil.rmtree(output_file_base)
 
 
 def test_vdw_mutation_for_hydrogens_system2():
@@ -797,51 +778,49 @@ def test_vdw_mutation_for_hydrogens_system2():
             original_psf[env] = copy.deepcopy(s1.psfs[env])
 
         for lambda_value in [1.0, 0.5, 0.25]:
-            try:
-                # lj hydrogens scaling
-                hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-                output_file_base = i.write_state(
-                    mutation_conf=hydrogen_lj_mutations,
-                    lambda_value_vdw=lambda_value,
-                    intst_nr=0,
-                )
-                print("Set epsilon/rmin for selected atoms")
+            # lj hydrogens scaling
+            hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+            output_file_base, _ = i.write_state(
+                mutation_conf=hydrogen_lj_mutations,
+                lambda_value_vdw=lambda_value,
+                intst_nr=0,
+            )
+            print("Set epsilon/rmin for selected atoms")
 
-                for env in s1.envs:
-                    new_psf = generate_psf(output_file_base, env)
-                    # are the terminal lj parameter correctly set?
-                    offset = s1.offset[env]
-                    for hydrogen_lj in hydrogen_lj_mutations:
-                        for idx in hydrogen_lj.vdw_atom_idx:
-                            idxo = idx + offset
-                            assert np.isclose(
-                                original_psf[env].atoms[idxo].epsilon * lambda_value,
-                                new_psf.atoms[idxo].epsilon,
-                                rtol=1e-3,
-                            )
-                            assert np.isclose(
-                                original_psf[env].atoms[idxo].rmin * lambda_value,
-                                new_psf.atoms[idxo].rmin,
-                                rtol=1e-3,
-                            )
+            for env in s1.envs:
+                new_psf = generate_psf(output_file_base, env)
+                # are the terminal lj parameter correctly set?
+                offset = s1.offset[env]
+                for hydrogen_lj in hydrogen_lj_mutations:
+                    for idx in hydrogen_lj.vdw_atom_idx:
+                        idxo = idx + offset
+                        assert np.isclose(
+                            original_psf[env].atoms[idxo].epsilon * lambda_value,
+                            new_psf.atoms[idxo].epsilon,
+                            rtol=1e-3,
+                        )
+                        assert np.isclose(
+                            original_psf[env].atoms[idxo].rmin * lambda_value,
+                            new_psf.atoms[idxo].rmin,
+                            rtol=1e-3,
+                        )
 
-                    # make sure that all other idx are not touched
-                    for idx in range(len(original_psf[env].atoms)):
-                        idxo = idx - offset  # NOTE: the '-'
-                        if idxo not in hydrogen_lj.vdw_atom_idx:
-                            assert np.isclose(
-                                original_psf[env].atoms[idx].epsilon,
-                                new_psf.atoms[idx].epsilon,
-                                rtol=1e-3,
-                            )
-                            assert np.isclose(
-                                original_psf[env].atoms[idx].rmin,
-                                new_psf.atoms[idx].rmin,
-                                rtol=1e-3,
-                            )
+                # make sure that all other idx are not touched
+                for idx in range(len(original_psf[env].atoms)):
+                    idxo = idx - offset  # NOTE: the '-'
+                    if idxo not in hydrogen_lj.vdw_atom_idx:
+                        assert np.isclose(
+                            original_psf[env].atoms[idx].epsilon,
+                            new_psf.atoms[idx].epsilon,
+                            rtol=1e-3,
+                        )
+                        assert np.isclose(
+                            original_psf[env].atoms[idx].rmin,
+                            new_psf.atoms[idx].rmin,
+                            rtol=1e-3,
+                        )
 
-            finally:
-                shutil.rmtree(output_file_base)
+            shutil.rmtree(output_file_base)
 
 
 @pytest.mark.slowtest
@@ -871,58 +850,51 @@ def test_bonded_mutation():
         )
 
         # mutate everything else before touching bonded terms
-        intst = 0
         charges = mutation_list["charge"]
-        intst += 1
         # turn off charges
-        output_file_base = i.write_state(
+        output_file_base, intst_nr = i.write_state(
             mutation_conf=charges,
             lambda_value_electrostatic=0.0,
-            intst_nr=intst,
+            intst_nr=0,
         )
         output_files.append(output_file_base)
 
         # Turn of hydrogens
-        intst += 1
         hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-        output_file_base = i.write_state(
+        output_file_base, intst_nr = i.write_state(
             mutation_conf=hydrogen_lj_mutations,
             lambda_value_vdw=0.0,
-            intst_nr=intst,
+            intst_nr=intst_nr,
         )
         output_files.append(output_file_base)
 
         # turn off heavy atoms
-        intst += 1
-
-        output_file_base = i.write_state(
+        output_file_base, intst_nr = i.write_state(
             mutation_conf=mutation_list["lj"],
             lambda_value_vdw=0.0,
-            intst_nr=intst,
+            intst_nr=intst_nr,
         )
         output_files.append(output_file_base)
 
         # generate terminal lj
-        intst += 1
-
-        output_file_base = i.write_state(
-            mutation_conf=mutation_list["terminal-lj"],
+        output_file_base, intst_nr = i.write_state(
+            mutation_conf=mutation_list["default-lj"],
             lambda_value_vdw=0.0,
-            intst_nr=intst,
+            intst_nr=intst_nr,
         )
         output_files.append(output_file_base)
 
         m = mutation_list["transform"]
         for lambda_value in np.linspace(0.25, 1, 3):
-            intst += 1
             print(lambda_value)
             # turn off charges
-            output_file_base = i.write_state(
+            output_file_base, intst_nr = i.write_state(
                 mutation_conf=m,
                 common_core_transformation=1 - lambda_value,
-                intst_nr=intst,
+                intst_nr=intst_nr,
             )
             output_files.append(output_file_base)
+        shutil.rmtree(output_file_base)
 
 
 def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
@@ -1007,7 +979,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 
                 # change to default lj
                 intst_nr += 1
-                terminal_lj_mutations = mutation_list["terminal-lj"]
+                terminal_lj_mutations = mutation_list["default-lj"]
                 terminal_idx = []
                 for mutation in terminal_lj_mutations:
                     all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
@@ -1080,22 +1052,46 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 
 def setup_2OJ9_tautomer_pair():
     from ..mutate import mutate_pure_tautomers
+    from ..constants import check_platform
 
     conf = (
         "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
     )
-    system_name = "2oj9-tautomer-pair"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = check_platform(configuration)
+
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.calculate_common_core()
-    return mutate_pure_tautomers(s1_to_s2, s1, s2, configuration)
+    return mutate_pure_tautomers(s1_to_s2, s1, s2, configuration), configuration
 
 
-def test_2OJ_tautomer_pair(caplog):
+def setup_acetylacetone_tautomer_pair():
+    from ..mutate import mutate_pure_tautomers
+    from ..constants import check_platform
+
+    conf = "transformato/tests/config/test-acetylaceton-tautomer-solvation-free-energy.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = check_platform(configuration)
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
+    return mutate_pure_tautomers(s1_to_s2, s1, s2, configuration), conf
+
+
+def test_acetylacetone_tautomer_pair(caplog):
+    caplog.set_level(logging.DEBUG)
+    setup_acetylacetone_tautomer_pair()
+    shutil.rmtree("acetylacetone-keto-acetylacetone-enol-solvation-free-energy")
+
+
+def test_2OJ9_tautomer_pair(caplog):
     caplog.set_level(logging.DEBUG)
     setup_2OJ9_tautomer_pair()
+    shutil.rmtree("2OJ9-original-2OJ9-tautomer-solvation-free-energy")
 
 
 def test_full_mutation_system1(caplog):
@@ -1132,18 +1128,13 @@ def test_full_mutation_system1(caplog):
         )
         intst = 0
         charges = mutation_list["charge"]
-        try:
-            for lambda_value in np.linspace(0, 1, 5):
-                print(lambda_value)
-                intst += 1
-                # turn off charges
-                output_file_base = i.write_state(
-                    mutation_conf=charges,
-                    lambda_value_electrostatic=1 - lambda_value,
-                    intst_nr=intst,
-                )
-        finally:
-            shutil.rmtree(output_file_base)
+        for lambda_value in np.linspace(0, 1, 5):
+            # turn off charges
+            output_file_base, intst = i.write_state(
+                mutation_conf=charges,
+                lambda_value_electrostatic=1 - lambda_value,
+                intst_nr=intst,
+            )
 
         original_psf = {}
         for env in s1.envs:
@@ -1151,31 +1142,23 @@ def test_full_mutation_system1(caplog):
 
         #
         lambda_vdw = 0.0
-        print(f"Lambda: {lambda_vdw}")
-        output_files = []
-        try:
-            intst += 1
 
-            all_atoms_for_which_lj_turned_off = []
-            print(mutation_list.keys())
-            # Turn of hydrogens
-            terminal_lj_mutations = mutation_list["terminal-lj"]
-            output_file_base = i.write_state(
-                mutation_conf=terminal_lj_mutations,
-                lambda_value_vdw=lambda_vdw,
-                intst_nr=intst,
-            )
-            output_files.append(output_file_base)
-            for mutation in terminal_lj_mutations:
-                all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+        all_atoms_for_which_lj_turned_off = []
+        print(mutation_list.keys())
+        # Turn of hydrogens
+        terminal_lj_mutations = mutation_list["default-lj"]
+        _, intst = i.write_state(
+            mutation_conf=terminal_lj_mutations,
+            lambda_value_vdw=lambda_vdw,
+            intst_nr=intst,
+        )
+        for mutation in terminal_lj_mutations:
+            all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
-        finally:
-            for output_file_base in output_files:
-                shutil.rmtree(output_file_base)
+        shutil.rmtree(f"{system_name}-solvation-free-energy")
 
 
 def test_full_mutation_system2():
-    from rdkit.Chem import rdFMCS
 
     for conf, system_name in zip(
         [
@@ -1205,19 +1188,15 @@ def test_full_mutation_system2():
             configuration=configuration,
         )
 
-        intst = 0
+        intst = 1
         charges = mutation_list["charge"]
-        try:
-            for lambda_value in np.linspace(0, 1, 5):
-                intst += 1
-                # turn off charges
-                output_file_base = i.write_state(
-                    mutation_conf=charges,
-                    lambda_value_electrostatic=1 - lambda_value,
-                    intst_nr=intst,
-                )
-        finally:
-            shutil.rmtree(output_file_base)
+        for lambda_value in np.linspace(0, 1, 5):
+            # turn off charges
+            output_file_base, intst = i.write_state(
+                mutation_conf=charges,
+                lambda_value_electrostatic=1 - lambda_value,
+                intst_nr=intst,
+            )
 
         original_psf = {}
         for env in s1.envs:
@@ -1226,68 +1205,60 @@ def test_full_mutation_system2():
         #
         lambda_vdw = 0.0
         print(f"Lambda: {lambda_vdw}")
-        output_files = []
-        try:
-            intst += 1
+        all_atoms_for_which_lj_turned_off = []
+        print(mutation_list.keys())
+        # Turn of hydrogens
+        hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+        output_file_base = i.write_state(
+            mutation_conf=hydrogen_lj_mutations,
+            lambda_value_vdw=lambda_vdw,
+            intst_nr=intst,
+        )
 
-            all_atoms_for_which_lj_turned_off = []
-            print(mutation_list.keys())
-            # Turn of hydrogens
-            hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-            output_file_base = i.write_state(
-                mutation_conf=hydrogen_lj_mutations,
+        for mutation in hydrogen_lj_mutations:
+            all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+
+        # turn off heavy atoms
+        for mutation in mutation_list["lj"]:
+
+            output_file_base, intst = i.write_state(
+                mutation_conf=[mutation],
                 lambda_value_vdw=lambda_vdw,
                 intst_nr=intst,
             )
-            output_files.append(output_file_base)
-            for mutation in hydrogen_lj_mutations:
-                all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+            all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
-            # turn off heavy atoms
-            for mutation in mutation_list["lj"]:
-                intst += 1
+        new_psf = generate_psf(output_file_base, env)
+        print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
 
-                output_file_base = i.write_state(
-                    mutation_conf=[mutation],
-                    lambda_value_vdw=lambda_vdw,
-                    intst_nr=intst,
-                )
-                all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
-                output_files.append(output_file_base)
+        print(all_atoms_for_which_lj_turned_off)
+        offset = s1.offset[env]
+        for idx in all_atoms_for_which_lj_turned_off:
+            idxo = idx + offset
+            assert np.isclose(
+                original_psf[env].atoms[idxo].epsilon * lambda_vdw,
+                new_psf.atoms[idxo].epsilon,
+                rtol=1e-3,
+            )
+            assert np.isclose(
+                original_psf[env].atoms[idxo].rmin * lambda_vdw,
+                new_psf.atoms[idxo].rmin,
+                rtol=1e-3,
+            )
 
-            new_psf = generate_psf(output_file_base, env)
-            print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
-
-            print(all_atoms_for_which_lj_turned_off)
-            offset = s1.offset[env]
-            for idx in all_atoms_for_which_lj_turned_off:
-                idxo = idx + offset
+        # make sure that all other idx are not touched
+        for idx in range(len(original_psf[env].atoms)):
+            idxo = idx - offset  # NOTE: the '-'
+            if idxo not in all_atoms_for_which_lj_turned_off:
                 assert np.isclose(
-                    original_psf[env].atoms[idxo].epsilon * lambda_vdw,
-                    new_psf.atoms[idxo].epsilon,
+                    original_psf[env].atoms[idx].epsilon,
+                    new_psf.atoms[idx].epsilon,
                     rtol=1e-3,
                 )
                 assert np.isclose(
-                    original_psf[env].atoms[idxo].rmin * lambda_vdw,
-                    new_psf.atoms[idxo].rmin,
+                    original_psf[env].atoms[idx].rmin,
+                    new_psf.atoms[idx].rmin,
                     rtol=1e-3,
                 )
 
-            # make sure that all other idx are not touched
-            for idx in range(len(original_psf[env].atoms)):
-                idxo = idx - offset  # NOTE: the '-'
-                if idxo not in all_atoms_for_which_lj_turned_off:
-                    assert np.isclose(
-                        original_psf[env].atoms[idx].epsilon,
-                        new_psf.atoms[idx].epsilon,
-                        rtol=1e-3,
-                    )
-                    assert np.isclose(
-                        original_psf[env].atoms[idx].rmin,
-                        new_psf.atoms[idx].rmin,
-                        rtol=1e-3,
-                    )
-
-        finally:
-            for output_file_base in output_files:
-                shutil.rmtree(output_file_base)
+        shutil.rmtree(f"{system_name}-solvation-free-energy")
