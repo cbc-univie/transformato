@@ -15,7 +15,7 @@ def mutate_methane_to_methane_cc(conf: str = "", output_dir: str = "."):
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -59,7 +59,7 @@ def testing_mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -132,7 +132,7 @@ def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -246,7 +246,7 @@ def mutate_ethane_to_methane_cc(conf: str = "", output_dir: str = "."):
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -310,7 +310,7 @@ def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -411,7 +411,7 @@ def mutate_ethane_to_methanol_cc(
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -476,7 +476,7 @@ def mutate_7_CPI_to_2_CPI_cc(
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -554,7 +554,7 @@ def mutate_2_CPI_to_7_CPI_cc(
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -640,7 +640,7 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", output_dir: str = "."):
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -746,7 +746,7 @@ def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -848,7 +848,7 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
     configuration = load_config_yaml(
         config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
     )
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
