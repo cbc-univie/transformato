@@ -3,7 +3,7 @@
 system:
   ################
   structure1:
-    name: "2OJ9-original"
+    name: "acetylacetone-keto"
     tlc: "UNK"
     vacuum:
       dirname: "vacuum"
@@ -21,7 +21,7 @@ system:
       intermediate-filename: "lig_in_waterbox"
 
   structure2:
-    name: "2OJ9-tautomer"
+    name: "acetylacetone-enol"
     tlc: "UNK"
     vacuum:
       dirname: "vacuum"
