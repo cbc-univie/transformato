@@ -1287,7 +1287,7 @@ def mutate_pure_tautomers(s1_to_s2:ProposeMutationRoute, system1:SystemStructure
     
     #write out states
     #start with charge
-    intst = 0
+    intst = 1
     charges = mutation_list["charge"]
     output_files_t1 = []
     for lambda_value in np.linspace(1, 0, 2):
