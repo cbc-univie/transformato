@@ -178,7 +178,6 @@ class FreeEnergyCalculator(object):
                     f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd",
                     top=f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
                 )
-                print(f"Before: {len(traj)}")
                 logger.info(f"Before: {len(traj)}")
                 traj = self._thinning_traj(traj)
                 # NOTE: removing the first 25% confs and thinning
@@ -264,11 +263,9 @@ class FreeEnergyCalculator(object):
                     try:
                         v = float(line)
                     except ValueError:
-                        print(line)
                         v = float(999999.0)
 
                     if math.isinf(v) or math.isnan(v):
-                        print(line)
                         v = float(999999.0)
 
                     v *= unit.kilocalorie_per_mole
@@ -360,7 +357,7 @@ class FreeEnergyCalculator(object):
         #########################################################
         #########################################################
         # main
-        print(f"Evaluating with {engine}")
+        logger.debug(f"Evaluating with {engine}")
 
         if engine == "openMM":
             u_kn = np.stack(
@@ -391,26 +388,26 @@ class FreeEnergyCalculator(object):
             results = {"u_kn": u_kn, "N_k": self.N_k}
             pickle.dump(results, open(file, "wb+"))
 
-        print("#######################################")
-        print("#######################################")
-        print("Pairwise Free Energy Estimate")
-        print("#######################################")
-        print("#######################################")
+        logger.debug("#######################################")
+        logger.debug("#######################################")
+        logger.debug("Pairwise Free Energy Estimate")
+        logger.debug("#######################################")
+        logger.debug("#######################################")
         u_kn_ = copy.deepcopy(u_kn)
         start = 0
         for d in range(u_kn.shape[0] - 1):
-            print(self.N_k)
-            print(f"{d}->{d+1} [kT]")
+            logger.debug(self.N_k)
+            logger.debug(f"{d}->{d+1} [kT]")
             nr_of_snapshots = self.N_k[env][d] + self.N_k[env][d + 1]
             u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
 
             m = mbar.MBAR(u_kn_, self.N_k[env][d : d + 2])
-            print(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
-            print(m.getFreeEnergyDifferences(return_dict=True)["dDelta_f"][0, 1])
+            logger.debug(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
+            logger.debug(m.getFreeEnergyDifferences(return_dict=True)["dDelta_f"][0, 1])
 
             start += self.N_k[env][d]
 
-        print("#######################################")
+        logger.debug("#######################################")
         return mbar.MBAR(u_kn, self.N_k[env], initialize="BAR", verbose=True)
 
     def calculate_dG_to_common_core(

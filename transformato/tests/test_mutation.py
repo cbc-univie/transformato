@@ -939,115 +939,106 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
             original_psf[env] = copy.deepcopy(s1.psfs[env])
 
         #
+        intst_nr = 1
         for lambda_vdw in [1.0, 0.0]:
             print(f"Lambda: {lambda_vdw}")
             output_files = []
+            all_atoms_for_which_lj_turned_off = []
+            print(mutation_list.keys())
+            # turn off hydrogen lj
+            hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+            print(
+                f"Turn off lj for hydrogen atoms : {[e.atoms_to_be_mutated for e in hydrogen_lj_mutations]}"
+            )
+            output_file_base, intst_nr = i.write_state(
+                mutation_conf=hydrogen_lj_mutations,
+                lambda_value_vdw=lambda_vdw,
+                intst_nr=intst_nr,
+            )
+            output_files.append(output_file_base)
+            for mutation in hydrogen_lj_mutations:
+                all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
-            intst_nr = 0
-            try:
+            # turn off heavy atom lj
+            for mutation in mutation_list["lj"]:
+                print(f"Turn off lj for heavy atom : {mutation.atoms_to_be_mutated}")
 
-                all_atoms_for_which_lj_turned_off = []
-                print(mutation_list.keys())
-                # turn off hydrogen lj
-                hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-                print(
-                    f"Turn off lj for hydrogen atoms : {[e.atoms_to_be_mutated for e in hydrogen_lj_mutations]}"
-                )
-                output_file_base = i.write_state(
-                    mutation_conf=hydrogen_lj_mutations,
+                output_file_base, intst_nr = i.write_state(
+                    mutation_conf=[mutation],
                     lambda_value_vdw=lambda_vdw,
                     intst_nr=intst_nr,
                 )
-                output_files.append(output_file_base)
-                for mutation in hydrogen_lj_mutations:
-                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
-
-                # turn off heavy atom lj
-                for mutation in mutation_list["lj"]:
-                    intst_nr += 1
-                    print(
-                        f"Turn off lj for heavy atom : {mutation.atoms_to_be_mutated}"
-                    )
-
-                    output_file_base = i.write_state(
-                        mutation_conf=[mutation],
-                        lambda_value_vdw=lambda_vdw,
-                        intst_nr=intst_nr,
-                    )
-                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
-                    output_files.append(output_file_base)
-
-                # change to default lj
-                intst_nr += 1
-                terminal_lj_mutations = mutation_list["default-lj"]
-                terminal_idx = []
-                for mutation in terminal_lj_mutations:
-                    all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
-                    terminal_idx.extend(mutation.vdw_atom_idx)
-                print(
-                    f"Turn off lj for terminal atom : {all_atoms_for_which_lj_turned_off}"
-                )
-
-                output_file_base = i.write_state(
-                    mutation_conf=terminal_lj_mutations,
-                    lambda_value_vdw=0.0,
-                    intst_nr=intst_nr,
-                )
+                all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
                 output_files.append(output_file_base)
 
-                print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
+            # change to default lj
+            terminal_lj_mutations = mutation_list["default-lj"]
+            terminal_idx = []
+            for mutation in terminal_lj_mutations:
+                all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
+                terminal_idx.extend(mutation.vdw_atom_idx)
+            print(
+                f"Turn off lj for terminal atom : {all_atoms_for_which_lj_turned_off}"
+            )
 
-                print(all_atoms_for_which_lj_turned_off)
-                for env in s1.envs:
-                    print(env)
-                    # read in generated psf at last mutation step
-                    new_psf = generate_psf(output_file_base, env)
-                    offset = s1.offset[env]
-                    for idx in all_atoms_for_which_lj_turned_off:
-                        idxo = idx + offset
-                        # match terminal jl
-                        if idx in terminal_idx:
-                            assert np.isclose(
-                                -0.15,
-                                new_psf.atoms[idxo].epsilon,
-                                rtol=1e-3,
-                            )
-                            assert np.isclose(
-                                1.5,
-                                new_psf.atoms[idxo].rmin,
-                                rtol=1e-3,
-                            )
-                        else:
-                            # match all other lj
-                            assert np.isclose(
-                                original_psf[env].atoms[idxo].epsilon * lambda_vdw,
-                                new_psf.atoms[idxo].epsilon,
-                                rtol=1e-3,
-                            )
-                            assert np.isclose(
-                                original_psf[env].atoms[idxo].rmin * lambda_vdw,
-                                new_psf.atoms[idxo].rmin,
-                                rtol=1e-3,
-                            )
+            output_file_base, intst_nr = i.write_state(
+                mutation_conf=terminal_lj_mutations,
+                lambda_value_vdw=0.0,
+                intst_nr=intst_nr,
+            )
+            output_files.append(output_file_base)
 
-                    # make sure that all other idx are not touched
-                    for idx in range(s1.mol.GetNumAtoms()):
-                        if idx not in all_atoms_for_which_lj_turned_off:
-                            print(idx)
-                            assert np.isclose(
-                                original_psf[env].atoms[idx].epsilon,
-                                new_psf.atoms[idx].epsilon,
-                                rtol=1e-3,
-                            )
-                            assert np.isclose(
-                                original_psf[env].atoms[idx].rmin,
-                                new_psf.atoms[idx].rmin,
-                                rtol=1e-3,
-                            )
+            print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
 
-            finally:
-                for output_file_base in output_files:
-                    shutil.rmtree(output_file_base)
+            print(all_atoms_for_which_lj_turned_off)
+            for env in s1.envs:
+                print(env)
+                # read in generated psf at last mutation step
+                new_psf = generate_psf(output_file_base, env)
+                offset = s1.offset[env]
+                for idx in all_atoms_for_which_lj_turned_off:
+                    idxo = idx + offset
+                    # match terminal jl
+                    if idx in terminal_idx:
+                        assert np.isclose(
+                            -0.15,
+                            new_psf.atoms[idxo].epsilon,
+                            rtol=1e-3,
+                        )
+                        assert np.isclose(
+                            1.5,
+                            new_psf.atoms[idxo].rmin,
+                            rtol=1e-3,
+                        )
+                    else:
+                        # match all other lj
+                        assert np.isclose(
+                            original_psf[env].atoms[idxo].epsilon * lambda_vdw,
+                            new_psf.atoms[idxo].epsilon,
+                            rtol=1e-3,
+                        )
+                        assert np.isclose(
+                            original_psf[env].atoms[idxo].rmin * lambda_vdw,
+                            new_psf.atoms[idxo].rmin,
+                            rtol=1e-3,
+                        )
+
+                # make sure that all other idx are not touched
+                for idx in range(s1.mol.GetNumAtoms()):
+                    if idx not in all_atoms_for_which_lj_turned_off:
+                        print(idx)
+                        assert np.isclose(
+                            original_psf[env].atoms[idx].epsilon,
+                            new_psf.atoms[idx].epsilon,
+                            rtol=1e-3,
+                        )
+                        assert np.isclose(
+                            original_psf[env].atoms[idx].rmin,
+                            new_psf.atoms[idx].rmin,
+                            rtol=1e-3,
+                        )
+
+        shutil.rmtree(f"{system_name}-solvation-free-energy")
 
 
 def setup_2OJ9_tautomer_pair():

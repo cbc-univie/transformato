@@ -143,13 +143,13 @@ def test_get_free_energy_2OJ9_tautomer_pair(caplog):
     run_simulation(output_files_t2)
     ddG1, dddG1 = postprocessing(
         conf, name="2OJ9-original", engine="openMM"
-    )  # TODO: correct namings
+    )  
     ddG2, dddG2 = postprocessing(
         conf, name="2OJ9-tautomer", engine="openMM"
-    )  # TODO: correct namings
+    )  
 
     ddG = ddG2 - ddG1
-    assert np.isclose(ddG, 1.12)
+    assert np.isclose(ddG, 6.884759627021253)
 
 
 @pytest.mark.slowtest
@@ -173,5 +173,5 @@ def test_get_free_energy_acetylaceton_tautomer_pair(caplog):
     )  # TODO: correct namings
 
     ddG = ddG2 - ddG1
-    assert np.isclose(ddG, 1.12)
+    assert np.isclose(ddG, 0.5866215857842647)
     shutil.rmtree("acetylacetone-keto-acetylacetone-enol-solvation-free-energy")
