@@ -46,7 +46,6 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocess
 
 
 def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM_postprocessing():
-    from transformato import FreeEnergyCalculator
 
     conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
     configuration = load_config_yaml(

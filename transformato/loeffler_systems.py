@@ -376,8 +376,8 @@ def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     # Turn off hydrogens
-    hydrogen_lj_mutations, intst = mutation_list["hydrogen-lj"]
-    output_file_base = i.write_state(
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+    output_file_base, intst = i.write_state(
         mutation_conf=hydrogen_lj_mutations,
         lambda_value_vdw=0.0,
         intst_nr=intst,
