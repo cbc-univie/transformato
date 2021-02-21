@@ -1058,7 +1058,7 @@ def setup_2OJ9_tautomer_pair():
         "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
     )
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1073,7 +1073,7 @@ def setup_acetylacetone_tautomer_pair():
 
     conf = "transformato/tests/config/test-acetylaceton-tautomer-solvation-free-energy.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-    configuration = check_platform(configuration)
+    check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1209,7 +1209,7 @@ def test_full_mutation_system2():
         print(mutation_list.keys())
         # Turn of hydrogens
         hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-        output_file_base = i.write_state(
+        output_file_base, intst = i.write_state(
             mutation_conf=hydrogen_lj_mutations,
             lambda_value_vdw=lambda_vdw,
             intst_nr=intst,

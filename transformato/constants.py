@@ -9,13 +9,13 @@ kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
 kT = kB * temperature
 
 
-def check_platform(configuration: dict)->dict:
+def check_platform(configuration: dict):
+
     if platform.upper() == "GPU":
-        configuration["simulation"]["GPU"] == True
+        configuration["simulation"]["GPU"] = True
         print("Setting platform to GPU")
     elif platform.upper() == "CPU":
-        configuration["simulation"]["GPU"] == False
+        configuration["simulation"]["GPU"] = False
         print("Setting platform to CPU")
     else:
         raise RuntimeError("something went wrong")
-    return configuration
