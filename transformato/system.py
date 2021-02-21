@@ -139,6 +139,7 @@ class SystemStructure(object):
                     f"Custom ligand parameters are not present in {file_path}"
                 )
 
+        # check cgenff versions
         if parameter_files:
             with open(parameter_files[0]) as f:
                 _ = f.readline()

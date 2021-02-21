@@ -169,19 +169,22 @@ class ProposeMutationRoute(object):
         
         for cc1_idx, cc2_idx in zip(cc_idx_mol1, cc_idx_mol2):
             if cc1_idx in self.terminal_real_atom_cc1 and cc2_idx in self.terminal_real_atom_cc2:
-                logger.info(f'Matching terminal real atoms from cc1 to cc2. cc1: {cc1_idx} : cc2: {cc2_idx}') 
+                logger.info(f'Dummy regions connect on the same terminal atoms. cc1: {cc1_idx} : cc2: {cc2_idx}') 
                 matching_terminal_atoms_between_cc.append((cc1_idx, cc2_idx))
-                
+            elif (cc1_idx in self.terminal_real_atom_cc1 and cc2_idx not in self.terminal_real_atom_cc2) or (cc1_idx not in self.terminal_real_atom_cc1 and cc2_idx in self.terminal_real_atom_cc2) :
+                logger.info(f'Single dummy region connects on terminal atom. cc1: {cc1_idx} : cc2: {cc2_idx}') 
+                matching_terminal_atoms_between_cc.append((cc1_idx, cc2_idx))
+            else:
+                pass
         if not matching_terminal_atoms_between_cc:
-            logger.warning('No terminal real atoms were matched between the common cores. This is fine for tautomer pairs. Otherwise continue with caution.')
+            raise RuntimeError('No terminal real atoms were matched between the common cores. Aborting.')
         
         self.matching_terminal_atoms_between_cc = matching_terminal_atoms_between_cc
 
     def _match_terminal_dummy_atoms_between_common_cores(self, 
                                                          match_terminal_atoms_cc1:dict, 
                                                          match_terminal_atoms_cc2:dict,
-                                                         connected_dummy_regions_cc1:list,
-                                                         connected_dummy_regions_cc2:list) -> Tuple[list, list]:
+                                                         ) -> Tuple[list, list]:
         
         cc1_idx = self._substructure_match['m1']
         cc2_idx = self._substructure_match['m2']
@@ -191,6 +194,7 @@ class ProposeMutationRoute(object):
         
         # iterate through the common core substracter (the order represents the matched atoms)
         for idx1, idx2 in zip(cc1_idx, cc2_idx):
+            
             # if both atoms are terminal atoms connected dummy regions can be identified
             if idx1 in match_terminal_atoms_cc1.keys() and idx2 in match_terminal_atoms_cc2.keys():
                 
@@ -211,12 +215,11 @@ class ProposeMutationRoute(object):
                         if self.mols['m2'].GetAtomWithIdx(atom_idx).GetSymbol() != 'H':
                             connected_dummy_cc2 = [atom_idx]
                             break        
+                
                 # hydrogen mutates to dummy atom (but not a LJ particle)
                 elif len(connected_dummy_cc1) == 0 or len(connected_dummy_cc2) == 0:
                     logger.debug('Hydrogen to dummy mutation')
                     raise NotImplementedError()
-                
-                
                 
                 lj_default_cc1.append(connected_dummy_cc1[0])
                 lj_default_cc2.append(connected_dummy_cc2[0])                
@@ -251,9 +254,7 @@ class ProposeMutationRoute(object):
         # find the atoms from dummy_region in s1 that needs to become lj default
         lj_default_cc1, lj_default_cc2 = self._match_terminal_dummy_atoms_between_common_cores(
                                                              match_terminal_atoms_cc1, 
-                                                              match_terminal_atoms_cc2, 
-                                                              connected_dummy_regions_cc1, 
-                                                              connected_dummy_regions_cc2)
+                                                              match_terminal_atoms_cc2)
 
         self.dummy_region_cc1 = DummyRegion(mol_name='m1', 
                                             tlc=self.s1_tlc,
@@ -649,7 +650,7 @@ class ProposeMutationRoute(object):
     @staticmethod
     def _find_terminal_atom(cc_idx: list, mol: Chem.Mol) ->Tuple[list,list]:
         """
-        Find atoms that connect the  the molecule to the common core.
+        Find atoms that connect the molecule to the common core.
 
         Args:
             cc_idx (list): common core index atoms
@@ -686,22 +687,23 @@ class ProposeMutationRoute(object):
         mol = self.mols[name]
         mutations = defaultdict(list)
 
+        # TODO: this needs some work!
         # get the atom that connects the common core to the dummy regiom
         match_termin_real_and_dummy_atoms = dummy_region.match_termin_real_and_dummy_atoms
-        print(match_termin_real_and_dummy_atoms)
-        list_match_termin_real_and_dummy_atoms = []
+        # get the terminal dummy atoms
+        list_termin_dummy_atoms = []
         for m in match_termin_real_and_dummy_atoms.values():
-            list_match_termin_real_and_dummy_atoms.extend(list(m))
-        print(list_match_termin_real_and_dummy_atoms)
+            list_termin_dummy_atoms.extend(list(m))
+        logger.info(f'Terminal dummy atoms: {list_termin_dummy_atoms}')
+
         # iterate through atoms and select atoms that need to be mutated
         atoms_to_be_mutated = []
         hydrogens = []
         for atom in mol.GetAtoms():
             idx = atom.GetIdx()
             if idx not in cc_idx:
-                print(idx)
                 # hydrogens are collected seperatly IF they are not terminal dummy atoms
-                if atom.GetSymbol() == 'H' and idx not in list_match_termin_real_and_dummy_atoms:
+                if atom.GetSymbol() == 'H' and idx not in list_termin_dummy_atoms:
                     hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
                 logger.info('Will be decoupled: Idx:{} Element:{}'.format(idx, atom.GetSymbol()))
@@ -741,19 +743,20 @@ class ProposeMutationRoute(object):
             
             for region in dummy_region.connected_dummy_regions:          
                 for atom_idx in region:
-                    # test if atom is a terminal atom and there is a corresponding atom on the other cc
-                    if atom_idx in list_match_termin_real_and_dummy_atoms:
+                    if atom_idx in list_termin_dummy_atoms and atom_idx in dummy_region.lj_default:
+                        # test if atom is a terminal atom and there is a corresponding atom on the other cc
+                        # in this case the atom needs to become a default lj particle
                         m = MutationDefinition(atoms_to_be_mutated=atoms_to_be_mutated, 
                             common_core=cc_idx, 
                             dummy_region=dummy_region,
                             vdw_atom_idx = [atom_idx],
                             steric_mutation_to_default = True)
-
-                        mutations['terminal-lj'].append(m)
+                        mutations['default-lj'].append(m)
                     elif atom_idx in hydrogens:
                         # already mutated
                         continue
                     else:
+                        # normal lj mutation
                         m = MutationDefinition(atoms_to_be_mutated=atoms_to_be_mutated, 
                             common_core=cc_idx, 
                             dummy_region=dummy_region,
@@ -1288,21 +1291,27 @@ def mutate_pure_tautomers(s1_to_s2:ProposeMutationRoute, system1:SystemStructure
     charges = mutation_list["charge"]
     output_files_t1 = []
     for lambda_value in np.linspace(1, 0, 2):
-        print(lambda_value)
-        intst += 1
         # turn off charges
-        o = i.write_state(
+        o, intst = i.write_state(
             mutation_conf=charges,
             lambda_value_electrostatic=lambda_value,
             intst_nr=intst,
         )
         output_files_t1.append(o)
+    
+    # turn off the lj of the hydrogen
+    lj = mutation_list["lj"]
+    o,intst = i.write_state(
+    mutation_conf=lj,
+    lambda_value_vdw=0.0,
+    intst_nr=intst,
+    )
+    output_files_t1.append(o)
+
     #transform common core
     for lambda_value in np.linspace(0.75, 0, 4):
-        intst += 1
-        print(lambda_value)
         # turn off charges
-        o = i.write_state(
+        o,intst = i.write_state(
             mutation_conf=mutation_list["transform"],
             common_core_transformation=lambda_value,
             intst_nr=intst,
@@ -1322,13 +1331,21 @@ def mutate_pure_tautomers(s1_to_s2:ProposeMutationRoute, system1:SystemStructure
     output_files_t2=[]
     charges = mutation_list["charge"]
     for lambda_value in np.linspace(1, 0, 2):
-        intst += 1
         # turn off charges
-        o = i.write_state(
+        o,intst = i.write_state(
             mutation_conf=charges,
             lambda_value_electrostatic=lambda_value,
             intst_nr=intst,
         )
         output_files_t2.append(o)
+
+    # turn off the lj of the hydrogen
+    lj = mutation_list["lj"]
+    o,intst = i.write_state(
+    mutation_conf=lj,
+    lambda_value_vdw=0.0,
+    intst_nr=intst,
+    )
+    output_files_t2.append(o)
 
     return (output_files_t1,output_files_t2)
