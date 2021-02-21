@@ -1130,7 +1130,7 @@ def test_full_mutation_system1(caplog):
             system=s1,
             configuration=configuration,
         )
-        intst = 0
+        intst = 1
         charges = mutation_list["charge"]
         for lambda_value in np.linspace(0, 1, 5):
             # turn off charges
