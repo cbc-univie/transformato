@@ -1054,10 +1054,12 @@ def setup_2OJ9_tautomer_pair():
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    conf = (
+    conf_path = (
         "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
     )
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(
+        config=conf_path, input_dir="data/", output_dir="."
+    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -1071,15 +1073,17 @@ def setup_acetylacetone_tautomer_pair():
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    conf = "transformato/tests/config/test-acetylaceton-tautomer-solvation-free-energy.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    conf_path = "transformato/tests/config/test-acetylaceton-tautomer-solvation-free-energy.yaml"
+    configuration = load_config_yaml(
+        config=conf_path, input_dir="data/", output_dir="."
+    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.calculate_common_core()
-    return mutate_pure_tautomers(s1_to_s2, s1, s2, configuration), conf
+    return mutate_pure_tautomers(s1_to_s2, s1, s2, configuration), configuration
 
 
 def test_acetylacetone_tautomer_pair(caplog):
