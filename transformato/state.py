@@ -70,7 +70,7 @@ class IntermediateStateFactory(object):
         logger.info("#########################################")
         logger.info("#########################################")
         output_file_base = self._init_intermediate_state_dir(intst_nr)
-        print(f"Writing to {output_file_base}")
+        logger.info(f"Writing to {output_file_base}")
 
         for env in self.system.envs:
             for mutation_type in mutation_conf:
@@ -84,7 +84,7 @@ class IntermediateStateFactory(object):
                     )
 
                 else:
-                    mutation_type.print_details()
+                    # mutation_type.print_details()
                     logger.debug(f"Lambda electrostatics: {lambda_value_electrostatic}")
                     logger.debug(f"Lambda vdw: {lambda_value_vdw}")
 
@@ -105,7 +105,7 @@ class IntermediateStateFactory(object):
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_toppar_str(output_file_base, self.system.tlc)
         self._copy_files(output_file_base)
-        return output_file_base, intst_nr+1
+        return output_file_base, intst_nr + 1
 
     def _add_serializer(self, file):
         # adding serializer functions
