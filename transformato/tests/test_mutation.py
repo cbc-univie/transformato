@@ -451,6 +451,28 @@ def test_common_core_system1():
             a.calculate_common_core()
 
 
+def setup_systems(conf):
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
+    i_s1 = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    i_s2 = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+    )
+
+    mutation_list_mol1 = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    mutation_list_mol2 = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+
+    return (configuration, mutation_list_mol1, mutation_list_mol2, i_s1, i_s2)
+
+
 def test_mutation_list():
 
     for conf, system_name in zip(
@@ -462,26 +484,37 @@ def test_mutation_list():
         ["toluene-methane", "neopentane-methane", "ethane-ethanol"],
     ):
 
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
-
-        s1_to_s2 = ProposeMutationRoute(s1, s2)
-
         if system_name == "ethane-methanol":
-            s1_to_s2.calculate_common_core()
-            mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-            assert set(mutation_list.keys()) == set(
+            (
+                configuration,
+                mutation_list_mol1,
+                mutation_list_mol2,
+                i_s1,
+                i_s2,
+            ) = setup_systems(conf)
+            assert set(mutation_list_mol1.keys()) == set(
                 ["charge", "default-lj", "transform"]
             )
         if system_name == "toluene-methane":
-            s1_to_s2.calculate_common_core()
-            mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-            assert set(mutation_list.keys()) == set(
+            (
+                configuration,
+                mutation_list_mol1,
+                mutation_list_mol2,
+                i_s1,
+                i_s2,
+            ) = setup_systems(conf)
+            assert set(mutation_list_mol1.keys()) == set(
                 ["charge", "hydrogen-lj", "lj", "transform", "default-lj"]
             )
 
         if system_name == "neopentane-methane":
+            configuration = load_config_yaml(
+                config=conf, input_dir="data/", output_dir="."
+            )
+            s1 = SystemStructure(configuration, "structure1")
+            s2 = SystemStructure(configuration, "structure2")
+
+            s1_to_s2 = ProposeMutationRoute(s1, s2)
             s1_to_s2.propose_common_core()
             s1_to_s2.finish_common_core(
                 connected_dummy_regions_cc1=[
@@ -503,20 +536,18 @@ def test_endpoint_mutation():
         "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
         "transformato/tests/config/test-ethane-methanol-solvation-free-energy.yaml",
     ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
+        (
+            configuration,
+            mutation_list_mol1,
+            mutation_list_mol2,
+            i_s1,
+            i_s2,
+        ) = setup_systems(conf)
 
-        s1_to_s2 = ProposeMutationRoute(s1, s2)
-        s2_to_s1 = ProposeMutationRoute(s2, s1)
-        for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
-            a.calculate_common_core()
-            i = IntermediateStateFactory(
-                system=system,
-                configuration=configuration,
-            )
-            output_file_base, intst_nr = i.write_state(mutation_conf=[], intst_nr=0)
+        output_file_base, _ = i_s1.write_state(mutation_conf=[], intst_nr=0)
+        shutil.rmtree(output_file_base)
 
+        output_file_base, _ = i_s2.write_state(mutation_conf=[], intst_nr=0)
         shutil.rmtree(output_file_base)
 
 
@@ -533,28 +564,26 @@ def test_charge_mutation_test_system1():
     ):
 
         # try writing endstate in all directions
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
-        s1_to_s2 = ProposeMutationRoute(s1, s2)
-        s2_to_s1 = ProposeMutationRoute(s2, s1)
-        for a, system in zip([s1_to_s2, s2_to_s1], [s1, s2]):
-            i = IntermediateStateFactory(
-                system=system,
-                configuration=configuration,
-            )
+        (
+            configuration,
+            mutation_list_mol1,
+            mutation_list_mol2,
+            i_s1,
+            i_s2,
+        ) = setup_systems(conf)
+        for i in [i_s1, i_s2]:
             output_file_base, _ = i.write_state(mutation_conf=[], intst_nr=0)
 
             # original psfs without charge change
             original_psf = {}
-            for env in system.envs:
-                original_psf[env] = copy.deepcopy(system.psfs[env])
+            for env in i.system.envs:
+                original_psf[env] = copy.deepcopy(i.system.psfs[env])
 
-            for env in system.envs:
-                offset = system.offset[env]
+            for env in i.system.envs:
+                offset = i.system.offset[env]
 
                 mutated_psf = generate_psf(output_file_base, env)
-                for atom in system.mol.GetAtoms():
+                for atom in i.system.mol.GetAtoms():
                     idx = atom.GetIdx()
                     assert np.isclose(
                         original_psf[env].atoms[idx + offset].charge,
@@ -565,32 +594,20 @@ def test_charge_mutation_test_system1():
 
 
 def test_setup_dual_junction_system():
-    from transformato import (
-        ProposeMutationRoute,
-        SystemStructure,
-        load_config_yaml,
-    )
 
     conf = "transformato/tests/config/test-2oj9-solvation-free-energy.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-    s1 = SystemStructure(configuration, "structure1")
-    s2 = SystemStructure(configuration, "structure2")
-    a = ProposeMutationRoute(s1, s2)
-    a.calculate_common_core()
-    mutation_list = a.generate_mutations_to_common_core_for_mol1()
-    i = IntermediateStateFactory(
-        system=s1,
-        configuration=configuration,
+    configuration, mutation_list_mol1, mutation_list_mol2, i_s1, i_s2 = setup_systems(
+        conf
     )
     # write out endpoint
     output_files = []
-    output_file_base, intst = i.write_state(mutation_conf=[], intst_nr=0)
+    output_file_base, intst = i_s1.write_state(mutation_conf=[], intst_nr=0)
     output_files.append(output_file_base)
 
-    charges = mutation_list["charge"]
+    charges = mutation_list_mol1["charge"]
     # start with charges
     # turn off charges
-    output_file_base, intst = i.write_state(
+    output_file_base, intst = i_s1.write_state(
         mutation_conf=charges,
         lambda_value_electrostatic=0.0,
         intst_nr=intst,
@@ -598,8 +615,8 @@ def test_setup_dual_junction_system():
     output_files.append(output_file_base)
 
     # Turn off hydrogens
-    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-    output_file_base, intst = i.write_state(
+    hydrogen_lj_mutations = mutation_list_mol1["hydrogen-lj"]
+    output_file_base, intst = i_s1.write_state(
         mutation_conf=hydrogen_lj_mutations,
         lambda_value_vdw=0.0,
         intst_nr=intst,
@@ -829,25 +846,11 @@ def test_bonded_mutation():
     for conf in [
         "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
     ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-        s1 = SystemStructure(configuration, "structure1")
-        s2 = SystemStructure(configuration, "structure2")
 
-        s1_to_s2 = ProposeMutationRoute(s1, s2)
-
-        original_psf = {}
         original_psf = {}
         output_files = []
         for env in s1.envs:
             original_psf[env] = copy.deepcopy(s1.psfs[env])
-
-        s1_to_s2.calculate_common_core()
-
-        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-        i = IntermediateStateFactory(
-            system=s1,
-            configuration=configuration,
-        )
 
         # mutate everything else before touching bonded terms
         charges = mutation_list["charge"]
@@ -885,16 +888,255 @@ def test_bonded_mutation():
         output_files.append(output_file_base)
 
         m = mutation_list["transform"]
-        for lambda_value in np.linspace(0.25, 1, 3):
+        for lambda_value in np.linspace(0.75, 0, 3):
             print(lambda_value)
             # turn off charges
             output_file_base, intst_nr = i.write_state(
                 mutation_conf=m,
-                common_core_transformation=1 - lambda_value,
+                common_core_transformation=lambda_value,
                 intst_nr=intst_nr,
             )
             output_files.append(output_file_base)
         shutil.rmtree(output_file_base)
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_atoms(caplog):
+    caplog.set_level(logging.CRITICAL)
+
+    from .test_mutation import setup_2OJ9_tautomer_pair
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
+    psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
+    psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
+    psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    print("@@@@@@@@@@@@@@@@@@")
+
+    cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
+    for atom_t1_idx, atom_t2_idx in zip(cc1_idx, cc2_idx):
+        atom_t1 = psf_at_t1_cc.atoms[atom_t1_idx]
+        atom_t2 = psf_at_t2_cc.atoms[atom_t2_idx]
+        assert atom_t1.charge == atom_t2.charge
+        assert atom_t1.sigma == atom_t2.sigma
+
+    for atom_t1_idx, atom_t2_idx in zip(cc1_idx, cc2_idx):
+        atom_t1 = psf_at_endstate_t1.atoms[atom_t1_idx]
+        atom_t2 = psf_at_endstate_t2.atoms[atom_t2_idx]
+        try:
+            assert atom_t1.charge == atom_t2.charge
+            assert atom_t1.sigma == atom_t2.sigma
+        except AssertionError:
+            pass
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_bonds(caplog):
+    caplog.set_level(logging.CRITICAL)
+
+    from .test_mutation import setup_2OJ9_tautomer_pair
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
+    psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
+    psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
+    psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    print("@@@@@@@@@@@@@@@@@@")
+
+    cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
+    # compare cc enstates
+    for bond_t1 in psf_at_t1_cc.bonds:
+        atom1_t1_idx = bond_t1.atom1.idx
+        atom2_t1_idx = bond_t1.atom2.idx
+        if atom1_t1_idx not in cc1_idx or atom2_t1_idx not in cc1_idx:
+            continue
+
+        # get index in common core
+        idx1 = cc1_idx.index(atom1_t1_idx)
+        idx2 = cc1_idx.index(atom2_t1_idx)
+
+        atom1_t2 = psf_at_t2_cc[cc2_idx[idx1]]
+        atom2_t2 = psf_at_t2_cc[cc2_idx[idx2]]
+        bond_t2 = None
+        for bond in psf_at_t2_cc.bonds:
+            if atom1_t2 in bond and atom2_t2 in bond:
+                bond_t2 = bond
+
+        assert bond_t1.type.k == bond_t2.type.k
+        assert bond_t1.type.req == bond_t2.type.req
+
+    # compare physical endstates
+    for bond_t1 in psf_at_endstate_t1.bonds:
+        atom1_t1_idx = bond_t1.atom1.idx
+        atom2_t1_idx = bond_t1.atom2.idx
+        if atom1_t1_idx not in cc1_idx or atom2_t1_idx not in cc1_idx:
+            continue
+
+        # get index in common core
+        idx1 = cc1_idx.index(atom1_t1_idx)
+        idx2 = cc1_idx.index(atom2_t1_idx)
+
+        atom1_t2 = psf_at_endstate_t2[cc2_idx[idx1]]
+        atom2_t2 = psf_at_endstate_t2[cc2_idx[idx2]]
+        bond_t2 = None
+        for bond in psf_at_endstate_t2.bonds:
+            if atom1_t2 in bond and atom2_t2 in bond:
+                bond_t2 = bond
+
+        try:
+            assert bond_t1.type.k == bond_t2.type.k
+            assert bond_t1.type.req == bond_t2.type.req
+        except AssertionError:
+            pass
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_angles(caplog):
+    caplog.set_level(logging.CRITICAL)
+
+    from .test_mutation import setup_2OJ9_tautomer_pair
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
+    psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
+    psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
+    psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    print("@@@@@@@@@@@@@@@@@@")
+
+    cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
+    for angle_t1 in psf_at_t1_cc.angles:
+        atom1_t1_idx = angle_t1.atom1.idx
+        atom2_t1_idx = angle_t1.atom2.idx
+        atom3_t1_idx = angle_t1.atom3.idx
+        if (
+            atom1_t1_idx not in cc1_idx
+            or atom2_t1_idx not in cc1_idx
+            or atom3_t1_idx not in cc1_idx
+        ):
+            continue
+
+        # get index in common core
+        idx1 = cc1_idx.index(atom1_t1_idx)
+        idx2 = cc1_idx.index(atom2_t1_idx)
+        idx3 = cc1_idx.index(atom3_t1_idx)
+
+        atom1_t2 = psf_at_t2_cc[cc2_idx[idx1]]
+        atom2_t2 = psf_at_t2_cc[cc2_idx[idx2]]
+        atom3_t2 = psf_at_t2_cc[cc2_idx[idx3]]
+        angle_t2 = None
+        for angle in psf_at_t2_cc.angles:
+            if atom1_t2 in angle and atom2_t2 in angle and atom3_t2 in angle:
+                angle_t2 = angle
+
+        assert angle_t1.type.k == angle_t2.type.k
+        assert angle_t1.type.theteq == angle_t2.type.theteq
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_dihedrals(caplog):
+    caplog.set_level(logging.CRITICAL)
+
+    from .test_mutation import setup_2OJ9_tautomer_pair
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
+    psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
+    print(output_files_t1[-1])
+    psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
+    psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    print("@@@@@@@@@@@@@@@@@@")
+
+    assert len(psf_at_t1_cc.dihedrals) == len(psf_at_t2_cc.dihedrals)
+    # compare the common core parameters at the cc state
+    cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
+    for dihedral_t1 in psf_at_t1_cc.dihedrals:
+        atom1_t1_idx = dihedral_t1.atom1.idx
+        atom2_t1_idx = dihedral_t1.atom2.idx
+        atom3_t1_idx = dihedral_t1.atom3.idx
+        atom4_t1_idx = dihedral_t1.atom4.idx
+        if (
+            atom1_t1_idx not in cc1_idx
+            or atom2_t1_idx not in cc1_idx
+            or atom3_t1_idx not in cc1_idx
+            or atom4_t1_idx not in cc1_idx
+        ):
+            print("Not present:")
+            print(dihedral_t1)
+
+            continue
+
+        # get index in common core
+        idx1 = cc1_idx.index(atom1_t1_idx)
+        idx2 = cc1_idx.index(atom2_t1_idx)
+        idx3 = cc1_idx.index(atom3_t1_idx)
+        idx4 = cc1_idx.index(atom4_t1_idx)
+
+        atom1_t2 = psf_at_t2_cc[cc2_idx[idx1]]
+        atom2_t2 = psf_at_t2_cc[cc2_idx[idx2]]
+        atom3_t2 = psf_at_t2_cc[cc2_idx[idx3]]
+        atom4_t2 = psf_at_t2_cc[cc2_idx[idx4]]
+
+        dihedral_t2 = None
+        for dihedral in psf_at_t2_cc.dihedrals:
+            if (
+                atom1_t2 in dihedral
+                and atom2_t2 in dihedral
+                and atom3_t2 in dihedral
+                and atom4_t2 in dihedral
+            ):
+                dihedral_t2 = dihedral
+                break
+
+        assert dihedral_t2 != None
+        print(dihedral_t1)
+        print(dihedral_t2)
+        for t1, t2 in zip(dihedral_t1.type, dihedral_t2.type):
+            assert t1.phi_k == t2.phi_k
+            assert t1.phase == t2.phase
+    assert False
+    # # compare the endstates
+    # cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
+    # for dihedral_t1 in psf_at_endstate_t1.dihedrals:
+    #     atom1_t1_idx = dihedral_t1.atom1.idx
+    #     atom2_t1_idx = dihedral_t1.atom2.idx
+    #     atom3_t1_idx = dihedral_t1.atom3.idx
+    #     atom4_t1_idx = dihedral_t1.atom4.idx
+    #     if (
+    #         atom1_t1_idx not in cc1_idx
+    #         or atom2_t1_idx not in cc1_idx
+    #         or atom3_t1_idx not in cc1_idx
+    #         or atom4_t1_idx not in cc1_idx
+    #     ):
+    #         continue
+
+    #     # get index in common core
+    #     idx1 = cc1_idx.index(atom1_t1_idx)
+    #     idx2 = cc1_idx.index(atom2_t1_idx)
+    #     idx3 = cc1_idx.index(atom3_t1_idx)
+    #     idx4 = cc1_idx.index(atom4_t1_idx)
+
+    #     atom1_t2 = psf_at_t2_cc[cc2_idx[idx1]]
+    #     atom2_t2 = psf_at_t2_cc[cc2_idx[idx2]]
+    #     atom3_t2 = psf_at_t2_cc[cc2_idx[idx3]]
+    #     atom4_t2 = psf_at_t2_cc[cc2_idx[idx4]]
+
+    #     dihedral_t2 = None
+    #     for dihedral in psf_at_endstate_t2.dihedrals:
+    #         if (
+    #             atom1_t2 in dihedral
+    #             and atom2_t2 in dihedral
+    #             and atom3_t2 in dihedral
+    #             and atom4_t2 in dihedral
+    #         ):
+    #             dihedral_t2 = dihedral
+    #             break
+
+    #     assert dihedral_t2 != None
+    #     print(dihedral_t1)
+    #     print(dihedral_t2)
+    #     for t1, t2 in zip(dihedral_t1.type, dihedral_t2.type):
+    #         assert t1.phi_k == t2.phi_k
+    #         assert t1.phase == t2.phase
 
 
 def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
@@ -1057,7 +1299,11 @@ def setup_2OJ9_tautomer_pair():
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.calculate_common_core()
-    return mutate_pure_tautomers(s1_to_s2, s1, s2, configuration), configuration
+    return (
+        mutate_pure_tautomers(s1_to_s2, s1, s2, configuration),
+        configuration,
+        s1_to_s2,
+    )
 
 
 def setup_acetylacetone_tautomer_pair():
