@@ -13,6 +13,7 @@ import pytest
 
 # Import package, test suite, and other packages as needed
 import transformato
+from simtk import unit
 
 # read in specific topology with parameters
 from parmed.charmm.parameters import CharmmParameterSet
@@ -45,9 +46,51 @@ def read_params(output_file_base):
 
 def generate_psf(output_file_base, env):
     parms = read_params(output_file_base)
-    target_psf = pm.charmm.CharmmPsfFile(f"{output_file_base}/lig_in_{env}.psf")
-    target_psf.load_parameters(parms)
-    return target_psf
+    psf = pm.charmm.CharmmPsfFile(f"{output_file_base}/lig_in_{env}.psf")
+    psf.load_parameters(parms)
+    return psf, parms
+
+
+def generate_crd(output_file_base, env):
+    return pm.charmm.CharmmCrdFile(f"{output_file_base}/lig_in_{env}.crd")
+
+
+def generate_sim(output_file_base, env):
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+
+    # ParmEd Imports
+    from parmed import unit as u
+
+    system, psf = generate_system(output_file_base, env)
+    crd = generate_crd(output_file_base, env)
+
+    # Create the integrator to do Langevin dynamics
+    integrator = mm.LangevinIntegrator(
+        300 * u.kelvin,  # Temperature of heat bath
+        1.0 / u.picoseconds,  # Friction coefficient
+        2.0 * u.femtoseconds,  # Time step
+    )
+
+    # Create the Simulation object
+    sim = app.Simulation(psf.topology, system, integrator)
+
+    # Set the particle positions
+    sim.context.setPositions(crd.positions)
+    return sim
+
+
+def generate_system(output_file_base, env):
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+
+    # ParmEd Imports
+    from parmed import unit as u
+
+    psf, parms = generate_psf(output_file_base, env)
+
+    system = psf.createSystem(parms, nonbondedMethod=app.NoCutoff)
+    return system, psf
 
 
 def test_proposed_mutation_mcs():
@@ -901,6 +944,108 @@ def test_bonded_mutation():
 
 
 @pytest.mark.slowtest
+def test_bonded_mutation_energies(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
+    e_t1_s1 = (
+        generate_sim(output_files_t1[0], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t1_s2 = (
+        generate_sim(output_files_t1[1], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t1_s3 = (
+        generate_sim(output_files_t1[2], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t1_s4 = (
+        generate_sim(output_files_t1[3], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t1_s5 = (
+        generate_sim(output_files_t1[4], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t1_s6 = (
+        generate_sim(output_files_t1[5], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t1_s7 = (
+        generate_sim(output_files_t1[6], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t2_s1 = (
+        generate_sim(output_files_t2[0], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t2_s2 = (
+        generate_sim(output_files_t2[1], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    e_t2_s3 = (
+        generate_sim(output_files_t2[2], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+
+    assert np.isclose(
+        e_t1_s1.value_in_unit(unit.kilocalorie_per_mole), -17.638044396797515
+    )
+    assert np.isclose(
+        e_t1_s2.value_in_unit(unit.kilocalorie_per_mole), 5.50502085150725
+    )
+    assert np.isclose(
+        e_t1_s3.value_in_unit(unit.kilocalorie_per_mole), 5.680121579945277
+    )
+    assert np.isclose(
+        e_t1_s4.value_in_unit(unit.kilocalorie_per_mole), 19.32431518895557
+    )
+    assert np.isclose(
+        e_t1_s5.value_in_unit(unit.kilocalorie_per_mole), 39.24392077135464
+    )
+    assert np.isclose(
+        e_t1_s6.value_in_unit(unit.kilocalorie_per_mole), 54.94647553965466
+    )
+    assert np.isclose(
+        e_t1_s7.value_in_unit(unit.kilocalorie_per_mole), 62.026441265363836
+    )
+
+    assert np.isclose(
+        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 12.152228076282555
+    )
+    assert np.isclose(
+        e_t2_s2.value_in_unit(unit.kilocalorie_per_mole), 44.88436132326585
+    )
+    assert np.isclose(
+        e_t2_s3.value_in_unit(unit.kilocalorie_per_mole), 45.06542169452752
+    )
+
+
+@pytest.mark.slowtest
 def test_bonded_mutation_atoms(caplog):
     caplog.set_level(logging.CRITICAL)
 
@@ -908,24 +1053,37 @@ def test_bonded_mutation_atoms(caplog):
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
     psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    prm_at_endstate_t1 = {
+        a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_endstate_t1.atoms
+    }
     psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
+    prm_at_t1_cc = {a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_t1_cc.atoms}
     psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
+    prm_at_t2_cc = {a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_t2_cc.atoms}
     psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    prm_at_endstate_t2 = {
+        a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_endstate_t2.atoms
+    }
     print("@@@@@@@@@@@@@@@@@@")
 
     cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
     for atom_t1_idx, atom_t2_idx in zip(cc1_idx, cc2_idx):
-        atom_t1 = psf_at_t1_cc.atoms[atom_t1_idx]
-        atom_t2 = psf_at_t2_cc.atoms[atom_t2_idx]
-        assert atom_t1.charge == atom_t2.charge
-        assert atom_t1.sigma == atom_t2.sigma
+        atom_t1 = prm_at_t1_cc[atom_t1_idx]
+        atom_t2 = prm_at_t2_cc[atom_t2_idx]
+        assert atom_t1 == atom_t2
+
+    for atom_t1 in psf_at_t1_cc.atoms:
+        if atom_t1.idx not in p.get_common_core_idx_mol1():
+            print(atom_t1)
+    for atom_t2 in psf_at_t2_cc.atoms:
+        if atom_t2.idx not in p.get_common_core_idx_mol2():
+            print(atom_t2)
 
     for atom_t1_idx, atom_t2_idx in zip(cc1_idx, cc2_idx):
-        atom_t1 = psf_at_endstate_t1.atoms[atom_t1_idx]
-        atom_t2 = psf_at_endstate_t2.atoms[atom_t2_idx]
+        atom_t1 = prm_at_endstate_t1[atom_t1_idx]
+        atom_t2 = prm_at_endstate_t2[atom_t2_idx]
         try:
-            assert atom_t1.charge == atom_t2.charge
-            assert atom_t1.sigma == atom_t2.sigma
+            assert atom_t1 == atom_t2
         except AssertionError:
             pass
 
@@ -937,15 +1095,31 @@ def test_bonded_mutation_bonds(caplog):
     from .test_mutation import setup_2OJ9_tautomer_pair
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
+    ##################
     psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    prm_at_endstate_t1 = {
+        idx: (a.type.k, a.type.req) for idx, a in enumerate(psf_at_endstate_t1.bonds)
+    }
+    ##################
     psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
+    prm_at_t1_cc = {
+        idx: (a.type.k, a.type.req) for idx, a in enumerate(psf_at_t1_cc.bonds)
+    }
+    ##################
     psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
+    prm_at_t2_cc = {
+        idx: (a.type.k, a.type.req) for idx, a in enumerate(psf_at_t2_cc.bonds)
+    }
+    ##################
     psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    prm_at_endstate_t2 = {
+        idx: (a.type.k, a.type.req) for idx, a in enumerate(psf_at_endstate_t2.bonds)
+    }  ##################
     print("@@@@@@@@@@@@@@@@@@")
 
     cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
     # compare cc enstates
-    for bond_t1 in psf_at_t1_cc.bonds:
+    for bond_t1_idx, bond_t1 in enumerate(psf_at_t1_cc.bonds):
         atom1_t1_idx = bond_t1.atom1.idx
         atom2_t1_idx = bond_t1.atom2.idx
         if atom1_t1_idx not in cc1_idx or atom2_t1_idx not in cc1_idx:
@@ -958,53 +1132,71 @@ def test_bonded_mutation_bonds(caplog):
         atom1_t2 = psf_at_t2_cc[cc2_idx[idx1]]
         atom2_t2 = psf_at_t2_cc[cc2_idx[idx2]]
         bond_t2 = None
-        for bond in psf_at_t2_cc.bonds:
-            if atom1_t2 in bond and atom2_t2 in bond:
-                bond_t2 = bond
+        for bond_t2_idx, bond_t2 in enumerate(psf_at_t2_cc.bonds):
+            if atom1_t2 in bond_t2 and atom2_t2 in bond_t2:
+                prm_at_t1_cc[bond_t1_idx] = prm_at_t2_cc[bond_t2_idx]
 
-        assert bond_t1.type.k == bond_t2.type.k
-        assert bond_t1.type.req == bond_t2.type.req
+    # # compare physical endstates
+    # for bond_t1 in psf_at_endstate_t1.bonds:
+    #     atom1_t1_idx = bond_t1.atom1.idx
+    #     atom2_t1_idx = bond_t1.atom2.idx
+    #     if atom1_t1_idx not in cc1_idx or atom2_t1_idx not in cc1_idx:
+    #         continue
 
-    # compare physical endstates
-    for bond_t1 in psf_at_endstate_t1.bonds:
-        atom1_t1_idx = bond_t1.atom1.idx
-        atom2_t1_idx = bond_t1.atom2.idx
-        if atom1_t1_idx not in cc1_idx or atom2_t1_idx not in cc1_idx:
-            continue
+    #     # get index in common core
+    #     idx1 = cc1_idx.index(atom1_t1_idx)
+    #     idx2 = cc1_idx.index(atom2_t1_idx)
 
-        # get index in common core
-        idx1 = cc1_idx.index(atom1_t1_idx)
-        idx2 = cc1_idx.index(atom2_t1_idx)
+    #     atom1_t2 = psf_at_endstate_t2[cc2_idx[idx1]]
+    #     atom2_t2 = psf_at_endstate_t2[cc2_idx[idx2]]
+    #     bond_t2 = None
+    #     for bond in psf_at_endstate_t2.bonds:
+    #         if atom1_t2 in bond and atom2_t2 in bond:
+    #             bond_t2 = bond
 
-        atom1_t2 = psf_at_endstate_t2[cc2_idx[idx1]]
-        atom2_t2 = psf_at_endstate_t2[cc2_idx[idx2]]
-        bond_t2 = None
-        for bond in psf_at_endstate_t2.bonds:
-            if atom1_t2 in bond and atom2_t2 in bond:
-                bond_t2 = bond
-
-        try:
-            assert bond_t1.type.k == bond_t2.type.k
-            assert bond_t1.type.req == bond_t2.type.req
-        except AssertionError:
-            pass
+    #     try:
+    #         assert bond_t1.type.k == bond_t2.type.k
+    #         assert bond_t1.type.req == bond_t2.type.req
+    #     except AssertionError:
+    #         pass
 
 
 @pytest.mark.slowtest
 def test_bonded_mutation_angles(caplog):
     caplog.set_level(logging.CRITICAL)
-
+    from copy import copy
     from .test_mutation import setup_2OJ9_tautomer_pair
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
-    psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
-    psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
-    psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
-    psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    ##################
+    # psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    # prm_at_endstate_t1 = {
+    #     idx: (copy(a.type.k), copy(a.type.theteq))
+    #     for idx, a in enumerate(psf_at_endstate_t1.angles)
+    # }
+    # ##################
+    # psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    # prm_at_endstate_t2 = {
+    #     idx: (copy(a.type.k), copy(a.type.theteq))
+    #     for idx, a in enumerate(psf_at_endstate_t2.angles)
+    # }
+    ##################
+    psf_at_t1_cc, _ = generate_psf(output_files_t1[-1], "vacuum")
+    prm_at_t1_cc = {
+        idx: (copy(a.type.k), copy(a.type.theteq))
+        for idx, a in enumerate(psf_at_t1_cc.angles)
+    }
+    ##################
+    psf_at_t2_cc, _ = generate_psf(output_files_t2[-1], "vacuum")
+    prm_at_t2_cc = {
+        idx: (copy(a.type.k), copy(a.type.theteq))
+        for idx, a in enumerate(psf_at_t2_cc.angles)
+    }
     print("@@@@@@@@@@@@@@@@@@")
+    ##################
 
     cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
-    for angle_t1 in psf_at_t1_cc.angles:
+    for angle_t1_idx, angle_t1 in enumerate(psf_at_t1_cc.angles):
         atom1_t1_idx = angle_t1.atom1.idx
         atom2_t1_idx = angle_t1.atom2.idx
         atom3_t1_idx = angle_t1.atom3.idx
@@ -1023,13 +1215,20 @@ def test_bonded_mutation_angles(caplog):
         atom1_t2 = psf_at_t2_cc[cc2_idx[idx1]]
         atom2_t2 = psf_at_t2_cc[cc2_idx[idx2]]
         atom3_t2 = psf_at_t2_cc[cc2_idx[idx3]]
-        angle_t2 = None
-        for angle in psf_at_t2_cc.angles:
-            if atom1_t2 in angle and atom2_t2 in angle and atom3_t2 in angle:
-                angle_t2 = angle
+        faulty = False
+        for angle_t2_idx, angle_t2 in enumerate(psf_at_t2_cc.angles):
+            if atom1_t2 in angle_t2 and atom2_t2 in angle_t2 and atom3_t2 in angle_t2:
 
-        assert angle_t1.type.k == angle_t2.type.k
-        assert angle_t1.type.theteq == angle_t2.type.theteq
+                if not (prm_at_t1_cc[angle_t1_idx] == prm_at_t2_cc[angle_t2_idx]):
+
+                    print("###################")
+                    print(prm_at_t1_cc[angle_t1_idx])
+                    print(prm_at_t2_cc[angle_t2_idx])
+                    print(angle_t1)
+                    print(angle_t2)
+                    faulty = True
+        if faulty:
+            raise AssertionError()
 
 
 @pytest.mark.slowtest
@@ -1039,17 +1238,57 @@ def test_bonded_mutation_dihedrals(caplog):
     from .test_mutation import setup_2OJ9_tautomer_pair
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
-    psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
-    psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
-    print(output_files_t1[-1])
-    psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
-    psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
-    print("@@@@@@@@@@@@@@@@@@")
-
-    assert len(psf_at_t1_cc.dihedrals) == len(psf_at_t2_cc.dihedrals)
+    # ##################
+    # psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    # prm_at_endstate_t1 = {
+    #     idx: [(a.type.phi_k, a.type.per, a.type.phase) for a in l.type]
+    #     for idx, l in enumerate(psf_at_endstate_t1.dihedrals)
+    # }
+    # ##################
+    # psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    # prm_at_endstate_t2 = {
+    #     idx: [(a.type.phi_k, a.type.per, a.type.phase) for a in l]
+    #     for idx, a in enumerate(psf_at_endstate_t2.dihedrals)
+    # }
+    ####################################
+    ####################################
+    psf_at_t1_cc, _ = generate_psf(output_files_t1[-1], "vacuum")
+    prm_at_t1_cc = {
+        idx: [(a.phi_k, a.per, a.phase) for a in l.type]
+        for idx, l in enumerate(psf_at_t1_cc.dihedrals)
+    }
+    t1_cc_nr_of_dihedrals = len(psf_at_t1_cc.dihedrals)
+    e_at_t1_cc = (
+        generate_sim(output_files_t1[-1], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    assert np.isclose(
+        e_at_t1_cc.value_in_unit(unit.kilocalorie_per_mole), 62.026441265363836
+    )
+    ####################################
+    ####################################
+    psf_at_t2_cc, _ = generate_psf(output_files_t2[-1], "vacuum")
+    prm_at_t2_cc = {
+        idx: [(a.phi_k, a.per, a.phase) for a in l.type]
+        for idx, l in enumerate(psf_at_t2_cc.dihedrals)
+    }
+    t2_cc_nr_of_dihedrals = len(psf_at_t2_cc.dihedrals)
+    e_at_t2_cc = (
+        generate_sim(output_files_t2[-1], "vacuum")
+        .context.getState(getEnergy=True)
+        .getPotentialEnergy()
+    )
+    assert np.isclose(
+        e_at_t2_cc.value_in_unit(unit.kilocalorie_per_mole), 45.06542169452752
+    )
+    ####################################
+    ####################################
+    assert t1_cc_nr_of_dihedrals == t2_cc_nr_of_dihedrals
     # compare the common core parameters at the cc state
     cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
-    for dihedral_t1 in psf_at_t1_cc.dihedrals:
+
+    for dihedral_t1_idx, dihedral_t1 in enumerate(psf_at_t1_cc.dihedrals):
         atom1_t1_idx = dihedral_t1.atom1.idx
         atom2_t1_idx = dihedral_t1.atom2.idx
         atom3_t1_idx = dihedral_t1.atom3.idx
@@ -1060,9 +1299,9 @@ def test_bonded_mutation_dihedrals(caplog):
             or atom3_t1_idx not in cc1_idx
             or atom4_t1_idx not in cc1_idx
         ):
-            print("Not present:")
+            print("Not present in cc2:")
             print(dihedral_t1)
-
+            print("#####################")
             continue
 
         # get index in common core
@@ -1077,7 +1316,8 @@ def test_bonded_mutation_dihedrals(caplog):
         atom4_t2 = psf_at_t2_cc[cc2_idx[idx4]]
 
         dihedral_t2 = None
-        for dihedral in psf_at_t2_cc.dihedrals:
+        faulty = False
+        for dihedral_t2_idx, dihedral in enumerate(psf_at_t2_cc.dihedrals):
             if (
                 atom1_t2 in dihedral
                 and atom2_t2 in dihedral
@@ -1086,57 +1326,22 @@ def test_bonded_mutation_dihedrals(caplog):
             ):
                 dihedral_t2 = dihedral
                 break
+        else:
+            print("Not present in cc1:")
+            print(dihedral)
+            print("#####################")
 
         assert dihedral_t2 != None
-        print(dihedral_t1)
-        print(dihedral_t2)
-        for t1, t2 in zip(dihedral_t1.type, dihedral_t2.type):
-            assert t1.phi_k == t2.phi_k
-            assert t1.phase == t2.phase
-    assert False
-    # # compare the endstates
-    # cc1_idx, cc2_idx = p.get_common_core_idx_mol1(), p.get_common_core_idx_mol2()
-    # for dihedral_t1 in psf_at_endstate_t1.dihedrals:
-    #     atom1_t1_idx = dihedral_t1.atom1.idx
-    #     atom2_t1_idx = dihedral_t1.atom2.idx
-    #     atom3_t1_idx = dihedral_t1.atom3.idx
-    #     atom4_t1_idx = dihedral_t1.atom4.idx
-    #     if (
-    #         atom1_t1_idx not in cc1_idx
-    #         or atom2_t1_idx not in cc1_idx
-    #         or atom3_t1_idx not in cc1_idx
-    #         or atom4_t1_idx not in cc1_idx
-    #     ):
-    #         continue
+        if not (prm_at_t1_cc[dihedral_t1_idx] == prm_at_t2_cc[dihedral_t2_idx]):
 
-    #     # get index in common core
-    #     idx1 = cc1_idx.index(atom1_t1_idx)
-    #     idx2 = cc1_idx.index(atom2_t1_idx)
-    #     idx3 = cc1_idx.index(atom3_t1_idx)
-    #     idx4 = cc1_idx.index(atom4_t1_idx)
-
-    #     atom1_t2 = psf_at_t2_cc[cc2_idx[idx1]]
-    #     atom2_t2 = psf_at_t2_cc[cc2_idx[idx2]]
-    #     atom3_t2 = psf_at_t2_cc[cc2_idx[idx3]]
-    #     atom4_t2 = psf_at_t2_cc[cc2_idx[idx4]]
-
-    #     dihedral_t2 = None
-    #     for dihedral in psf_at_endstate_t2.dihedrals:
-    #         if (
-    #             atom1_t2 in dihedral
-    #             and atom2_t2 in dihedral
-    #             and atom3_t2 in dihedral
-    #             and atom4_t2 in dihedral
-    #         ):
-    #             dihedral_t2 = dihedral
-    #             break
-
-    #     assert dihedral_t2 != None
-    #     print(dihedral_t1)
-    #     print(dihedral_t2)
-    #     for t1, t2 in zip(dihedral_t1.type, dihedral_t2.type):
-    #         assert t1.phi_k == t2.phi_k
-    #         assert t1.phase == t2.phase
+            print("###################")
+            print(prm_at_t1_cc[dihedral_t1_idx])
+            print(prm_at_t2_cc[dihedral_t2_idx])
+            print(dihedral_t1)
+            print(dihedral_t2)
+            faulty = True
+        if faulty:
+            raise AssertionError()
 
 
 def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
