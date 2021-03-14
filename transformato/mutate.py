@@ -1242,36 +1242,37 @@ class CommonCoreTransformation(object):
                         continue
 
                     mod_types = []
-
                     # torsion present at cc1 needs to be turned fully off starting at lambda_vlaue == 1.
                     f = max((1 - ((1 - lambda_value) * 2)), 0.0)
-                    for torsion_t in original_torsion.type:
-                        modified_phi_k = torsion_t.phi_k * f
-                        mod_types.append(
-                            mod_type(
-                                modified_phi_k,
-                                torsion_t.per,
-                                torsion_t.phase,
-                                torsion_t.scee,
-                                torsion_t.scnb,
+
+                    if f > 0.0 or lambda_value == 0.5:
+                        for torsion_t in original_torsion.type:
+                            modified_phi_k = torsion_t.phi_k * f
+                            mod_types.append(
+                                mod_type(
+                                    modified_phi_k,
+                                    torsion_t.per,
+                                    torsion_t.phase,
+                                    torsion_t.scee,
+                                    torsion_t.scnb,
+                                )
                             )
-                        )
 
                     # torsion present at cc2 needs to be fully turned on at lambda_value == 0.0
                     f = 1 - min((lambda_value) * 2, 1.0)
-                    for torsion_t in new_torsion.type:
-                        modified_phi_k = (
-                            torsion_t.phi_k * f
-                        )
-                        mod_types.append(
-                            mod_type(
-                                modified_phi_k,
-                                torsion_t.per,
-                                torsion_t.phase,
-                                torsion_t.scee,
-                                torsion_t.scnb,
-                            )
-                        )
+                    if f > 0.0:
+                        for torsion_t in new_torsion.type:
+                            modified_phi_k = torsion_t.phi_k * f
+                            if modified_phi_k >= 0.0:
+                                mod_types.append(
+                                    mod_type(
+                                        modified_phi_k,
+                                        torsion_t.per,
+                                        torsion_t.phase,
+                                        torsion_t.scee,
+                                        torsion_t.scnb,
+                                    )
+                                )
 
                     original_torsion.mod_type = mod_types
 
