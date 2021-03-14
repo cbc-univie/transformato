@@ -138,7 +138,7 @@ def test_get_free_energy_2OJ9_tautomer_pair(caplog):
     from .test_run_production import run_simulation
     from .test_postprocessing import postprocessing
 
-    (output_files_t1, output_files_t2), conf = setup_2OJ9_tautomer_pair()
+    (output_files_t1, output_files_t2), conf, _ = setup_2OJ9_tautomer_pair()
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
     ddG1, dddG1 = postprocessing(
