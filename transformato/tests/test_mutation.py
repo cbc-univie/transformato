@@ -944,7 +944,200 @@ def test_bonded_mutation():
 
 
 @pytest.mark.slowtest
-def test_bonded_mutation_energies(caplog):
+def test_equivalent_endstates_vacuum():
+
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+
+    # ParmEd Imports
+    from parmed import unit as u
+
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+    env = "vacuum"
+    psf, parms = generate_psf(output_files_t1[-2], env)
+    coord = generate_crd(output_files_t1[-1], env).positions
+    mask = []
+    nr_of_atoms = len(psf.atoms)
+    assert nr_of_atoms == len(coord)
+
+    for a in psf.atoms:
+        if str(a.type).startswith("DD"):
+            mask.append(False)
+        else:
+            mask.append(True)
+    psf = psf[mask]
+    for idx, e in enumerate(mask):
+        if not e:
+            print(coord.pop(idx))
+
+    system = psf.createSystem(parms, nonbondedMethod=app.NoCutoff)
+
+    # Create the integrator to do Langevin dynamics
+    integrator = mm.LangevinIntegrator(
+        300 * u.kelvin,  # Temperature of heat bath
+        1.0 / u.picoseconds,  # Friction coefficient
+        2.0 * u.femtoseconds,  # Time step
+    )
+    assert nr_of_atoms == psf.topology.getNumAtoms() + 1
+    print(psf.topology.getNumAtoms())
+    # Create the Simulation object
+    sim = app.Simulation(psf.topology, system, integrator)
+    # Set the particle positions
+    sim.context.setPositions(coord)
+    e1 = sim.context.getState(getEnergy=True).getPotentialEnergy()
+
+    #####################################
+    #####################################
+    psf, parms = generate_psf(output_files_t2[-1], env)
+    # coord = generate_crd(output_files_t2[-1], env).positions
+    mask = []
+    nr_of_atoms = len(psf.atoms)
+    assert nr_of_atoms == len(coord) + 1
+
+    mask = []
+    for a in psf.atoms:
+        if str(a.type).startswith("DD"):
+            mask.append(False)
+        else:
+            mask.append(True)
+    psf = psf[mask]
+
+    system = psf.createSystem(parms, nonbondedMethod=app.NoCutoff)
+    # Create the integrator to do Langevin dynamics
+    integrator = mm.LangevinIntegrator(
+        300 * u.kelvin,  # Temperature of heat bath
+        1.0 / u.picoseconds,  # Friction coefficient
+        2.0 * u.femtoseconds,  # Time step
+    )
+
+    # Create the Simulation object
+    sim = app.Simulation(psf.topology, system, integrator)
+    # Set the particle positions
+    sim.context.setPositions(coord)
+    e2 = sim.context.getState(getEnergy=True).getPotentialEnergy()
+    print(e1)
+    print(e2)
+    assert e1 == e2
+
+
+@pytest.mark.slowtest
+def test_equivalent_endstates_waterbox():
+
+    import simtk.openmm as mm
+    import simtk.openmm.app as app
+
+    # ParmEd Imports
+    from parmed import unit as u
+
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+    env = "waterbox"
+    psf, parms = generate_psf(output_files_t1[-2], env)
+    coords = generate_crd(output_files_t1[-1], env).positions
+
+    psf.box = (30, 30, 30, 90, 90, 90)
+
+    mask = []
+    nr_of_atoms = len(psf.atoms)
+    assert nr_of_atoms == len(coords)
+
+    for a in psf.atoms:
+        if str(a.type).startswith("DD"):
+            mask.append(False)
+        else:
+            mask.append(True)
+    psf = psf[mask]
+    for idx, e in enumerate(mask):
+        if not e:
+            print(coords.pop(idx))
+
+    system = psf.createSystem(
+        parms,
+        nonbondedMethod=app.PME,
+        nonbondedCutoff=12.0 * u.angstroms,
+        switchDistance=10.0 * u.angstroms,
+    )
+
+    # Create the integrator to do Langevin dynamics
+    integrator = mm.LangevinIntegrator(
+        300 * u.kelvin,  # Temperature of heat bath
+        1.0 / u.picoseconds,  # Friction coefficient
+        2.0 * u.femtoseconds,  # Time step
+    )
+    assert nr_of_atoms == psf.topology.getNumAtoms() + 1
+    print(psf.topology.getNumAtoms())
+    # Create the Simulation object
+    sim = app.Simulation(psf.topology, system, integrator)
+    # Set the particle positions
+    sim.context.setPositions(coords)
+    e1 = sim.context.getState(getEnergy=True).getPotentialEnergy()
+
+    #####################################
+    #####################################
+    psf, parms = generate_psf(output_files_t2[-1], env)
+    psf.box = (30, 30, 30, 90, 90, 90)
+    mask = []
+    nr_of_atoms = len(psf.atoms)
+    assert nr_of_atoms == len(coords) + 1
+
+    mask = []
+    for a in psf.atoms:
+        if str(a.type).startswith("DD"):
+            mask.append(False)
+        else:
+            mask.append(True)
+    psf = psf[mask]
+
+    system = psf.createSystem(
+        parms,
+        nonbondedMethod=app.PME,
+        nonbondedCutoff=12.0 * u.angstroms,
+        switchDistance=10.0 * u.angstroms,
+    )
+    # Create the integrator to do Langevin dynamics
+    integrator = mm.LangevinIntegrator(
+        300 * u.kelvin,  # Temperature of heat bath
+        1.0 / u.picoseconds,  # Friction coefficient
+        2.0 * u.femtoseconds,  # Time step
+    )
+
+    # Create the Simulation object
+    sim = app.Simulation(psf.topology, system, integrator)
+    # Set the particle positions
+    sim.context.setPositions(coords)
+    e2 = sim.context.getState(getEnergy=True).getPotentialEnergy()
+    print(e1)
+    print(e2)
+    assert e1 == e2
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t1_s1(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1 = [
         "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
@@ -966,80 +1159,262 @@ def test_bonded_mutation_energies(caplog):
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+    assert np.isclose(
+        e_t1_s1.value_in_unit(unit.kilocalorie_per_mole), -17.638044396797515
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t1_s2(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+
     e_t1_s2 = (
         generate_sim(output_files_t1[1], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+
+    assert np.isclose(
+        e_t1_s2.value_in_unit(unit.kilocalorie_per_mole), 5.50502085150725
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t1_s3(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
     e_t1_s3 = (
         generate_sim(output_files_t1[2], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+
+    assert np.isclose(
+        e_t1_s3.value_in_unit(unit.kilocalorie_per_mole), 5.680121579945277
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t1_s4(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
     e_t1_s4 = (
         generate_sim(output_files_t1[3], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+
+    assert np.isclose(
+        e_t1_s4.value_in_unit(unit.kilocalorie_per_mole), 19.32431518895557
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t1_s5(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
     e_t1_s5 = (
         generate_sim(output_files_t1[4], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+
+    assert np.isclose(
+        e_t1_s5.value_in_unit(unit.kilocalorie_per_mole), 39.24392077135464
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t1_s6(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
     e_t1_s6 = (
         generate_sim(output_files_t1[5], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+
+    assert np.isclose(
+        e_t1_s6.value_in_unit(unit.kilocalorie_per_mole), 54.94647553965466
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t1_s7(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
     e_t1_s7 = (
         generate_sim(output_files_t1[6], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+
+    assert np.isclose(
+        e_t1_s7.value_in_unit(unit.kilocalorie_per_mole), 62.026441265363836
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t2_s1(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
     e_t2_s1 = (
         generate_sim(output_files_t2[0], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+
+    assert np.isclose(
+        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 12.152228076282555
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t2_s2(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
     e_t2_s2 = (
         generate_sim(output_files_t2[1], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
+
+    assert np.isclose(
+        e_t2_s2.value_in_unit(unit.kilocalorie_per_mole), 44.88436132326585
+    )
+
+
+@pytest.mark.slowtest
+def test_bonded_mutation_energies_t2_s3(caplog):
+    caplog.set_level(logging.CRITICAL)
+    output_files_t1 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
     e_t2_s3 = (
         generate_sim(output_files_t2[2], "vacuum")
         .context.getState(getEnergy=True)
         .getPotentialEnergy()
     )
 
-    assert np.isclose(
-        e_t1_s1.value_in_unit(unit.kilocalorie_per_mole), -17.638044396797515
-    )
-    assert np.isclose(
-        e_t1_s2.value_in_unit(unit.kilocalorie_per_mole), 5.50502085150725
-    )
-    assert np.isclose(
-        e_t1_s3.value_in_unit(unit.kilocalorie_per_mole), 5.680121579945277
-    )
-    assert np.isclose(
-        e_t1_s4.value_in_unit(unit.kilocalorie_per_mole), 19.32431518895557
-    )
-    assert np.isclose(
-        e_t1_s5.value_in_unit(unit.kilocalorie_per_mole), 39.24392077135464
-    )
-    assert np.isclose(
-        e_t1_s6.value_in_unit(unit.kilocalorie_per_mole), 54.94647553965466
-    )
-    assert np.isclose(
-        e_t1_s7.value_in_unit(unit.kilocalorie_per_mole), 62.026441265363836
-    )
-
-    assert np.isclose(
-        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 12.152228076282555
-    )
-    assert np.isclose(
-        e_t2_s2.value_in_unit(unit.kilocalorie_per_mole), 44.88436132326585
-    )
     assert np.isclose(
         e_t2_s3.value_in_unit(unit.kilocalorie_per_mole), 45.06542169452752
     )
@@ -1052,15 +1427,15 @@ def test_bonded_mutation_atoms(caplog):
     from .test_mutation import setup_2OJ9_tautomer_pair
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
-    psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    psf_at_endstate_t1, _ = generate_psf(output_files_t1[0], "vacuum")
     prm_at_endstate_t1 = {
         a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_endstate_t1.atoms
     }
-    psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
+    psf_at_t1_cc, _ = generate_psf(output_files_t1[-1], "vacuum")
     prm_at_t1_cc = {a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_t1_cc.atoms}
-    psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
+    psf_at_t2_cc, _ = generate_psf(output_files_t2[-1], "vacuum")
     prm_at_t2_cc = {a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_t2_cc.atoms}
-    psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    psf_at_endstate_t2, _ = generate_psf(output_files_t2[0], "vacuum")
     prm_at_endstate_t2 = {
         a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_endstate_t2.atoms
     }
@@ -1096,22 +1471,22 @@ def test_bonded_mutation_bonds(caplog):
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair()
     ##################
-    psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
+    psf_at_endstate_t1, _ = generate_psf(output_files_t1[0], "vacuum")
     prm_at_endstate_t1 = {
         idx: (a.type.k, a.type.req) for idx, a in enumerate(psf_at_endstate_t1.bonds)
     }
     ##################
-    psf_at_t1_cc = generate_psf(output_files_t1[-1], "vacuum")
+    psf_at_t1_cc, _ = generate_psf(output_files_t1[-1], "vacuum")
     prm_at_t1_cc = {
         idx: (a.type.k, a.type.req) for idx, a in enumerate(psf_at_t1_cc.bonds)
     }
     ##################
-    psf_at_t2_cc = generate_psf(output_files_t2[-1], "vacuum")
+    psf_at_t2_cc, _ = generate_psf(output_files_t2[-1], "vacuum")
     prm_at_t2_cc = {
         idx: (a.type.k, a.type.req) for idx, a in enumerate(psf_at_t2_cc.bonds)
     }
     ##################
-    psf_at_endstate_t2 = generate_psf(output_files_t2[0], "vacuum")
+    psf_at_endstate_t2, _ = generate_psf(output_files_t2[0], "vacuum")
     prm_at_endstate_t2 = {
         idx: (a.type.k, a.type.req) for idx, a in enumerate(psf_at_endstate_t2.bonds)
     }  ##################
@@ -1488,13 +1863,17 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
         shutil.rmtree(f"{system_name}-solvation-free-energy")
 
 
-def setup_2OJ9_tautomer_pair():
+def setup_2OJ9_tautomer_pair(single_state=False, conf_path=''):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    conf_path = (
-        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
-    )
+    if not conf_path:
+        conf_path = (
+            "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+        )
+    else:
+        print(conf_path)
+
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir="."
     )
@@ -1505,7 +1884,9 @@ def setup_2OJ9_tautomer_pair():
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.calculate_common_core()
     return (
-        mutate_pure_tautomers(s1_to_s2, s1, s2, configuration),
+        mutate_pure_tautomers(
+            s1_to_s2, s1, s2, configuration, single_state=single_state
+        ),
         configuration,
         s1_to_s2,
     )
