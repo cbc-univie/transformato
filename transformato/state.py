@@ -34,6 +34,7 @@ class IntermediateStateFactory(object):
         self.path = f"{configuration['system_dir']}/{self.system.name}"
         self._init_base_dir()
         self.configuration = configuration
+        self.vdw_switch: str
 
     def write_state(
         self,
@@ -343,6 +344,8 @@ outfile.close()
         # add serialization
         self._add_serializer(omm_simulation_script_target)
         self._check_platform(omm_simulation_script_target)
+        self._check_switching_function(omm_simulation_script_target)
+
         # continue with vacuum
         omm_simulation_script_source = (
             f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
@@ -353,6 +356,37 @@ outfile.close()
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         self._add_serializer(omm_simulation_script_target)
         self._check_platform(omm_simulation_script_target)
+
+    def _check_switching_function(self, file):
+        if self.vdw_switch == "Force-switch":
+            pass  # don't do anything, that's the default for c-gui openMM scripts
+        elif self.vdw_switch == "vswitch":
+            # turn switching function on for nonbonded forces
+            s = """
+for force in system.getForces():
+    if isinstance(force, NonbondedForce):
+        nonbonded = force
+        print('Set switching distance')
+        nonbonded.setSwitchingDistance(inputs.r_on *nanometers)
+        nonbonded.setUseSwitchingFunction(True)
+"""
+            with open(file, "r") as f:
+                with open(f"{file}_tmp", "w+") as g:
+                    for line in f.readlines():
+                        if line.startswith("integrator = LangevinIntegrator"):
+                            g.write(line)
+                            g.write("\n")
+                            g.write(s)
+                        else:
+                            g.write(line)
+            shutil.move(f"{file}_tmp", file)
+
+        elif self.vdw_switch == "no-switch":
+            pass  # this is the openMM default --- simply don't call the c-gui switching function
+        else:
+            raise NotImplementedError(
+                f"Other switching functino called: {self.vdw_switch}."
+            )
 
     def _check_platform(self, file):
         # changin input script
@@ -456,6 +490,17 @@ outfile.close()
 
         overwrite_parameters = copy.deepcopy(self._get_simulations_parameters())
 
+        if "vdw" in overwrite_parameters.keys():
+            if overwrite_parameters["vdw"] not in [
+                "Force-switch",
+                "no-switch",
+                "vswitch",
+            ]:
+                raise NotImplementedError(
+                    f"switch: {overwrite_parameters['vdw']} not implemented."
+                )
+            self.vdw_switch = overwrite_parameters["vdw"]
+
         input_simulation_parameter = open(omm_simulation_parameter_source, "r")
         output_simulation_parameter = open(
             omm_simulation_parameter_target + ".inp", "w+"
@@ -482,10 +527,8 @@ outfile.close()
 
         for l in input_simulation_parameter.readlines():
             if l.strip():
-                t1, t2 = l.split("=")
-                t1 = t1.strip()
-                t2, comment = t2.split("#")
-                t2 = t2.strip()
+                t1, t2_comment = [e.strip() for e in l.split("=")]
+                t2, comment = [e.strip() for e in t2_comment.split("#")]
                 comment = comment.strip()
                 if t1 in overwrite_parameters.keys():
                     t2 = overwrite_parameters[t1]

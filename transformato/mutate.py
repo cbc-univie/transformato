@@ -1530,6 +1530,7 @@ def mutate_pure_tautomers(
     system1: SystemStructure,
     system2: SystemStructure,
     configuration,
+    single_state=False,
 ):
 
     from transformato import (
@@ -1556,7 +1557,8 @@ def mutate_pure_tautomers(
             intst_nr=intst,
         )
         output_files_t1.append(o)
-
+        if single_state:
+            return (output_files_t1, [])
     # turn off the lj of the hydrogen
     lj = mutation_list["lj"]
     o, intst = i.write_state(
