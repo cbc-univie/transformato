@@ -21,7 +21,7 @@ system:
       intermediate-filename: "lig_in_waterbox"
 
   structure2:
-    name: "2OJ9-test2"
+    name: "2OJ9-tautomer"
     tlc: "UNK"
     vacuum:
       dirname: "vacuum"
@@ -43,12 +43,13 @@ simulation:
   ################
   parameters:
     nstep: 5000
-    nstdcd: 50
+    nstdcd: 25
     nstout: 1000
     cons: None
     dt: 0.001
-    switch: "vswitch"
-  GPU: True
+    mini_nstep: 1000
+    vdw: "no-switch"
+  GPU: False
 
   free-energy-type: "solvation-free-energy"
 ################
