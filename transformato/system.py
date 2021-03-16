@@ -82,7 +82,8 @@ class SystemStructure(object):
                 "only binding and solvation free energy implemented."
             )
 
-    def _mol_to_nx(self, mol: Chem.Mol):
+    @staticmethod
+    def _mol_to_nx(mol: Chem.Mol):
         G = nx.Graph()
 
         for atom in mol.GetAtoms():

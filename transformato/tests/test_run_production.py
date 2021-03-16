@@ -117,15 +117,15 @@ def test_run_acetylacetone_tautomer_pair(caplog):
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_2OJ0_tautomer_pair(caplog):
+def test_run_2OJ9_tautomer_pair(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair
     from .test_run_production import run_simulation
 
-    (output_files_t1, output_files_t2), _ = setup_2OJ9_tautomer_pair()
+    (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair()
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    shutil.rmtree("2OJ9-original-2OJ9-tautomer-solvation-free-energy")
+    #shutil.rmtree("2OJ9-original-2OJ9-tautomer-solvation-free-energy")
 
 
 @pytest.mark.slowtest
