@@ -953,21 +953,21 @@ def test_equivalent_endstates_vacuum():
     from parmed import unit as u
 
     output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
     ]
     output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
     ]
     env = "vacuum"
-    psf, parms = generate_psf(output_files_t1[-2], env)
+    psf, parms = generate_psf(output_files_t1[-1], env)
     coord = generate_crd(output_files_t1[-1], env).positions
     mask = []
     nr_of_atoms = len(psf.atoms)
@@ -1140,18 +1140,13 @@ def test_equivalent_endstates_waterbox():
 def test_bonded_mutation_energies_t1_s1(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
     ]
 
     e_t1_s1 = (
@@ -1168,13 +1163,13 @@ def test_bonded_mutation_energies_t1_s1(caplog):
 def test_bonded_mutation_energies_t1_s2(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
     ]
 
     e_t1_s2 = (
@@ -1192,20 +1187,14 @@ def test_bonded_mutation_energies_t1_s2(caplog):
 def test_bonded_mutation_energies_t1_s3(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
     ]
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
-    ]
-
     e_t1_s3 = (
         generate_sim(output_files_t1[2], "vacuum")
         .context.getState(getEnergy=True)
@@ -1221,18 +1210,13 @@ def test_bonded_mutation_energies_t1_s3(caplog):
 def test_bonded_mutation_energies_t1_s4(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
     ]
 
     e_t1_s4 = (
@@ -1250,18 +1234,13 @@ def test_bonded_mutation_energies_t1_s4(caplog):
 def test_bonded_mutation_energies_t1_s5(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
     ]
 
     e_t1_s5 = (
@@ -1279,18 +1258,13 @@ def test_bonded_mutation_energies_t1_s5(caplog):
 def test_bonded_mutation_energies_t1_s6(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
     ]
 
     e_t1_s6 = (
@@ -1316,11 +1290,6 @@ def test_bonded_mutation_energies_t1_s7(caplog):
         "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
         "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
     ]
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
-    ]
 
     e_t1_s7 = (
         generate_sim(output_files_t1[6], "vacuum")
@@ -1336,19 +1305,10 @@ def test_bonded_mutation_energies_t1_s7(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s1(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
     output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
     ]
 
     e_t2_s1 = (
@@ -1365,19 +1325,10 @@ def test_bonded_mutation_energies_t2_s1(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s2(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
     output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
     ]
 
     e_t2_s2 = (
@@ -1394,19 +1345,10 @@ def test_bonded_mutation_energies_t2_s2(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s3(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
     output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
     ]
 
     e_t2_s3 = (
@@ -1511,29 +1453,6 @@ def test_bonded_mutation_bonds(caplog):
             if atom1_t2 in bond_t2 and atom2_t2 in bond_t2:
                 prm_at_t1_cc[bond_t1_idx] = prm_at_t2_cc[bond_t2_idx]
 
-    # # compare physical endstates
-    # for bond_t1 in psf_at_endstate_t1.bonds:
-    #     atom1_t1_idx = bond_t1.atom1.idx
-    #     atom2_t1_idx = bond_t1.atom2.idx
-    #     if atom1_t1_idx not in cc1_idx or atom2_t1_idx not in cc1_idx:
-    #         continue
-
-    #     # get index in common core
-    #     idx1 = cc1_idx.index(atom1_t1_idx)
-    #     idx2 = cc1_idx.index(atom2_t1_idx)
-
-    #     atom1_t2 = psf_at_endstate_t2[cc2_idx[idx1]]
-    #     atom2_t2 = psf_at_endstate_t2[cc2_idx[idx2]]
-    #     bond_t2 = None
-    #     for bond in psf_at_endstate_t2.bonds:
-    #         if atom1_t2 in bond and atom2_t2 in bond:
-    #             bond_t2 = bond
-
-    #     try:
-    #         assert bond_t1.type.k == bond_t2.type.k
-    #         assert bond_t1.type.req == bond_t2.type.req
-    #     except AssertionError:
-    #         pass
 
 
 @pytest.mark.slowtest
@@ -1863,14 +1782,12 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
         shutil.rmtree(f"{system_name}-solvation-free-energy")
 
 
-def setup_2OJ9_tautomer_pair(single_state=False, conf_path=''):
+def setup_2OJ9_tautomer_pair(single_state=False, conf_path=""):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
     if not conf_path:
-        conf_path = (
-            "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
-        )
+        conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
     else:
         print(conf_path)
 

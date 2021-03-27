@@ -6,12 +6,109 @@ import os
 
 import numpy as np
 import pytest
-
+import logging
 
 # read in specific topology with parameters
 from transformato import (
     load_config_yaml,
 )
+
+
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_compare_energies_2OJ9_tautomer_pair_vacuum(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    base = "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/"
+    # run_simulation(output_files_t1[:2])
+    # print(output_files_t1)
+    output_files_t1 = [
+        f"{base}/intst1/",
+        f"{base}/intst2/",
+        f"{base}/intst3/",
+        f"{base}/intst4/",
+        f"{base}/intst5/",
+        f"{base}/intst6/",
+        f"{base}/intst7/",
+    ]
+
+    conf = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "2OJ9-original")
+    for idx, b in enumerate(output_files_t1):
+        traj = md.load_dcd(
+            f"{b}/lig_in_vacuum.dcd",
+            f"{b}/lig_in_vacuum.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, "vacuum")
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, "vacuum")
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        mae = np.sum(s) / len(s)
+        assert mae < 0.005
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+
+
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_compare_energies_2OJ9_tautomer_pair_waterbox(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    base = "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/"
+    output_files = [
+        f"{base}/intst1/",
+        f"{base}/intst2/",
+        f"{base}/intst3/",
+        f"{base}/intst4/",
+        f"{base}/intst5/",
+        f"{base}/intst6/",
+        f"{base}/intst7/",
+    ]
+
+    conf = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+    f = FreeEnergyCalculator(configuration, "2OJ9-original")
+    for idx, b in enumerate(output_files[:1]):
+        traj = md.load_dcd(
+            f"{b}/lig_in_waterbox.dcd",
+            f"{b}/lig_in_waterbox.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, "waterbox")
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, "waterbox")
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        mae = np.sum(s) / len(s)
+        print(mae)
+        print(l_charmm)
+        print(l_openMM)
+
+        # assert mae < 0.005
+        # for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+        #    assert np.isclose(e_charmm, e_openMM, rtol=1e-1)
+    assert False
 
 
 def postprocessing(configuration, name="methane", engine="openMM", max_snapshots=300):
