@@ -122,10 +122,16 @@ def test_run_2OJ9_tautomer_pair(caplog):
     from .test_mutation import setup_2OJ9_tautomer_pair
     from .test_run_production import run_simulation
 
-    (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair()
+    conf_path = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
+
+    (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair(
+        conf_path=conf_path
+    )
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    #shutil.rmtree("2OJ9-original-2OJ9-tautomer-solvation-free-energy")
+    # shutil.rmtree("2OJ9-original-2OJ9-tautomer-solvation-free-energy")
 
 
 @pytest.mark.slowtest
@@ -141,12 +147,8 @@ def test_get_free_energy_2OJ9_tautomer_pair(caplog):
     (output_files_t1, output_files_t2), conf, _ = setup_2OJ9_tautomer_pair()
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    ddG1, dddG1 = postprocessing(
-        conf, name="2OJ9-original", engine="openMM"
-    )  
-    ddG2, dddG2 = postprocessing(
-        conf, name="2OJ9-tautomer", engine="openMM"
-    )  
+    ddG1, dddG1 = postprocessing(conf, name="2OJ9-original", engine="openMM")
+    ddG2, dddG2 = postprocessing(conf, name="2OJ9-tautomer", engine="openMM")
 
     ddG = ddG2 - ddG1
     assert np.isclose(ddG, 6.884759627021253)
