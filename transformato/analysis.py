@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 def return_reduced_potential(
     potential_energy: unit.Quantity, volume: unit.Quantity, temperature: unit.Quantity
-):
+)->float:
     """Retrieve the reduced potential for a given context.
     The reduced potential is defined as in Ref. [1]
     u = \beta [U(x) + p V(x)]
@@ -48,11 +48,10 @@ def return_reduced_potential(
 
     assert type(temperature) == unit.Quantity
     pressure = 1.0 * unit.atmosphere  # atm
-
-    beta = 1.0 / (unit.BOLTZMANN_CONSTANT_kB * temperature)
-    reduced_potential = potential_energy / unit.AVOGADRO_CONSTANT_NA
-    reduced_potential += pressure * volume
-    return beta * reduced_potential
+    kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
+    beta = 1.0 / (kB * temperature)
+    #potential_energy += pressure * volume
+    return beta * potential_energy
 
 
 class FreeEnergyCalculator(object):
@@ -196,6 +195,160 @@ class FreeEnergyCalculator(object):
 
         return (snapshots, nr_of_states, N_k)
 
+    @staticmethod
+    def _energy_at_ts(
+        simulation: Simulation, traj: mdtraj.Trajectory, ts: int, env: str
+    ):
+        """
+        Calculates the potential energy with the correct periodic boundary conditions.
+        """
+        if env != "vacuum":
+            simulation.context.setPeriodicBoxVectors(
+                traj.unitcell_vectors[ts][0],
+                traj.unitcell_vectors[ts][1],
+                traj.unitcell_vectors[ts][2],
+            )
+        simulation.context.setPositions(traj.openmm_positions(ts))
+        state = simulation.context.getState(getEnergy=True)
+        return state.getPotentialEnergy()
+
+    @staticmethod
+    def _get_V_for_ts(snapshots: mdtraj.Trajectory, env: str, ts: int):
+        if env == "vacuum":
+            volumn = (0.0 * unit.nanometer) ** 3
+        else:
+            # extract the box size at the given ts
+            bxl_x = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
+            bxl_y = snapshots.unitcell_lengths[ts][1] * (unit.nanometer)
+            bxl_z = snapshots.unitcell_lengths[ts][2] * (unit.nanometer)
+
+            volumn = bxl_x * bxl_y * bxl_z
+        return volumn
+
+    @staticmethod
+    def _parse_CHARMM_energy_output(path: str, env: str) -> list:
+        import math
+
+        pot_energies = []
+        file_name: str = ""
+        if env == "waterbox":
+            file_name = f"{path}/ener_solv.log"
+        elif env == "vacuum":
+            file_name = f"{path}/ener_vac.log"
+
+        with open(file_name, "r") as f:
+            for line in f.readlines():
+                try:
+                    v = float(line)
+                except ValueError:
+                    v = float(999999.0)
+
+                if math.isinf(v) or math.isnan(v):
+                    v = float(999999.0)
+
+                v *= unit.kilocalorie_per_mole
+                pot_energies.append(v)
+
+        assert len(pot_energies) > 50
+        return pot_energies
+
+    def _evaluate_traj_with_CHARMM(self, path: str, env: str, volumn_list: list = []):
+
+        script_name: str = ""
+        if env == "waterbox":
+            script_name: str = "charmm_evaluate_energy_in_solv.inp"
+            assert len(volumn_list) > 1
+        elif env == "vacuum":
+            script_name: str = "charmm_evaluate_energy_in_vac.inp"
+
+        top = self.configuration["system"][self.structure][env]["intermediate-filename"]
+
+        exe = subprocess.run(
+            [
+                "bash",
+                f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",
+                str(path),
+                str(top),
+                str(script_name),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+            encoding="latin1",
+        )
+        # path=$1     # path in which the simulation will start
+        # top=$2      # top file to use
+        # script=$3   # which script is called
+
+        with open(f"{path}/eval_charmm_{env}.log", "w+") as f:
+            f.write("Capture stdout")
+            f.write(exe.stdout)
+            f.write("Capture stderr")
+            f.write(exe.stderr)
+
+        logger.info("Capture stdout")
+        logger.info(exe.stdout)
+        logger.info("Capture stderr")
+        logger.info(exe.stderr)
+
+        pot_energies = self._parse_CHARMM_energy_output(path, env)
+
+        logger.info(f"Number of entries in pot_energies list: {len(pot_energies)}")
+        logger.info(f"Number of entries in pot_energies list: {len(volumn_list)}")
+
+        if volumn_list:
+            assert len(volumn_list) == len(pot_energies)
+            return [
+                return_reduced_potential(e, volume=V, temperature=temperature)
+                for e, V in zip(pot_energies, volumn_list)
+            ]
+        else:
+            return [
+                return_reduced_potential(
+                    e, volume=(0.0 * unit.nanometer) ** 3, temperature=temperature
+                )
+                for e in pot_energies
+            ]
+
+    def _evaluated_e_on_all_snapshots_CHARMM(
+        self, snapshots: mdtraj.Trajectory, lambda_state: int, env: str
+    ):
+
+        if env == "waterbox":
+            volumn_list = [
+                self._get_V_for_ts(snapshots, env, ts)
+                for ts in range(snapshots.n_frames)
+            ]
+
+        elif env == "vacuum":
+            volumn_list = []
+        else:
+            raise RuntimeError(f"{env}")
+
+        return self._evaluate_traj_with_CHARMM(
+            path=f"{self.base_path}/intst{lambda_state}/",
+            env=env,
+            volumn_list=volumn_list,
+        )
+
+    def _evaluated_e_on_all_snapshots_openMM(
+        self, snapshots: mdtraj.Trajectory, lambda_state: int, env: str
+    ) -> np.ndarray:
+
+        simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
+        energies = []
+        volumn_list = [
+            self._get_V_for_ts(snapshots, env, ts) for ts in range(snapshots.n_frames)
+        ]
+        for ts in tqdm(range(snapshots.n_frames)):
+            volumn = volumn_list[ts]
+            # calculate the potential energy
+            e = self._energy_at_ts(simulation, snapshots, ts, env)
+            # obtain the reduced potential (for NpT)
+            red_e = return_reduced_potential(e, volumn, temperature)
+            energies.append(red_e)
+        return np.array(energies)
+
     def _analyse_results_using_mbar(
         self,
         env: str,
@@ -203,156 +356,6 @@ class FreeEnergyCalculator(object):
         save_results: bool,
         engine: str,
     ):
-        def _energy_at_ts(
-            simulation: Simulation, traj: mdtraj.Trajectory, ts: int, env: str
-        ):
-            """
-            Calculates the potential energy with the correct periodic boundary conditions.
-            """
-            if env != "vacuum":
-                simulation.context.setPeriodicBoxVectors(
-                    traj.unitcell_vectors[ts][0],
-                    traj.unitcell_vectors[ts][1],
-                    traj.unitcell_vectors[ts][2],
-                )
-            simulation.context.setPositions(traj.openmm_positions(ts))
-            state = simulation.context.getState(getEnergy=True)
-            return state.getPotentialEnergy()
-
-        def _get_V_for_ts(snapshots: mdtraj.Trajectory, env: str, ts: int):
-            if env == "vacuum":
-                volumn = (0.0 * unit.nanometer) ** 3
-            else:
-                # extract the box size at the given ts
-                bxl_x = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
-                bxl_y = snapshots.unitcell_lengths[ts][1] * (unit.nanometer)
-                bxl_z = snapshots.unitcell_lengths[ts][2] * (unit.nanometer)
-
-                volumn = bxl_x * bxl_y * bxl_z
-            return volumn
-
-        def _evaluated_e_on_all_snapshots_openMM(
-            snapshots: mdtraj.Trajectory, lambda_state: int, env: str
-        ) -> np.ndarray:
-
-            simulation = self._generate_openMM_system(
-                env=env, lambda_state=lambda_state
-            )
-            energies = []
-            for ts in tqdm(range(snapshots.n_frames)):
-                volumn = _get_V_for_ts(snapshots, env, ts)
-                # calculate the potential energy
-                e = _energy_at_ts(simulation, snapshots, ts, env)
-                # obtain the reduced potential (for NpT)
-                red_e = return_reduced_potential(e, volumn, temperature)
-                energies.append(red_e)
-            return np.array(energies)
-
-        def _parse_CHARMM_energy_output(path: str, env: str) -> list:
-            import math
-
-            pot_energies = []
-            file_name: str = ""
-            if env == "waterbox":
-                file_name = f"{path}/ener_solv.log"
-            elif env == "vacuum":
-                file_name = f"{path}/ener_vac.log"
-
-            with open(file_name, "r") as f:
-                for line in f.readlines():
-                    try:
-                        v = float(line)
-                    except ValueError:
-                        v = float(999999.0)
-
-                    if math.isinf(v) or math.isnan(v):
-                        v = float(999999.0)
-
-                    v *= unit.kilocalorie_per_mole
-                    pot_energies.append(v)
-
-            assert len(pot_energies) > 50
-            return pot_energies
-
-        def _evaluate_traj_with_CHARMM(path: str, env: str, volumn_list: list = []):
-
-            script_name: str = ""
-            if env == "waterbox":
-                script_name: str = "charmm_evaluate_energy_in_solv.inp"
-            elif env == "vacuum":
-                script_name: str = "charmm_evaluate_energy_in_vac.inp"
-
-            top = self.configuration["system"][self.structure][env][
-                "intermediate-filename"
-            ]
-
-            exe = subprocess.run(
-                [
-                    "bash",
-                    f"{self.configuration['bin_dir']}/charmm_eval_energy.sh",
-                    str(path),
-                    str(top),
-                    str(script_name),
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-                encoding="latin1",
-            )
-            # path=$1     # path in which the simulation will start
-            # top=$2      # top file to use
-            # script=$3   # which script is called
-
-            with open(f"{path}/eval_charmm_{env}.log", "w+") as f:
-                f.write("Capture stdout")
-                f.write(exe.stdout)
-                f.write("Capture stderr")
-                f.write(exe.stderr)
-
-            logger.info("Capture stdout")
-            logger.info(exe.stdout)
-            logger.info("Capture stderr")
-            logger.info(exe.stderr)
-
-            pot_energies = _parse_CHARMM_energy_output(path, env)
-
-            logger.info(f"Number of entries in pot_energies list: {len(pot_energies)}")
-            logger.info(f"Number of entries in pot_energies list: {len(volumn_list)}")
-
-            if volumn_list:
-                assert len(volumn_list) == len(pot_energies)
-                return [
-                    return_reduced_potential(e, volume=V, temperature=temperature)
-                    for e, V in zip(pot_energies, volumn_list)
-                ]
-            else:
-                return [
-                    return_reduced_potential(
-                        e, volume=(0.0 * unit.nanometer) ** 3, temperature=temperature
-                    )
-                    for e in pot_energies
-                ]
-
-        def _evaluated_e_on_all_snapshots_CHARMM(lambda_state: int, env: str):
-
-            if env == "waterbox":
-
-                volumn_list = [
-                    _get_V_for_ts(snapshots, env, ts)
-                    for ts in range(snapshots.n_frames)
-                ]
-                volumn_list = []  # Note: for now we are descarding the V list
-
-            elif env == "vacuum":
-                volumn_list = []
-            else:
-                raise RuntimeError(f"{env}")
-
-            return _evaluate_traj_with_CHARMM(
-                path=f"{self.base_path}/intst{lambda_state}/",
-                env=env,
-                volumn_list=volumn_list,
-            )
 
         #########################################################
         #########################################################
@@ -362,7 +365,9 @@ class FreeEnergyCalculator(object):
         if engine == "openMM":
             u_kn = np.stack(
                 [
-                    _evaluated_e_on_all_snapshots_openMM(snapshots, lambda_state, env)
+                    self._evaluated_e_on_all_snapshots_openMM(
+                        snapshots, lambda_state, env
+                    )
                     for lambda_state in range(1, self.nr_of_states + 1)
                 ]
             )
@@ -372,7 +377,9 @@ class FreeEnergyCalculator(object):
             snapshots.save_dcd(f"{self.base_path}/traj.dcd")
             u_kn = np.stack(
                 [
-                    _evaluated_e_on_all_snapshots_CHARMM(lambda_state, env)
+                    self._evaluated_e_on_all_snapshots_CHARMM(
+                        snapshots, lambda_state, env
+                    )
                     for lambda_state in range(1, self.nr_of_states + 1)
                 ]
             )
