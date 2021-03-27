@@ -334,7 +334,6 @@ outfile.close()
                 shutil.copyfile(omm_source, omm_target)
             except OSError:
                 logger.critical(f"Could not find file: {f}")
-                raise
 
         # copy omm simulation script
         # start with waterbox
@@ -500,6 +499,8 @@ for force in system.getForces():
                     f"switch: {overwrite_parameters['vdw']} not implemented."
                 )
             self.vdw_switch = overwrite_parameters["vdw"]
+        else:
+            self.vdw_switch = "Force-switch"  # default for now
 
         input_simulation_parameter = open(omm_simulation_parameter_source, "r")
         output_simulation_parameter = open(
