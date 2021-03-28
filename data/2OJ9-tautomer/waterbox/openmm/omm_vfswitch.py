@@ -22,7 +22,7 @@ def vfswitch(system, psf, inputs):
     for force in system.getForces():
         if isinstance(force, NonbondedForce):
             nonbonded = force
-        if isinstance(force, CustomNonbondedForce):
+        if isinstance(force, CustomNonbondedForce) and force.getNumTabulatedFunctions() == 2:
             nbfix     = force
             chknbfix  = True
 

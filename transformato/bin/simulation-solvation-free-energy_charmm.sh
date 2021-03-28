@@ -14,7 +14,7 @@ pwd
 hostname
 
 input=charmm_run_vacuum
-charmm -i ${input}.inp > log_vac.out
+/home/mwieder/Work/Software/charmm/exec/gnu/charmm -i ${input}.inp > log_vac.out
 
 input=charmm_run_waterbox
-OMP_NUM_THREADS=8 charmm -i ${input}.inp > log_solv.out
+OMP_NUM_THREADS=8 /home/mwieder/Work/Software/charmm/exec/gnu/charmm -i ${input}.inp > log_solv.out

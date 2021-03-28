@@ -19,7 +19,6 @@ from omm_readparams import *
 from omm_vfswitch import *
 from omm_barostat import *
 from omm_restraints import *
-from omm_hmr import *
 from omm_rewrap import *
 
 from simtk.unit import *
@@ -39,7 +38,6 @@ parser.add_argument('-opdb', metavar='PDBFILE', dest='opdb', help='Output PDB fi
 parser.add_argument('-orst', metavar='RSTFILE', dest='orst', help='Output restart file (optional)', default=None)
 parser.add_argument('-ochk', metavar='CHKFILE', dest='ochk', help='Output checkpoint file (optional)', default=None)
 parser.add_argument('-odcd', metavar='DCDFILE', dest='odcd', help='Output trajectory file (optional)', default=None)
-parser.add_argument('-hmr', dest='hmr', help='Apply Hydrogen Mass Repartitioning (optional)', action='store_true', default=False)
 parser.add_argument('-rewrap', dest='rewrap', help='Re-wrap the coordinates in a molecular basis (optional)', action='store_true', default=False)
 args = parser.parse_args()
 
@@ -55,15 +53,31 @@ else:
     psf = gen_box(psf, crd)
 
 # Build system
-system = psf.createSystem(params, nonbondedMethod=inputs.coulomb,
-                          nonbondedCutoff=inputs.r_off*nanometers,
-                          constraints=inputs.cons,
-                          ewaldErrorTolerance=inputs.ewald_Tol)
+nboptions = dict(nonbondedMethod=inputs.coulomb,
+                 nonbondedCutoff=inputs.r_off*nanometers,
+                 constraints=inputs.cons,
+                 ewaldErrorTolerance=inputs.ewald_Tol)
+if inputs.vdw == 'Switch': nboptions['switchDistance'] = inputs.r_on*nanometers
+if inputs.vdw == 'LJPME':  nboptions['nonbondedMethod'] = LJPME
 
+system = psf.createSystem(params, **nboptions)
 if inputs.vdw == 'Force-switch': system = vfswitch(system, psf, inputs)
+
+if inputs.lj_lrc == 'yes':
+    for force in system.getForces():
+        if isinstance(force, NonbondedForce): force.setUseDispersionCorrection(True)
+        if isinstance(force, CustomNonbondedForce) and force.getNumTabulatedFunctions() != 1:
+            force.setUseLongRangeCorrection(True)
+
+if inputs.e14scale != 1.0:
+    for force in system.getForces():
+        if isinstance(force, NonbondedForce): nonbonded = force; break
+    for i in range(nonbonded.getNumExceptions()):
+        atom1, atom2, chg, sig, eps = nonbonded.getExceptionParameters(i)
+        nonbonded.setExceptionParameters(i, atom1, atom2, chg*inputs.e14scale, sig, eps)
+
 if inputs.pcouple == 'yes':      system = barostat(system, inputs)
 if inputs.rest == 'yes':         system = restraints(system, crd, inputs)
-if args.hmr:                     system = HydrogenMassRepartition(system, psf)
 integrator = LangevinIntegrator(inputs.temp*kelvin, inputs.fric_coeff/picosecond, inputs.dt*picoseconds)
 
 # Set platform

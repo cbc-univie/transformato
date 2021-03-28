@@ -9,7 +9,7 @@ Correspondance: jul316@lehigh.edu or wonpil@lehigh.edu
 Last update: March 29, 2017
 """
 
-import os
+import os, json
 
 from simtk.unit import *
 from simtk.openmm import *
@@ -59,26 +59,18 @@ def read_charmm_rst(filename):
     return charmm_rst
 
 def read_params(filename):
-    extlist = ['rtf', 'prm', 'str']
-
     parFiles = ()
     for line in open(filename, 'r'):
         if '!' in line: line = line.split('!')[0]
         parfile = line.strip()
-        if len(parfile) != 0:
-            ext = parfile.lower().split('.')[-1]
-            if not ext in extlist: continue
-            parFiles += ( parfile, )
+        if len(parfile) != 0: parFiles += ( parfile, )
 
     params = CharmmParameterSet( *parFiles )
     return params
 
 def read_box(psf, filename):
-    for line in open(filename, 'r'):
-        segments = line.split('=')
-        if segments[0].strip() == "BOXLX": boxlx = float(segments[1])
-        if segments[0].strip() == "BOXLY": boxly = float(segments[1])
-        if segments[0].strip() == "BOXLZ": boxlz = float(segments[1])
+    sysinfo = json.load(open(filename, 'r'))
+    boxlx, boxly, boxlz = map(float, sysinfo['dimensions'][:3])
     psf.setBox(boxlx*angstroms, boxly*angstroms, boxlz*angstroms)
     return psf
 
