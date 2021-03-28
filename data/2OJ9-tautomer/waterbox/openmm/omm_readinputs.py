@@ -32,6 +32,8 @@ class _OpenMMReadInputs():
         self.vdw              = 'Force-switch'                            # vdW cut-off method
         self.r_on             = 1.0                                       # Switch-on distance (nm)
         self.r_off            = 1.2                                       # Switch-off distance (nm)
+        self.lj_lrc           = 'no'                                      # Turn on/off LJ long-range correction
+        self.e14scale         = 1.0                                       # 1-4 electrostatic interaction scaling
 
         self.temp             = 300.0                                     # Temperature (K)
         self.fric_coeff       = 1                                         # Friction coefficient for Langevin dynamics
@@ -91,9 +93,16 @@ class _OpenMMReadInputs():
                         if input_value.upper() == 'PME':                self.coulomb          = PME
                     if input_param == 'EWALD_TOL':                      self.ewald_Tol        = float(input_value)
                     if input_param == 'VDW':
+                        if input_value.upper() == 'CUTOFFPERIODIC':     self.vdw              = 'CutoffPeriodic'
                         if input_value.upper() == 'FORCE-SWITCH':       self.vdw              = 'Force-switch'
+                        if input_value.upper() == 'SWITCH':             self.vdw              = 'Switch'
+                        if input_value.upper() == 'LJPME':              self.vdw              = 'LJPME'
                     if input_param == 'R_ON':                           self.r_on             = float(input_value)
                     if input_param == 'R_OFF':                          self.r_off            = float(input_value)
+                    if input_param == 'LJ_LRC':
+                        if input_value.upper() == 'YES':                self.lj_lrc           = 'yes'
+                        if input_value.upper() == 'NO':                 self.lj_lrc           = 'no'
+                    if input_param == 'E14SCALE':                       self.e14scale         = float(input_value)
                     if input_param == 'TEMP':                           self.temp             = float(input_value)
                     if input_param == 'FRIC_COEFF':                     self.fric_coeff       = float(input_value)
                     if input_param == 'PCOUPLE':
