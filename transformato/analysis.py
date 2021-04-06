@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 def return_reduced_potential(
     potential_energy: unit.Quantity, volume: unit.Quantity, temperature: unit.Quantity
-)->float:
+) -> float:
     """Retrieve the reduced potential for a given context.
     The reduced potential is defined as in Ref. [1]
     u = \beta [U(x) + p V(x)]
@@ -50,7 +50,7 @@ def return_reduced_potential(
     pressure = 1.0 * unit.atmosphere  # atm
     kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
     beta = 1.0 / (kB * temperature)
-    #potential_energy += pressure * volume
+    # potential_energy += pressure * volume
     return beta * potential_energy
 
 
@@ -186,6 +186,9 @@ class FreeEnergyCalculator(object):
                     )
 
                 confs.append(traj)
+                logger.info(
+                    f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
+                )
                 logger.info(f"Nr of snapshots: {len(traj)}")
                 N_k[env].append(len(traj))
 
@@ -230,7 +233,7 @@ class FreeEnergyCalculator(object):
         import math
 
         pot_energies = []
-        file_name: str = ""
+        file_name = ""
         if env == "waterbox":
             file_name = f"{path}/ener_solv.log"
         elif env == "vacuum":
@@ -252,14 +255,16 @@ class FreeEnergyCalculator(object):
         assert len(pot_energies) > 50
         return pot_energies
 
-    def _evaluate_traj_with_CHARMM(self, path: str, env: str, volumn_list: list = []):
+    def _evaluate_traj_with_CHARMM(
+        self, path: str, env: str, volumn_list: list = []
+    ) -> list:
 
-        script_name: str = ""
+        script_name = ""
         if env == "waterbox":
-            script_name: str = "charmm_evaluate_energy_in_solv.inp"
+            script_name = "charmm_evaluate_energy_in_solv.inp"
             assert len(volumn_list) > 1
         elif env == "vacuum":
-            script_name: str = "charmm_evaluate_energy_in_vac.inp"
+            script_name = "charmm_evaluate_energy_in_vac.inp"
 
         top = self.configuration["system"][self.structure][env]["intermediate-filename"]
 
@@ -285,11 +290,6 @@ class FreeEnergyCalculator(object):
             f.write(exe.stdout)
             f.write("Capture stderr")
             f.write(exe.stderr)
-
-        logger.info("Capture stdout")
-        logger.info(exe.stdout)
-        logger.info("Capture stderr")
-        logger.info(exe.stderr)
 
         pot_energies = self._parse_CHARMM_energy_output(path, env)
 
@@ -609,16 +609,15 @@ class FreeEnergyCalculator(object):
     @property
     def end_state_free_energy_difference(self):
         """DeltaF[lambda=1 --> lambda=0]"""
-        K = len(self.waterbox_free_energy_differences)
         if (
             self.configuration["simulation"]["free-energy-type"]
             == "solvation-free-energy"
         ):
             return (
-                self.waterbox_free_energy_differences[0, K - 1]
-                - self.vacuum_free_energy_differences[0, K - 1],
-                self.waterbox_free_energy_difference_uncertanties[0, K - 1]
-                + self.vacuum_free_energy_difference_uncertanties[0, K - 1],
+                self.waterbox_free_energy_differences[0, -1]
+                - self.vacuum_free_energy_differences[0, -1],
+                self.waterbox_free_energy_difference_uncertanties[0, -1]
+                + self.vacuum_free_energy_difference_uncertanties[0, -1],
             )
 
         elif (
@@ -626,10 +625,10 @@ class FreeEnergyCalculator(object):
             == "binding-free-energy"
         ):
             return (
-                self.complex_free_energy_differences[0, K - 1]
-                - self.waterbox_free_energy_differences[0, K - 1],
-                self.complex_free_energy_difference_uncertanties[0, K - 1]
-                + self.waterbox_free_energy_difference_uncertanties[0, K - 1],
+                self.complex_free_energy_differences[0, -1]
+                - self.waterbox_free_energy_differences[0, -1],
+                self.complex_free_energy_difference_uncertanties[0, -1]
+                + self.waterbox_free_energy_difference_uncertanties[0, -1],
             )
         else:
             raise RuntimeError()

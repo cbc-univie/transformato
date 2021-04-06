@@ -130,7 +130,7 @@ read coor unit 10 card
     ##### gas phase ######
 
     gas_phase = f"""
-coor orie sele all end ! put the molecule at the origin
+!coor orie sele all end ! put the molecule at the origin
 
 MMFP
 GEO rcm sphere -
@@ -183,7 +183,7 @@ CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
 !Image centering by residue
-IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+!IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
 
 !
 ! Nonbonded Options
@@ -253,6 +253,7 @@ stop"""
 
     return charmm_str
 
+
 def charmm_evaluation(
     env: str,
     intermediate_filename: str,
@@ -276,7 +277,7 @@ open read unit 10 card name {intermediate_filename}.crd
 read coor unit 10 card"""
 
     ##### gas phase ######
-    
+
     gas_phase = f"""
 coor orie sele all end ! put the molecule at the origin
 
@@ -318,7 +319,7 @@ if @idx .lt. @nframes goto loop
 stop"""
 
     ##### solv phase ######
-    
+
     solv_phase = f"""
 stream charmm_step3_pbcsetup.str
 
@@ -336,7 +337,7 @@ IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
 !
 ! Nonbonded Options
 !
-cons fix sele segi solv end
+! cons fix sele segi solv end
 
 nbonds atom vatom {switch} bycb -
        ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
