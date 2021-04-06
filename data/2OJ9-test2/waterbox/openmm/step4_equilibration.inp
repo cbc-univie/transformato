@@ -4,11 +4,11 @@ mini_Tol    = 100.0                             # Minimization energy tolerance
 gen_vel     = yes                               # Generate initial velocities
 gen_temp    = 303.15                            # Temperature for generating initial velocities (K)
                                          
-nstep       = 25000                             # Number of steps to run
+nstep       = 125000                            # Number of steps to run
 dt          = 0.001                             # Time-step (ps)
                                          
 nstout      = 1000                              # Writing output frequency (steps)
-nstdcd      = 1000                              # Writing coordinates trajectory frequency (steps)
+nstdcd      = 5000                              # Writing coordinates trajectory frequency (steps)
                                          
 coulomb     = PME                               # Electrostatic cut-off method
 ewald_Tol   = 0.0005                            # Ewald error tolerance

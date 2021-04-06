@@ -26,7 +26,7 @@ set ctonnb 980.
 set cutnb  1000.
 
 nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
-  atom swit vatom vswitch -
+  atom swit vatom VFSWItch -
   inbfrq 1 
 
 energy   inbfrq 1
@@ -35,7 +35,7 @@ energy   inbfrq 0
 mini sd nstep 200
 
 set nstep = 2000 
-set temp = 300.0
+set temp = 303.15
 
 scalar fbeta set 5. sele all end  
 open write unit 21 file name lig_in_vacuum.dcd
@@ -45,5 +45,6 @@ DYNA lang leap start time 0.001 nstep @nstep -
     iunread -1 iunwri -1 iuncrd 21 iunvel -1 kunit -1 -
     nsavc 5 nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
+    ECHECK 0
     
 stop

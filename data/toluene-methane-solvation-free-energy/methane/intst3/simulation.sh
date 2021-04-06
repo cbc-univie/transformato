@@ -23,7 +23,7 @@ istep=lig_in_waterbox
 irst=lig_in_waterbox
 orst=lig_in_waterbox_rst
 
-python -u openmm_run.py -i ${input}.inp -t toppar.str -p ${init}.psf -c ${init}.crd  -orst ${irst}.rst -odcd ${istep}.dcd
+python -u openmm_run.py -i ${input}.inp -t toppar.str -p ${init}.psf -c ${init}.crd  -orst ${irst}.rst -odcd ${istep}.dcd &> waterbox_out.log
 
 input=lig_in_vacuum
 init=lig_in_vacuum
@@ -32,4 +32,4 @@ istep=lig_in_vacuum
 irst=lig_in_vacuum
 orst=lig_in_vacuum_rst
 
-python -u openmm_run_vacuum.py -i ${input}.inp -t toppar.str -p ${init}.psf -c ${init}.crd -orst ${irst}.rst -odcd ${istep}.dcd
+python -u openmm_run_vacuum.py -i ${input}.inp -t toppar.str -p ${init}.psf -c ${init}.crd -orst ${irst}.rst -odcd ${istep}.dcd &> vacuum_out.log
