@@ -11,12 +11,16 @@ import pytest
 import shutil
 
 
-def run_simulation(output_files):
+def run_simulation(output_files, engine="openMM"):
     for path in sorted(output_files):
         # because path is object not string
         print(f"Start sampling for: {path}")
+        runfile = "simulation.sh"
+        if engine.upper() == "CHARMM":
+            runfile = "simulation_charmm.sh"
+
         exe = subprocess.run(
-            ["bash", f"{str(path)}/simulation.sh", str(path)],
+            ["bash", f"{str(path)}/{runfile}", str(path)],
             check=True,
             capture_output=True,
             text=True,
@@ -40,12 +44,9 @@ def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
     )
 
     run_simulation(output_files)
-    ddG, dddG = postprocessing(
-        configuration, name="toluene", engine="openMM", max_snapshots=100
-    )
-    np.isclose(ddG, 10.074696575528037, rtol=1e-5)
-    print(ddG)
-    shutil.rmtree("toluene-methane-solvation-free-energy")
+    f = "/".join(output_files[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)
 
 
 @pytest.mark.slowtest
@@ -61,31 +62,16 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
         conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
     )
     run_simulation(output_files)
-    ddG, dddG = postprocessing(
-        configuration, name="methane", engine="openMM", max_snapshots=300
-    )
-    np.isclose(ddG, 8.9984, rtol=1e-2)
+    f = "/".join(output_files[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)
 
 
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM_generate_trajs():
-    from transformato.loeffler_systems import mutate_methane_to_methane_cc
-    from .test_run_production import run_simulation
-
-    output_files, configuration = mutate_methane_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    )
-    run_simulation(output_files)
-
-
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_trajs():
+def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM():
     from transformato.loeffler_systems import mutate_methane_to_methane_cc
     from .test_run_production import run_simulation
     from .test_postprocessing import postprocessing
@@ -95,7 +81,9 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_generate_tr
         output_dir=".",
     )
     run_simulation(output_files)
-    postprocessing(configuration, name="methane", engine="CHARMM")
+    f = "/".join(output_files[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)
 
 
 @pytest.mark.slowtest
@@ -110,14 +98,16 @@ def test_run_acetylacetone_tautomer_pair(caplog):
     (output_files_t1, output_files_t2), _ = setup_acetylacetone_tautomer_pair()
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    shutil.rmtree("acetylacetone-keto-acetylacetone-enol-solvation-free-energy")
+    f = "/".join(output_files_t1[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)
 
 
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_2OJ9_tautomer_pair(caplog):
+def test_run_2OJ9_tautomer_pair_openMM(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair
     from .test_run_production import run_simulation
@@ -131,27 +121,32 @@ def test_run_2OJ9_tautomer_pair(caplog):
     )
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    # shutil.rmtree("2OJ9-original-2OJ9-tautomer-solvation-free-energy")
+    f = "/".join(output_files_t1[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)
 
 
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_get_free_energy_2OJ9_tautomer_pair(caplog):
+def test_run_2OJ9_tautomer_pair_charmm(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair
     from .test_run_production import run_simulation
-    from .test_postprocessing import postprocessing
 
-    (output_files_t1, output_files_t2), conf, _ = setup_2OJ9_tautomer_pair()
-    run_simulation(output_files_t1)
-    run_simulation(output_files_t2)
-    ddG1, dddG1 = postprocessing(conf, name="2OJ9-original", engine="openMM")
-    ddG2, dddG2 = postprocessing(conf, name="2OJ9-tautomer", engine="openMM")
+    conf_path = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
 
-    ddG = ddG2 - ddG1
-    assert np.isclose(ddG, 6.884759627021253)
+    (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair(
+        conf_path=conf_path
+    )
+    run_simulation(output_files_t1, engine="CHARMM")
+    run_simulation(output_files_t2, engine="CHARMM")
+    f = "/".join(output_files_t1[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)
 
 
 @pytest.mark.slowtest
@@ -167,13 +162,6 @@ def test_get_free_energy_acetylaceton_tautomer_pair(caplog):
     (output_files_t1, output_files_t2), conf = setup_acetylacetone_tautomer_pair()
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    ddG1, dddG1 = postprocessing(
-        conf, name="acetylacetone-keto", engine="openMM"
-    )  # TODO: correct namings
-    ddG2, dddG2 = postprocessing(
-        conf, name="acetylacetone-enol", engine="openMM"
-    )  # TODO: correct namings
-
-    ddG = ddG2 - ddG1
-    assert np.isclose(ddG, 0.5866215857842647)
-    shutil.rmtree("acetylacetone-keto-acetylacetone-enol-solvation-free-energy")
+    f = "/".join(output_files_t1[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)

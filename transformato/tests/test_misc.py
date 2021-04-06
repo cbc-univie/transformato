@@ -13,15 +13,24 @@ import numpy as np
 def test_reduced_energy():
     from transformato.constants import temperature as T
 
+    # with openMM generated traj evaluated with openMM   
     e = -41264.39524669979 * unit.kilojoule_per_mole
     rE = return_reduced_potential(e, volume=0, temperature=T)
     print(rE)
     assert np.isclose(rE, -16371.30301422)
 
+    # with openMM generated traj evaluated with CHARMM
     e = -1099.41855 * unit.kilocalorie_per_mole
     rE = return_reduced_potential(e, volume=0, temperature=T)
     print(rE)
     assert np.isclose(rE, -1824.9982986086145)
+
+    # energy term in CHARMM traj
+    # DYNA>        0      0.00000  -7775.74490   1914.51007  -9690.25498    377.14828
+    e = -9690.25498 * unit.kilocalorie_per_mole #ENERGgy
+    rE = return_reduced_potential(e, volume=0, temperature=T)
+    print(rE)
+    assert np.isclose(rE, -16085.501605902184)
 
 
 def test_convert_to_kT():
@@ -46,8 +55,9 @@ def test_change_platform():
     )
 
     check_platform(configuration)
-    print(configuration)
-    if platform == "CPU":
+    print(configuration["simulation"]["GPU"])
+    print(platform)
+    if platform.upper() == "CPU":
         assert configuration["simulation"]["GPU"] == False
     else:
         assert configuration["simulation"]["GPU"] == True
