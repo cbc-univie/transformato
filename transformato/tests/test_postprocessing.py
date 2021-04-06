@@ -12,29 +12,46 @@ import logging
 from transformato import (
     load_config_yaml,
 )
-
-
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+from .test_mutation import (
+    _set_output_files_2oj9_tautomer_pair,
+    _set_output_files_acetylaceton_tautomer_pair,
+    _set_output_files_toluene_methane_pair,
 )
-def test_compare_energies_2OJ9_tautomer_pair_vacuum(caplog):
+
+
+def postprocessing(
+    configuration,
+    name="methane",
+    engine="openMM",
+    max_snapshots=300,
+    show_summary=False,
+):
+    from transformato import FreeEnergyCalculator
+
+    f = FreeEnergyCalculator(configuration, name)
+    f.load_trajs(nr_of_max_snapshots=max_snapshots)
+    f.calculate_dG_to_common_core(engine=engine)
+    ddG, dddG = f.end_state_free_energy_difference
+    print(f"Free energy difference: {ddG}")
+    print(f"Uncertanty: {dddG}")
+    if show_summary:
+        f.show_summary()
+    return ddG, dddG, f
+
+
+###########################################
+# 2OJ9-tautomer system
+###########################################
+@pytest.mark.system_2oj9
+def test_compare_energies_2OJ9_original_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
     import mdtraj as md
 
-    base = "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/"
-    # run_simulation(output_files_t1[:2])
-    # print(output_files_t1)
-    output_files_t1 = [
-        f"{base}/intst1/",
-        f"{base}/intst2/",
-        f"{base}/intst3/",
-        f"{base}/intst4/",
-        f"{base}/intst5/",
-        f"{base}/intst6/",
-        f"{base}/intst7/",
-    ]
+    env = "vacuum"
+
+    base = "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/"
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
     conf = (
         "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
@@ -47,12 +64,450 @@ def test_compare_energies_2OJ9_tautomer_pair_vacuum(caplog):
     f = FreeEnergyCalculator(configuration, "2OJ9-original")
     for idx, b in enumerate(output_files_t1):
         traj = md.load_dcd(
-            f"{b}/lig_in_vacuum.dcd",
-            f"{b}/lig_in_vacuum.psf",
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, "vacuum")
-        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, "vacuum")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        print(s)
+        mae = np.sum(s) / len(s)
+        assert mae < 0.005
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=0.1)
+
+
+@pytest.mark.system_2oj9
+def test_compare_energies_2OJ9_original_waterbox(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "waterbox"
+
+    base = "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/"
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
+
+    conf = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "2OJ9-original")
+    for idx, b in enumerate(output_files_t1):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        print(s)
+        mae = np.sum(s) / len(s)
+        assert mae < 1.0
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=0.1)
+
+
+@pytest.mark.system_2oj9
+def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "vacuum"
+    base = "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/"
+    _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
+
+    conf = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "2OJ9-tautomer")
+    for idx, b in enumerate(output_files_t2):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        print(s)
+        mae = np.sum(s) / len(s)
+        assert mae < 0.005
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+
+
+@pytest.mark.system_2oj9
+def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "waterbox"
+    base = "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/"
+    _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
+
+    conf = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+    f = FreeEnergyCalculator(configuration, "2OJ9-tautomer")
+    for idx, b in enumerate(output_files_t2):
+        print(b)
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        # traj = traj.center_coordinates()
+        traj.save_dcd(f"{base}/traj.dcd", force_overwrite=True)
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        mae = np.sum(s) / len(s)
+        print(mae)
+        assert mae < 1.0
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            print(f"{e_charmm}, {e_openMM}: {e_charmm - e_openMM}")
+            assert np.isclose(e_charmm, e_openMM, rtol=0.1)
+
+
+@pytest.mark.system_2oj9
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_2oj9_solvation_free_energy_with_different_engines_postprocessing():
+
+    conf = (
+        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
+    )
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    # 2OJ9-original to tautomer common core
+    ddG_charmm, dddG, f_charmm = postprocessing(
+        configuration, name="2OJ9-original", engine="CHARMM", max_snapshots=600
+    )
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration, name="2OJ9-original", engine="openMM", max_snapshots=600
+    )
+
+    assert np.isclose(
+        f_charmm.vacuum_free_energy_differences[0, -1],
+        f_openMM.vacuum_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+
+    assert np.isclose(
+        f_charmm.waterbox_free_energy_differences[0, -1],
+        f_openMM.waterbox_free_energy_differences[0, -1],
+        rtol=1e-2,
+    )
+
+    assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-2)
+    assert np.isclose(ddG_openMM, 3.3739872639241213)
+    assert np.isclose(ddG_charmm, 3.3656925062767016)
+
+    # 2OJ9-tautomer to tautomer common core
+    ddG_charmm, dddG, f_charmm = postprocessing(
+        configuration, name="2OJ9-tautomer", engine="CHARMM", max_snapshots=600
+    )
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration, name="2OJ9-tautomer", engine="openMM", max_snapshots=600
+    )
+
+    assert np.isclose(
+        f_charmm.vacuum_free_energy_differences[0, -1],
+        f_openMM.vacuum_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+
+    assert np.isclose(
+        f_charmm.waterbox_free_energy_differences[0, -1],
+        f_openMM.waterbox_free_energy_differences[0, -1],
+        rtol=1e-2,
+    )
+
+    assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-2)
+    assert np.isclose(ddG_openMM, 4.721730274995082)
+    assert np.isclose(ddG_charmm, 4.722406415490632)
+
+
+###########################################
+# acetylacetone-tautomer system
+###########################################
+@pytest.mark.system_acetylacetone
+def test_compare_energies_acetylacetone_enol_vacuum(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "vacuum"
+
+    base = "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-enol/"
+    (
+        output_files_enol,
+        output_files_keto,
+    ) = _set_output_files_acetylaceton_tautomer_pair()
+
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "acetylacetone-enol")
+    for idx, b in enumerate(output_files_enol):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        print(s)
+        mae = np.sum(s) / len(s)
+        assert mae < 0.005
+
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+
+
+@pytest.mark.system_acetylacetone
+def test_compare_energies_acetylacetone_enol_waterbox(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "waterbox"
+
+    base = "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-enol/"
+    (
+        output_files_enol,
+        output_files_keto,
+    ) = _set_output_files_acetylaceton_tautomer_pair()
+
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "acetylacetone-enol")
+    for idx, b in enumerate(output_files_enol):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        print(s)
+        mae = np.sum(s) / len(s)
+        assert mae < 1.0
+
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+
+
+@pytest.mark.system_acetylacetone
+def test_compare_energies_acetylacetone_keto_vacuum(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "vacuum"
+    base = "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/"
+    (
+        output_files_enol,
+        output_files_keto,
+    ) = _set_output_files_acetylaceton_tautomer_pair()
+
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "acetylacetone-keto")
+    for idx, b in enumerate(output_files_keto):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        print(s)
+        mae = np.sum(s) / len(s)
+        assert mae < 0.005
+
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+
+
+@pytest.mark.system_acetylacetone
+def test_compare_energies_acetylacetone_keto_waterbox(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "waterbox"
+    base = "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/"
+    (
+        output_files_enol,
+        output_files_keto,
+    ) = _set_output_files_acetylaceton_tautomer_pair()
+
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "acetylacetone-keto")
+    for idx, b in enumerate(output_files_keto):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        print(s)
+        mae = np.sum(s) / len(s)
+        assert mae < 1.0
+
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+
+
+@pytest.mark.system_acetylacetone
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_acetylacetone_solvation_free_energy_with_different_engines_postprocessing():
+
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    # enol
+    ddG_charmm, dddG, f_charmm = postprocessing(
+        configuration, name="acetylacetone-enol", engine="CHARMM", max_snapshots=500
+    )
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration, name="acetylacetone-enol", engine="openMM", max_snapshots=500
+    )
+    assert np.isclose(
+        f_charmm.vacuum_free_energy_differences[0, -1],
+        f_openMM.vacuum_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+    assert np.isclose(
+        f_charmm.waterbox_free_energy_differences[0, -1],
+        f_openMM.waterbox_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+
+    assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-1)
+    print(ddG_openMM)
+    print(ddG_charmm)
+    assert np.isclose(ddG_openMM, -0.6532604462065663)
+    assert np.isclose(ddG_charmm, -0.6591611245563769)
+
+    # keto
+    ddG_charmm, dddG, f_charmm = postprocessing(
+        configuration, name="acetylacetone-keto", engine="CHARMM", max_snapshots=600
+    )
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration, name="acetylacetone-keto", engine="openMM", max_snapshots=600
+    )
+    assert np.isclose(
+        f_charmm.vacuum_free_energy_differences[0, -1],
+        f_openMM.vacuum_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+    assert np.isclose(
+        f_charmm.waterbox_free_energy_differences[0, -1],
+        f_openMM.waterbox_free_energy_differences[0, -1],
+        rtol=0.01,
+    )
+    assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-1)
+    print(ddG_openMM)
+    print(ddG_charmm)
+    assert np.isclose(ddG_openMM, 2.691482858438775, rtol=0.01)
+    assert np.isclose(ddG_charmm, 2.699116266252545, rtol=0.01)
+
+
+###########################################
+# toluene-methane system
+###########################################
+@pytest.mark.system_toluene_methane
+def test_compare_energies_methane_vacuum(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "vacuum"
+    base = "data/toluene-methane-solvation-free-energy/methane/"
+    (
+        output_files_methane,
+        output_files_toluene,
+    ) = _set_output_files_toluene_methane_pair()
+
+    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "methane")
+    for idx, b in enumerate(output_files_methane):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
@@ -62,96 +517,176 @@ def test_compare_energies_2OJ9_tautomer_pair_vacuum(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_compare_energies_2OJ9_tautomer_pair_waterbox(caplog):
+@pytest.mark.system_toluene_methane
+def test_compare_energies_methane_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
     import mdtraj as md
 
-    base = "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/"
-    output_files = [
-        f"{base}/intst1/",
-        f"{base}/intst2/",
-        f"{base}/intst3/",
-        f"{base}/intst4/",
-        f"{base}/intst5/",
-        f"{base}/intst6/",
-        f"{base}/intst7/",
-    ]
+    env = "waterbox"
+    base = "data/toluene-methane-solvation-free-energy/methane/"
+    (
+        output_files_methane,
+        output_files_toluene,
+    ) = _set_output_files_toluene_methane_pair()
 
-    conf = (
-        "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml"
-    )
+    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
-    f = FreeEnergyCalculator(configuration, "2OJ9-original")
-    for idx, b in enumerate(output_files[:1]):
+
+    f = FreeEnergyCalculator(configuration, "methane")
+    for idx, b in enumerate(output_files_methane):
         traj = md.load_dcd(
-            f"{b}/lig_in_waterbox.dcd",
-            f"{b}/lig_in_waterbox.psf",
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, "waterbox")
-        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, "waterbox")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        mae = np.sum(s) / len(s)
+        assert mae < 0.7
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+
+
+@pytest.mark.system_toluene_methane
+def test_compare_energies_toluene_vacuum(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "vacuum"
+    base = "data/toluene-methane-solvation-free-energy/toluene/"
+    (
+        output_files_methane,
+        output_files_toluene,
+    ) = _set_output_files_toluene_methane_pair()
+
+    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "toluene")
+    for idx, b in enumerate(output_files_toluene):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
+        assert len(l_charmm) == len(l_openMM)
+        s = abs(np.array(l_charmm) - np.array(l_openMM))
+        mae = np.sum(s) / len(s)
+        assert mae < 0.005
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+
+
+@pytest.mark.system_toluene_methane
+def test_compare_energies_toluene_waterbox(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+
+    env = "waterbox"
+    base = "data/toluene-methane-solvation-free-energy/toluene/"
+    (
+        output_files_methane,
+        output_files_toluene,
+    ) = _set_output_files_toluene_methane_pair()
+
+    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    f = FreeEnergyCalculator(configuration, "toluene")
+    for idx, b in enumerate(output_files_toluene):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+        traj.save_dcd(f"{base}/traj.dcd")
+        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
         print(mae)
-        print(l_charmm)
-        print(l_openMM)
-
-        # assert mae < 0.005
-        # for e_charmm, e_openMM in zip(l_charmm, l_openMM):
-        #    assert np.isclose(e_charmm, e_openMM, rtol=1e-1)
-    assert False
+        assert mae < 0.8
+        for e_charmm, e_openMM in zip(l_charmm, l_openMM):
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-def postprocessing(configuration, name="methane", engine="openMM", max_snapshots=300):
-    from transformato import FreeEnergyCalculator
-
-    f = FreeEnergyCalculator(configuration, name)
-    f.load_trajs(nr_of_max_snapshots=max_snapshots)
-    f.calculate_dG_to_common_core(engine=engine)
-    ddG, dddG = f.end_state_free_energy_difference
-    print(f"Free energy difference: {ddG}")
-    print(f"Uncertanty: {dddG}")
-    f.show_summary()
-    return ddG, dddG
-
-
+@pytest.mark.system_toluene_methane
 @pytest.mark.slowtest
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM_postprocessing():
-    from transformato import FreeEnergyCalculator
+def test_toluene_to_methane_solvation_free_energy_with_different_engines_postprocessing():
 
     conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
-
-    ddG, dddG = postprocessing(
-        configuration, name="methane", engine="CHARMM", max_snapshots=300
+    # methane
+    ddG_charmm, dddG, f_charmm = postprocessing(
+        configuration, name="methane", engine="CHARMM", max_snapshots=600
     )
-    np.isclose(ddG, -1.2102764838282152, rtol=1e-8)
-
-
-def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM_postprocessing():
-
-    conf = "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="data"
-    )  # NOTE: for preprocessing input_dir is the output dir
-    ddG, dddG = postprocessing(
-        configuration, name="methane", engine="openMM", max_snapshots=300
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration, name="methane", engine="openMM", max_snapshots=600
     )
-    np.isclose(ddG, -1.2102764838282152, rtol=1e-8)
+    assert np.isclose(
+        f_charmm.vacuum_free_energy_differences[0, -1],
+        f_openMM.vacuum_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+    assert np.isclose(
+        f_charmm.waterbox_free_energy_differences[0, -1],
+        f_openMM.waterbox_free_energy_differences[0, -1],
+        rtol=1e-3,
+    )
+
+    assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-1)
+    print(f_charmm.vacuum_free_energy_differences[0, -1])
+    print(f_openMM.vacuum_free_energy_differences[0, -1])
+    assert np.isclose(ddG_openMM, -1.3681988336807516)
+    assert np.isclose(ddG_charmm, -1.3674494407692004)
+
+    # toluene
+    ddG_charmm, dddG, f_charmm = postprocessing(
+        configuration, name="toluene", engine="CHARMM", max_snapshots=600
+    )
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration, name="toluene", engine="openMM", max_snapshots=600
+    )
+    assert np.isclose(
+        f_charmm.vacuum_free_energy_differences[0, -1],
+        f_openMM.vacuum_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+    assert np.isclose(
+        f_charmm.waterbox_free_energy_differences[0, -1],
+        f_openMM.waterbox_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+
+    assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-1)
+    print(f_charmm.vacuum_free_energy_differences[0, -1])
+    print(f_openMM.vacuum_free_energy_differences[0, -1])
+    assert np.isclose(ddG_openMM, 5.651522313536532)
+    assert np.isclose(ddG_charmm, 5.651678173410401)
 
 
 def test_postprocessing_thinning():
@@ -163,21 +698,26 @@ def test_postprocessing_thinning():
     )  # NOTE: for preprocessing input_dir is the output dir
 
     f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=1000)
+    f.load_trajs(nr_of_max_snapshots=300)
     assert len(f.snapshots.keys()) == 2  # entry for vacuum and waterbox
     assert f.nr_of_states == 3  # nr of lambda states
 
     print(f.snapshots["vacuum"])
-    assert (
-        len(f.snapshots["vacuum"]) == 2250
-    )  # total:3000 frames, 75%: 2250 ---> for the individual traj: 1000 frames, 75% are 750, and we take all of these
-    assert len(f.snapshots["waterbox"]) == 2250  # total:3000 frames, 75%: 2250
+    assert len(f.snapshots["vacuum"]) == 900
+    assert len(f.snapshots["waterbox"]) == 900
 
     f = FreeEnergyCalculator(configuration, "methane")
-    f.load_trajs(nr_of_max_snapshots=500)
+    f.load_trajs(nr_of_max_snapshots=200)
 
     print(f.snapshots["vacuum"])
-    assert (
-        len(f.snapshots["vacuum"]) == 1500
-    )  # input had length of 1000, 25% removed gives 750 frames, taking only 500 of these we end up with 1500 frames
-    assert len(f.snapshots["waterbox"]) == 1500  #
+    assert len(f.snapshots["vacuum"]) == 600
+    assert len(f.snapshots["waterbox"]) == 600
+
+    f = FreeEnergyCalculator(configuration, "toluene")
+    f.load_trajs(nr_of_max_snapshots=200)
+    assert len(f.snapshots.keys()) == 2  # entry for vacuum and waterbox
+    assert f.nr_of_states == 13  # nr of lambda states
+
+    print(f.snapshots["vacuum"])
+    assert len(f.snapshots["vacuum"]) == 1950
+    assert len(f.snapshots["waterbox"]) == 1950

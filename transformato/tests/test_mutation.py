@@ -93,6 +93,69 @@ def generate_system(output_file_base, env):
     return system, psf
 
 
+def _set_output_files_2oj9_tautomer_pair():
+    output_files_t1 = [
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
+    ]
+    output_files_t2 = [
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
+        "data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
+    ]
+
+    return output_files_t1, output_files_t2
+
+
+def _set_output_files_acetylaceton_tautomer_pair():
+    output_files_enol = [
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-enol/intst1/",
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-enol/intst2/",
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-enol/intst3/",
+    ]
+    output_files_keto = [
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/intst1/",
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/intst2/",
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/intst3/",
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/intst4/",
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/intst5/",
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/intst6/",
+        "data/acetylacetone-keto-acetylacetone-enol-solvation-free-energy/acetylacetone-keto/intst7/",
+    ]
+
+    return output_files_enol, output_files_keto
+
+
+def _set_output_files_toluene_methane_pair():
+    output_files_methane = [
+        "data/toluene-methane-solvation-free-energy/methane/intst1/",
+        "data/toluene-methane-solvation-free-energy/methane/intst2/",
+        "data/toluene-methane-solvation-free-energy/methane/intst3/",
+    ]
+    output_files_toluene = [
+        "data/toluene-methane-solvation-free-energy/toluene/intst1/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst2/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst3/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst4/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst5/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst6/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst7/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst8/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst9/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst10/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst11/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst12/",
+        "data/toluene-methane-solvation-free-energy/toluene/intst13/",
+    ]
+
+    return output_files_methane, output_files_toluene
+
+
 def test_proposed_mutation_mcs():
 
     from rdkit.Chem import rdFMCS
@@ -114,45 +177,45 @@ def test_proposed_mutation_mcs():
         cc1 = set(
             [
                 0,
-                3,
-                6,
-                5,
                 4,
-                14,
+                9,
+                7,
+                6,
                 24,
-                23,
-                26,
-                22,
-                25,
-                17,
-                16,
+                39,
+                37,
+                41,
+                36,
+                40,
                 28,
                 27,
-                29,
+                43,
+                42,
+                45,
                 46,
                 47,
                 48,
-                45,
-                41,
                 44,
+                29,
+                38,
                 2,
-                7,
                 11,
-                9,
+                20,
+                16,
+                14,
+                18,
+                22,
+                21,
+                23,
+                19,
+                15,
+                17,
+                12,
+                13,
+                3,
                 8,
                 10,
-                13,
-                12,
-                39,
-                38,
-                36,
-                37,
-                34,
-                35,
-                30,
-                32,
-                33,
-                31,
+                5,
             ]
         )
         cc2 = set(
@@ -199,6 +262,7 @@ def test_proposed_mutation_mcs():
                 30,
             ]
         )
+
         assert set(a.get_common_core_idx_mol1()) == cc1
         assert set(a.get_common_core_idx_mol2()) == cc2
         a.bondCompare = rdFMCS.BondCompare.CompareOrder
@@ -208,30 +272,29 @@ def test_proposed_mutation_mcs():
         cc1 = set(
             [
                 0,
-                3,
-                6,
-                33,
-                31,
-                14,
+                4,
+                9,
+                10,
+                5,
                 24,
-                23,
-                26,
-                22,
-                25,
-                17,
-                16,
+                39,
+                37,
+                41,
+                36,
+                40,
                 28,
                 27,
-                29,
+                43,
+                42,
+                45,
                 46,
                 47,
                 48,
-                45,
-                41,
                 44,
+                29,
+                38,
             ]
         )
-        assert set(a.get_common_core_idx_mol1()) == cc1
         cc2 = set(
             [
                 0,
@@ -258,7 +321,12 @@ def test_proposed_mutation_mcs():
                 41,
             ]
         )
+
+        print(a.get_common_core_idx_mol1())
+        print(a.get_common_core_idx_mol2())
+
         assert set(a.get_common_core_idx_mol2()) == cc2
+        assert set(a.get_common_core_idx_mol1()) == cc1
 
     for conf in [
         "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
@@ -358,8 +426,12 @@ def test_find_connected_dummy_regions1():
     # match terminal real/dummy atoms
     match_terminal_atoms_cc1 = a._match_terminal_real_and_dummy_atoms_for_mol1()
     match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
-    print(match_terminal_atoms_cc1)
-    print(match_terminal_atoms_cc2)
+    e = next(iter(match_terminal_atoms_cc1[15]))
+    assert e == 14
+    assert len(match_terminal_atoms_cc1[15]) == 1
+    e = next(iter(match_terminal_atoms_cc2[15]))
+    assert e == 6
+    assert len(match_terminal_atoms_cc2[15]) == 1
 
     # find connected dummy regions
     connected_dummy_regions_cc1 = a._find_connected_dummy_regions(
@@ -374,8 +446,12 @@ def test_find_connected_dummy_regions1():
         match_terminal_atoms_cc2,
     )
 
-    print(connected_dummy_regions_cc1)
-    print(connected_dummy_regions_cc2)
+    assert set(connected_dummy_regions_cc1[0]) == set(
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    )
+    assert set(connected_dummy_regions_cc2[0]) == set(
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+    )
 
 
 def test_find_connected_dummy_regions2():
@@ -427,18 +503,17 @@ def test_find_connected_dummy_regions2():
         lj_default=lj_default_cc2,
     )
 
-    print(connected_dummy_regions_cc2)
-
+    print(dummy_region_m1.connected_dummy_regions)
     # match
     assert dummy_region_m1.connected_dummy_regions[0] == {
-        40,
-        42,
-        43,
-        15,
-        18,
-        19,
-        20,
-        21,
+        32,
+        33,
+        34,
+        35,
+        25,
+        26,
+        30,
+        31,
     }
 
     assert dummy_region_m1.connected_dummy_regions[1] == {1}
@@ -451,7 +526,7 @@ def test_find_connected_dummy_regions2():
         dummy_region_m1.return_connecting_real_atom(
             dummy_region_m1.connected_dummy_regions[0]
         )
-        == 16
+        == 27
     )
 
     assert (
@@ -463,7 +538,7 @@ def test_find_connected_dummy_regions2():
 
     print(f"Matched dummy region: {dummy_region_m1.lj_default}")
     print(f"Matched dummy region: {dummy_region_m2.lj_default}")
-    assert dummy_region_m1.lj_default == [1, 18]
+    assert dummy_region_m1.lj_default == [1, 30]
     assert dummy_region_m2.lj_default == [1, 39]
 
 
@@ -587,10 +662,10 @@ def test_endpoint_mutation():
             i_s2,
         ) = setup_systems(conf)
 
-        output_file_base, _ = i_s1.write_state(mutation_conf=[], intst_nr=0)
+        output_file_base, _ = i_s1.write_state(mutation_conf=[], intst_nr=1)
         shutil.rmtree(output_file_base)
 
-        output_file_base, _ = i_s2.write_state(mutation_conf=[], intst_nr=0)
+        output_file_base, _ = i_s2.write_state(mutation_conf=[], intst_nr=1)
         shutil.rmtree(output_file_base)
 
 
@@ -615,7 +690,7 @@ def test_charge_mutation_test_system1():
             i_s2,
         ) = setup_systems(conf)
         for i in [i_s1, i_s2]:
-            output_file_base, _ = i.write_state(mutation_conf=[], intst_nr=0)
+            output_file_base, _ = i.write_state(mutation_conf=[], intst_nr=1)
 
             # original psfs without charge change
             original_psf = {}
@@ -625,9 +700,11 @@ def test_charge_mutation_test_system1():
             for env in i.system.envs:
                 offset = i.system.offset[env]
 
-                mutated_psf = generate_psf(output_file_base, env)
+                mutated_psf, param = generate_psf(output_file_base, env)
                 for atom in i.system.mol.GetAtoms():
                     idx = atom.GetIdx()
+                    print(original_psf[env].atoms[idx + offset].charge)
+                    print(mutated_psf.atoms[idx + offset].charge)
                     assert np.isclose(
                         original_psf[env].atoms[idx + offset].charge,
                         mutated_psf.atoms[idx + offset].charge,
@@ -644,7 +721,7 @@ def test_setup_dual_junction_system():
     )
     # write out endpoint
     output_files = []
-    output_file_base, intst = i_s1.write_state(mutation_conf=[], intst_nr=0)
+    output_file_base, intst = i_s1.write_state(mutation_conf=[], intst_nr=1)
     output_files.append(output_file_base)
 
     charges = mutation_list_mol1["charge"]
@@ -665,7 +742,8 @@ def test_setup_dual_junction_system():
         intst_nr=intst,
     )
     output_files.append(output_file_base)
-    shutil.rmtree(output_files)
+    for f in output_files:
+        shutil.rmtree(f)
 
 
 def test_charge_mutation_test_system2():
@@ -717,7 +795,7 @@ def test_charge_mutation_test_system2():
                 for env in system.envs:
                     offset = system.offset[env]
                     # read in newly generated psf
-                    mutated_psf = generate_psf(output_file_base, env)
+                    mutated_psf, params = generate_psf(output_file_base, env)
                     for idx in charges[0].atoms_to_be_mutated:
                         assert np.isclose(
                             original_psf[env].atoms[idx + offset].charge
@@ -774,7 +852,7 @@ def test_vdw_mutation_for_hydrogens_system1():
         print("Set epsilon/rmin to zero for selected atoms")
 
         for env in s1.envs:
-            new_psf = generate_psf(output_file_base, env)
+            new_psf, params = generate_psf(output_file_base, env)
             # are the terminal lj parameter correctly set?
             offset = s1.offset[env]
             for terminal_lj in terminal_lj_mutations:
@@ -848,7 +926,7 @@ def test_vdw_mutation_for_hydrogens_system2():
             print("Set epsilon/rmin for selected atoms")
 
             for env in s1.envs:
-                new_psf = generate_psf(output_file_base, env)
+                new_psf, params = generate_psf(output_file_base, env)
                 # are the terminal lj parameter correctly set?
                 offset = s1.offset[env]
                 for hydrogen_lj in hydrogen_lj_mutations:
@@ -890,6 +968,18 @@ def test_bonded_mutation():
         "transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
     ]:
 
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        s1 = SystemStructure(configuration, "structure1")
+        s2 = SystemStructure(configuration, "structure2")
+
+        s1_to_s2 = ProposeMutationRoute(s1, s2)
+        s1_to_s2.calculate_common_core()
+
+        mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+        i = IntermediateStateFactory(
+            system=s1,
+            configuration=configuration,
+        )
         original_psf = {}
         output_files = []
         for env in s1.envs:
@@ -901,7 +991,7 @@ def test_bonded_mutation():
         output_file_base, intst_nr = i.write_state(
             mutation_conf=charges,
             lambda_value_electrostatic=0.0,
-            intst_nr=0,
+            intst_nr=1,
         )
         output_files.append(output_file_base)
 
@@ -952,20 +1042,8 @@ def test_equivalent_endstates_vacuum():
     # ParmEd Imports
     from parmed import unit as u
 
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
-    ]
+    output_files_t1, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
+
     env = "vacuum"
     psf, parms = generate_psf(output_files_t1[-1], env)
     coord = generate_crd(output_files_t1[-1], env).positions
@@ -997,7 +1075,7 @@ def test_equivalent_endstates_vacuum():
     sim = app.Simulation(psf.topology, system, integrator)
     # Set the particle positions
     sim.context.setPositions(coord)
-    e1 = sim.context.getState(getEnergy=True).getPotentialEnergy()
+    e1 = sim.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
 
     #####################################
     #####################################
@@ -1027,10 +1105,9 @@ def test_equivalent_endstates_vacuum():
     sim = app.Simulation(psf.topology, system, integrator)
     # Set the particle positions
     sim.context.setPositions(coord)
-    e2 = sim.context.getState(getEnergy=True).getPotentialEnergy()
-    print(e1)
-    print(e2)
-    assert e1 == e2
+    e2 = sim.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+
+    assert np.isclose(e1, e2)
 
 
 @pytest.mark.slowtest
@@ -1042,22 +1119,10 @@ def test_equivalent_endstates_waterbox():
     # ParmEd Imports
     from parmed import unit as u
 
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
-    ]
+    output_files_t1, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
+
     env = "waterbox"
-    psf, parms = generate_psf(output_files_t1[-2], env)
+    psf, parms = generate_psf(output_files_t1[-1], env)
     coords = generate_crd(output_files_t1[-1], env).positions
 
     psf.box = (30, 30, 30, 90, 90, 90)
@@ -1071,11 +1136,16 @@ def test_equivalent_endstates_waterbox():
             mask.append(False)
         else:
             mask.append(True)
-    psf = psf[mask]
-    for idx, e in enumerate(mask):
-        if not e:
-            print(coords.pop(idx))
 
+    psf = psf[mask]
+    nr_of_atoms_t1 = psf.topology.getNumAtoms()
+
+    new_coords = []
+    for idx, e in enumerate(mask):
+        if e:
+            new_coords.append(coords[idx])
+
+    coords = new_coords
     system = psf.createSystem(
         parms,
         nonbondedMethod=app.PME,
@@ -1090,20 +1160,17 @@ def test_equivalent_endstates_waterbox():
         2.0 * u.femtoseconds,  # Time step
     )
     assert nr_of_atoms == psf.topology.getNumAtoms() + 1
-    print(psf.topology.getNumAtoms())
     # Create the Simulation object
     sim = app.Simulation(psf.topology, system, integrator)
     # Set the particle positions
     sim.context.setPositions(coords)
-    e1 = sim.context.getState(getEnergy=True).getPotentialEnergy()
-
+    e1 = sim.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+    nr_of_atoms_t1 = psf.topology.getNumAtoms()
     #####################################
     #####################################
     psf, parms = generate_psf(output_files_t2[-1], env)
     psf.box = (30, 30, 30, 90, 90, 90)
-    mask = []
-    nr_of_atoms = len(psf.atoms)
-    assert nr_of_atoms == len(coords) + 1
+    # coords = generate_crd(output_files_t2[-1], env).positions
 
     mask = []
     for a in psf.atoms:
@@ -1111,7 +1178,12 @@ def test_equivalent_endstates_waterbox():
             mask.append(False)
         else:
             mask.append(True)
+
+    # remove waters from top
+    mask[-12:] = [False] * 12
     psf = psf[mask]
+    nr_of_atoms_t2 = psf.topology.getNumAtoms()
+    assert nr_of_atoms_t1 == nr_of_atoms_t2
 
     system = psf.createSystem(
         parms,
@@ -1130,25 +1202,14 @@ def test_equivalent_endstates_waterbox():
     sim = app.Simulation(psf.topology, system, integrator)
     # Set the particle positions
     sim.context.setPositions(coords)
-    e2 = sim.context.getState(getEnergy=True).getPotentialEnergy()
-    print(e1)
-    print(e2)
-    assert e1 == e2
+    e2 = sim.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+    assert np.isclose(e1, e2)
 
 
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s1(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
-
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
     e_t1_s1 = (
         generate_sim(output_files_t1[0], "vacuum")
         .context.getState(getEnergy=True)
@@ -1162,15 +1223,7 @@ def test_bonded_mutation_energies_t1_s1(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s2(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
     e_t1_s2 = (
         generate_sim(output_files_t1[1], "vacuum")
@@ -1186,15 +1239,8 @@ def test_bonded_mutation_energies_t1_s2(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s3(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
+
     e_t1_s3 = (
         generate_sim(output_files_t1[2], "vacuum")
         .context.getState(getEnergy=True)
@@ -1209,15 +1255,7 @@ def test_bonded_mutation_energies_t1_s3(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s4(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
     e_t1_s4 = (
         generate_sim(output_files_t1[3], "vacuum")
@@ -1233,15 +1271,7 @@ def test_bonded_mutation_energies_t1_s4(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s5(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
     e_t1_s5 = (
         generate_sim(output_files_t1[4], "vacuum")
@@ -1257,15 +1287,7 @@ def test_bonded_mutation_energies_t1_s5(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s6(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
     e_t1_s6 = (
         generate_sim(output_files_t1[5], "vacuum")
@@ -1281,15 +1303,7 @@ def test_bonded_mutation_energies_t1_s6(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s7(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t1 = [
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst1/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst2/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst3/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst4/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst5/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst6/",
-        "/home/mwieder/Work/Projects/transformato/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original/intst7/",
-    ]
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
     e_t1_s7 = (
         generate_sim(output_files_t1[6], "vacuum")
@@ -1305,11 +1319,7 @@ def test_bonded_mutation_energies_t1_s7(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s1(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
-    ]
+    _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
 
     e_t2_s1 = (
         generate_sim(output_files_t2[0], "vacuum")
@@ -1325,11 +1335,7 @@ def test_bonded_mutation_energies_t2_s1(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s2(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
-    ]
+    _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
 
     e_t2_s2 = (
         generate_sim(output_files_t2[1], "vacuum")
@@ -1345,11 +1351,7 @@ def test_bonded_mutation_energies_t2_s2(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s3(caplog):
     caplog.set_level(logging.CRITICAL)
-    output_files_t2 = [
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst1/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst2/",
-        "/home/mwieder/Work/Projects/transformato/data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-tautomer/intst3/",
-    ]
+    _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
 
     e_t2_s3 = (
         generate_sim(output_files_t2[2], "vacuum")
@@ -1452,7 +1454,6 @@ def test_bonded_mutation_bonds(caplog):
         for bond_t2_idx, bond_t2 in enumerate(psf_at_t2_cc.bonds):
             if atom1_t2 in bond_t2 and atom2_t2 in bond_t2:
                 prm_at_t1_cc[bond_t1_idx] = prm_at_t2_cc[bond_t2_idx]
-
 
 
 @pytest.mark.slowtest
@@ -1735,7 +1736,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
             for env in s1.envs:
                 print(env)
                 # read in generated psf at last mutation step
-                new_psf = generate_psf(output_file_base, env)
+                new_psf, params = generate_psf(output_file_base, env)
                 offset = s1.offset[env]
                 for idx in all_atoms_for_which_lj_turned_off:
                     idxo = idx + offset
@@ -1972,7 +1973,7 @@ def test_full_mutation_system2():
             )
             all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
-        new_psf = generate_psf(output_file_base, env)
+        new_psf, params = generate_psf(output_file_base, env)
         print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
 
         print(all_atoms_for_which_lj_turned_off)
