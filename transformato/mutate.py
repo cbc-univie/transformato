@@ -1569,7 +1569,7 @@ def mutate_pure_tautomers(
     output_files_t1.append(o)
 
     # transform common core
-    for lambda_value in np.linspace(0.75, 0, 8):
+    for lambda_value in np.linspace(0.75, 0, 4):
         # turn off charges
         o, intst = i.write_state(
             mutation_conf=mutation_list["transform"],

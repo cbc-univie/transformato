@@ -2,7 +2,7 @@ nstep       = 500000                            # Number of steps to run
 dt          = 0.002                             # Time-step (ps)
                                             
 nstout      = 1000                              # Writing output frequency (steps)
-nstdcd      = 5000                              # Writing coordinates trajectory frequency (steps)
+nstdcd      = 50000                             # Writing coordinates trajectory frequency (steps)
                                             
 coulomb     = PME                               # Electrostatic cut-off method
 ewald_Tol   = 0.0005                            # Ewald error tolerance
