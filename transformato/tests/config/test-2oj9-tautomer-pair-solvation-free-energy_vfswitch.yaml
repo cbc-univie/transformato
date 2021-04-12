@@ -42,13 +42,13 @@ system:
 simulation:
   ################
   parameters:
-    nstep: 5000
-    nstdcd: 25
-    nstout: 1000
+    nstep: 50
+    nstdcd: 2
+    nstout: 10
     cons: None
     dt: 0.001
-    mini_nstep: 1000
-    vdw: 'Force-switch'
+    mini_nstep: 100
+    vdw: 'force-switch'
   GPU: False
 
   free-energy-type: "solvation-free-energy"
