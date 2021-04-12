@@ -1814,7 +1814,7 @@ def setup_acetylacetone_tautomer_pair():
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    conf_path = "transformato/tests/config/test-acetylaceton-tautomer-solvation-free-energy.yaml"
+    conf_path = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir="."
     )
