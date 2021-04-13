@@ -247,7 +247,43 @@ class SystemStructure(object):
 
         return min(idx_list)
 
-    def _generate_rdkit_mol(self, env: str, psf: pm.charmm.CharmmPsfFile) -> Chem.Mol:
+    def _return_small_molecule(self, env: str) -> Chem.rdchem.Mol:
+        import glob
+
+        charmm_gui_env = self.charmm_gui_base + env
+        possible_files = []
+        for ending in ["sdf", "mol", "mol2"]:
+            possible_files.extend(glob.glob(f"{charmm_gui_env}/*/*{ending}"))
+
+        # looking for small molecule
+        # start with sdf
+        mol2_detected = False
+        mol_detected = False
+        found_small_molecule = False
+        for f in possible_files:
+            if f.endswith(".sdf"):
+                suppl = Chem.SDMolSupplier(f, removeHs=False)
+                mol = next(suppl)
+                logger.info(f"SDF file loaded: {f}")
+                found_small_molecule = True
+                return mol
+            elif f.endswith(".mol2"):
+                mol2_detected = True
+            elif f.endswith(".mol"):
+                mol_detected = True
+
+        if mol2_detected == True or mol_detected == True:
+            raise RuntimeError(
+                "Please convert mol2 or mol file to sdf using obabel: {possible_files}."
+            )
+        if not found_small_molecule:
+            raise FileNotFoundError(
+                "Could not load small molecule sdf file in {charmm_gui_env}. Aborting."
+            )
+
+    def _generate_rdkit_mol(
+        self, env: str, psf: pm.charmm.CharmmPsfFile
+    ) -> Chem.rdchem.Mol:
         """
         Generates the rdkit mol object.
         Parameters
@@ -257,29 +293,11 @@ class SystemStructure(object):
         psf: pm.charmm.CharmmPsfFile
         Returns
         ----------
-        mol: rdkit.Chem.mol
+        mol: rdkit.Chem.rdchem.Mol
         """
-        from itertools import product
 
         assert type(psf) == pm.charmm.CharmmPsfFile
-        charmm_gui_env = self.charmm_gui_base + env
-        tlc = self.tlc
-
-        filenames = [str(tlc), str(tlc).lower(), str(tlc).upper()]
-        dir_names = [str(tlc), str(tlc).lower(), str(tlc).upper()]
-
-        for name in filenames:
-            for dir_name in dir_names:
-                file = f"{charmm_gui_env}/{dir_name}/{name}.sdf"  # NOTE: maybe also tlc and tlc_lower for dir?
-                try:
-                    suppl = Chem.SDMolSupplier(file, removeHs=False)
-                    mol = next(suppl)
-                    logger.info(f"SDF file loaded: {file}")
-                    break
-                except IOError:
-                    logger.debug(f"SDF file not found: {file}")
-                    pass
-
+        mol = self._return_small_molecule(env)
         (
             atom_idx_to_atom_name,
             _,

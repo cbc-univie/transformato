@@ -5,7 +5,7 @@ Unit and regression test for the transformato package.
 import parmed as pm
 
 from io import StringIO
-
+import logging
 
 # read in specific topology with parameters
 from transformato import (
@@ -25,6 +25,7 @@ def test_read_yaml():
 
     assert settingsMap["system"]["name"] == "toluene-methane-solvation-free-energy"
     assert settingsMap["system"]["structure1"]["tlc"] == "UNL"
+
 
 def test_psf_files():
     test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
@@ -51,7 +52,9 @@ def test_psf_files():
                 assert len(values) == 11
 
 
-def test_initialize_systems():
+def test_initialize_systems(caplog):
+    caplog.set_level(logging.DEBUG)
+
     configuration = load_config_yaml(
         config="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml",
         input_dir="data/",
@@ -69,3 +72,26 @@ def test_initialize_systems():
     assert "vacuum" in s1.envs and "vacuum" in s2.envs
     assert "waterbox" in s1.envs and "waterbox" in s2.envs
 
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy.yaml",
+        input_dir="data/",
+        output_dir=".",
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    assert int(s1.offset["waterbox"]) == 0
+    assert int(s1.offset["vacuum"]) == 0
+
+    s2 = SystemStructure(configuration, "structure2")
+    assert int(s2.offset["waterbox"]) == 0
+    assert int(s2.offset["vacuum"]) == 0
+
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-tautomer-min-example-solvation-free-energy.yaml",
+        input_dir="data/",
+        output_dir=".",
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    assert int(s1.offset["waterbox"]) == 0
+    assert int(s1.offset["vacuum"]) == 0
