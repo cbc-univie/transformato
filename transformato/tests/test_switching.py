@@ -102,7 +102,7 @@ def test_run_2OJ9_tautomer_pair_vswitch(caplog):
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
 def test_run_2OJ9_tautomer_pair_no_switch(caplog):
-    # THIS DOES NOT WORK! IF NO SWITCH IS SPECIFIED, TRANFORMATO WILL USE VFSWITCH
+    #NOTE: THIS DOES NOT WORK! IF NO SWITCH IS SPECIFIED, TRANFORMATO WILL USE VFSWITCH
 
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair
