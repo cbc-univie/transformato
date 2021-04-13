@@ -7,6 +7,7 @@ import os
 import numpy as np
 import pytest
 import logging
+import subprocess
 
 # read in specific topology with parameters
 from transformato import (
@@ -20,16 +21,25 @@ from .test_mutation import (
 
 
 def postprocessing(
-    configuration,
-    name="methane",
-    engine="openMM",
-    max_snapshots=300,
-    show_summary=False,
+    configuration: dict,
+    name: str = "methane",
+    engine: str = "openMM",
+    max_snapshots: int = 300,
+    show_summary: bool = False,
+    different_path_for_dcd: str = "",
 ):
     from transformato import FreeEnergyCalculator
 
     f = FreeEnergyCalculator(configuration, name)
-    f.load_trajs(nr_of_max_snapshots=max_snapshots)
+    if different_path_for_dcd:
+        # this is needed if the trajectories are stored at a different location than the
+        # potential definitions
+        path = f.base_path
+        f.base_path = different_path_for_dcd
+        f.load_trajs(nr_of_max_snapshots=max_snapshots)
+        f.base_path = path
+    else:
+        f.load_trajs(nr_of_max_snapshots=max_snapshots)
     f.calculate_dG_to_common_core(engine=engine)
     ddG, dddG = f.end_state_free_energy_difference
     print(f"Free energy difference: {ddG}")
@@ -242,7 +252,7 @@ def test_2oj9_solvation_free_energy_with_different_engines_postprocessing():
     assert np.isclose(
         f_charmm.vacuum_free_energy_differences[0, -1],
         f_openMM.vacuum_free_energy_differences[0, -1],
-        rtol=1e-4,
+        atol=1e-2,
     )
 
     assert np.isclose(
@@ -254,6 +264,112 @@ def test_2oj9_solvation_free_energy_with_different_engines_postprocessing():
     assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-2)
     assert np.isclose(ddG_openMM, 4.721730274995082)
     assert np.isclose(ddG_charmm, 4.722406415490632)
+
+
+@pytest.mark.system_2oj9
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_2oj9_solvation_free_energy_with_different_switches_postprocessing(caplog):
+    caplog.set_level(logging.WARNING)
+    from .test_mutation import setup_2OJ9_tautomer_pair
+    from .test_run_production import run_simulation
+    from ..analysis import FreeEnergyCalculator
+
+    # vfswitch
+    conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy_vfswitch.yaml"
+    (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair(
+        conf_path=conf_path
+    )
+    run_simulation(output_files_t1)
+    configuration = load_config_yaml(
+        config=conf_path, input_dir="data/", output_dir="."
+    )
+    f = FreeEnergyCalculator(configuration, "2OJ9-original")
+
+    # 2OJ9-original to tautomer common core
+    ddG_charmm, dddG, f_charmm_vfswitch = postprocessing(
+        configuration,
+        name="2OJ9-original",
+        engine="CHARMM",
+        max_snapshots=600,
+        different_path_for_dcd="data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original",
+    )
+    ddG_openMM, dddG, f_openMM_vfswitch = postprocessing(
+        configuration,
+        name="2OJ9-original",
+        engine="openMM",
+        max_snapshots=600,
+        different_path_for_dcd="data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original",
+    )
+
+    assert np.isclose(
+        f_charmm_vfswitch.vacuum_free_energy_differences[0, -1],
+        f_openMM_vfswitch.vacuum_free_energy_differences[0, -1],
+        atol=1e-2,
+    )
+
+    assert np.isclose(
+        f_charmm_vfswitch.waterbox_free_energy_differences[0, -1],
+        f_openMM_vfswitch.waterbox_free_energy_differences[0, -1],
+        atol=1e-2,
+    )
+
+    # switch
+    conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-solvation-free-energy_vswitch.yaml"
+    (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair(
+        conf_path=conf_path
+    )
+    run_simulation(output_files_t1)
+    configuration = load_config_yaml(
+        config=conf_path, input_dir="data/", output_dir="."
+    )  # NOTE: for preprocessing input_dir is the output dir
+    f = FreeEnergyCalculator(configuration, "2OJ9-original")
+
+    # 2OJ9-original to tautomer common core
+    ddG_charmm, dddG, f_charmm_switch = postprocessing(
+        configuration,
+        name="2OJ9-original",
+        engine="CHARMM",
+        max_snapshots=600,
+        different_path_for_dcd="data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original",
+    )
+    ddG_charmm, dddG, f_openMM_switch = postprocessing(
+        configuration,
+        name="2OJ9-original",
+        engine="openMM",
+        max_snapshots=600,
+        different_path_for_dcd="data/2OJ9-original-2OJ9-tautomer-solvation-free-energy/2OJ9-original",
+    )
+
+    assert np.isclose(
+        f_charmm_switch.vacuum_free_energy_differences[0, -1],
+        f_openMM_switch.vacuum_free_energy_differences[0, -1],
+        atol=1e-2,
+    )
+
+    assert np.isclose(
+        f_charmm_switch.waterbox_free_energy_differences[0, -1],
+        f_openMM_switch.waterbox_free_energy_differences[0, -1],
+        atol=1e-2,
+    )
+
+    assert np.isclose(
+        f_charmm_vfswitch.vacuum_free_energy_differences[0, -1],
+        f_charmm_switch.vacuum_free_energy_differences[0, -1],
+        atol=1e-2,
+    )
+    assert np.isclose(
+        f_charmm_vfswitch.waterbox_free_energy_differences[0, -1],
+        f_charmm_switch.waterbox_free_energy_differences[0, -1],
+        atol=1e-2,
+    )
+    assert np.isclose(
+        f_openMM_vfswitch.waterbox_free_energy_differences[0, -1],
+        f_openMM_switch.waterbox_free_energy_differences[0, -1],
+        atol=1e-2,
+    )
 
 
 ###########################################
