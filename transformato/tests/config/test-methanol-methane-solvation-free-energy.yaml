@@ -47,6 +47,9 @@ simulation:
     nstout: 5000
     dt: 0.001
     switch: "vswitch"
+    cons: None
+    mini_nstep: 1000
+
   GPU: True
   free-energy-type: "solvation-free-energy"
 ################

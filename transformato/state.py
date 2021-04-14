@@ -8,16 +8,16 @@ import transformato
 
 from .utils import get_toppar_dir, psf_correction
 from .mutate import Mutation
-from transformato.charmm_factory import charmm_factory, build_reduced_toppar
-
+from transformato.charmm_factory import CharmmFactory
 from typing import List
-import types
 
 logger = logging.getLogger(__name__)
 
 
 class IntermediateStateFactory(object):
-    def __init__(self, system: transformato.system, configuration: dict):
+    def __init__(
+        self, system: transformato.system.SystemStructure, configuration: dict
+    ):
         """
         Generate the intermediate directories with for the provided systems with the provided mutations.
         Parameters
@@ -34,6 +34,8 @@ class IntermediateStateFactory(object):
         self.path = f"{configuration['system_dir']}/{self.system.name}"
         self._init_base_dir()
         self.configuration = configuration
+        self.vdw_switch: str
+        self.charmm_factory = CharmmFactory(configuration, self.system.structure)
 
     def write_state(
         self,
@@ -63,12 +65,14 @@ class IntermediateStateFactory(object):
         -------
         [type]
             [description]
+        intst_nr : int
+            automatically incremented intst nr
         """
 
         logger.info("#########################################")
         logger.info("#########################################")
         output_file_base = self._init_intermediate_state_dir(intst_nr)
-        print(f"Writing to {output_file_base}")
+        logger.info(f"Writing to {output_file_base}")
 
         for env in self.system.envs:
             for mutation_type in mutation_conf:
@@ -82,7 +86,7 @@ class IntermediateStateFactory(object):
                     )
 
                 else:
-                    mutation_type.print_details()
+                    # mutation_type.print_details()
                     logger.debug(f"Lambda electrostatics: {lambda_value_electrostatic}")
                     logger.debug(f"Lambda vdw: {lambda_value_vdw}")
 
@@ -101,29 +105,24 @@ class IntermediateStateFactory(object):
             self._write_psf(self.system.psfs[env], output_file_base, env)
         self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
-        self._write_toppar_str(output_file_base, self.system.tlc)
+        self._write_toppar_str(output_file_base)
         self._copy_files(output_file_base)
-        return output_file_base
+        return output_file_base, intst_nr + 1
 
     def _add_serializer(self, file):
         # adding serializer functions
-        f = open(file, "a")
-        f.write(
-            """
+        with open(file, "a") as f:
+            f.write(
+                """
 # mw: adding xml serializer to the simulation script
 file_name = str(args.psffile).replace('.psf', '')
 print(file_name)
-serialized_integrator = XmlSerializer.serialize(integrator)
-outfile = open(file_name + '_integrator.xml','w')
-outfile.write(serialized_integrator)
-outfile.close()
-serialized_system = XmlSerializer.serialize(system)
-outfile = open(file_name + '_system.xml','w')
-outfile.write(serialized_system)
-outfile.close()
+with open(file_name + '_integrator.xml','w') as outfile:
+    outfile.write(XmlSerializer.serialize(integrator))
+with open(file_name + '_system.xml','w') as outfile:
+    outfile.write(XmlSerializer.serialize(system))
 """
-        )
-        f.close()
+            )
 
     def _get_simulations_parameters(self):
         prms = {}
@@ -158,47 +157,69 @@ outfile.close()
 
             for env in self.system.envs:
                 if env == "waterbox":
-                    charmm_input = charmm_factory(
-                        configuration=self.configuration,
-                        structure=self.system.structure,
-                        env="waterbox",
+                    # write charmm production scripte
+                    charmm_input = self.charmm_factory.generate_CHARMM_production_files(
+                        env,
                     )
                     with open(
-                        f"{intermediate_state_file_path}/charmm_run_waterbox.inp", "w"
+                        f"{intermediate_state_file_path}/charmm_run_waterbox.inp", "w+"
                     ) as f:
                         f.write(charmm_input)
 
-                    # copy evaluation script
-                    charmm_simulation_submit_script_source = (
-                        f"{self.configuration['bin_dir']}/evaluate_energy_in_solv.inp"
+                    # write charmm postproduction script
+                    charmm_input = (
+                        self.charmm_factory.generate_CHARMM_postprocessing_files(
+                            env,
+                        )
                     )
-                    charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp"
-                    shutil.copyfile(
-                        charmm_simulation_submit_script_source,
-                        charmm_simulation_submit_script_target,
-                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp",
+                        "w+",
+                    ) as f:
+                        f.write(charmm_input)
 
-                else:  # vacuum
-                    charmm_input = charmm_factory(
-                        configuration=self.configuration,
-                        structure=self.system.structure,
-                        env="vacuum",
+                    # # copy evaluation script
+                    # charmm_simulation_submit_script_source = (
+                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_solv.inp"
+                    # )
+                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp"
+                    # shutil.copyfile(
+                    #     charmm_simulation_submit_script_source,
+                    #     charmm_simulation_submit_script_target,
+                    # )
+
+                elif env == "vacuum":  # vacuum
+                    # write charmm production scripte
+                    charmm_input = self.charmm_factory.generate_CHARMM_production_files(
+                        env,
                     )
                     with open(
                         f"{intermediate_state_file_path}/charmm_run_vacuum.inp", "w"
                     ) as f:
                         f.write(charmm_input)
-
-                    # copy evaluation script
-                    charmm_simulation_submit_script_source = (
-                        f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
+                    # write charmm postproduction script
+                    charmm_input = (
+                        self.charmm_factory.generate_CHARMM_postprocessing_files(
+                            env,
+                        )
                     )
-                    charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
-                    shutil.copyfile(
-                        charmm_simulation_submit_script_source,
-                        charmm_simulation_submit_script_target,
-                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp",
+                        "w+",
+                    ) as f:
+                        f.write(charmm_input)
 
+                    # # copy evaluation script
+                    # charmm_simulation_submit_script_source = (
+                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
+                    # )
+                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
+                    # shutil.copyfile(
+                    #     charmm_simulation_submit_script_source,
+                    #     charmm_simulation_submit_script_target,
+                    # )
+                else:
+                    raise NotImplementedError()
         elif (
             self.configuration["simulation"]["free-energy-type"]
             == "binding-free-energy"
@@ -331,7 +352,6 @@ outfile.close()
                 shutil.copyfile(omm_source, omm_target)
             except OSError:
                 logger.critical(f"Could not find file: {f}")
-                raise
 
         # copy omm simulation script
         # start with waterbox
@@ -341,6 +361,8 @@ outfile.close()
         # add serialization
         self._add_serializer(omm_simulation_script_target)
         self._check_platform(omm_simulation_script_target)
+        self._check_switching_function(omm_simulation_script_target)
+
         # continue with vacuum
         omm_simulation_script_source = (
             f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
@@ -351,6 +373,24 @@ outfile.close()
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         self._add_serializer(omm_simulation_script_target)
         self._check_platform(omm_simulation_script_target)
+
+    def _check_switching_function(self, file):
+        """
+        There are three possibilities for the CHARMM/openMM switching functions:
+        - vfswitch
+        - switch
+        - no-switch (not implemented --- this will use vfswitch)
+        """
+        if self.vdw_switch.lower() == "force-switch":
+            pass  # don't do anything, that's the default for c-gui openMM scripts
+        elif self.vdw_switch.lower() == "switch":
+            pass
+        elif self.vdw_switch.lower() == "no-switch":
+            pass  # this is the openMM default --- simply don't call the c-gui switching function
+        else:
+            raise NotImplementedError(
+                f"Other switching functino called: {self.vdw_switch}."
+            )
 
     def _check_platform(self, file):
         # changin input script
@@ -441,7 +481,7 @@ outfile.close()
         self, omm_simulation_parameter_source: str, omm_simulation_parameter_target: str
     ):
         """
-        _overwrite_simulation_script_parameters Overwrites simulatioo parameters that are defined in omm_simulation_parameter_source
+        _overwrite_simulation_script_parameters changes parameters that are defined in omm_simulation_parameter_source
 
         Parameters
         ----------
@@ -454,6 +494,20 @@ outfile.close()
 
         overwrite_parameters = copy.deepcopy(self._get_simulations_parameters())
 
+        if "vdw" in overwrite_parameters.keys():
+            if overwrite_parameters["vdw"].lower() not in [
+                "force-switch",
+                "no-switch",
+                "switch",
+            ]:
+                raise NotImplementedError(
+                    f"switch: {overwrite_parameters['vdw']} not implemented."
+                )
+            self.vdw_switch = overwrite_parameters["vdw"].lower()
+        else:
+            self.vdw_switch = "force-switch"  # default for now
+            logger.critical("Setting switching function to vfswitch")
+
         input_simulation_parameter = open(omm_simulation_parameter_source, "r")
         output_simulation_parameter = open(
             omm_simulation_parameter_target + ".inp", "w+"
@@ -465,9 +519,10 @@ outfile.close()
             "nstout",
             "cons",
             "dt",
-            "switch",
             "mini_nstep",
         ]
+
+        # test that common keywords are in yaml files
         if not all(elem in overwrite_parameters.keys() for elem in common_keywords):
             for elem in common_keywords:
                 if elem not in overwrite_parameters.keys():
@@ -479,14 +534,14 @@ outfile.close()
 
         for l in input_simulation_parameter.readlines():
             if l.strip():
-                t1, t2 = l.split("=")
-                t1 = t1.strip()
-                t2, comment = t2.split("#")
-                t2 = t2.strip()
+                t1, t2_comment = [e.strip() for e in l.split("=")]
+                t2, comment = [e.strip() for e in t2_comment.split("#")]
                 comment = comment.strip()
                 if t1 in overwrite_parameters.keys():
                     t2 = overwrite_parameters[t1]
                     del overwrite_parameters[t1]  # remove from dict
+                if t1 == "vdw":
+                    t2 = t2.capitalize()
                 output_simulation_parameter.write(
                     f"{t1:<25} = {t2:<25} # {comment:<30}\n"
                 )
@@ -784,7 +839,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
         else:
             os.makedirs(self.path)
 
-    def _write_toppar_str(self, output_file_base, tlc):
+    def _write_toppar_str(self, output_file_base):
 
         toppar_format = f"""
 toppar/top_all36_prot.rtf
@@ -814,8 +869,8 @@ toppar/toppar_all36_lipid_miscellaneous.str
 toppar/toppar_all36_lipid_model.str
 toppar/toppar_all36_lipid_prot.str
 toppar/toppar_all36_lipid_sphingo.str
-{tlc.lower()}_g.rtf
-{tlc.lower()}.prm
+{self.system.tlc.lower()}_g.rtf
+{self.system.tlc.lower()}.prm
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
@@ -825,13 +880,16 @@ dummy_parameters.prm
         f.close()
 
         # TODO for BB: write charmm toppar.str file: charmm_toppar.str
-        charmm_toppar = build_reduced_toppar(tlc.lower())
+        charmm_toppar = self.charmm_factory.build_reduced_toppar(
+            self.system.tlc.lower()
+        )
 
         f = open(f"{output_file_base}/charmm_toppar.str", "w+")
         f.write(charmm_toppar)
         f.close()
 
-    def _write_psf(self, psf, output_file_base: str, env: str):
+    @staticmethod
+    def _write_psf(psf, output_file_base: str, env: str):
         """
         Writes the new psf and pdb file.
         """

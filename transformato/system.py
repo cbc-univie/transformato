@@ -1,15 +1,14 @@
-import io
 import logging
 import os
 from collections import namedtuple
 
 import networkx as nx
 import parmed as pm
-import rdkit
+from typing import Tuple
 from rdkit import Chem
-from simtk import unit
 from collections import defaultdict
 from .utils import get_toppar_dir
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -33,10 +32,12 @@ class SystemStructure(object):
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
         self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
-        self.parameter = self._read_parameters('waterbox')
+        self.parameter = self._read_parameters("waterbox")
+        self.cgenff_version: float
+        self.envs: set
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "binding-free-energy":
-            self.envs: set = set(["complex", "waterbox"])
+            self.envs = set(["complex", "waterbox"])
             for env in self.envs:
                 parameter = self._read_parameters(env)
                 # set up system
@@ -57,7 +58,7 @@ class SystemStructure(object):
             self.graph: nx.Graph = self._mol_to_nx(self.mol)
 
         elif configuration["simulation"]["free-energy-type"] == "solvation-free-energy":
-            self.envs: set = set(["waterbox", "vacuum"])
+            self.envs = set(["waterbox", "vacuum"])
             for env in self.envs:
                 parameter = self._read_parameters(env)
                 # set up system
@@ -73,7 +74,7 @@ class SystemStructure(object):
 
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
-                "waterbox", self.psfs['waterbox'][f":{self.tlc}"]
+                "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
             )
             self.graph: nx.Graph = self._mol_to_nx(self.mol)
         else:
@@ -81,8 +82,8 @@ class SystemStructure(object):
                 "only binding and solvation free energy implemented."
             )
 
-
-    def _mol_to_nx(self, mol: Chem.Mol):
+    @staticmethod
+    def _mol_to_nx(mol: Chem.Mol):
         G = nx.Graph()
 
         for atom in mol.GetAtoms():
@@ -104,9 +105,7 @@ class SystemStructure(object):
             )
         return G
 
-    def _read_parameters(
-        self, env: str
-    ) -> pm.charmm.CharmmParameterSet:
+    def _read_parameters(self, env: str) -> pm.charmm.CharmmParameterSet:
         """
         Reads in topparameters from a toppar dir and ligand specific parameters.
         Parameters
@@ -137,7 +136,18 @@ class SystemStructure(object):
             if os.path.isfile(file_path):
                 parameter_files += (file_path,)
             else:
-                logger.debug(f"Custom ligand parameters are not present in {file_path}")
+                logger.critical(
+                    f"Custom ligand parameters are not present in {file_path}"
+                )
+
+        # check cgenff versions
+        if parameter_files:
+            with open(parameter_files[0]) as f:
+                _ = f.readline()
+                cgenff = f.readline().rstrip()
+                logger.info(f"CGenFF version: {cgenff}")
+                cgenff_version = re.findall("\d+\.\d+", cgenff)[0]
+                self.cgenff_version = float(cgenff_version)
 
         parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
         parameter_files += (f"{toppar_dir}/par_all36m_prot.prm",)
@@ -237,7 +247,43 @@ class SystemStructure(object):
 
         return min(idx_list)
 
-    def _generate_rdkit_mol(self, env: str, psf: pm.charmm.CharmmPsfFile) -> Chem.Mol:
+    def _return_small_molecule(self, env: str) -> Chem.rdchem.Mol:
+        import glob
+
+        charmm_gui_env = self.charmm_gui_base + env
+        possible_files = []
+        for ending in ["sdf", "mol", "mol2"]:
+            possible_files.extend(glob.glob(f"{charmm_gui_env}/*/*{ending}"))
+
+        # looking for small molecule
+        # start with sdf
+        mol2_detected = False
+        mol_detected = False
+        found_small_molecule = False
+        for f in possible_files:
+            if f.endswith(".sdf"):
+                suppl = Chem.SDMolSupplier(f, removeHs=False)
+                mol = next(suppl)
+                logger.info(f"SDF file loaded: {f}")
+                found_small_molecule = True
+                return mol
+            elif f.endswith(".mol2"):
+                mol2_detected = True
+            elif f.endswith(".mol"):
+                mol_detected = True
+
+        if mol2_detected == True or mol_detected == True:
+            raise RuntimeError(
+                "Please convert mol2 or mol file to sdf using obabel: {possible_files}."
+            )
+        if not found_small_molecule:
+            raise FileNotFoundError(
+                "Could not load small molecule sdf file in {charmm_gui_env}. Aborting."
+            )
+
+    def _generate_rdkit_mol(
+        self, env: str, psf: pm.charmm.CharmmPsfFile
+    ) -> Chem.rdchem.Mol:
         """
         Generates the rdkit mol object.
         Parameters
@@ -247,28 +293,11 @@ class SystemStructure(object):
         psf: pm.charmm.CharmmPsfFile
         Returns
         ----------
-        mol: rdkit.Chem.mol
+        mol: rdkit.Chem.rdchem.Mol
         """
-        from itertools import product
 
         assert type(psf) == pm.charmm.CharmmPsfFile
-        charmm_gui_env = self.charmm_gui_base + env
-        tlc = self.tlc
-
-        filenames = [str(tlc), str(tlc).lower(), str(tlc).upper()]
-        dir_names = [str(tlc), str(tlc).lower(), str(tlc).upper()]
-
-        for name in filenames:
-            for dir_name in dir_names:
-                try:
-                    file = f"{charmm_gui_env}/{dir_name}/{name}.sdf"  # NOTE: maybe also tlc and tlc_lower for dir?
-                    suppl = Chem.SDMolSupplier(file, removeHs=False)
-                    mol = next(suppl)
-                    break
-                except IOError:
-                    logger.info(f"SDF file not found: {file}")
-                    pass
-
+        mol = self._return_small_molecule(env)
         (
             atom_idx_to_atom_name,
             _,
@@ -298,7 +327,7 @@ class SystemStructure(object):
 
     def generate_atom_tables_from_psf(
         self, psf: pm.charmm.CharmmPsfFile
-    ) -> (dict, dict, dict, dict):
+    ) -> Tuple[dict, dict, dict, dict]:
         """
         Generate mapping dictionaries for a molecule in a psf.
         Parameters
