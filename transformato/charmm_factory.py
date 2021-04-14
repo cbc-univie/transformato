@@ -1,39 +1,68 @@
 import datetime
+from os import stat
 from transformato.constants import temperature
 from simtk import unit
 
 
-def charmm_factory(configuration: dict, structure: str, env: str) -> str:
-    """Function to build the string needed to create a CHARMM input and streaming file"""
+class CharmmFactory:
+    """Class to build the string needed to create a CHARMM input and streaming file"""
 
-    # get env_dir
-    intermediate_filename = configuration["system"][structure][env][
-        "intermediate-filename"
-    ]
+    def __init__(self, configuration: dict, structure: str) -> None:
 
-    # tlc = configuration["system"][structure]["tlc"]
-    nstep = configuration["simulation"]["parameters"]["nstep"]
-    print_frq = configuration["simulation"]["parameters"]["nstout"]
-    nstdcd = configuration["simulation"]["parameters"]["nstdcd"]
+        self.configuration = configuration
+        self.structure = structure
+        self.vdw_switching_keyword = self._check_switching_function()
 
-    try:
-        GPU = configuration["simulation"]["GPU"]
-    except KeyError:
-        GPU = False
-        pass
+    def _get_simulations_parameters(self):
+        prms = {}
+        for key in self.configuration["simulation"]["parameters"]:
+            prms[key] = self.configuration["simulation"]["parameters"][key]
+        return prms
 
-    switch = "VFSWItch"  # hard coded switch
+    def _check_switching_function(self) -> str:
+        prms = self._get_simulations_parameters()
+        vdw = prms.get("vdw", "Force-switch")  # default is vfswitch
+        if vdw.lower() == "force-switch":
+            return "vfswitch"
+        elif vdw.lower() == "switch":
+            return "vswitch"
+        elif vdw.lower() == "no-switch":  # not implemented
+            return ""
+            raise NotImplementedError()
 
-    charmm_str = charmm_string(
-        env, intermediate_filename, nstep, print_frq, nstdcd, switch, GPU
-    )
-    return charmm_str
+    def generate_CHARMM_postprocessing_files(self, env: str) -> str:
 
+        charmm_postprocessing_script = self._get_CHARMM_postprocessing_header(env)
+        if env == "vacuum":
+            charmm_postprocessing_script += (
+                self._get_CHARMM_vacuum_postprocessing_body()
+            )
+        elif env == "waterbox":
+            charmm_postprocessing_script += (
+                self._get_CHARMM_waterbox_postprocessing_body()
+            )
+        else:
+            raise NotImplementedError(f"Something went wrong with {env}.")
 
-# toppar file
-def build_reduced_toppar(tlc: str) -> str:
-    date = datetime.date.today()
-    toppar = f"""* Simplified toppar script 
+        return charmm_postprocessing_script
+
+    def generate_CHARMM_production_files(self, env: str) -> str:
+        """Body of the CHARMM file with option for gas pahse, waterbox with vswitch and vfswitch"""
+
+        charmm_production_script = self._get_CHARMM_production_header(env)
+        if env == "vacuum":
+            charmm_production_script += self._get_CHARMM_vacuum_production_body()
+        elif env == "waterbox":
+            charmm_production_script += self._get_CHARMM_waterbox_production_body()
+        else:
+            raise NotImplementedError(f"Something went wrong with {env}.")
+
+        return charmm_production_script
+
+    @staticmethod
+    def build_reduced_toppar(tlc: str) -> str:
+        date = datetime.date.today()
+        toppar = f"""* Simplified toppar script 
 * Version from {date} 
 *
 
@@ -92,26 +121,15 @@ open read unit 10 card name dummy_parameters.prm
 read para card unit 10 append flex
 
 """
-    return toppar
+        return toppar
 
+    def _get_CHARMM_production_header(self, env: str) -> str:
+        intermediate_filename = self.configuration["system"][self.structure][env][
+            "intermediate-filename"
+        ]
 
-def charmm_string(
-    env: str,
-    intermediate_filename: str,
-    nstep: int,
-    print_frq: int,
-    nstdcd: int,
-    switch: str,
-    GPU: bool,
-):
-    """Body of the CHARMM file with option for gas pahse, waterbox with vswitch and vfswitch"""
-
-    if GPU == True:
-        GPU = f"""domdec gpu only"""
-    else:
-        GPU = ""
-
-    header = f"""*Version September 2020 
+        header = f"""
+*Version September 2020 
 *Run script for CHARMM jobs from transformato 
 *
 
@@ -125,12 +143,61 @@ read psf  unit 10 card
 ! Read Coordinate 
 open read unit 10 card name {intermediate_filename}.crd 
 read coor unit 10 card
-"""
+        """
+        return header
 
-    ##### gas phase ######
-
-    gas_phase = f"""
+    def _get_CHARMM_vacuum_postprocessing_body(self) -> str:
+        body = f"""
 coor orie sele all end ! put the molecule at the origin
+
+set ctofnb 990.
+set ctonnb 980.
+set cutnb  1000.
+
+nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
+  atom swit vatom vswitch -
+  inbfrq 1 
+
+energy
+
+energy inbfrq 0
+
+scalar fbeta set 5. sele all end
+
+open read file unit 41 name ../traj.dcd
+traj query unit 41
+
+set start ?start
+set nframes ?nfile
+set skip ?skip
+
+set nframes @nframes !?nfile
+traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
+
+open form writ unit 51 name ener_vac.log
+echu 51
+set idx 0
+label loop
+traj read
+energy
+echo ?ener
+incr idx by 1
+if @idx .lt. @nframes goto loop
+   
+  
+stop"""
+
+        return body
+
+    def _get_CHARMM_vacuum_production_body(self) -> str:
+        ##### gas phase ######
+        nstep = self.configuration["simulation"]["parameters"]["nstep"]
+        nstout = self.configuration["simulation"]["parameters"]["nstout"]
+        nstdcd = self.configuration["simulation"]["parameters"]["nstdcd"]
+        switch = self.vdw_switching_keyword
+
+        body = f"""
+!coor orie sele all end ! put the molecule at the origin
 
 MMFP
 GEO rcm sphere -
@@ -158,16 +225,86 @@ scalar fbeta set 5. sele all end
 open write unit 21 file name lig_in_vacuum.dcd
  
 DYNA lang leap start time 0.001 nstep @nstep -
-    nprint {print_frq} iprfrq {print_frq} -
+    nprint {nstout} iprfrq {nstout} -
     iunread -1 iunwri -1 iuncrd 21 iunvel -1 kunit -1 -
     nsavc {nstdcd} nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0
     
 stop"""
+        return body
 
-    ##### waterbox ######
-    liquid_phase = f"""
+    def _get_CHARMM_waterbox_postprocessing_body(self):
+        ##### solv phase ######
+        switch = self.vdw_switching_keyword
+
+        body = f"""
+stream charmm_step3_pbcsetup.str
+
+!
+! Image Setup
+!
+
+open read unit 10 card name charmm_crystal_image.str
+CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
+CRYSTAL READ UNIT 10 CARD
+
+!Image centering by residue
+!IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+
+!
+! Nonbonded Options
+!
+! cons fix sele segi solv end
+
+nbonds atom vatom {switch} bycb -
+       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
+       inbfrq 1 imgfrq 1 wmin 1.0 cdie eps 1.0 -
+       ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
+
+energy
+
+!
+!use a restraint to place center of mass of the molecules near the origin
+!
+
+open read file unit 41 name ../traj.dcd
+traj query unit 41
+
+set start ?start
+set nframes ?nfile
+set skip ?skip
+
+set nframes @nframes !?nfile
+traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
+
+open form writ unit 51 name ener_solv.log
+echu 51
+set idx 0
+label loop
+traj read
+energy
+echo ?ener
+incr idx by 1
+if @idx .lt. @nframes goto loop
+        
+  
+stop"""
+        return body
+
+    def _get_CHARMM_waterbox_production_body(self):
+        ##### waterbox ######
+        switch = self.vdw_switching_keyword
+
+        nstep = self.configuration["simulation"]["parameters"]["nstep"]
+        nstout = self.configuration["simulation"]["parameters"]["nstout"]
+        nstdcd = self.configuration["simulation"]["parameters"]["nstdcd"]
+        if self.configuration["simulation"].get("GPU", False) == True:
+            GPU = f"""domdec gpu only"""
+        else:
+            GPU = ""
+
+        body = f"""
 !
 ! Setup PBC (Periodic Boundary Condition)
 !
@@ -183,7 +320,7 @@ CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
 !Image centering by residue
-IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+!IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
 
 !
 ! Nonbonded Options
@@ -235,7 +372,7 @@ scalar fbeta set 5. sele all end
 open write unit 13 file name lig_in_waterbox.dcd 
 
 DYNA CPT leap start time 0.001 nstep @nstep -
-     nprint {print_frq} iprfrq {print_frq} -
+     nprint {nstout} iprfrq {nstout} -
      iunread -1 iunwri -1 iuncrd 13 iunvel -1 kunit -1 -
      nsavc {nstdcd} nsavv 0 -
      PCONSTANT pref   1.0  pmass @Pmass  pgamma   20.0 -
@@ -243,24 +380,16 @@ DYNA CPT leap start time 0.001 nstep @nstep -
      ECHECK 0
 
 stop"""
+        return body
 
-    if env == "vacuum":
-        charmm_str = f"{header}{gas_phase}"
-    elif env == "waterbox":
-        charmm_str = f"{header}{liquid_phase}"
-    else:
-        raise RuntimeError(f"Something went wrong. {env} not availalbe.")
+    def _get_CHARMM_postprocessing_header(self, env: str) -> str:
 
-    return charmm_str
+        intermediate_filename = self.configuration["system"][self.structure][env][
+            "intermediate-filename"
+        ]
 
-def charmm_evaluation(
-    env: str,
-    intermediate_filename: str,
-    switch: str,
-):
-
-    date = datetime.date.today()
-    header = f"""*Version from {date} 
+        date = datetime.date.today()
+        header = f"""*Version from {date} 
 *Run script for CHARMM jobs from transformato 
 *
 
@@ -274,109 +403,4 @@ read psf  unit 10 card
 ! Read Coordinate 
 open read unit 10 card name {intermediate_filename}.crd 
 read coor unit 10 card"""
-
-    ##### gas phase ######
-    
-    gas_phase = f"""
-coor orie sele all end ! put the molecule at the origin
-
-set ctofnb 990.
-set ctonnb 980.
-set cutnb  1000.
-
-nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
-  atom swit vatom vswitch -
-  inbfrq 1 
-
-energy
-
-energy inbfrq 0
-
-scalar fbeta set 5. sele all end
-
-open read file unit 41 name traj.dcd
-traj query unit 41
-
-set start ?start
-set nframes ?nfile
-set skip ?skip
-
-set nframes @nframes !?nfile
-traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
-
-open form writ unit 51 name ener_vac.log
-echu 51
-set idx 0
-label loop
-traj read
-energy
-echo ?ener
-incr idx by 1
-if @idx .lt. @nframes goto loop
-   
-  
-stop"""
-
-    ##### solv phase ######
-    
-    solv_phase = f"""
-stream charmm_step3_pbcsetup.str
-
-!
-! Image Setup
-!
-
-open read unit 10 card name charmm_crystal_image.str
-CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
-CRYSTAL READ UNIT 10 CARD
-
-!Image centering by residue
-IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
-
-!
-! Nonbonded Options
-!
-cons fix sele segi solv end
-
-nbonds atom vatom {switch} bycb -
-       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
-       inbfrq 1 imgfrq 1 wmin 1.0 cdie eps 1.0 -
-       ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
-
-energy
-
-!
-!use a restraint to place center of mass of the molecules near the origin
-!
-
-open read file unit 41 name traj.dcd
-traj query unit 41
-
-set start ?start
-set nframes ?nfile
-set skip ?skip
-
-set nframes @nframes !?nfile
-traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
-
-open form writ unit 51 name ener_solv.log
-echu 51
-set idx 0
-label loop
-traj read
-energy
-echo ?ener
-incr idx by 1
-if @idx .lt. @nframes goto loop
-        
-  
-stop"""
-
-    if env == "vacuum":
-        charmm_evaluation_str = f"{header}{gas_phase}"
-    elif env == "waterbox":
-        charmm_evaluation_str = f"{header}{solv_phase}"
-    else:
-        raise RuntimeError(f"Something went wrong. {env} not availalbe.")
-
-    return charmm_evaluation_str
+        return header

@@ -78,9 +78,13 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
             raise RuntimeError(
                 "nsteps size and nstdcd size in config file does not match"
             )
-    #making tlc caps always uppercase
-    settingsMap["system"]["structure1"]["tlc"] = settingsMap["system"]["structure1"]["tlc"].upper()
-    settingsMap["system"]["structure2"]["tlc"] = settingsMap["system"]["structure2"]["tlc"].upper()
+    # making tlc caps always uppercase
+    settingsMap["system"]["structure1"]["tlc"] = settingsMap["system"]["structure1"][
+        "tlc"
+    ].upper()
+    settingsMap["system"]["structure2"]["tlc"] = settingsMap["system"]["structure2"][
+        "tlc"
+    ].upper()
     # set the bin, data and analysis dir
     settingsMap["bin_dir"] = get_bin_dir()
     settingsMap["analysis_dir_base"] = os.path.abspath(f"{output_dir}")
@@ -127,17 +131,18 @@ def psf_correction(str_object: StringIO):
         ):  # if in correction mode take the string, split on whitespace and put the values in a newly formated string
             values = line.split()
             if len(values) == 11:  # skip empty lines
-                corrected_string = f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
-                new_str += corrected_string
+                new_str += f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
             elif len(values) == 8:
                 values.extend(["0", "0.00000", "0.00000000000"])
-                corrected_string = f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
-                new_str += corrected_string
+                new_str += f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
+            elif len(values) == 9:
+                values.extend(["0.00000", "0.00000000000"])
+                new_str += f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
+
             elif len(values) == 0:
                 new_str += f"{line}\n"
             else:
-                logger.debug(f"Error with the psf file")
-                raise RuntimeError(f"Error with the psf file")
+                raise RuntimeError(f"Error with the psf file: {line}")
         else:  # otherwise add line to new_str
             new_str += f"{line}\n"
 

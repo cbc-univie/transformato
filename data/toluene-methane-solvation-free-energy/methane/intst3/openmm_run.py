@@ -67,8 +67,8 @@ if args.hmr:                     system = HydrogenMassRepartition(system, psf)
 integrator = LangevinIntegrator(inputs.temp*kelvin, inputs.fric_coeff/picosecond, inputs.dt*picoseconds)
 
 # Set platform
-platform = Platform.getPlatformByName('CUDA')
-prop = dict(CudaPrecision='mixed')
+platform = Platform.getPlatformByName('CPU')
+prop = dict()
 
 # Build simulation context
 simulation = Simulation(psf.topology, system, integrator, platform, prop)

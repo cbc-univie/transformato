@@ -1,4 +1,4 @@
-nstep                     = 5000                      # Number of steps to run        
+nstep                     = 2000                      # Number of steps to run        
 dt                        = 0.001                     # Time-step (ps)                
 
 nstout                    = 1000                      # Writing output frequency (steps)
@@ -22,3 +22,5 @@ cons                      = None                      # Constraints mehtod
 
 rest                      = no                        # Turn on/off restraints        
 
+switch                    = vswitch                   # some new options
+mini_nstep                = 1000                      # some new options
