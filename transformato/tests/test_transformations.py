@@ -11,6 +11,7 @@ import shutil
 
 # Import package, test suite, and other packages as needed
 import transformato
+import logging
 
 # read in specific topology with parameters
 from transformato import (
@@ -21,6 +22,15 @@ from transformato import (
 def test_transformato_imported():
     """Sample test, will always pass so long as import statement worked"""
     assert "transformato" in sys.modules
+
+
+def test_generate_output_for_acetylacetone_tautomer_pair(caplog):
+    caplog.set_level(logging.WARNING)
+    from .test_mutation import setup_acetylacetone_tautomer_pair
+
+    (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair(
+        nr_of_bonded_windows=8
+    )
 
 
 def test_generate_output_for_methane_cc_solvation_free_energy():
