@@ -1075,7 +1075,11 @@ def test_equivalent_endstates_vacuum():
     sim = app.Simulation(psf.topology, system, integrator)
     # Set the particle positions
     sim.context.setPositions(coord)
-    e1 = sim.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+    e1 = (
+        sim.context.getState(getEnergy=True)
+        .getPotentialEnergy()
+        .value_in_unit(unit.kilocalorie_per_mole)
+    )
 
     #####################################
     #####################################
@@ -1105,7 +1109,11 @@ def test_equivalent_endstates_vacuum():
     sim = app.Simulation(psf.topology, system, integrator)
     # Set the particle positions
     sim.context.setPositions(coord)
-    e2 = sim.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+    e2 = (
+        sim.context.getState(getEnergy=True)
+        .getPotentialEnergy()
+        .value_in_unit(unit.kilocalorie_per_mole)
+    )
 
     assert np.isclose(e1, e2)
 
@@ -1164,7 +1172,11 @@ def test_equivalent_endstates_waterbox():
     sim = app.Simulation(psf.topology, system, integrator)
     # Set the particle positions
     sim.context.setPositions(coords)
-    e1 = sim.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+    e1 = (
+        sim.context.getState(getEnergy=True)
+        .getPotentialEnergy()
+        .value_in_unit(unit.kilocalorie_per_mole)
+    )
     nr_of_atoms_t1 = psf.topology.getNumAtoms()
     #####################################
     #####################################
@@ -1202,7 +1214,11 @@ def test_equivalent_endstates_waterbox():
     sim = app.Simulation(psf.topology, system, integrator)
     # Set the particle positions
     sim.context.setPositions(coords)
-    e2 = sim.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+    e2 = (
+        sim.context.getState(getEnergy=True)
+        .getPotentialEnergy()
+        .value_in_unit(unit.kilocalorie_per_mole)
+    )
     assert np.isclose(e1, e2)
 
 
@@ -1783,7 +1799,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
         shutil.rmtree(f"{system_name}-solvation-free-energy")
 
 
-def setup_2OJ9_tautomer_pair(single_state=False, conf_path=""):
+def setup_2OJ9_tautomer_pair(single_state=False, conf_path="", nr_of_bonded_windows=4):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
@@ -1803,18 +1819,29 @@ def setup_2OJ9_tautomer_pair(single_state=False, conf_path=""):
     s1_to_s2.calculate_common_core()
     return (
         mutate_pure_tautomers(
-            s1_to_s2, s1, s2, configuration, single_state=single_state
+            s1_to_s2,
+            s1,
+            s2,
+            configuration,
+            single_state=single_state,
+            nr_of_bonded_windows=4,
         ),
         configuration,
         s1_to_s2,
     )
 
 
-def setup_acetylacetone_tautomer_pair():
+def setup_acetylacetone_tautomer_pair(
+    single_state=False, conf_path="", nr_of_bonded_windows=4
+):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    conf_path = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
+    if not conf_path:
+        conf_path = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
+    else:
+        print(conf_path)
+
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir="."
     )
@@ -1824,7 +1851,18 @@ def setup_acetylacetone_tautomer_pair():
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.calculate_common_core()
-    return mutate_pure_tautomers(s1_to_s2, s1, s2, configuration), configuration
+    return (
+        mutate_pure_tautomers(
+            s1_to_s2,
+            s1,
+            s2,
+            configuration,
+            single_state=single_state,
+            nr_of_bonded_windows=nr_of_bonded_windows,
+        ),
+        configuration,
+        s1_to_s2,
+    )
 
 
 def test_acetylacetone_tautomer_pair(caplog):

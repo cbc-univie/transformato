@@ -1531,6 +1531,7 @@ def mutate_pure_tautomers(
     system2: SystemStructure,
     configuration,
     single_state=False,
+    nr_of_bonded_windows:int=4
 ):
 
     from transformato import (
@@ -1569,7 +1570,7 @@ def mutate_pure_tautomers(
     output_files_t1.append(o)
 
     # transform common core
-    for lambda_value in np.linspace(0.75, 0, 4):
+    for lambda_value in np.linspace(1, 0, nr_of_bonded_windows+1)[1:]:
         # turn off charges
         o, intst = i.write_state(
             mutation_conf=mutation_list["transform"],

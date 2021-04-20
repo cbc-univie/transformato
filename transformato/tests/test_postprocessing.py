@@ -3,6 +3,7 @@ Unit and regression test for the transformato package.
 """
 
 import os
+from typing import Tuple
 
 import numpy as np
 import pytest
@@ -27,10 +28,13 @@ def postprocessing(
     max_snapshots: int = 300,
     show_summary: bool = False,
     different_path_for_dcd: str = "",
+    only_vacuum: bool = False,
 ):
     from transformato import FreeEnergyCalculator
 
     f = FreeEnergyCalculator(configuration, name)
+    if only_vacuum:
+        f.envs = ["vacuum"]
     if different_path_for_dcd:
         # this is needed if the trajectories are stored at a different location than the
         # potential definitions
@@ -41,6 +45,9 @@ def postprocessing(
     else:
         f.load_trajs(nr_of_max_snapshots=max_snapshots)
     f.calculate_dG_to_common_core(engine=engine)
+    if only_vacuum:
+        return -1, -1, f
+
     ddG, dddG = f.end_state_free_energy_difference
     print(f"Free energy difference: {ddG}")
     print(f"Uncertanty: {dddG}")
@@ -591,6 +598,70 @@ def test_acetylacetone_solvation_free_energy_with_different_engines_postprocessi
     print(ddG_charmm)
     assert np.isclose(ddG_openMM, 2.691482858438775, rtol=0.01)
     assert np.isclose(ddG_charmm, 2.699116266252545, rtol=0.01)
+
+
+@pytest.mark.system_acetylacetone
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_acetylacetone_solvation_free_energy_with_different_engines_postprocessing_only_vacuum():
+    from ..constants import kT
+    from simtk import unit
+
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-solvation-free-energy.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    # enol
+    ddG_charmm, dddG, f_charmm = postprocessing(
+        configuration,
+        name="acetylacetone-enol",
+        engine="CHARMM",
+        max_snapshots=10_000,
+        only_vacuum=True,
+    )
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration,
+        name="acetylacetone-enol",
+        engine="openMM",
+        max_snapshots=10_000,
+        only_vacuum=True,
+    )
+    assert np.isclose(
+        f_charmm.vacuum_free_energy_differences[0, -1],
+        f_openMM.vacuum_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+
+    # keto
+    ddG_charmm, dddG, f_charmm = postprocessing(
+        configuration,
+        name="acetylacetone-keto",
+        engine="CHARMM",
+        max_snapshots=10_000,
+        only_vacuum=True,
+    )
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration,
+        name="acetylacetone-keto",
+        engine="openMM",
+        max_snapshots=10_000,
+        only_vacuum=True,
+    )
+    assert np.isclose(
+        f_charmm.vacuum_free_energy_differences[0, -1],
+        f_openMM.vacuum_free_energy_differences[0, -1],
+        rtol=1e-4,
+    )
+
+    print(
+        f"results-openMM: {(f_openMM.vacuum_free_energy_differences[0, -1] * kT).value_in_unit(unit.kilocalorie_per_mole)}"
+    )
+    print(
+        f"results-CHARMM: {(f_charmm.vacuum_free_energy_differences[0, -1] * kT).value_in_unit(unit.kilocalorie_per_mole)}"
+    )
 
 
 ###########################################
