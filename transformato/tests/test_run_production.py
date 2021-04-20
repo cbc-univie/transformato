@@ -11,16 +11,21 @@ import pytest
 import shutil
 
 
-def run_simulation(output_files, engine="openMM"):
+def run_simulation(output_files, engine="openMM", only_vacuum=False):
     for path in sorted(output_files):
         # because path is object not string
         print(f"Start sampling for: {path}")
         runfile = "simulation.sh"
+        calculate_solv_and_vac = 2  # 2 means yes, 1 only vacuum
         if engine.upper() == "CHARMM":
             runfile = "simulation_charmm.sh"
+        if only_vacuum and engine.upper() == "OPENMM":
+            calculate_solv_and_vac = 1
+        if only_vacuum and not engine.upper() == "OPENMM":
+            raise NotImplementedError("Only vacuum runs are not implemented for CHARMM")
 
         exe = subprocess.run(
-            ["bash", f"{str(path)}/{runfile}", str(path)],
+            ["bash", f"{str(path)}/{runfile}", str(path), str(calculate_solv_and_vac)],
             check=True,
             capture_output=True,
             text=True,
@@ -95,12 +100,29 @@ def test_run_acetylacetone_tautomer_pair(caplog):
     from .test_mutation import setup_acetylacetone_tautomer_pair
     from .test_run_production import run_simulation
 
-    (output_files_t1, output_files_t2), _ = setup_acetylacetone_tautomer_pair()
+    (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair()
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
     f = "/".join(output_files_t1[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
+
+
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_run_acetylacetone_tautomer_pair_only_in_vacuum(caplog):
+    caplog.set_level(logging.WARNING)
+    from .test_mutation import setup_acetylacetone_tautomer_pair
+    from .test_run_production import run_simulation
+
+    (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair()
+    run_simulation(output_files_t1, only_vacuum=True)
+    run_simulation(output_files_t2, only_vacuum=True)
+    f = "/".join(output_files_t1[0].split("/")[:-3])
+    # print(f)
+    # shutil.rmtree(f)
 
 
 @pytest.mark.slowtest
@@ -159,9 +181,9 @@ def test_get_free_energy_acetylaceton_tautomer_pair(caplog):
     from .test_run_production import run_simulation
     from .test_postprocessing import postprocessing
 
-    (output_files_t1, output_files_t2), conf = setup_acetylacetone_tautomer_pair()
-    run_simulation(output_files_t1)
-    run_simulation(output_files_t2)
+    (output_files_t1, output_files_t2), conf, _ = setup_acetylacetone_tautomer_pair()
+    run_simulation(output_files_t1, only_vacuum=True)
+    run_simulation(output_files_t2, only_vacuum=True)
     f = "/".join(output_files_t1[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
