@@ -19,10 +19,8 @@ def run_simulation(output_files, engine="openMM", only_vacuum=False):
         calculate_solv_and_vac = 2  # 2 means yes, 1 only vacuum
         if engine.upper() == "CHARMM":
             runfile = "simulation_charmm.sh"
-        if only_vacuum and engine.upper() == "OPENMM":
+        if only_vacuum:
             calculate_solv_and_vac = 1
-        if only_vacuum and not engine.upper() == "OPENMM":
-            raise NotImplementedError("Only vacuum runs are not implemented for CHARMM")
 
         exe = subprocess.run(
             ["bash", f"{str(path)}/{runfile}", str(path), str(calculate_solv_and_vac)],
@@ -40,7 +38,7 @@ def run_simulation(output_files, engine="openMM", only_vacuum=False):
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
 def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
-    from transformato.loeffler_systems import mutate_toluene_to_methane_cc
+    from transformato.testsystems import mutate_toluene_to_methane_cc
     from .test_run_production import run_simulation
     from .test_postprocessing import postprocessing
 
@@ -59,7 +57,7 @@ def test_run_toluene_to_methane_cc_solvation_free_energy_with_openMM():
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
 def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
-    from transformato.loeffler_systems import mutate_methane_to_methane_cc
+    from transformato.testsystems import mutate_methane_to_methane_cc
     from .test_run_production import run_simulation
     from .test_postprocessing import postprocessing
 
@@ -77,7 +75,7 @@ def test_run_methane_to_methane_cc_solvation_free_energy_with_openMM():
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
 def test_run_methane_to_methane_cc_solvation_free_energy_with_CHARMM():
-    from transformato.loeffler_systems import mutate_methane_to_methane_cc
+    from transformato.testsystems import mutate_methane_to_methane_cc
     from .test_run_production import run_simulation
     from .test_postprocessing import postprocessing
 
@@ -117,7 +115,9 @@ def test_run_acetylacetone_tautomer_pair_only_in_vacuum(caplog):
     from .test_mutation import setup_acetylacetone_tautomer_pair
     from .test_run_production import run_simulation
 
-    (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair()
+    (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair(
+        nr_of_bonded_windows=16
+    )
     run_simulation(output_files_t1, only_vacuum=True)
     run_simulation(output_files_t2, only_vacuum=True)
     f = "/".join(output_files_t1[0].split("/")[:-3])

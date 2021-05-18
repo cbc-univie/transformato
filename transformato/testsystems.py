@@ -987,3 +987,152 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
         )
         output_files.append(output_file_base)
     return output_files, configuration
+
+
+def mutate_acetylaceton_methyl_common_core(
+    conf_path: str, input_dir: str, output_dir: str
+):
+    configuration = load_config_yaml(
+        config=conf_path, input_dir=input_dir, output_dir=output_dir
+    )
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+
+    # modify MCS matching
+    from rdkit.Chem import rdFMCS
+
+    s1_to_s2.matchValences = True
+    s1_to_s2.bondCompare = rdFMCS.BondCompare.CompareOrderExact
+    s1_to_s2.propose_common_core()
+    s1_to_s2.remove_idx_from_common_core_of_mol1([2, 10])
+    s1_to_s2.remove_idx_from_common_core_of_mol2([2, 10])
+
+    # manually set the dummy region
+    s1_to_s2.finish_common_core(
+        connected_dummy_regions_cc1=[{11, 2, 10, 3, 6, 4, 13, 14, 12}]
+    )
+
+    ###############################
+    ########### KETO ##############
+    ###############################
+    # generate the mutation list for keto acetylaceton
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    print(mutation_list.keys())
+    output_files = []
+
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+
+    # write endpoint mutation
+    output_file_base, intst = i.write_state(mutation_conf=[], intst_nr=1)
+    output_files.append(output_file_base)
+
+    # start with charges
+    # turn off charges
+    charges = mutation_list["charge"]
+    nr_of_mutation_steps_charge = (
+        5  # defines the number of mutation steps for charge mutation
+    )
+    for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_charge + 1)[1:]:
+        output_file_base, intst = i.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+    # Turn off hydrogens
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+    output_file_base, intst = i.write_state(
+        mutation_conf=hydrogen_lj_mutations,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # turn off lj of heavy atoms
+    d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
+    for m in [d[(4,)], d[(6,)], d[(3,)]]:
+        output_file_base, intst = i.write_state(
+            mutation_conf=[m],
+            lambda_value_vdw=0.0,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+    # generate terminal lj
+    output_file_base, intst = i.write_state(
+        mutation_conf=mutation_list["default-lj"],
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    # change charge on common core
+    m = mutation_list["transform"]
+    # turn off charges
+    output_file_base, intst = i.write_state(
+        mutation_conf=m,
+        common_core_transformation=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    ###############################
+    ########### ENOL ##############
+    ###############################
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+    )
+
+    output_files = []
+    output_file_base, intst = i.write_state(mutation_conf=[], intst_nr=1)
+    output_files.append(output_file_base)
+
+    # start with charges
+    # turn off charges
+    charges = mutation_list["charge"]
+    nr_of_mutation_steps_charge = (
+        5  # defines the number of mutation steps for charge mutation
+    )
+    for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_charge + 1)[1:]:
+        output_file_base, intst = i.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+    # Turn off hydrogens
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+    output_file_base, intst = i.write_state(
+        mutation_conf=hydrogen_lj_mutations,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+    d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
+
+    # turn off heavy atom lj
+    for m in [d[(0,)], d[(5,)], d[(1,)]]:
+        output_file_base, intst = i.write_state(
+            mutation_conf=[m],
+            lambda_value_vdw=0.0,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
+
+    # generate terminal lj
+    output_file_base, intst = i.write_state(
+        mutation_conf=mutation_list["default-lj"],
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
