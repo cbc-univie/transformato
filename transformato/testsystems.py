@@ -1231,15 +1231,16 @@ def mutate_bmi_small_common_core(conf_path: str, input_dir: str, output_dir: str
     )
     output_files.append(output_file_base)
 
-    # change charge on common core
+    # change bonded parameters on common core
     m = mutation_list["transform"]
-    # turn off charges
-    output_file_base, intst = i.write_state(
-        mutation_conf=m,
-        common_core_transformation=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
+    for lambda_value in np.linspace(0.75, 0, 4):
+        # interpolate between parameters
+        output_file_base, intst = i.write_state(
+            mutation_conf=m,
+            common_core_transformation=lambda_value,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
 
     ###############################
     ###### 2OJ9 - tautomer ########
