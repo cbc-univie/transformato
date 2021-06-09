@@ -1073,13 +1073,14 @@ def mutate_acetylaceton_methyl_common_core(
 
     # change charge on common core
     m = mutation_list["transform"]
-    # turn off charges
-    output_file_base, intst = i.write_state(
-        mutation_conf=m,
-        common_core_transformation=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
+    for lambda_value in np.linspace(0.75, 0, 4):
+        # interpolate between parameters
+        output_file_base, intst = i.write_state(
+            mutation_conf=m,
+            common_core_transformation=lambda_value,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
 
     ###############################
     ########### ENOL ##############
@@ -1209,7 +1210,8 @@ def mutate_bmi_small_common_core(conf_path: str, input_dir: str, output_dir: str
     # turn off lj of heavy atoms
     d = transformato.utils.map_lj_mutations_to_atom_idx(mutation_list["lj"])
     for m in [
-        [d[(18,)], d[(22,)], d[(14,)]],
+        [d[(18,)], d[(22,)]],
+        [d[(14,)]],
         [d[(21,)], d[(16,)]],
         [d[(20,)]],
         [d[(11,)]],
