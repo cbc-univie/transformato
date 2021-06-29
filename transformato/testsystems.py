@@ -1143,10 +1143,14 @@ def mutate_bmi_small_common_core(conf_path: str, input_dir: str, output_dir: str
     configuration = load_config_yaml(
         config=conf_path, input_dir=input_dir, output_dir=output_dir
     )
+    print("Setup system ...")
+    print(configuration)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
+    print("Propose mutation ...")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.propose_common_core()
+    print("Remove atom idx ...")
 
     s1_to_s2.remove_idx_from_common_core_of_mol1(
         [2, 3, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
@@ -1156,6 +1160,8 @@ def mutate_bmi_small_common_core(conf_path: str, input_dir: str, output_dir: str
     )
 
     # manually set the dummy region
+    print("Manually specify dummy regions ...")
+
     s1_to_s2.finish_common_core(
         connected_dummy_regions_cc1=[
             {2, 3, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23},
