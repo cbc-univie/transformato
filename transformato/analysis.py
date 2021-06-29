@@ -71,11 +71,11 @@ class FreeEnergyCalculator(object):
         # decide if the name of the system corresponds to structure1 or structure2
         structure = get_structure_name(configuration, structure_name)
 
-        if configuration["simulation"]["free-energy-type"] == "solvation-free-energy":
+        if configuration["simulation"]["free-energy-type"] == "rsfe":
             self.envs = ("vacuum", "waterbox")
             self.mbar_results = {"waterbox": None, "vacuum": None}
 
-        elif configuration["simulation"]["free-energy-type"] == "binding-free-energy":
+        elif configuration["simulation"]["free-energy-type"] == "rbfe":
             self.envs = ("complex", "waterbox")
             self.mbar_results = {"waterbox": None, "complex": None}
         else:
@@ -609,10 +609,7 @@ class FreeEnergyCalculator(object):
     @property
     def end_state_free_energy_difference(self):
         """DeltaF[lambda=1 --> lambda=0]"""
-        if (
-            self.configuration["simulation"]["free-energy-type"]
-            == "solvation-free-energy"
-        ):
+        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
             return (
                 self.waterbox_free_energy_differences[0, -1]
                 - self.vacuum_free_energy_differences[0, -1],
@@ -620,10 +617,7 @@ class FreeEnergyCalculator(object):
                 + self.vacuum_free_energy_difference_uncertanties[0, -1],
             )
 
-        elif (
-            self.configuration["simulation"]["free-energy-type"]
-            == "binding-free-energy"
-        ):
+        elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             return (
                 self.complex_free_energy_differences[0, -1]
                 - self.waterbox_free_energy_differences[0, -1],
@@ -634,10 +628,7 @@ class FreeEnergyCalculator(object):
             raise RuntimeError()
 
     def show_summary(self):
-        if (
-            self.configuration["simulation"]["free-energy-type"]
-            == "solvation-free-energy"
-        ):
+        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
             self.plot_vacuum_free_energy_overlap()
             self.plot_waterbox_free_energy_overlap()
             self.plot_vacuum_free_energy()

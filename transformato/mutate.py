@@ -1491,6 +1491,7 @@ class Mutation(object):
         )
 
         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
+            print(psf)
             raise RuntimeError(
                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
             )
