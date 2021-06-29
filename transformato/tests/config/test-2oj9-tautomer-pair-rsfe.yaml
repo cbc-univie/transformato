@@ -4,7 +4,7 @@ system:
   ################
   structure1:
     name: "2OJ9-original"
-    tlc: "UNK"
+    tlc: "BMI"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_input"
@@ -21,8 +21,8 @@ system:
       intermediate-filename: "lig_in_waterbox"
 
   structure2:
-    name: "2OJ9-test2"
-    tlc: "UNK"
+    name: "2OJ9-tautomer"
+    tlc: "BMI"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_input"
@@ -43,14 +43,14 @@ simulation:
   ################
   parameters:
     nstep: 5000
-    nstdcd: 50
-    nstout: 1000
+    nstdcd: 25
+    nstout: 25
     cons: None
     dt: 0.001
-    switch: "vswitch"
-  GPU: True
+    mini_nstep: 1000
+  GPU: False
 
-  free-energy-type: "solvation-free-energy"
+  free-energy-type: "rsfe"
 ################
 solvation:
   ################
