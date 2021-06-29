@@ -37,7 +37,7 @@ def test_generate_output_for_methane_cc_solvation_free_energy():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
     output_files, configuration = mutate_methane_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+        conf="transformato/tests/config/test-toluene-methane-rsfe.yaml"
     )
 
     assert len(output_files) == 3
@@ -50,7 +50,7 @@ def test_generate_output_for_toluene_cc_solvation_free_energy():
     from transformato.testsystems import mutate_toluene_to_methane_cc
 
     output_files, configuration = mutate_toluene_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-solvation-free-energy.yaml"
+        conf="transformato/tests/config/test-toluene-methane-rsfe.yaml"
     )
 
     f = "/".join(output_files[0].split("/")[:-3])
@@ -62,7 +62,7 @@ def test_generate_output_for_neopentane_cc_solvation_free_energy():
     from transformato.testsystems import mutate_neopentane_to_methane_cc
 
     output_files, configuration = mutate_neopentane_to_methane_cc(
-        conf="transformato/tests/config/test-neopentane-methane-solvation-free-energy.yaml"
+        conf="transformato/tests/config/test-neopentane-methane-rsfe.yaml"
     )
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
@@ -74,7 +74,7 @@ def test_generate_output_for_methanol_cc_solvation_free_energy():
     from transformato.testsystems import mutate_methanol_to_methane_cc
 
     output_files, _ = mutate_methanol_to_methane_cc(
-        conf="transformato/tests/config/test-methanol-methane-solvation-free-energy.yaml"
+        conf="transformato/tests/config/test-methanol-methane-rsfe.yaml"
     )
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
@@ -86,7 +86,7 @@ def test_generate_output_for_2_CPI_solvation_free_energy():
     from transformato.testsystems import mutate_2_CPI_to_7_CPI_cc
 
     output_files, _ = mutate_2_CPI_to_7_CPI_cc(
-        conf="transformato/tests/config/test-7-CPI-2-CPI-solvation-free-energy.yaml"
+        conf="transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml"
     )
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
@@ -98,7 +98,7 @@ def test_generate_output_for_7_CPI_solvation_free_energy():
     from transformato.testsystems import mutate_7_CPI_to_2_CPI_cc
 
     output_files, _ = mutate_7_CPI_to_2_CPI_cc(
-        conf="transformato/tests/config/test-7-CPI-2-CPI-solvation-free-energy.yaml"
+        conf="transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml"
     )
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
