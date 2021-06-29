@@ -3,8 +3,8 @@
 system:
   ################
   structure1:
-    name: "toluene"
-    tlc: "unl"
+    name: "ethane"
+    tlc: "UNL"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_charmm2omm"
@@ -21,8 +21,8 @@ system:
       intermediate-filename: "lig_in_waterbox"
 
   structure2:
-    name: "methane"
-    tlc: "LIG"
+    name: "methanol"
+    tlc: "UNK"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_charmm2omm"
@@ -43,13 +43,16 @@ simulation:
   ################
   parameters:
     nstep: 5000
-    nstdcd: 25
-    nstout: 25
+    nstdcd: 50
+    nstout: 1000
     cons: None
     dt: 0.001
+    switch: "vswitch"
     mini_nstep: 1000
+
   GPU: False
-  free-energy-type: "solvation-free-energy"
+
+  free-energy-type: "rsfe"
 ################
 solvation:
   ################

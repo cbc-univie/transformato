@@ -4,14 +4,7 @@ system:
   ################
   structure1:
     name: "2OJ9-original"
-    tlc: "UNK"
-    vacuum:
-      dirname: "vacuum"
-      psf_file_name: "step3_input"
-      crd_file_name: "step3_input"
-      rst_file_name: "step4_equilibration"
-      simulation_parameter: "step5_production.inp"
-      intermediate-filename: "lig_in_vacuum"
+    tlc: "BMI"
     waterbox:
       dirname: "waterbox"
       psf_file_name: "step3_input"
@@ -19,17 +12,17 @@ system:
       rst_file_name: "step4_equilibration"
       simulation_parameter: "step5_production.inp"
       intermediate-filename: "lig_in_waterbox"
+    complex:
+      dirname: "complex"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_complex"
 
   structure2:
     name: "2OJ9-tautomer"
-    tlc: "UNK"
-    vacuum:
-      dirname: "vacuum"
-      psf_file_name: "step3_input"
-      crd_file_name: "step3_input"
-      rst_file_name: "step4_equilibration"
-      simulation_parameter: "step5_production.inp"
-      intermediate-filename: "lig_in_vacuum"
+    tlc: "BMI"
     waterbox:
       dirname: "waterbox"
       psf_file_name: "step3_input"
@@ -37,22 +30,28 @@ system:
       rst_file_name: "step4_equilibration"
       simulation_parameter: "step5_production.inp"
       intermediate-filename: "lig_in_waterbox"
+    complex:
+      dirname: "complex"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_complex"
 
 ################
 simulation:
   ################
   parameters:
-    nstep: 50
-    nstdcd: 2
-    nstout: 10
+    nstep: 5000
+    nstdcd: 25
+    nstout: 25
     cons: None
     dt: 0.001
-    mini_nstep: 100
-    vdw: "no-switch"
+    mini_nstep: 1000
   GPU: False
 
-  free-energy-type: "solvation-free-energy"
+  free-energy-type: "rbfe"
 ################
 solvation:
   ################
-  steps_for_equilibration: 1000
+  steps_for_equilibration: 5000

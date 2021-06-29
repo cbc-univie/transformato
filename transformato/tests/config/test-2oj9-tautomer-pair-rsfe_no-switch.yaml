@@ -4,7 +4,7 @@ system:
   ################
   structure1:
     name: "2OJ9-original"
-    tlc: "UNK"
+    tlc: "BMI"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_input"
@@ -22,7 +22,7 @@ system:
 
   structure2:
     name: "2OJ9-tautomer"
-    tlc: "UNK"
+    tlc: "BMI"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_input"
@@ -48,10 +48,10 @@ simulation:
     cons: None
     dt: 0.001
     mini_nstep: 100
-    vdw: 'force-switch'
+    vdw: "no-switch"
   GPU: False
 
-  free-energy-type: "solvation-free-energy"
+  free-energy-type: "rsfe"
 ################
 solvation:
   ################

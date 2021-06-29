@@ -51,7 +51,7 @@ simulation:
     mini_nstep: 1000
 
   GPU: True
-  free-energy-type: "solvation-free-energy"
+  free-energy-type: "rsfe"
 ################
 solvation:
   ################

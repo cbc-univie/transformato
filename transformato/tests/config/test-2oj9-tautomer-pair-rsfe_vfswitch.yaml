@@ -3,7 +3,7 @@
 system:
   ################
   structure1:
-    name: "benz"
+    name: "2OJ9-original"
     tlc: "BMI"
     vacuum:
       dirname: "vacuum"
@@ -21,8 +21,8 @@ system:
       intermediate-filename: "lig_in_waterbox"
 
   structure2:
-    name: "unk"
-    tlc: "UNK"
+    name: "2OJ9-tautomer"
+    tlc: "BMI"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_input"
@@ -42,15 +42,16 @@ system:
 simulation:
   ################
   parameters:
-    nstep: 5000
-    nstdcd: 25
-    nstout: 25
+    nstep: 50
+    nstdcd: 2
+    nstout: 10
     cons: None
     dt: 0.001
-    mini_nstep: 1000
+    mini_nstep: 100
+    vdw: "force-switch"
   GPU: False
 
-  free-energy-type: "solvation-free-energy"
+  free-energy-type: "rsfe"
 ################
 solvation:
   ################
