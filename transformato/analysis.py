@@ -180,9 +180,9 @@ class FreeEnergyCalculator(object):
                 logger.info(f"Before: {len(traj)}")
                 traj = self._thinning_traj(traj)
                 # NOTE: removing the first 25% confs and thinning
-                if len(traj) < 100:
+                if len(traj) < 10:
                     raise RuntimeError(
-                        f"Below 100 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
+                        f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
                     )
 
                 confs.append(traj)
