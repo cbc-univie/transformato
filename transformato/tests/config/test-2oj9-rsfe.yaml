@@ -22,7 +22,7 @@ system:
 
   structure2:
     name: "2OJ9-test2"
-    tlc: "BMI"
+    tlc: "UNK"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_input"
