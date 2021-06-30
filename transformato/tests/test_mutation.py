@@ -171,51 +171,51 @@ def test_proposed_mutation_mcs():
         # find mcs
         a._find_mcs("m1", "m2")
 
-        assert str(a.s1_tlc) == "UNK"
+        assert str(a.s1_tlc) == "BMI"
         assert str(a.s2_tlc) == "UNK"
 
         cc1 = set(
             [
                 0,
-                4,
-                9,
-                7,
+                3,
                 6,
+                5,
+                4,
+                14,
                 24,
-                39,
-                37,
-                41,
-                36,
-                40,
+                23,
+                26,
+                22,
+                25,
+                17,
+                16,
                 28,
                 27,
-                43,
-                42,
-                45,
+                29,
                 46,
                 47,
                 48,
+                45,
+                41,
                 44,
-                29,
-                38,
                 2,
+                7,
                 11,
-                20,
-                16,
-                14,
-                18,
-                22,
-                21,
-                23,
-                19,
-                15,
-                17,
-                12,
-                13,
-                3,
+                9,
                 8,
                 10,
-                5,
+                13,
+                12,
+                39,
+                38,
+                36,
+                37,
+                34,
+                35,
+                30,
+                32,
+                33,
+                31,
             ]
         )
         cc2 = set(
@@ -263,6 +263,9 @@ def test_proposed_mutation_mcs():
             ]
         )
 
+        print(a.get_common_core_idx_mol1())
+        print(a.get_common_core_idx_mol2())
+
         assert set(a.get_common_core_idx_mol1()) == cc1
         assert set(a.get_common_core_idx_mol2()) == cc2
         a.bondCompare = rdFMCS.BondCompare.CompareOrder
@@ -272,27 +275,27 @@ def test_proposed_mutation_mcs():
         cc1 = set(
             [
                 0,
-                4,
-                9,
-                10,
-                5,
+                3,
+                6,
+                33,
+                31,
+                14,
                 24,
-                39,
-                37,
-                41,
-                36,
-                40,
+                23,
+                26,
+                22,
+                25,
+                17,
+                16,
                 28,
                 27,
-                43,
-                42,
-                45,
+                29,
                 46,
                 47,
                 48,
+                45,
+                41,
                 44,
-                29,
-                38,
             ]
         )
         cc2 = set(
@@ -492,6 +495,7 @@ def test_find_connected_dummy_regions2():
     )
 
     print(connected_dummy_regions_cc1)
+    print(connected_dummy_regions_cc2)
 
     dummy_region_m2 = transformato.mutate.DummyRegion(
         "m2",
@@ -502,16 +506,18 @@ def test_find_connected_dummy_regions2():
     )
 
     print(dummy_region_m1.connected_dummy_regions)
+    print(dummy_region_m2.connected_dummy_regions)
+
     # match
     assert dummy_region_m1.connected_dummy_regions[0] == {
-        32,
-        33,
-        34,
-        35,
-        25,
-        26,
-        30,
-        31,
+        40,
+        42,
+        43,
+        15,
+        18,
+        19,
+        20,
+        21,
     }
 
     assert dummy_region_m1.connected_dummy_regions[1] == {1}
@@ -524,7 +530,7 @@ def test_find_connected_dummy_regions2():
         dummy_region_m1.return_connecting_real_atom(
             dummy_region_m1.connected_dummy_regions[0]
         )
-        == 27
+        == 16
     )
 
     assert (
@@ -536,11 +542,11 @@ def test_find_connected_dummy_regions2():
 
     print(f"Matched dummy region: {dummy_region_m1.lj_default}")
     print(f"Matched dummy region: {dummy_region_m2.lj_default}")
-    assert dummy_region_m1.lj_default == [1, 30]
+    assert dummy_region_m1.lj_default == [1, 18]
     assert dummy_region_m2.lj_default == [1, 39]
 
 
-def test_common_core_system1():
+def test_common_core_for_multiple_systems():
 
     for conf in [
         "transformato/tests/config/test-toluene-methane-rsfe.yaml",
@@ -586,7 +592,7 @@ def setup_systems(conf):
     return (configuration, mutation_list_mol1, mutation_list_mol2, i_s1, i_s2)
 
 
-def test_mutation_list():
+def test_generate_mutation_list_for_multiple_systems():
 
     for conf, system_name in zip(
         [
@@ -640,19 +646,16 @@ def test_mutation_list():
             )
 
 
-def test_endpoint_mutation():
+def test_write_endpoint_state():
     # test physical endpoint systems
-    from ..utils import print_mutations
-    from ..mutate import MutationDefinition
-
     for conf in [
         "transformato/tests/config/test-toluene-methane-rsfe.yaml",
         "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
     ]:
         (
-            configuration,
-            mutation_list_mol1,
-            mutation_list_mol2,
+            _,
+            _,
+            _,
             i_s1,
             i_s2,
         ) = setup_systems(conf)
@@ -664,9 +667,7 @@ def test_endpoint_mutation():
         shutil.rmtree(output_file_base)
 
 
-def test_charge_mutation_test_system1():
-    from ..utils import print_mutations
-    from ..mutate import MutationDefinition
+def test_charges_at_endstate():
 
     for conf, system_name in zip(
         [
@@ -741,7 +742,7 @@ def test_setup_dual_junction_system():
         shutil.rmtree(f)
 
 
-def test_charge_mutation_test_system2():
+def test_charge_mutation_for_multiple_systems():
 
     for conf, system_name in zip(
         [
@@ -1339,7 +1340,7 @@ def test_bonded_mutation_energies_t2_s1(caplog):
     )
 
     assert np.isclose(
-        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 12.152228076282555
+        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 12.152228076282555, rtol=1e-4
     )
 
 
@@ -1586,7 +1587,7 @@ def test_bonded_mutation_dihedrals(caplog):
         .getPotentialEnergy()
     )
     assert np.isclose(
-        e_at_t2_cc.value_in_unit(unit.kilocalorie_per_mole), 45.06542169452752
+        e_at_t2_cc.value_in_unit(unit.kilocalorie_per_mole), 63.36457961831904
     )
     ####################################
     ####################################
