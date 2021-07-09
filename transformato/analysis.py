@@ -358,7 +358,7 @@ class FreeEnergyCalculator(object):
         # main
         logger.debug(f"Evaluating with {engine}")
         logger.debug(f"using {NUM_PROC} processes for the analysis")
-        ctx = mp.get_context("forkserver")
+        ctx = mp.get_context("fork")
         pool = ctx.Pool(processes=NUM_PROC)
 
         if engine == "openMM":
