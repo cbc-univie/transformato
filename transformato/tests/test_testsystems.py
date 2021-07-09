@@ -26,7 +26,6 @@ def test_rsfe_mutate_bmi_small_common_core():
 @pytest.mark.rbfe
 def test_rbfe_mutate_2oj9():
     from ..mutate import mutate_pure_tautomers
-    from ..constants import check_platform
     from transformato import (
         ProposeMutationRoute,
         SystemStructure,
