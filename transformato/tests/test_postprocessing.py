@@ -3,12 +3,11 @@ Unit and regression test for the transformato package.
 """
 
 import os
-from typing import Tuple
 
 import numpy as np
 import pytest
 import logging
-import subprocess
+from ..constants import initialize_NUM_PROC
 
 # read in specific topology with parameters
 from transformato import (
@@ -209,6 +208,28 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
+def test_2oj9_calculate_rsfe_with_openMM_mp(caplog):
+    caplog.set_level(logging.DEBUG)
+
+    initialize_NUM_PROC(4)
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    # 2OJ9-original to tautomer common core
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration, name="2OJ9-original", engine="openMM", max_snapshots=600
+    )
+
+    assert np.isclose(ddG_openMM, 3.3739872639241213)
+
+
+@pytest.mark.system_2oj9
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
 def test_2oj9_calculate_rsfe_with_different_engines():
 
     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
@@ -388,7 +409,7 @@ def test_2oj9_calculate_rbfe_with_openMM():
         configuration, name="2OJ9-tautomer", engine="openMM", max_snapshots=10
     )
 
-    assert np.isclose(ddG_openMM, 4.721730274995082)
+    assert np.isclose(ddG_openMM, 1.0224154995479893)
 
     # 2OJ9-original to tautomer common core
     ddG_openMM, dddG, f_openMM = postprocessing(
@@ -592,8 +613,8 @@ def test_acetylacetone_calculate_rsfe_with_different_engines():
     assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-1)
     print(ddG_openMM)
     print(ddG_charmm)
-    assert np.isclose(ddG_openMM, -0.6532604462065663)
-    assert np.isclose(ddG_charmm, -0.6591611245563769)
+    assert np.isclose(ddG_openMM, -0.6532604462065663, rtol=1e-3)
+    assert np.isclose(ddG_charmm, -0.6591611245563769, rtol=1e-3)
 
     # keto
     ddG_charmm, dddG, f_charmm = postprocessing(
@@ -630,7 +651,7 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
 
     conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="."
+        config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
 
     # enol
@@ -687,7 +708,6 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
     print(
         f"results-CHARMM: {(f_charmm.vacuum_free_energy_differences[0, -1] * kT).value_in_unit(unit.kilocalorie_per_mole)}"
     )
-    assert False
 
 
 ###########################################
