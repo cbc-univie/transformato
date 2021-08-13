@@ -210,6 +210,7 @@ with open(file_name + '_system.xml','w') as outfile:
                     # )
                 else:
                     raise NotImplementedError()
+
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # copy simulation bash script
             charmm_simulation_submit_script_source = (
@@ -222,6 +223,65 @@ with open(file_name + '_system.xml','w') as outfile:
                 charmm_simulation_submit_script_source,
                 charmm_simulation_submit_script_target,
             )
+
+
+            for env in self.system.envs:
+                if env == "waterbox":
+                    # write charmm production scripte
+                    charmm_input = self.charmm_factory.generate_CHARMM_production_files(
+                        env,
+                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_run_waterbox.inp", "w+"
+                    ) as f:
+                        f.write(charmm_input)
+
+                    # write charmm postproduction script
+                    charmm_input = (
+                        self.charmm_factory.generate_CHARMM_postprocessing_files(
+                            env,
+                        )
+                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp",
+                        "w+",
+                    ) as f:
+                        f.write(charmm_input)
+
+                elif env == "complex":  # vacuum
+                    # write charmm production scripte
+                    charmm_input = self.charmm_factory.generate_CHARMM_production_files(
+                        env,
+                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_run_complex.inp", "w"
+                    ) as f:
+                        f.write(charmm_input)
+                    # write charmm postproduction script
+                    charmm_input = (
+                        self.charmm_factory.generate_CHARMM_postprocessing_files(
+                            env,
+                        )
+                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp",
+                        "w+",
+                    ) as f:
+                        f.write(charmm_input)
+
+                    # # copy evaluation script
+                    # charmm_simulation_submit_script_source = (
+                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
+                    # )
+                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
+                    # shutil.copyfile(
+                    #     charmm_simulation_submit_script_source,
+                    #     charmm_simulation_submit_script_target,
+                    # )
+                else:
+                    raise NotImplementedError()
+        
+
         else:
             pass
 
