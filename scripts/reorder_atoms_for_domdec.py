@@ -62,7 +62,7 @@ def read_pdb(file_path):
                 )
 
             # read in bonds
-            elif line.startswith("CONECT"):
+            elif line.startswith("CONECT") and int(line.split()[1:][0]) in atoms:
                 s = line.split()[1:]
                 idx = int(s[0])
                 neighbors = [int(idx) for idx in s[1:]]
@@ -78,7 +78,7 @@ def read_pdb(file_path):
 
 
 def write_pdb_file(atoms, bonds, head, tail):
-    """ write out pdb file """
+    """write out pdb file"""
     new_atom_idx = 0
     print("Reordering indices and writing out ...")
 

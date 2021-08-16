@@ -36,7 +36,7 @@ class SystemStructure(object):
         self.cgenff_version: float
         self.envs: set
         # running a binding-free energy calculation?
-        if configuration["simulation"]["free-energy-type"] == "binding-free-energy":
+        if configuration["simulation"]["free-energy-type"] == "rbfe":
             self.envs = set(["complex", "waterbox"])
             for env in self.envs:
                 parameter = self._read_parameters(env)
@@ -57,7 +57,7 @@ class SystemStructure(object):
             )
             self.graph: nx.Graph = self._mol_to_nx(self.mol)
 
-        elif configuration["simulation"]["free-energy-type"] == "solvation-free-energy":
+        elif configuration["simulation"]["free-energy-type"] == "rsfe":
             self.envs = set(["waterbox", "vacuum"])
             for env in self.envs:
                 parameter = self._read_parameters(env)
@@ -158,6 +158,8 @@ class SystemStructure(object):
         parameter_files += (f"{toppar_dir}/par_all36_lipid.prm",)
         parameter_files += (f"{toppar_dir}/top_all36_lipid.rtf",)
         parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
+        parameter_files += (f"{toppar_dir}/toppar_all36_prot_na_combined.str",) # if modified aminoacids are needed 
+
 
         # set up parameter objec
         parameter = pm.charmm.CharmmParameterSet(*parameter_files)
@@ -360,3 +362,4 @@ class SystemStructure(object):
             atom_name_to_atom_type,
             atom_idx_to_atom_partial_charge,
         )
+
