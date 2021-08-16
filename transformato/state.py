@@ -139,14 +139,14 @@ with open(file_name + '_system.xml','w') as outfile:
         intermediate_state_file_path : [type]
             [description]
         """
+
         basedir = self.system.charmm_gui_base
 
-        if (
-            self.configuration["simulation"]["free-energy-type"]
-            == "solvation-free-energy"
-        ):
+        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
             # copy simulation bash script
-            charmm_simulation_submit_script_source = f"{self.configuration['bin_dir']}/simulation-solvation-free-energy_charmm.sh"
+            charmm_simulation_submit_script_source = (
+                f"{self.configuration['bin_dir']}/simulation-rsfe_charmm.sh"
+            )
             charmm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation_charmm.sh"
             )
@@ -177,16 +177,6 @@ with open(file_name + '_system.xml','w') as outfile:
                         "w+",
                     ) as f:
                         f.write(charmm_input)
-
-                    # # copy evaluation script
-                    # charmm_simulation_submit_script_source = (
-                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_solv.inp"
-                    # )
-                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp"
-                    # shutil.copyfile(
-                    #     charmm_simulation_submit_script_source,
-                    #     charmm_simulation_submit_script_target,
-                    # )
 
                 elif env == "vacuum":  # vacuum
                     # write charmm production scripte
@@ -220,11 +210,78 @@ with open(file_name + '_system.xml','w') as outfile:
                     # )
                 else:
                     raise NotImplementedError()
-        elif (
-            self.configuration["simulation"]["free-energy-type"]
-            == "binding-free-energy"
-        ):
-            pass
+
+        elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
+            # copy simulation bash script
+            charmm_simulation_submit_script_source = (
+                f"{self.configuration['bin_dir']}/simulation-rbfe_charmm.sh"
+            )
+            charmm_simulation_submit_script_target = (
+                f"{intermediate_state_file_path}/simulation_charmm.sh"
+            )
+            shutil.copyfile(
+                charmm_simulation_submit_script_source,
+                charmm_simulation_submit_script_target,
+            )
+
+
+            for env in self.system.envs:
+                if env == "waterbox":
+                    # write charmm production scripte
+                    charmm_input = self.charmm_factory.generate_CHARMM_production_files(
+                        env,
+                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_run_waterbox.inp", "w+"
+                    ) as f:
+                        f.write(charmm_input)
+
+                    # write charmm postproduction script
+                    charmm_input = (
+                        self.charmm_factory.generate_CHARMM_postprocessing_files(
+                            env,
+                        )
+                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp",
+                        "w+",
+                    ) as f:
+                        f.write(charmm_input)
+
+                elif env == "complex":  # vacuum
+                    # write charmm production scripte
+                    charmm_input = self.charmm_factory.generate_CHARMM_production_files(
+                        env,
+                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_run_complex.inp", "w"
+                    ) as f:
+                        f.write(charmm_input)
+                    # write charmm postproduction script
+                    charmm_input = (
+                        self.charmm_factory.generate_CHARMM_postprocessing_files(
+                            env,
+                        )
+                    )
+                    with open(
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp",
+                        "w+",
+                    ) as f:
+                        f.write(charmm_input)
+
+                    # # copy evaluation script
+                    # charmm_simulation_submit_script_source = (
+                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
+                    # )
+                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
+                    # shutil.copyfile(
+                    #     charmm_simulation_submit_script_source,
+                    #     charmm_simulation_submit_script_target,
+                    # )
+                else:
+                    raise NotImplementedError()
+        
+
         else:
             pass
 
@@ -269,10 +326,7 @@ with open(file_name + '_system.xml','w') as outfile:
         """
         basedir = self.system.charmm_gui_base
 
-        if (
-            self.configuration["simulation"]["free-energy-type"]
-            == "solvation-free-energy"
-        ):
+        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
             # parse omm simulation paramter
             for env in self.system.envs:
                 if env == "waterbox":
@@ -291,7 +345,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
             # copy simulation bash script
             omm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/simulation-solvation-free-energy.sh"
+                f"{self.configuration['bin_dir']}/simulation-rsfe.sh"
             )
             omm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation.sh"
@@ -299,10 +353,7 @@ with open(file_name + '_system.xml','w') as outfile:
             shutil.copyfile(
                 omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
-        elif (
-            self.configuration["simulation"]["free-energy-type"]
-            == "binding-free-energy"
-        ):
+        elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
             for env in self.system.envs:
                 omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}"
@@ -313,7 +364,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
             # copy simulation bash script
             omm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/simulation-binding-free-energy.sh"
+                f"{self.configuration['bin_dir']}/simulation-rbfe.sh"
             )
             omm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation.sh"
@@ -355,7 +406,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
         # copy omm simulation script
         # start with waterbox
-        omm_simulation_script_source = f"{basedir}/waterbox/openmm/openmm_run.py"
+        omm_simulation_script_source = f"{self.configuration['bin_dir']}/openmm_run.py"
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
@@ -399,6 +450,7 @@ with open(file_name + '_system.xml','w') as outfile:
         i = 0  # counting lines
 
         if self.configuration["simulation"]["GPU"]:
+            logger.info("Preparing for CUDA")
             for line in f.readlines():
                 if "CudaPrecision" in line and i == 0:
                     i += 1
