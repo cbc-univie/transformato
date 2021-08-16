@@ -545,7 +545,7 @@ class FreeEnergyCalculator(object):
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
         plt.ylabel("lambda state (0 to 1)", fontsize=15)
         plt.legend()
-        plt.savefig(f"{self.save_results_to_path}/ddG_to_common_core_overlap_{env}.png")
+        plt.savefig(f"{self.save_results_to_path}/ddG_to_common_core_overlap_{env}_for_{self.structure_name}.png")
 
         plt.show()
         plt.close()
@@ -584,7 +584,7 @@ class FreeEnergyCalculator(object):
         plt.ylabel("Free energy estimate in kT", fontsize=15)
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
         plt.savefig(
-            f"{self.save_results_to_path}/ddG_to_common_core_line_plot_{env}.png"
+            f"{self.save_results_to_path}/ddG_to_common_core_line_plot_{env}_for_{self.structure_name}.png"
         )
         plt.show()
         plt.close()
@@ -644,3 +644,4 @@ class FreeEnergyCalculator(object):
         print(
             f"Free energy to common core: {energy_estimate} [kT] with uncertanty: {uncertanty} [kT]."
         )
+
