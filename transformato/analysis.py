@@ -524,7 +524,7 @@ class FreeEnergyCalculator(object):
         return self.free_energy_overlap(env="vacuum")
 
     def plot_free_energy_overlap(self, env: str):
-        plt.figure(figsize=[8, 8], dpi=300)
+        plt.figure(figsize=[4, 4], dpi=300)
         if env == "vacuum":
             ax = sns.heatmap(
                 self.vacuum_free_energy_difference_overlap, cmap="Blues", linewidth=0.5
@@ -551,7 +551,7 @@ class FreeEnergyCalculator(object):
         plt.close()
 
     def plot_free_energy(self, env: str):
-
+        plt.figure(figsize=[4, 4], dpi=300)
         if env == "vacuum":
             x = [
                 a
@@ -579,6 +579,7 @@ class FreeEnergyCalculator(object):
             raise RuntimeError()
 
         plt.errorbar(x, y, yerr=y_error, label="ddG +- stddev [kT]")
+        plt.legend()
         plt.title(f"Free energy estimate for ligand in {env}", fontsize=15)
         plt.ylabel("Free energy estimate in kT", fontsize=15)
         plt.xlabel("lambda state (0 to 1)", fontsize=15)

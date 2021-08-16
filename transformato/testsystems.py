@@ -730,7 +730,7 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", output_dir: str = "."):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.75, 0, 4):
+    for lambda_value in np.linspace(1, 0, 5)[:1]:
         # turn off charges
         output_file_base, intst = i.write_state(
             mutation_conf=m,
@@ -1309,3 +1309,38 @@ def mutate_bmi_small_common_core(conf_path: str, input_dir: str, output_dir: str
         intst_nr=intst,
     )
     output_files.append(output_file_base)
+
+
+def mutate_2ra0_l51a_l51b(conf_path: str, input_dir: str, output_dir: str):
+    configuration = load_config_yaml(
+        config=conf_path, input_dir=input_dir, output_dir=output_dir
+    )
+    print("Setup system ...")
+    print(configuration)
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    print("Propose mutation ...")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    print("Remove atom idx ...")
+
+    s1_to_s2.remove_idx_from_common_core_of_mol1(
+        [2, 3, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+    )
+    s1_to_s2.remove_idx_from_common_core_of_mol2(
+        [2, 3, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+    )
+
+    # manually set the dummy region
+    print("Manually specify dummy regions ...")
+
+    s1_to_s2.finish_common_core(
+        connected_dummy_regions_cc1=[
+            {2, 3, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23},
+            {38},
+        ],
+        connected_dummy_regions_cc2=[
+            {2, 3, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23},
+            {40},
+        ],
+    )

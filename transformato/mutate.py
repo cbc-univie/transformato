@@ -1626,3 +1626,121 @@ def mutate_pure_tautomers(
     output_files_t2.append(o)
 
     return (output_files_t1, output_files_t2)
+
+
+def mutate_systems(
+    config: str,
+    nr_of_bonded_windows: int = 4,
+    input_dir: str = "../data/",
+    output_dir: str = ".",
+    connected_dummy_regions_cc1: list = [],
+    connected_dummy_regions_cc2: list = [],
+    el_nr_of_states:int=5
+):
+
+    from transformato import (
+        IntermediateStateFactory,
+        ProposeMutationRoute,
+        SystemStructure,
+        load_config_yaml,
+    )
+
+    configuration = load_config_yaml(
+        config=config, input_dir=input_dir, output_dir=output_dir
+    )
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+
+    # setup mutation route
+    if connected_dummy_regions_cc1:
+        s1_to_s2.propose_common_core()
+        s1_to_s2.finish_common_core(
+            connected_dummy_regions_cc1=connected_dummy_regions_cc1
+        )
+    elif connected_dummy_regions_cc2:
+        s1_to_s2.propose_common_core()
+        s1_to_s2.finish_common_core(
+            connected_dummy_regions_cc2=connected_dummy_regions_cc2
+        )
+    elif connected_dummy_regions_cc2 and connected_dummy_regions_cc1:
+        s1_to_s2.propose_common_core()
+        s1_to_s2.finish_common_core(
+            connected_dummy_regions_cc1=connected_dummy_regions_cc1,
+            connected_dummy_regions_cc2=connected_dummy_regions_cc2,
+        )
+    else:
+        raise RuntimeError()
+    
+    # setup mutation and StateFactory
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+
+    # system 1
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+
+    # write out states
+    # start with charge
+    intst = 1
+    charges = mutation_list["charge"]
+    output_files_t1 = []
+    for lambda_value in np.linspace(1, 0, el_nr_of_states):
+        # turn off charges
+        o, intst = i.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+            intst_nr=intst,
+        )
+        output_files_t1.append(o)
+        
+    # turn off the lj of the hydrogen
+    lj = mutation_list["lj"]
+    o, intst = i.write_state(
+        mutation_conf=lj,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files_t1.append(o)
+
+    # transform common core
+    for lambda_value in np.linspace(1, 0, nr_of_bonded_windows + 1)[1:]:
+        # turn off charges
+        o, intst = i.write_state(
+            mutation_conf=mutation_list["transform"],
+            common_core_transformation=lambda_value,
+            intst_nr=intst,
+        )
+        output_files_t1.append(o)
+
+    # setup other tautomer
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    i = IntermediateStateFactory(
+        system=system2,
+        configuration=configuration,
+    )
+    # write out states
+    # start with charge
+    intst = 1
+    output_files_t2 = []
+    charges = mutation_list["charge"]
+    for lambda_value in np.linspace(1, 0, 2):
+        # turn off charges
+        o, intst = i.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+            intst_nr=intst,
+        )
+        output_files_t2.append(o)
+
+    # turn off the lj of the hydrogen
+    lj = mutation_list["lj"]
+    o, intst = i.write_state(
+        mutation_conf=lj,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files_t2.append(o)
+
+    return (output_files_t1, output_files_t2)

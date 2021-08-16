@@ -399,21 +399,16 @@ def test_2oj9_calculate_rsfe_with_different_switches(caplog):
 )
 def test_2oj9_calculate_rbfe_with_openMM():
 
+    initialize_NUM_PROC(4)
+
     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rbfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
 
-    # 2OJ9-tautomer to tautomer common core
-    ddG_openMM, dddG, f_openMM = postprocessing(
-        configuration, name="2OJ9-tautomer", engine="openMM", max_snapshots=10
-    )
-
-    assert np.isclose(ddG_openMM, 1.0224154995479893)
-
     # 2OJ9-original to tautomer common core
     ddG_openMM, dddG, f_openMM = postprocessing(
-        configuration, name="2OJ9-original", engine="openMM", max_snapshots=10
+        configuration, name="2OJ9-original", engine="openMM", max_snapshots=200
     )
 
     assert np.isclose(ddG_openMM, -23.233893466807686)
