@@ -1,0 +1,87 @@
+<?xml version="1.0" ?>
+<System openmmVersion="7.4.1" type="System" version="1">
+	<PeriodicBoxVectors>
+		<A x="2" y="0" z="0"/>
+		<B x="0" y="2" z="0"/>
+		<C x="0" y="0" z="2"/>
+	</PeriodicBoxVectors>
+	<Particles>
+		<Particle mass="12.011"/>
+		<Particle mass="1.008"/>
+		<Particle mass="1.008"/>
+		<Particle mass="1.008"/>
+		<Particle mass="1.008"/>
+	</Particles>
+	<Constraints/>
+	<Forces>
+		<Force forceGroup="0" type="HarmonicBondForce" usesPeriodic="0" version="2">
+			<Bonds>
+				<Bond d=".1111" k="269449.60000000003" p1="0" p2="1"/>
+				<Bond d=".1111" k="269449.60000000003" p1="0" p2="2"/>
+				<Bond d=".1111" k="269449.60000000003" p1="0" p2="3"/>
+				<Bond d=".1111" k="269449.60000000003" p1="0" p2="4"/>
+			</Bonds>
+		</Force>
+		<Force forceGroup="1" type="HarmonicAngleForce" usesPeriodic="0" version="2">
+			<Angles>
+				<Angle a="1.8919369091618532" k="297.064" p1="1" p2="0" p3="2"/>
+				<Angle a="1.8919369091618532" k="297.064" p1="1" p2="0" p3="3"/>
+				<Angle a="1.8919369091618532" k="297.064" p1="1" p2="0" p3="4"/>
+				<Angle a="1.8919369091618532" k="297.064" p1="2" p2="0" p3="3"/>
+				<Angle a="1.8919369091618532" k="297.064" p1="2" p2="0" p3="4"/>
+				<Angle a="1.8919369091618532" k="297.064" p1="3" p2="0" p3="4"/>
+			</Angles>
+		</Force>
+		<Force forceGroup="3" type="HarmonicBondForce" usesPeriodic="0" version="2">
+			<Bonds>
+				<Bond d=".18020000000000003" k="4518.72" p1="1" p2="2"/>
+				<Bond d=".18020000000000003" k="4518.72" p1="1" p2="3"/>
+				<Bond d=".18020000000000003" k="4518.72" p1="1" p2="4"/>
+				<Bond d=".18020000000000003" k="4518.72" p1="2" p2="3"/>
+				<Bond d=".18020000000000003" k="4518.72" p1="2" p2="4"/>
+				<Bond d=".18020000000000003" k="4518.72" p1="3" p2="4"/>
+			</Bonds>
+		</Force>
+		<Force forceGroup="2" type="PeriodicTorsionForce" usesPeriodic="0" version="2">
+			<Torsions/>
+		</Force>
+		<Force energy="k*min(dtheta, 2*pi-dtheta)^2; dtheta = abs(theta-theta0);pi = 3.141593;" forceGroup="4" type="CustomTorsionForce" usesPeriodic="0" version="3">
+			<PerTorsionParameters>
+				<Parameter name="k"/>
+				<Parameter name="theta0"/>
+			</PerTorsionParameters>
+			<GlobalParameters/>
+			<EnergyParameterDerivatives/>
+			<Torsions/>
+		</Force>
+		<Force forceGroup="5" type="CMAPTorsionForce" usesPeriodic="0" version="2">
+			<Maps/>
+			<Torsions/>
+		</Force>
+		<Force alpha="0" cutoff="1" dispersionCorrection="0" ewaldTolerance=".0005" forceGroup="6" ljAlpha="0" ljnx="0" ljny="0" ljnz="0" method="0" nx="0" ny="0" nz="0" recipForceGroup="-1" rfDielectric="78.3" switchingDistance="-1" type="NonbondedForce" useSwitchingFunction="0" version="3">
+			<GlobalParameters/>
+			<ParticleOffsets/>
+			<ExceptionOffsets/>
+			<Particles>
+				<Particle eps=".32635200000000003" q="-.27" sig=".3652684744375391"/>
+				<Particle eps=".100416" q=".09" sig=".23876085646161097"/>
+				<Particle eps=".100416" q=".09" sig=".23876085646161097"/>
+				<Particle eps=".100416" q=".09" sig=".23876085646161097"/>
+				<Particle eps=".100416" q="0" sig=".23876085646161097"/>
+			</Particles>
+			<Exceptions>
+				<Exception eps="0" p1="0" p2="1" q="0" sig=".1"/>
+				<Exception eps="0" p1="0" p2="2" q="0" sig=".1"/>
+				<Exception eps="0" p1="0" p2="3" q="0" sig=".1"/>
+				<Exception eps="0" p1="0" p2="4" q="0" sig=".1"/>
+				<Exception eps="0" p1="1" p2="2" q="0" sig=".1"/>
+				<Exception eps="0" p1="1" p2="3" q="0" sig=".1"/>
+				<Exception eps="0" p1="1" p2="4" q="0" sig=".1"/>
+				<Exception eps="0" p1="2" p2="3" q="0" sig=".1"/>
+				<Exception eps="0" p1="2" p2="4" q="0" sig=".1"/>
+				<Exception eps="0" p1="3" p2="4" q="0" sig=".1"/>
+			</Exceptions>
+		</Force>
+		<Force forceGroup="0" frequency="1" type="CMMotionRemover" version="1"/>
+	</Forces>
+</System>
