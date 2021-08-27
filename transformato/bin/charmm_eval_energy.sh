@@ -18,4 +18,4 @@ echo 'Path: ' ${path}
 echo 'top: ' ${top}
 echo 'script: ' ${script}
 
-charmm top:${top} path:${path} -i ${script}
+${CHARMM} top:${top} path:${path} -i ${script}
