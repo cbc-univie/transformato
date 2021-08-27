@@ -17,12 +17,12 @@ hostname
 
 run_vacuum () {
 input=charmm_run_vacuum
-/home/mwieder/Work/Software/charmm/exec/gnu/charmm -i ${input}.inp > log_vac.out
+${CHARMM} -i ${input}.inp > log_vac.out
 }
 
 run_waterbox () {
 input=charmm_run_waterbox
-OMP_NUM_THREADS=8 /home/mwieder/Work/Software/charmm/exec/gnu/charmm -i ${input}.inp > log_solv.out
+OMP_NUM_THREADS=8 ${CHARMM} -i ${input}.inp > log_solv.out
 }
 
 
