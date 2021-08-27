@@ -33,7 +33,7 @@ def test_generate_output_for_acetylacetone_tautomer_pair(caplog):
     )
 
 
-def test_generate_output_for_methane_cc_solvation_free_energy():
+def test_generate_output_for_methane_cc_rsfe():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
     output_files, configuration = mutate_methane_to_methane_cc(
@@ -46,7 +46,7 @@ def test_generate_output_for_methane_cc_solvation_free_energy():
     shutil.rmtree(f)
 
 
-def test_generate_output_for_toluene_cc_solvation_free_energy():
+def test_generate_output_for_toluene_cc_rsfe():
     from transformato.testsystems import mutate_toluene_to_methane_cc
 
     output_files, configuration = mutate_toluene_to_methane_cc(
@@ -58,7 +58,7 @@ def test_generate_output_for_toluene_cc_solvation_free_energy():
     shutil.rmtree(f)
 
 
-def test_generate_output_for_neopentane_cc_solvation_free_energy():
+def test_generate_output_for_neopentane_cc_rsfe():
     from transformato.testsystems import mutate_neopentane_to_methane_cc
 
     output_files, configuration = mutate_neopentane_to_methane_cc(
@@ -70,7 +70,7 @@ def test_generate_output_for_neopentane_cc_solvation_free_energy():
     shutil.rmtree(f)
 
 
-def test_generate_output_for_methanol_cc_solvation_free_energy():
+def test_generate_output_for_methanol_cc_rsfe():
     from transformato.testsystems import mutate_methanol_to_methane_cc
 
     output_files, _ = mutate_methanol_to_methane_cc(
@@ -82,7 +82,7 @@ def test_generate_output_for_methanol_cc_solvation_free_energy():
     shutil.rmtree(f)
 
 
-def test_generate_output_for_2_CPI_solvation_free_energy():
+def test_generate_output_for_2_CPI_rsfe():
     from transformato.testsystems import mutate_2_CPI_to_7_CPI_cc
 
     output_files, _ = mutate_2_CPI_to_7_CPI_cc(
@@ -94,7 +94,7 @@ def test_generate_output_for_2_CPI_solvation_free_energy():
     shutil.rmtree(f)
 
 
-def test_generate_output_for_7_CPI_solvation_free_energy():
+def test_generate_output_for_7_CPI_rsfe():
     from transformato.testsystems import mutate_7_CPI_to_2_CPI_cc
 
     output_files, _ = mutate_7_CPI_to_2_CPI_cc(
