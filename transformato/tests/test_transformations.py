@@ -31,6 +31,9 @@ def test_generate_output_for_acetylacetone_tautomer_pair(caplog):
     (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair(
         nr_of_bonded_windows=8
     )
+    f = "/".join(output_files_t1[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)
 
 
 def test_generate_output_for_methane_cc_rsfe():

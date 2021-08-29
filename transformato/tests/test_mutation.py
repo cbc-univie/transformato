@@ -1796,19 +1796,11 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 
 
 def setup_2OJ9_tautomer_pair_rsfe(
-    single_state=False, conf_path="", nr_of_bonded_windows=4
+    configuration: dict, single_state=False, nr_of_bonded_windows=4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    if not conf_path:
-        conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    else:
-        print(conf_path)
-
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir="."
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -1830,19 +1822,11 @@ def setup_2OJ9_tautomer_pair_rsfe(
 
 
 def setup_2OJ9_tautomer_pair_rbfe(
-    single_state=False, conf_path="", nr_of_bonded_windows=4
+    configuration: dict, single_state=False, nr_of_bonded_windows=4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    if not conf_path:
-        conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    else:
-        print(conf_path)
-
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir="."
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -1864,19 +1848,11 @@ def setup_2OJ9_tautomer_pair_rbfe(
 
 
 def setup_acetylacetone_tautomer_pair(
-    single_state=False, conf_path="", nr_of_bonded_windows=4
+    configuration: dict, single_state=False, nr_of_bonded_windows=4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    if not conf_path:
-        conf_path = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
-    else:
-        print(conf_path)
-
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir="."
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
