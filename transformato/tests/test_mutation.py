@@ -1340,7 +1340,7 @@ def test_bonded_mutation_energies_t2_s1(caplog):
     )
 
     assert np.isclose(
-        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 12.152228076282555, rtol=1e-4
+        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 32.698191830578544, rtol=1e-4
     )
 
 
@@ -1355,9 +1355,7 @@ def test_bonded_mutation_energies_t2_s2(caplog):
         .getPotentialEnergy()
     )
 
-    assert np.isclose(
-        e_t2_s2.value_in_unit(unit.kilocalorie_per_mole), 44.88436132326585
-    )
+    assert np.isclose(e_t2_s2.value_in_unit(unit.kilocalorie_per_mole), 63.196164016286)
 
 
 @pytest.mark.slowtest
@@ -1372,7 +1370,7 @@ def test_bonded_mutation_energies_t2_s3(caplog):
     )
 
     assert np.isclose(
-        e_t2_s3.value_in_unit(unit.kilocalorie_per_mole), 45.06542169452752
+        e_t2_s3.value_in_unit(unit.kilocalorie_per_mole), 63.36457961831904
     )
 
 
@@ -1382,7 +1380,12 @@ def test_bonded_mutation_atoms(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
+        configuration=configuration
+    )
     psf_at_endstate_t1, _ = generate_psf(output_files_t1[0], "vacuum")
     prm_at_endstate_t1 = {
         a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_endstate_t1.atoms
@@ -1425,7 +1428,12 @@ def test_bonded_mutation_bonds(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
+        configuration=configuration
+    )
     ##################
     psf_at_endstate_t1, _ = generate_psf(output_files_t1[0], "vacuum")
     prm_at_endstate_t1 = {
@@ -1474,7 +1482,12 @@ def test_bonded_mutation_angles(caplog):
     from copy import copy
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
+        configuration=configuration
+    )
     ##################
     # psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
     # prm_at_endstate_t1 = {
@@ -1544,7 +1557,12 @@ def test_bonded_mutation_dihedrals(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
+        configuration=configuration
+    )
     # ##################
     # psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
     # prm_at_endstate_t1 = {
