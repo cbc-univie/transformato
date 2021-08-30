@@ -70,7 +70,7 @@ scalar mass stat
 calc Pmass = int ( ?stot  /  50.0 )
 
 energy
-
+domdec gpu only
 energy
 
 set nstep = 5000

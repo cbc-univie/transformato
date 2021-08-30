@@ -93,7 +93,7 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
         mae = np.sum(s) / len(s)
         assert mae < 0.005
         for e_charmm, e_openMM in zip(l_charmm, l_openMM):
-            assert np.isclose(e_charmm, e_openMM, rtol=0.1)
+            assert np.isclose(e_charmm, e_openMM, rtol=0.2)
 
 
 @pytest.mark.system_2oj9
@@ -164,7 +164,7 @@ def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
         mae = np.sum(s) / len(s)
         assert mae < 0.005
         for e_charmm, e_openMM in zip(l_charmm, l_openMM):
-            assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
+            assert np.isclose(e_charmm, e_openMM, rtol=1e-1)
 
 
 @pytest.mark.system_2oj9
