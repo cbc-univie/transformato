@@ -129,7 +129,7 @@ integrator = LangevinIntegrator(
 )
 
 # Set platform
-platform = Platform.getPlatformByName('CPU')
+platform = Platform.getPlatformByName("CUDA")
 prop = dict()
 
 # Build simulation context
