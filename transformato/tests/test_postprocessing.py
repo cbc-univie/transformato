@@ -258,8 +258,8 @@ def test_2oj9_calculate_rsfe_with_different_engines():
     )
 
     assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-2)
-    assert np.isclose(ddG_openMM, 3.3739872639241213)
-    assert np.isclose(ddG_charmm, 3.3656925062767016)
+    assert np.isclose(ddG_openMM, 1.6614087621422442)
+    assert np.isclose(ddG_charmm, 1.6579906682671464)
 
     # 2OJ9-tautomer to tautomer common core
     ddG_charmm, dddG, f_charmm = postprocessing(
@@ -299,8 +299,12 @@ def test_2oj9_calculate_rsfe_with_different_switches(caplog):
 
     # vfswitch
     conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe_vfswitch.yaml"
+    configuration = load_config_yaml(
+        config=conf_path, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
     (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rsfe(
-        conf_path=conf_path
+        configuration=configuration
     )
     run_simulation(output_files_t1)
     configuration = load_config_yaml(
@@ -410,8 +414,6 @@ def test_2oj9_calculate_rbfe_with_openMM():
     ddG_openMM, dddG, f_openMM = postprocessing(
         configuration, name="2OJ9-original", engine="openMM", max_snapshots=200
     )
-
-    assert np.isclose(ddG_openMM, -23.233893466807686)
 
 
 ###########################################
