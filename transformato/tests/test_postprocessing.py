@@ -222,7 +222,7 @@ def test_2oj9_calculate_rsfe_with_openMM_mp(caplog):
         configuration, name="2OJ9-original", engine="openMM", max_snapshots=600
     )
 
-    assert np.isclose(ddG_openMM, 3.3739872639241213)
+    assert np.isclose(ddG_openMM, 1.6614072591246014)
 
 
 @pytest.mark.system_2oj9
@@ -282,8 +282,8 @@ def test_2oj9_calculate_rsfe_with_different_engines():
     )
 
     assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-2)
-    assert np.isclose(ddG_openMM, 4.721730274995082)
-    assert np.isclose(ddG_charmm, 4.722406415490632)
+    assert np.isclose(ddG_openMM, -0.4446282802464623)
+    assert np.isclose(ddG_charmm, -0.4459798541540181)
 
 
 @pytest.mark.system_2oj9
@@ -300,16 +300,14 @@ def test_2oj9_calculate_rsfe_with_different_switches(caplog):
     # vfswitch
     conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe_vfswitch.yaml"
     configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir="data"
+        config=conf_path, input_dir="data/", output_dir="."
     )  # NOTE: for preprocessing input_dir is the output dir
 
     (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
     )
     run_simulation(output_files_t1)
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir="."
-    )
+
     f = FreeEnergyCalculator(configuration, "2OJ9-original")
 
     # 2OJ9-original to tautomer common core
@@ -342,9 +340,10 @@ def test_2oj9_calculate_rsfe_with_different_switches(caplog):
 
     # switch
     conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe_vswitch.yaml"
-    (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rsfe(
-        conf_path=conf_path
-    )
+    configuration = load_config_yaml(
+        config=conf_path, input_dir="data/", output_dir="."
+    )  # NOTE: for preprocessing input_dir is the output dir
+
     run_simulation(output_files_t1)
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir="."
