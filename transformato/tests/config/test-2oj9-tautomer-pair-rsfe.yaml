@@ -48,7 +48,7 @@ simulation:
     cons: None
     dt: 0.001
     mini_nstep: 1000
-  GPU: False
+  GPU: True
 
   free-energy-type: "rsfe"
 ################

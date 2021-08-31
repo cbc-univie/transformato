@@ -1557,7 +1557,7 @@ def test_bonded_mutation_dihedrals(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
@@ -1589,7 +1589,7 @@ def test_bonded_mutation_dihedrals(caplog):
         .getPotentialEnergy()
     )
     assert np.isclose(
-        e_at_t1_cc.value_in_unit(unit.kilocalorie_per_mole), 62.026441265363836
+        e_at_t1_cc.value_in_unit(unit.kilocalorie_per_mole), 62.02640132284073
     )
     ####################################
     ####################################
@@ -1845,6 +1845,9 @@ def setup_2OJ9_tautomer_pair_rbfe(
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -1871,6 +1874,9 @@ def setup_acetylacetone_tautomer_pair(
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -1893,13 +1899,19 @@ def setup_acetylacetone_tautomer_pair(
 
 def test_acetylacetone_tautomer_pair(caplog):
     caplog.set_level(logging.DEBUG)
-    setup_acetylacetone_tautomer_pair()
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    setup_acetylacetone_tautomer_pair(configuration=configuration)
     shutil.rmtree("acetylacetone-keto-acetylacetone-enol-rsfe")
 
 
 def test_2OJ9_tautomer_pair(caplog):
     caplog.set_level(logging.DEBUG)
-    setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    setup_2OJ9_tautomer_pair_rsfe(configuration=configuration)
     shutil.rmtree("2OJ9-original-2OJ9-tautomer-rsfe")
 
 
