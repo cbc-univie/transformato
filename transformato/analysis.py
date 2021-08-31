@@ -2,7 +2,7 @@ from collections import defaultdict
 import logging
 import os
 import pickle
-import multiprocessing as mp
+
 import matplotlib.pyplot as plt
 import mdtraj
 import numpy as np
@@ -18,7 +18,15 @@ from transformato.utils import get_structure_name
 from transformato.constants import temperature
 import copy
 
+
 logger = logging.getLogger(__name__)
+
+import mdtraj as md
+import numpy as np
+import multiprocessing as mp
+from multiprocessing import Pool
+import ctypes as c
+
 
 
 def return_reduced_potential(
@@ -194,18 +202,27 @@ class FreeEnergyCalculator(object):
 
     @staticmethod
     def _energy_at_ts(
-        simulation: Simulation, traj: mdtraj.Trajectory, ts: int, env: str
+        simulation: Simulation, traj: mdtraj.Trajectory, ts: int, env: str, shape: tuple
     ):
         """
         Calculates the potential energy with the correct periodic boundary conditions.
         """
+        arr = np.frombuffer(mp_arr.get_obj())
+        arr_2d = np.reshape(arr, shape)
+
         if env != "vacuum":
+
+            #traj.unitcell_vectors[ts][0],
+            #traj.unitcell_vectors[ts][1],
+            #traj.unitcell_vectors[ts][2],
+
+            
             simulation.context.setPeriodicBoxVectors(
-                traj.unitcell_vectors[ts][0],
-                traj.unitcell_vectors[ts][1],
-                traj.unitcell_vectors[ts][2],
+                [10.2515485, 0.        ,0.       ],
+                [0.       , 10.2515485 ,0.       ],
+                [0.        ,0.        ,10.2515485],
             )
-        simulation.context.setPositions(traj.openmm_positions(ts))
+        simulation.context.setPositions(arr_2d[ts])
         state = simulation.context.getState(getEnergy=True)
         return state.getPotentialEnergy()
 
@@ -214,12 +231,19 @@ class FreeEnergyCalculator(object):
         if env == "vacuum":
             volumn = (0.0 * unit.nanometer) ** 3
         else:
+            volumn = (0.0 * unit.nanometer) ** 3
+            # volumn = (0.0 * unit.nanometer) ** 3
             # extract the box size at the given ts
-            bxl_x = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
-            bxl_y = snapshots.unitcell_lengths[ts][1] * (unit.nanometer)
-            bxl_z = snapshots.unitcell_lengths[ts][2] * (unit.nanometer)
+            # bxl_x = snapshots.unitcell_lengths[ts][0] * (unit.nanometer)
+            # bxl_y = snapshots.unitcell_lengths[ts][1] * (unit.nanometer)
+            # bxl_z = snapshots.unitcell_lengths[ts][2] * (unit.nanometer)
 
-            volumn = bxl_x * bxl_y * bxl_z
+            # bxl_x = 1
+            # bxl_y = 1
+            # bxl_z = 1
+
+            # volumn = bxl_x * bxl_y * bxl_z
+            pass
         return volumn
 
     @staticmethod
@@ -326,18 +350,21 @@ class FreeEnergyCalculator(object):
         )
 
     def _evaluated_e_on_all_snapshots_openMM(
-        self, snapshots: mdtraj.Trajectory, lambda_state: int, env: str
+        self, lambda_state: int, env: str, shape: tuple
     ) -> np.ndarray:
+
+        arr = np.frombuffer(mp_arr.get_obj())
+        arr_2d = np.reshape(arr, shape)
 
         simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
         energies = []
         volumn_list = [
-            self._get_V_for_ts(snapshots, env, ts) for ts in range(snapshots.n_frames)
+            self._get_V_for_ts(arr_2d, env, ts) for ts in range(arr_2d.shape[0])
         ]
-        for ts in tqdm(range(snapshots.n_frames)):
+        for ts in tqdm(range(arr_2d.shape[0])):
             volumn = volumn_list[ts]
             # calculate the potential energy
-            e = self._energy_at_ts(simulation, snapshots, ts, env)
+            e = self._energy_at_ts(simulation, arr_2d, ts, env, shape)
             # obtain the reduced potential (for NpT)
             red_e = return_reduced_potential(e, volumn, temperature)
             energies.append(red_e)
@@ -358,8 +385,16 @@ class FreeEnergyCalculator(object):
         # main
         logger.debug(f"Evaluating with {engine}")
         logger.debug(f"using {NUM_PROC} processes for the analysis")
+
+
+        shape = snapshots.xyz.shape
+        snaps_arr = np.asarray(snapshots.xyz)
+        snap = np.reshape(snaps_arr,-1)
+        global mp_arr
+        mp_arr = mp.Array(c.c_double, snap)
+        print(type(mp_arr))
         ctx = mp.get_context("fork")
-        pool = ctx.Pool(processes=NUM_PROC)
+        pool = ctx.Pool(processes=5)
 
         if engine == "openMM":
             lambda_states = [
@@ -367,7 +402,7 @@ class FreeEnergyCalculator(object):
             ]
             r = pool.starmap(
                 self._evaluated_e_on_all_snapshots_openMM,
-                zip(repeat(snapshots), lambda_states, repeat(env)),
+                zip(lambda_states, repeat(env),repeat(shape)),
             )
 
             u_kn = np.stack([r_i for r_i in r])
