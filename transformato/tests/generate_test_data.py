@@ -39,7 +39,7 @@ def test_run_acetylacetone_tautomer_pair_rsfe():
 
 def test_run_2OJ9_tautomer_pair_rbfe_openMM():
 
-    conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf_path = "config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf_path, input_dir="../../data/", output_dir="../../data/"
     )
@@ -52,6 +52,6 @@ def test_run_2OJ9_tautomer_pair_rbfe_openMM():
 
 
 if __name__ == "__main__":
-    run_2OJ9_tautomer_pair_rsfe_openMM()
-    test_run_acetylacetone_tautomer_pair_rsfe()
+    #run_2OJ9_tautomer_pair_rsfe_openMM()
+    #test_run_acetylacetone_tautomer_pair_rsfe()
     test_run_2OJ9_tautomer_pair_rbfe_openMM()
