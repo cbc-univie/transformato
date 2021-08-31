@@ -4,17 +4,13 @@ import transformato
 from transformato.mutate import ProposeMutationRoute
 from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
-from transformato.utils import load_config_yaml
 from transformato.constants import check_platform
 
 transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
 
 
-def mutate_methane_to_methane_cc(conf: str = "", output_dir: str = "."):
+def mutate_methane_to_methane_cc(configuration: dict):
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -51,14 +47,11 @@ def mutate_methane_to_methane_cc(conf: str = "", output_dir: str = "."):
     )
     output_files.append(output_file_base)
 
-    return output_files, configuration
+    return output_files
 
 
-def testing_mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
+def testing_mutate_toluene_to_methane_cc(configuration: dict):
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -126,12 +119,11 @@ def testing_mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
     )
     output_files.append(output_file_base)
 
+    return output_files
 
-def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
+def mutate_toluene_to_methane_cc(configuration: dict):
+
     check_platform(configuration)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -238,14 +230,11 @@ def mutate_toluene_to_methane_cc(conf: str = "", output_dir: str = "."):
             intst_nr=intst,
         )
         output_files.append(output_file_base)
-    return output_files, configuration
+    return output_files
 
 
-def mutate_ethane_to_methane_cc(conf: str = "", output_dir: str = "."):
+def mutate_ethane_to_methane_cc(configuration: dict):
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -302,14 +291,11 @@ def mutate_ethane_to_methane_cc(conf: str = "", output_dir: str = "."):
             intst_nr=intst,
         )
         output_files.append(output_file_base)
-    return output_files, configuration
+    return output_files
 
 
-def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
+def mutate_methanol_to_methane_cc(configuration: dict):
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -401,16 +387,11 @@ def mutate_methanol_to_methane_cc(conf: str = "", output_dir: str = "."):
             intst_nr=intst,
         )
         output_files.append(output_file_base)
-    return output_files, configuration
+    return output_files
 
 
-def mutate_ethane_to_methanol_cc(
-    conf: str = "", output_dir: str = "."
-):  # not a loeffler system
+def mutate_ethane_to_methanol_cc(configuration: dict):  # not a loeffler system
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -466,16 +447,11 @@ def mutate_ethane_to_methanol_cc(
             intst_nr=intst,
         )
         output_files.append(output_file_base)
-    return output_files, configuration
+    return output_files
 
 
-def mutate_7_CPI_to_2_CPI_cc(
-    conf: str = "", output_dir: str = "."
-):  # will be tested later on
+def mutate_7_CPI_to_2_CPI_cc(configuration: dict):  # will be tested later on
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -544,16 +520,11 @@ def mutate_7_CPI_to_2_CPI_cc(
     )
     output_files.append(output_file_base)
 
-    return output_files, configuration
+    return output_files
 
 
-def mutate_2_CPI_to_7_CPI_cc(
-    conf: str = "", output_dir: str = "."
-):  # will be tested later on
+def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -632,14 +603,11 @@ def mutate_2_CPI_to_7_CPI_cc(
             intst_nr=intst,
         )
         output_files.append(output_file_base)
-    return output_files, configuration
+    return output_files
 
 
-def mutate_2_methylfuran_to_methane_cc(conf: str = "", output_dir: str = "."):
+def mutate_2_methylfuran_to_methane_cc(configuration: dict):
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -738,14 +706,11 @@ def mutate_2_methylfuran_to_methane_cc(conf: str = "", output_dir: str = "."):
             intst_nr=intst,
         )
         output_files.append(output_file_base)
-    return output_files, configuration
+    return output_files
 
 
-def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
+def mutate_neopentane_to_methane_cc(configuration: dict):
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -840,14 +805,11 @@ def mutate_neopentane_to_methane_cc(conf: str = "", output_dir: str = "."):
             intst_nr=intst,
         )
         output_files.append(output_file_base)
-    return output_files, configuration
+    return output_files
 
 
-def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
+def mutate_2_methylindole_to_methane_cc(configuration: dict):
 
-    configuration = load_config_yaml(
-        config=conf, input_dir=transformato_systems_dir, output_dir=output_dir
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -986,15 +948,10 @@ def mutate_2_methylindole_to_methane_cc(conf: str = "", output_dir: str = "."):
             intst_nr=intst,
         )
         output_files.append(output_file_base)
-    return output_files, configuration
+    return output_files
 
 
-def mutate_acetylaceton_methyl_common_core(
-    conf_path: str, input_dir: str, output_dir: str
-):
-    configuration = load_config_yaml(
-        config=conf_path, input_dir=input_dir, output_dir=output_dir
-    )
+def mutate_acetylaceton_methyl_common_core(configuration: dict):
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
@@ -1137,12 +1094,11 @@ def mutate_acetylaceton_methyl_common_core(
         intst_nr=intst,
     )
     output_files.append(output_file_base)
+    return output_files
 
 
-def mutate_bmi_small_common_core(conf_path: str, input_dir: str, output_dir: str):
-    configuration = load_config_yaml(
-        config=conf_path, input_dir=input_dir, output_dir=output_dir
-    )
+def mutate_bmi_small_common_core(configuration: dict):
+
     print("Setup system ...")
     print(configuration)
     s1 = SystemStructure(configuration, "structure1")
@@ -1311,10 +1267,7 @@ def mutate_bmi_small_common_core(conf_path: str, input_dir: str, output_dir: str
     output_files.append(output_file_base)
 
 
-def mutate_2ra0_l51a_l51b(conf_path: str, input_dir: str, output_dir: str):
-    configuration = load_config_yaml(
-        config=conf_path, input_dir=input_dir, output_dir=output_dir
-    )
+def mutate_2ra0_l51a_l51b(configuration):
     print("Setup system ...")
     print(configuration)
     s1 = SystemStructure(configuration, "structure1")
