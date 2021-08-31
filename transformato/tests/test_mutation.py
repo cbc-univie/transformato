@@ -1814,7 +1814,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 
 
 def setup_2OJ9_tautomer_pair_rsfe(
-    configuration: dict, single_state=False, nr_of_bonded_windows=4
+    configuration: dict, single_state=False, nr_of_bonded_windows:int=4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
@@ -1832,7 +1832,7 @@ def setup_2OJ9_tautomer_pair_rsfe(
             s2,
             configuration,
             single_state=single_state,
-            nr_of_bonded_windows=4,
+            nr_of_bonded_windows=nr_of_bonded_windows,
         ),
         configuration,
         s1_to_s2,
@@ -1840,13 +1840,10 @@ def setup_2OJ9_tautomer_pair_rsfe(
 
 
 def setup_2OJ9_tautomer_pair_rbfe(
-    configuration: dict, single_state=False, nr_of_bonded_windows=4
+    configuration: dict, single_state=False, nr_of_bonded_windows:int=4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
-
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
 
     check_platform(configuration)
 
@@ -1861,7 +1858,7 @@ def setup_2OJ9_tautomer_pair_rbfe(
             s2,
             configuration,
             single_state=single_state,
-            nr_of_bonded_windows=4,
+            nr_of_bonded_windows=nr_of_bonded_windows,
         ),
         configuration,
         s1_to_s2,
