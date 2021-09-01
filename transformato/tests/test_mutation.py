@@ -1131,6 +1131,7 @@ def test_equivalent_endstates_waterbox():
 
     psf.box = (30, 30, 30, 90, 90, 90)
 
+    # remove dummy atom from psf topology
     mask = []
     nr_of_atoms = len(psf.atoms)
     assert nr_of_atoms == len(coords)
@@ -1163,6 +1164,7 @@ def test_equivalent_endstates_waterbox():
         1.0 / u.picoseconds,  # Friction coefficient
         2.0 * u.femtoseconds,  # Time step
     )
+    # test that only a single dummy atom was present
     assert nr_of_atoms == psf.topology.getNumAtoms() + 1
     # Create the Simulation object
     sim = app.Simulation(psf.topology, system, integrator)
@@ -1178,8 +1180,7 @@ def test_equivalent_endstates_waterbox():
     #####################################
     psf, parms = generate_psf(output_files_t2[-1], env)
     psf.box = (30, 30, 30, 90, 90, 90)
-    # coords = generate_crd(output_files_t2[-1], env).positions
-
+    # remove dummy atom
     mask = []
     for a in psf.atoms:
         if str(a.type).startswith("DD"):
@@ -1187,8 +1188,8 @@ def test_equivalent_endstates_waterbox():
         else:
             mask.append(True)
 
-    # remove waters from top
-    mask[-12:] = [False] * 12
+    # remove waters that differ between the two topologies
+    mask[-3:] = [False] * 3
     psf = psf[mask]
     nr_of_atoms_t2 = psf.topology.getNumAtoms()
     assert nr_of_atoms_t1 == nr_of_atoms_t2
@@ -1814,7 +1815,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 
 
 def setup_2OJ9_tautomer_pair_rsfe(
-    configuration: dict, single_state=False, nr_of_bonded_windows:int=4
+    configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
@@ -1840,7 +1841,7 @@ def setup_2OJ9_tautomer_pair_rsfe(
 
 
 def setup_2OJ9_tautomer_pair_rbfe(
-    configuration: dict, single_state=False, nr_of_bonded_windows:int=4
+    configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform

@@ -15,6 +15,7 @@ from transformato import (
 
 transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
 
+
 def test_transformato_imported():
     """Sample test, will always pass so long as import statement worked"""
     assert "transformato" in sys.modules
@@ -40,9 +41,7 @@ def test_generate_output_for_methane_cc_rsfe():
         input_dir=transformato_systems_dir,
         output_dir=".",
     )
-    output_files, configuration = mutate_methane_to_methane_cc(
-        configuration=configuration
-    )
+    output_files = mutate_methane_to_methane_cc(configuration=configuration)
 
     assert len(output_files) == 3
     f = "/".join(output_files[0].split("/")[:-3])
@@ -107,7 +106,7 @@ def test_generate_output_for_2_CPI_rsfe():
         output_dir=".",
     )
 
-    output_files, _ = mutate_2_CPI_to_7_CPI_cc(configuration=configuration)
+    output_files = mutate_2_CPI_to_7_CPI_cc(configuration=configuration)
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)
@@ -123,7 +122,7 @@ def test_generate_output_for_7_CPI_rsfe():
         output_dir=".",
     )
 
-    output_files, _ = mutate_7_CPI_to_2_CPI_cc(configuration=configuration)
+    output_files = mutate_7_CPI_to_2_CPI_cc(configuration=configuration)
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)

@@ -94,7 +94,7 @@ def test_run_methane_to_methane_cc_rsfe_with_CHARMM():
         output_dir=".",
     )
 
-    output_files, configuration = mutate_methane_to_methane_cc(
+    output_files = mutate_methane_to_methane_cc(
         configuration=configuration
     )
     run_simulation(output_files)
