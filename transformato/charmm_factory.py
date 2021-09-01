@@ -72,43 +72,103 @@ class CharmmFactory:
 * Version from {date}
 *
 
-! Read Protein Topology and Parameter
-open read card unit 10 name ./toppar/top_all36_prot.rtf
+! protein topology and parameter
+open read card unit 10 name toppar/top_all36_prot.rtf
 read  rtf card unit 10
 
-open read card unit 20 name ./toppar/par_all36m_prot.prm
+open read card unit 20 name toppar/par_all36m_prot.prm
 read para card unit 20 flex
 
-! Read Nucleic Acids
-open read card unit 10 name ./toppar/top_all36_na.rtf
+! nucleic acids
+open read card unit 10 name toppar/top_all36_na.rtf
 read  rtf card unit 10 append
 
-open read card unit 20 name ./toppar/par_all36_na.prm
+open read card unit 20 name toppar/par_all36_na.prm
 read para card unit 20 append flex
 
-! Read Carbohydrates
-open read card unit 10 name ./toppar/top_all36_carb.rtf
+! carbohydrates
+open read card unit 10 name toppar/top_all36_carb.rtf
 read  rtf card unit 10 append
 
-open read card unit 20 name ./toppar/par_all36_carb.prm
+open read card unit 20 name toppar/par_all36_carb.prm
 read para card unit 20 append flex
 
-! Read Lipids
-open read card unit 10 name ./toppar/top_all36_lipid.rtf
+! lipids
+open read card unit 10 name toppar/top_all36_lipid.rtf
 read  rtf card unit 10 append
 
-open read card unit 20 name ./toppar/par_all36_lipid.prm
+open read card unit 20 name toppar/par_all36_lipid.prm
 read para card unit 20 append flex
 
-!Read CGENFF
-open read card unit 10 name ./toppar/top_all36_cgenff.rtf
+! CGENFF
+open read card unit 10 name toppar/top_all36_cgenff.rtf
 read  rtf card unit 10 append
 
-open read card unit 20 name ./toppar/par_all36_cgenff.prm
+open read card unit 20 name toppar/par_all36_cgenff.prm
 read para card unit 20 append flex
+
+! Interface FF
+open read card unit 10 name toppar/top_interface.rtf
+read  rtf card unit 10 append
+
+open read card unit 10 name toppar/par_interface.prm
+read para card unit 10 append flex
+
+stream toppar/toppar_all36_nano_lig.str
+stream toppar/toppar_all36_nanolig_patch.str
+
+! Additional topologies and parameters for synthetic polymer
+stream toppar/toppar_all36_synthetic_polymer.str
+stream toppar/toppar_all36_synthetic_polymer_patch.str
+stream toppar/toppar_all36_polymer_solvent.str
 
 ! Additional topologies and parameters for water and ions
-stream ./toppar/toppar_water_ions.str
+stream toppar/toppar_water_ions.str
+stream toppar/toppar_dum_noble_gases.str
+stream toppar/toppar_ions_won.str
+
+! Additional topologies and parameters for protein
+stream toppar/toppar_all36_prot_arg0.str
+stream toppar/toppar_all36_prot_c36m_d_aminoacids.str
+stream toppar/toppar_all36_prot_fluoro_alkanes.str
+stream toppar/toppar_all36_prot_heme.str
+stream toppar/toppar_all36_prot_na_combined.str
+stream toppar/toppar_all36_prot_retinol.str
+stream toppar/toppar_all36_prot_modify_res.str
+
+! Additional topologies and parameters for nucleic acids
+stream toppar/toppar_all36_na_nad_ppi.str
+stream toppar/toppar_all36_na_rna_modified.str
+
+! Additional topologies and parameters for lipids
+!stream toppar/toppar_all36_lipid_archaeal.str
+stream toppar/toppar_all36_lipid_bacterial.str
+stream toppar/toppar_all36_lipid_cardiolipin.str
+stream toppar/toppar_all36_lipid_cholesterol.str
+stream toppar/toppar_all36_lipid_dag.str
+stream toppar/toppar_all36_lipid_inositol.str
+!stream toppar/toppar_all36_lipid_lnp.str
+stream toppar/toppar_all36_lipid_lps.str
+!stream toppar/toppar_all36_lipid_mycobacterial.str
+stream toppar/toppar_all36_lipid_miscellaneous.str
+stream toppar/toppar_all36_lipid_model.str
+stream toppar/toppar_all36_lipid_prot.str
+stream toppar/toppar_all36_lipid_sphingo.str
+!stream toppar/toppar_all36_lipid_tag.str
+stream toppar/toppar_all36_lipid_yeast.str
+stream toppar/toppar_all36_lipid_hmmm.str
+stream toppar/toppar_all36_lipid_detergent.str
+stream toppar/toppar_all36_lipid_ether.str
+
+! Additional topologies and parameters for carbohydrates
+stream toppar/toppar_all36_carb_glycolipid.str
+stream toppar/toppar_all36_carb_glycopeptide.str
+stream toppar/toppar_all36_carb_imlab.str
+
+! Additional topologies and parameters for spin/fluorophore labels
+stream toppar/toppar_all36_label_spin.str
+stream toppar/toppar_all36_label_fluorophore.str
+
 
 ! Read {tlc} RTF
 open read unit 10 card name {tlc}_g.rtf
@@ -369,7 +429,7 @@ scalar mass stat
 calc Pmass = int ( ?stot  /  50.0 )
 
 !energy
-!{GPU}
+!GPU
 !energy
 
 set nstep = {nstep}
