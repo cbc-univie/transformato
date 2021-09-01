@@ -59,7 +59,7 @@ class CharmmFactory:
         elif env == "waterbox":
             charmm_production_script += self._get_CHARMM_waterbox_production_body()
         elif env == "complex": ###needs to be adaptet from waterbox to complex
-            charmm_production_script += self._get_CHARMM_complex_production_body()
+            charmm_production_script += self._get_CHARMM_waterbox_production_body()
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
 
@@ -68,62 +68,62 @@ class CharmmFactory:
     @staticmethod
     def build_reduced_toppar(tlc: str) -> str:
         date = datetime.date.today()
-        toppar = f"""* Simplified toppar script 
-* Version from {date} 
+        toppar = f"""* Simplified toppar script
+* Version from {date}
 *
 
-! Read Protein Topology and Parameter 
-open read card unit 10 name ./toppar/top_all36_prot.rtf 
-read  rtf card unit 10 
-    
-open read card unit 20 name ./toppar/par_all36m_prot.prm 
-read para card unit 20 flex 
+! Read Protein Topology and Parameter
+open read card unit 10 name ./toppar/top_all36_prot.rtf
+read  rtf card unit 10
 
-! Read Nucleic Acids 
-open read card unit 10 name ./toppar/top_all36_na.rtf 
-read  rtf card unit 10 append 
-    
-open read card unit 20 name ./toppar/par_all36_na.prm 
-read para card unit 20 append flex
-    
-! Read Carbohydrates 
-open read card unit 10 name ./toppar/top_all36_carb.rtf 
-read  rtf card unit 10 append 
-    
-open read card unit 20 name ./toppar/par_all36_carb.prm 
-read para card unit 20 append flex 
+open read card unit 20 name ./toppar/par_all36m_prot.prm
+read para card unit 20 flex
 
-! Read Lipids 
-open read card unit 10 name ./toppar/top_all36_lipid.rtf 
-read  rtf card unit 10 append 
-    
-open read card unit 20 name ./toppar/par_all36_lipid.prm 
+! Read Nucleic Acids
+open read card unit 10 name ./toppar/top_all36_na.rtf
+read  rtf card unit 10 append
+
+open read card unit 20 name ./toppar/par_all36_na.prm
 read para card unit 20 append flex
-    
-!Read CGENFF 
-open read card unit 10 name ./toppar/top_all36_cgenff.rtf 
-read  rtf card unit 10 append 
-    
-open read card unit 20 name ./toppar/par_all36_cgenff.prm 
+
+! Read Carbohydrates
+open read card unit 10 name ./toppar/top_all36_carb.rtf
+read  rtf card unit 10 append
+
+open read card unit 20 name ./toppar/par_all36_carb.prm
 read para card unit 20 append flex
-    
-! Additional topologies and parameters for water and ions 
+
+! Read Lipids
+open read card unit 10 name ./toppar/top_all36_lipid.rtf
+read  rtf card unit 10 append
+
+open read card unit 20 name ./toppar/par_all36_lipid.prm
+read para card unit 20 append flex
+
+!Read CGENFF
+open read card unit 10 name ./toppar/top_all36_cgenff.rtf
+read  rtf card unit 10 append
+
+open read card unit 20 name ./toppar/par_all36_cgenff.prm
+read para card unit 20 append flex
+
+! Additional topologies and parameters for water and ions
 stream ./toppar/toppar_water_ions.str
 
-! Read {tlc} RTF 
-open read unit 10 card name {tlc}_g.rtf 
+! Read {tlc} RTF
+open read unit 10 card name {tlc}_g.rtf
 read rtf card unit 10 append
 
-! Read {tlc} prm 
-open read unit 10 card name {tlc}.prm 
+! Read {tlc} prm
+open read unit 10 card name {tlc}.prm
 read para card unit 10 append flex
 
-! Read dummy_atom RTF 
-open read unit 10 card name dummy_atom_definitions.rtf 
+! Read dummy_atom RTF
+open read unit 10 card name dummy_atom_definitions.rtf
 read rtf card unit 10 append
 
-! Read dummy_atom prm 
-open read unit 10 card name dummy_parameters.prm 
+! Read dummy_atom prm
+open read unit 10 card name dummy_parameters.prm
 read para card unit 10 append flex
 
 """
@@ -134,19 +134,19 @@ read para card unit 10 append flex
             "intermediate-filename"
         ]
 
-        header = f"""*Version September 2020 
-*Run script for CHARMM jobs from transformato 
+        header = f"""*Version September 2020
+*Run script for CHARMM jobs from transformato
 *
 
-! Read topology and parameter files 
-stream charmm_toppar.str 
+! Read topology and parameter files
+stream charmm_toppar.str
 
-! Read PSF 
-open read unit 10 card name {intermediate_filename}.psf 
+! Read PSF
+open read unit 10 card name {intermediate_filename}.psf
 read psf  unit 10 card
 
-! Read Coordinate 
-open read unit 10 card name {intermediate_filename}.crd 
+! Read Coordinate
+open read unit 10 card name {intermediate_filename}.crd
 read coor unit 10 card
         """
         return header
@@ -161,7 +161,7 @@ set cutnb  1000.
 
 nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
   atom swit vatom vswitch -
-  inbfrq 1 
+  inbfrq 1
 
 energy
 
@@ -188,8 +188,8 @@ energy
 echo ?ener
 incr idx by 1
 if @idx .lt. @nframes goto loop
-   
-  
+
+
 stop"""
 
         return body
@@ -216,26 +216,26 @@ set cutnb  1000.
 
 nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
   atom swit vatom {switch} -
-  inbfrq 1 
+  inbfrq 1
 
 energy   inbfrq 1
 energy   inbfrq 0
 
 mini sd nstep 200
 
-set nstep = {nstep} 
+set nstep = {nstep}
 set temp = {temperature.value_in_unit(unit.kelvin)}
 
-scalar fbeta set 5. sele all end  
+scalar fbeta set 5. sele all end
 open write unit 21 file name lig_in_vacuum.dcd
- 
+
 DYNA lang leap start time 0.001 nstep @nstep -
     nprint {nstout} iprfrq {nstout} -
     iunread -1 iunwri -1 iuncrd 21 iunvel -1 kunit -1 -
     nsavc {nstdcd} nsavv 0 -
     rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0
-    
+
 stop"""
         return body
 
@@ -292,8 +292,8 @@ energy
 echo ?ener
 incr idx by 1
 if @idx .lt. @nframes goto loop
-        
-  
+
+
 stop"""
         return body
 
@@ -304,10 +304,10 @@ stop"""
         nstep = self.configuration["simulation"]["parameters"]["nstep"]
         nstout = self.configuration["simulation"]["parameters"]["nstout"]
         nstdcd = self.configuration["simulation"]["parameters"]["nstdcd"]
-        if self.configuration["simulation"].get("GPU", False) == True:
-            GPU = f"""domdec gpu only"""
-        else:
-            GPU = ""
+        # if self.configuration["simulation"].get("GPU", False) == True:
+        #     GPU = f"""domdec gpu only"""
+        # else:
+        #     GPU = ""
 
         body = f"""
 !
@@ -331,6 +331,8 @@ CRYSTAL READ UNIT 10 CARD
 ! Nonbonded Options
 !
 
+omm on
+
 nbonds atom vatom {switch} bycb -
        ctonnb 10.0 ctofnb 12.0 cutnb 16.0 cutim 16.0 -
        inbfrq -1 imgfrq -1 wmin 1.0 cdie eps 1.0 -
@@ -342,11 +344,11 @@ energy
 !use a restraint to place center of mass of the molecules near the origin
 !
 
-MMFP
-GEO rcm sphere -
-    Xref @xcen Yref @ycen Zref @zcen XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
-    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
-END
+!MMFP
+!GEO rcm sphere -
+!    Xref @xcen Yref @ycen Zref @zcen XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
+!    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
+!END
 
 shak bonh para fast sele segi SOLV end
 
@@ -366,23 +368,23 @@ mini ABNR nstep 500
 scalar mass stat
 calc Pmass = int ( ?stot  /  50.0 )
 
-energy
-{GPU}
-energy
+!energy
+!{GPU}
+!energy
 
 set nstep = {nstep}
 set temp = {temperature.value_in_unit(unit.kelvin)}
 
-scalar fbeta set 5. sele all end 
-open write unit 13 file name lig_in_waterbox.dcd 
+scalar fbeta set 5. sele all end
+open write unit 13 file name lig_in_waterbox.dcd
 
 DYNA CPT leap start time 0.001 nstep @nstep -
      nprint {nstout} iprfrq {nstout} -
      iunread -1 iunwri -1 iuncrd 13 iunvel -1 kunit -1 -
      nsavc {nstdcd} nsavv 0 -
      PCONSTANT pref   1.0  pmass @Pmass  pgamma   20.0 -
-     lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
-     ECHECK 0
+     omm langevin gamma 10 firstt @temp finalt @temp -
+     prmc pref 1.0 iprsfrq 15
 
 stop"""
         return body
@@ -440,8 +442,8 @@ energy
 echo ?ener
 incr idx by 1
 if @idx .lt. @nframes goto loop
-        
-  
+
+
 stop"""
         return body
 
@@ -521,8 +523,8 @@ energy
 set nstep = {nstep}
 set temp = {temperature.value_in_unit(unit.kelvin)}
 
-scalar fbeta set 5. sele all end 
-open write unit 13 file name lig_in_waterbox.dcd 
+scalar fbeta set 5. sele all end
+open write unit 13 file name lig_in_waterbox.dcd
 
 DYNA CPT leap start time 0.001 nstep @nstep -
      nprint {nstout} iprfrq {nstout} -
@@ -543,18 +545,18 @@ stop"""
         ]
 
         date = datetime.date.today()
-        header = f"""*Version from {date} 
-*Run script for CHARMM jobs from transformato 
+        header = f"""*Version from {date}
+*Run script for CHARMM jobs from transformato
 *
 
-! Read topology and parameter files 
-stream charmm_toppar.str 
+! Read topology and parameter files
+stream charmm_toppar.str
 
-! Read PSF 
-open read unit 10 card name {intermediate_filename}.psf 
+! Read PSF
+open read unit 10 card name {intermediate_filename}.psf
 read psf  unit 10 card
 
-! Read Coordinate 
-open read unit 10 card name {intermediate_filename}.crd 
+! Read Coordinate
+open read unit 10 card name {intermediate_filename}.crd
 read coor unit 10 card"""
         return header
