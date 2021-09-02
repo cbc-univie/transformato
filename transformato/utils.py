@@ -113,11 +113,14 @@ def get_structure_name(configuration: dict, structure_name: str):
 
 
 def psf_correction(str_object: StringIO):
-    """Correcting the issue with 2 missing spaces in the waterbox psf files"""
+    """Correcting the issue with 2 missing spaces in the waterbox psf files and replacing the !NGRP statement so its possible that CHARMM, CHARMM_OpenMM and OpenMM can handle the correspoing psf file"""
     str_object = str_object.getvalue()  # get the values as a long string
     new_str = ""
+    i = 0
+    second_line = -1
     correction_on = False
     for line in str_object.split("\n"):  # split on newline charactar
+        i += 1
         if "!NATOM" in line:  # if !NATOM is found start correction mode
             new_str += f"{line}\n"
             correction_on = True
@@ -143,7 +146,17 @@ def psf_correction(str_object: StringIO):
                 new_str += f"{line}\n"
             else:
                 raise RuntimeError(f"Error with the psf file: {line}")
+
         else:  # otherwise add line to new_str
-            new_str += f"{line}\n"
+
+            if "!NGRP NST2" in line:
+                second_line = i+1 # we want to remove the next line after !NGRP appears
+                new_str += f"{line.replace('1','0')}\n"
+            elif i == second_line:
+                new_str += ' \n'
+            else:
+                new_str += f"{line}\n"
+
+
 
     return new_str
