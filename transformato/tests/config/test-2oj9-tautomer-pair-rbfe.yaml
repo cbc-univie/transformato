@@ -42,7 +42,7 @@ system:
 simulation:
   ################
   parameters:
-    nstep: 10000
+    nstep: 20000
     nstdcd: 10
     nstout: 500
     cons: None

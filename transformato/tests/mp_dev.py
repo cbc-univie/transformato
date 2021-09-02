@@ -3,11 +3,12 @@ from transformato.constants import initialize_NUM_PROC
 
 # read in specific topology with parameters
 from transformato import load_config_yaml, FreeEnergyCalculator
+initialize_NUM_PROC(6)
 
 
 def postprocessing(
     configuration: dict,
-    name: str = "methane",
+    name: str,
     engine: str = "openMM",
     max_snapshots: int = 300,
     show_summary: bool = False,
@@ -42,7 +43,6 @@ def postprocessing(
 
 def calculate_rsfe_mp():
 
-    initialize_NUM_PROC(6)
     conf = "config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="../../data/", output_dir="../../data"
@@ -56,7 +56,6 @@ def calculate_rsfe_mp():
 
 def calculate_rbfe_mp():
 
-    initialize_NUM_PROC(6)
     conf = "config/test-2oj9-tautomer-pair-rbfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="../../data/", output_dir="../../data"
