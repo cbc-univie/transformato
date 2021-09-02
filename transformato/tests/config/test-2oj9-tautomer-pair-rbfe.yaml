@@ -43,8 +43,8 @@ simulation:
   ################
   parameters:
     nstep: 10000
-    nstdcd: 25
-    nstout: 25
+    nstdcd: 10
+    nstout: 500
     cons: None
     dt: 0.001
     mini_nstep: 1000
