@@ -66,7 +66,34 @@ def calculate_rbfe_mp():
         configuration, name="2OJ9-original", engine="openMM", max_snapshots=1000
     )
 
+def load_traj_span_mp():
+    
+    def proc(snapshots):
+        print(len(snapshots))
+        
+    
+    import _multiprocessing as mp
+    
+    name="2OJ9-original"
+    conf = "config/test-2oj9-tautomer-pair-rbfe.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="../../data/", output_dir="../../data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+    
+    f = FreeEnergyCalculator(configuration, name)
+    f.load_trajs(nr_of_max_snapshots=1_000)
+    snapshots = f.snapshots
+    
+    #xyz = np.asarray(snapshots.xyz)
+    #shm = shared_memory.SharedMemory(create=True, size=xyz.nbytes)
+    #shm_xyz = np.ndarray(xyz.shape, dtype=xyz.dtype, buffer=shm.buf)
+    #shm_xyz[:] = xyz[:]
+    
+    ctx = mp.get_context("fork")
+    pool = ctx.Pool(processes=4)
+    pool.map(proc, snapshots)
+
 
 if __name__ == "__main__":
     # calculate_rsfe_mp()
-    calculate_rbfe_mp()
+    #calculate_rbfe_mp()
