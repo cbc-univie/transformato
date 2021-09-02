@@ -16,10 +16,10 @@ SWITCH=$2
 cd ${path}
 pwd
 hostname
+export OPENMM_CPU_THREADS=4
 
 
 run_vacuum () {
-export OPENMM_CPU_THREADS=1
 input=lig_in_vacuum
 init=lig_in_vacuum
 pstep=lig_in_vacuum
