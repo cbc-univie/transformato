@@ -17,12 +17,12 @@ hostname
 
 run_complex () {
 input=charmm_run_complex
-OMP_NUM_THREADS=8 /home/mwieder/Work/Software/charmm/exec/gnu/charmm -i ${input}.inp > log_complex.out
+OMP_NUM_THREADS=8 ${CHARMM} -i ${input}.inp > log_complex.out
 }
 
 run_waterbox () {
 input=charmm_run_waterbox
-OMP_NUM_THREADS=8 /home/mwieder/Work/Software/charmm/exec/gnu/charmm -i ${input}.inp > log_solv.out
+OMP_NUM_THREADS=8 ${CHARMM} -i ${input}.inp > log_solv.out
 }
 
 

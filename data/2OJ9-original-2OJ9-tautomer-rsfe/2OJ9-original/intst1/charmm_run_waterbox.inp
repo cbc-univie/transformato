@@ -12,7 +12,7 @@ read psf  unit 10 card
 ! Read Coordinate 
 open read unit 10 card name lig_in_waterbox.crd 
 read coor unit 10 card
-
+        
 !
 ! Setup PBC (Periodic Boundary Condition)
 !
@@ -34,7 +34,7 @@ CRYSTAL READ UNIT 10 CARD
 ! Nonbonded Options
 !
 
-nbonds atom vatom VFSWItch bycb -
+nbonds atom vatom vfswitch bycb -
        ctonnb 10.0 ctofnb 12.0 cutnb 16.0 cutim 16.0 -
        inbfrq -1 imgfrq -1 wmin 1.0 cdie eps 1.0 -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
@@ -69,6 +69,8 @@ mini ABNR nstep 500
 scalar mass stat
 calc Pmass = int ( ?stot  /  50.0 )
 
+energy
+domdec gpu only
 energy
 
 set nstep = 5000

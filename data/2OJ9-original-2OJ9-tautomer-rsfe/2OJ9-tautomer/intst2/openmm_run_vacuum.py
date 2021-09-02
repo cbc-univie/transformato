@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 inputs = read_inputs(args.inpfile)
 params = read_params(args.toppar)
-psf = read_psf(args.psffile)
+psf = CharmmPsfFile(args.psffile)
 crd = read_crd(args.crdfile)
 
 # Build system
@@ -52,11 +52,7 @@ if args.orst:
 # mw: adding xml serializer to the simulation script
 file_name = str(args.psffile).replace('.psf', '')
 print(file_name)
-serialized_integrator = XmlSerializer.serialize(integrator)
-outfile = open(file_name + '_integrator.xml','w')
-outfile.write(serialized_integrator)
-outfile.close()
-serialized_system = XmlSerializer.serialize(system)
-outfile = open(file_name + '_system.xml','w')
-outfile.write(serialized_system)
-outfile.close()
+with open(file_name + '_integrator.xml','w') as outfile:
+    outfile.write(XmlSerializer.serialize(integrator))
+with open(file_name + '_system.xml','w') as outfile:
+    outfile.write(XmlSerializer.serialize(system))

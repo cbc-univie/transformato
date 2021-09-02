@@ -1131,6 +1131,7 @@ def test_equivalent_endstates_waterbox():
 
     psf.box = (30, 30, 30, 90, 90, 90)
 
+    # remove dummy atom from psf topology
     mask = []
     nr_of_atoms = len(psf.atoms)
     assert nr_of_atoms == len(coords)
@@ -1163,6 +1164,7 @@ def test_equivalent_endstates_waterbox():
         1.0 / u.picoseconds,  # Friction coefficient
         2.0 * u.femtoseconds,  # Time step
     )
+    # test that only a single dummy atom was present
     assert nr_of_atoms == psf.topology.getNumAtoms() + 1
     # Create the Simulation object
     sim = app.Simulation(psf.topology, system, integrator)
@@ -1178,8 +1180,7 @@ def test_equivalent_endstates_waterbox():
     #####################################
     psf, parms = generate_psf(output_files_t2[-1], env)
     psf.box = (30, 30, 30, 90, 90, 90)
-    # coords = generate_crd(output_files_t2[-1], env).positions
-
+    # remove dummy atom
     mask = []
     for a in psf.atoms:
         if str(a.type).startswith("DD"):
@@ -1187,8 +1188,8 @@ def test_equivalent_endstates_waterbox():
         else:
             mask.append(True)
 
-    # remove waters from top
-    mask[-12:] = [False] * 12
+    # remove waters that differ between the two topologies
+    mask[-3:] = [False] * 3
     psf = psf[mask]
     nr_of_atoms_t2 = psf.topology.getNumAtoms()
     assert nr_of_atoms_t1 == nr_of_atoms_t2
@@ -1340,7 +1341,7 @@ def test_bonded_mutation_energies_t2_s1(caplog):
     )
 
     assert np.isclose(
-        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 12.152228076282555, rtol=1e-4
+        e_t2_s1.value_in_unit(unit.kilocalorie_per_mole), 32.698191830578544, rtol=1e-4
     )
 
 
@@ -1355,9 +1356,7 @@ def test_bonded_mutation_energies_t2_s2(caplog):
         .getPotentialEnergy()
     )
 
-    assert np.isclose(
-        e_t2_s2.value_in_unit(unit.kilocalorie_per_mole), 44.88436132326585
-    )
+    assert np.isclose(e_t2_s2.value_in_unit(unit.kilocalorie_per_mole), 63.196164016286)
 
 
 @pytest.mark.slowtest
@@ -1372,7 +1371,7 @@ def test_bonded_mutation_energies_t2_s3(caplog):
     )
 
     assert np.isclose(
-        e_t2_s3.value_in_unit(unit.kilocalorie_per_mole), 45.06542169452752
+        e_t2_s3.value_in_unit(unit.kilocalorie_per_mole), 63.36457961831904
     )
 
 
@@ -1382,7 +1381,12 @@ def test_bonded_mutation_atoms(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
+        configuration=configuration
+    )
     psf_at_endstate_t1, _ = generate_psf(output_files_t1[0], "vacuum")
     prm_at_endstate_t1 = {
         a.idx: (a.charge, a.sigma, a.epsilon) for a in psf_at_endstate_t1.atoms
@@ -1425,7 +1429,12 @@ def test_bonded_mutation_bonds(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
+        configuration=configuration
+    )
     ##################
     psf_at_endstate_t1, _ = generate_psf(output_files_t1[0], "vacuum")
     prm_at_endstate_t1 = {
@@ -1474,7 +1483,12 @@ def test_bonded_mutation_angles(caplog):
     from copy import copy
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
+        configuration=configuration
+    )
     ##################
     # psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
     # prm_at_endstate_t1 = {
@@ -1544,7 +1558,12 @@ def test_bonded_mutation_dihedrals(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
+        configuration=configuration
+    )
     # ##################
     # psf_at_endstate_t1 = generate_psf(output_files_t1[0], "vacuum")
     # prm_at_endstate_t1 = {
@@ -1571,7 +1590,7 @@ def test_bonded_mutation_dihedrals(caplog):
         .getPotentialEnergy()
     )
     assert np.isclose(
-        e_at_t1_cc.value_in_unit(unit.kilocalorie_per_mole), 62.026441265363836
+        e_at_t1_cc.value_in_unit(unit.kilocalorie_per_mole), 62.02640132284073
     )
     ####################################
     ####################################
@@ -1796,19 +1815,11 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 
 
 def setup_2OJ9_tautomer_pair_rsfe(
-    single_state=False, conf_path="", nr_of_bonded_windows=4
+    configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    if not conf_path:
-        conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    else:
-        print(conf_path)
-
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir="."
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -1822,7 +1833,7 @@ def setup_2OJ9_tautomer_pair_rsfe(
             s2,
             configuration,
             single_state=single_state,
-            nr_of_bonded_windows=4,
+            nr_of_bonded_windows=nr_of_bonded_windows,
         ),
         configuration,
         s1_to_s2,
@@ -1830,19 +1841,11 @@ def setup_2OJ9_tautomer_pair_rsfe(
 
 
 def setup_2OJ9_tautomer_pair_rbfe(
-    single_state=False, conf_path="", nr_of_bonded_windows=4
+    configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    if not conf_path:
-        conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    else:
-        print(conf_path)
-
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir="."
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -1856,7 +1859,7 @@ def setup_2OJ9_tautomer_pair_rbfe(
             s2,
             configuration,
             single_state=single_state,
-            nr_of_bonded_windows=4,
+            nr_of_bonded_windows=nr_of_bonded_windows,
         ),
         configuration,
         s1_to_s2,
@@ -1864,19 +1867,14 @@ def setup_2OJ9_tautomer_pair_rbfe(
 
 
 def setup_acetylacetone_tautomer_pair(
-    single_state=False, conf_path="", nr_of_bonded_windows=4
+    configuration: dict, single_state=False, nr_of_bonded_windows=4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
 
-    if not conf_path:
-        conf_path = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
-    else:
-        print(conf_path)
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
 
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir="."
-    )
     check_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
@@ -1899,13 +1897,19 @@ def setup_acetylacetone_tautomer_pair(
 
 def test_acetylacetone_tautomer_pair(caplog):
     caplog.set_level(logging.DEBUG)
-    setup_acetylacetone_tautomer_pair()
+    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    setup_acetylacetone_tautomer_pair(configuration=configuration)
     shutil.rmtree("acetylacetone-keto-acetylacetone-enol-rsfe")
 
 
 def test_2OJ9_tautomer_pair(caplog):
     caplog.set_level(logging.DEBUG)
-    setup_2OJ9_tautomer_pair_rsfe()
+    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+
+    setup_2OJ9_tautomer_pair_rsfe(configuration=configuration)
     shutil.rmtree("2OJ9-original-2OJ9-tautomer-rsfe")
 
 
