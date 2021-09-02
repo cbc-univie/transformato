@@ -1841,7 +1841,7 @@ def setup_2OJ9_tautomer_pair_rsfe(
 
 
 def setup_2OJ9_tautomer_pair_rbfe(
-    configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
+    configuration: dict, single_state:bool=False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import check_platform
