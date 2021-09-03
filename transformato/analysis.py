@@ -19,7 +19,7 @@ from simtk.openmm import Platform, XmlSerializer
 from simtk.openmm.app import CharmmPsfFile, Simulation
 from tqdm import tqdm
 
-from transformato.constants import NUM_PROC, temperature
+from transformato.constants import temperature
 from transformato.utils import get_structure_name
 
 logger = logging.getLogger(__name__)
@@ -397,6 +397,7 @@ class FreeEnergyCalculator(object):
         save_results: bool,
         engine: str,
     ):
+        from transformato.constants import NUM_PROC
 
         #########################################################
         #########################################################

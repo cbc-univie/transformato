@@ -8,7 +8,7 @@ import multiprocessing as mp
 import numpy as np
 from itertools import repeat
 from multiprocessing import shared_memory
-initialize_NUM_PROC(6)
+
 
 def postprocessing(
     configuration: dict,
@@ -71,14 +71,16 @@ def calculate_rbfe_mp():
     )
 
 
-  
 def procft(snapshots):
     print(snapshots.n_frames)
     for i in range(snapshots.n_frames):
-        j=i*i
-        print(j,)
+        j = i * i
+        print(
+            j,
+        )
         sleep(1)
     return j
+
 
 def procsh(shr_name, dims, i):
     print(shr_name)
@@ -88,22 +90,25 @@ def procsh(shr_name, dims, i):
     np_array = np.ndarray(dims, dtype=np.float32, buffer=existing_shm.buf)
 
     for i in range(len(np_array))[:50]:
-        j=i*i
-        print(j,)
+        j = i * i
+        print(
+            j,
+        )
         sleep(1)
     existing_shm.close()
 
+
 def create_data():
 
-    name="2OJ9-original"
+    name = "2OJ9-original"
     conf = "config/test-2oj9-tautomer-pair-rbfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="../../data/", output_dir="../../data"
     )  # NOTE: for preprocessing input_dir is the output dir
-    
+
     f = FreeEnergyCalculator(configuration, name)
     f.load_trajs(nr_of_max_snapshots=1_000)
-    snapshots = f.snapshots['complex']
+    snapshots = f.snapshots["complex"]
     print(snapshots.n_frames)
     xyz = np.asarray(snapshots.xyz)
     dims = xyz.shape
@@ -114,26 +119,28 @@ def create_data():
     shm_xyz[:] = xyz[:]
     return shm, shm_xyz, dims
 
-def load_traj_span_mp(shm, shm_xyz, dims):
 
+def load_traj_span_mp(shm, shm_xyz, dims):
 
     ctx = mp.get_context("spawn")
     pool = ctx.Pool(processes=4)
-    #pool.map(proct, [i for i in range(snapshots.n_frames)])
+    # pool.map(proct, [i for i in range(snapshots.n_frames)])
 
-    #pool.map(procf, repeat(snapshots))
-    #map(procf, zip(repeat(snapshots), [i for i in range(7)]))
-    #r = map(procf, (snapshots, 1))
-    #print(list(r))
-    #r = map(procft, [snapshots])
-    #print(list(r))
-    #pool.map(procft, [snapshots,snapshots,snapshots,snapshots])
+    # pool.map(procf, repeat(snapshots))
+    # map(procf, zip(repeat(snapshots), [i for i in range(7)]))
+    # r = map(procf, (snapshots, 1))
+    # print(list(r))
+    # r = map(procft, [snapshots])
+    # print(list(r))
+    # pool.map(procft, [snapshots,snapshots,snapshots,snapshots])
     pool.starmap(procsh, zip(repeat(shm.name), repeat(dims), [i for i in range(4)]))
-    
+
+
 if __name__ == "__main__":
+    initialize_NUM_PROC(1)
     # calculate_rsfe_mp()
-    #calculate_rbfe_mp()
-    shm, shm_xyz, dims = create_data()
-    load_traj_span_mp(shm, shm_xyz, dims)
-    shm.close()
-    shm.unlink()
+    calculate_rbfe_mp()
+    # shm, shm_xyz, dims = create_data()
+    # load_traj_span_mp(shm, shm_xyz, dims)
+    # shm.close()
+    # shm.unlink()
