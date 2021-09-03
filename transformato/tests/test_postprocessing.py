@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 import logging
 from ..constants import initialize_NUM_PROC
+from transformato.constants import check_platform
 
 # read in specific topology with parameters
 from transformato import (
@@ -216,6 +217,7 @@ def test_2oj9_calculate_rsfe_with_openMM_mp(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
+    check_platform(configuration)
 
     # 2OJ9-original to tautomer common core
     ddG_openMM, dddG, f_openMM = postprocessing(
