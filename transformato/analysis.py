@@ -5,7 +5,7 @@ import os
 import pickle
 import subprocess
 from collections import defaultdict
-from itertools import repeat
+from itertools import repeat, starmap
 from multiprocessing import shared_memory
 from typing import List, Set, Tuple
 
@@ -198,16 +198,18 @@ class FreeEnergyCalculator(object):
 
     @staticmethod
     def _energy_at_ts(
-        simulation: Simulation, configuration, env: str, unitcell_lengths
+        simulation: Simulation, configuration, env: str, ts: int, unitcell_vectors
     ):
         """
         Calculates the potential energy with the correct periodic boundary conditions.
         """
         if env != "vacuum":
+            print("UNITCELL:")
+            print(unitcell_vectors[ts])
             simulation.context.setPeriodicBoxVectors(
-                unitcell_lengths[0],
-                unitcell_lengths[1],
-                unitcell_lengths[2],
+                unitcell_vectors[ts][0],
+                unitcell_vectors[ts][1],
+                unitcell_vectors[ts][2],
             )
         simulation.context.setPositions(configuration)
         state = simulation.context.getState(getEnergy=True)
@@ -308,7 +310,7 @@ class FreeEnergyCalculator(object):
                 for e in pot_energies
             ]
 
-    def _evaluated_e_on_all_snapshots_CHARMM(
+    def _evaluate_e_on_all_snapshots_CHARMM(
         self, snapshots: mdtraj.Trajectory, lambda_state: int, env: str
     ):
 
@@ -329,33 +331,64 @@ class FreeEnergyCalculator(object):
             volumn_list=volumn_list,
         )
 
-    def _evaluated_e_on_all_snapshots_openMM(
+    def _evaluate_e_on_all_snapshots_openMM_sp(
+        self, snapshots: mdtraj.Trajectory, lambda_state: int, env: str
+    ):
+        """call for single processor run"""
+
+        xyz_array = np.asarray(snapshots.xyz)
+        unitcell_lengths = snapshots.unitcell_lengths
+        unitcell_vectors = snapshots.unitcell_vectors
+
+        energies = []
+        simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
+
+        # reference shared memory trajectory
+        energies = self._evaluate_e_with_openMM(
+            xyz_array, simulation, env, unitcell_lengths, unitcell_vectors
+        )
+
+        return np.array(energies)
+
+    def _evaluate_e_with_openMM(
+        self, xyz_array, simulation, env, unitcell_lengths, unitcell_vectors
+    ):
+        """This function will be called from the mutliprocessing AND the single processor computational route"""
+        energies = []
+        volumn_list = [
+            self._get_V_for_ts(unitcell_lengths, env, ts)
+            for ts in range(len(xyz_array))
+        ]
+        for ts in tqdm(range(len(xyz_array))):
+            # calculate the potential energy
+            e = self._energy_at_ts(simulation, xyz_array[ts], env, ts, unitcell_vectors)
+            # obtain the reduced potential (for NpT)
+            red_e = return_reduced_potential(e, volumn_list[ts], temperature)
+            energies.append(red_e)
+        return energies
+
+    def _evaluate_e_on_all_snapshots_openMM_mp(
         self,
         shr_name: str,
         lambda_state: int,
         env: str,
         xyz_shape: tuple,
         unitcell_lengths,
+        unitcell_vectors,
     ) -> np.ndarray:
+        """call for multiple processor run"""
+
+        energies = []
+        simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
 
         # reference shared memory trajectory
         existing_shm = shared_memory.SharedMemory(name=shr_name)
-        np_array = np.ndarray(xyz_shape, dtype=np.float32, buffer=existing_shm.buf)
+        xyz_array = np.ndarray(xyz_shape, dtype=np.float32, buffer=existing_shm.buf)
 
-        simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
-        energies = []
-        volumn_list = [
-            self._get_V_for_ts(unitcell_lengths, env, ts)
-            for ts in range(len(unitcell_lengths))
-        ]
-        for ts in tqdm(range(len(np_array))):
-            volumn = volumn_list[ts]
-            # calculate the potential energy
+        energies = self._evaluate_e_with_openMM(
+            xyz_array, simulation, env, unitcell_lengths, unitcell_vectors
+        )
 
-            e = self._energy_at_ts(simulation, np_array[ts], env, unitcell_lengths[ts])
-            # obtain the reduced potential (for NpT)
-            red_e = return_reduced_potential(e, volumn, temperature)
-            energies.append(red_e)
         existing_shm.close()
         return np.array(energies)
 
@@ -372,28 +405,43 @@ class FreeEnergyCalculator(object):
         # main
         logger.debug(f"Evaluating with {engine}")
         logger.debug(f"using {NUM_PROC} processes for the analysis")
-        xyz = np.asarray(snapshots.xyz)
-        shm = shared_memory.SharedMemory(create=True, size=xyz.nbytes)
-        shm_xyz = np.ndarray(xyz.shape, dtype=xyz.dtype, buffer=shm.buf)
-        shm_xyz[:] = xyz[:]
-        unitcell_lengths = snapshots.unitcell_lengths
-        ctx = mp.get_context("spawn")
-        pool = ctx.Pool(processes=NUM_PROC)
 
         if engine == "openMM":
             lambda_states = [
                 lambda_state for lambda_state in range(1, self.nr_of_states + 1)
             ]
-            r = pool.starmap(
-                self._evaluated_e_on_all_snapshots_openMM,
-                zip(
-                    repeat(shm.name),
-                    lambda_states,
-                    repeat(env),
-                    repeat(xyz.shape),
-                    repeat(unitcell_lengths),
-                ),
-            )
+
+            if NUM_PROC <= 1:
+                r = starmap(
+                    self._evaluate_e_on_all_snapshots_openMM_sp,
+                    zip(repeat(snapshots), lambda_states, repeat(env)),
+                )
+
+            else:
+                xyz = np.asarray(snapshots.xyz)
+                shm = shared_memory.SharedMemory(create=True, size=xyz.nbytes)
+                shm_xyz = np.ndarray(xyz.shape, dtype=xyz.dtype, buffer=shm.buf)
+                shm_xyz[:] = xyz[:]
+                unitcell_lengths = snapshots.unitcell_lengths
+                unitcell_vectors = snapshots.unitcell_vectors
+
+                ctx = mp.get_context("spawn")
+                pool = ctx.Pool(processes=NUM_PROC)
+
+                r = pool.starmap(
+                    self._evaluate_e_on_all_snapshots_openMM_mp,
+                    zip(
+                        repeat(shm.name),
+                        lambda_states,
+                        repeat(env),
+                        repeat(xyz.shape),
+                        repeat(unitcell_lengths),
+                        repeat(unitcell_vectors),
+                    ),
+                )
+                # close and unlink shared memory
+                shm.close()
+                shm.unlink()
 
             u_kn = np.stack([r_i for r_i in r])
 
@@ -402,7 +450,7 @@ class FreeEnergyCalculator(object):
             snapshots.save_dcd(f"{self.base_path}/traj.dcd")
             u_kn = np.stack(
                 [
-                    self._evaluated_e_on_all_snapshots_CHARMM(
+                    self._evaluate_e_on_all_snapshots_CHARMM(
                         snapshots, lambda_state, env
                     )
                     for lambda_state in range(1, self.nr_of_states + 1)
@@ -413,10 +461,6 @@ class FreeEnergyCalculator(object):
 
         else:
             raise RuntimeError(f"Either openMM or CHARMM engine, not {engine}")
-
-        # close and unlink shared memory
-        shm.close()
-        shm.unlink()
 
         if save_results:
             file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"

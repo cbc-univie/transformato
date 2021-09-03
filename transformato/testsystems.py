@@ -4,14 +4,14 @@ import transformato
 from transformato.mutate import ProposeMutationRoute
 from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
-from transformato.constants import check_platform
+from transformato.constants import change_platform
 
 transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
 
 
 def mutate_methane_to_methane_cc(configuration: dict):
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -52,7 +52,7 @@ def mutate_methane_to_methane_cc(configuration: dict):
 
 def testing_mutate_toluene_to_methane_cc(configuration: dict):
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -124,7 +124,7 @@ def testing_mutate_toluene_to_methane_cc(configuration: dict):
 
 def mutate_toluene_to_methane_cc(configuration: dict):
 
-    check_platform(configuration)
+    change_platform(configuration)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -235,7 +235,7 @@ def mutate_toluene_to_methane_cc(configuration: dict):
 
 def mutate_ethane_to_methane_cc(configuration: dict):
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -296,7 +296,7 @@ def mutate_ethane_to_methane_cc(configuration: dict):
 
 def mutate_methanol_to_methane_cc(configuration: dict):
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -392,7 +392,7 @@ def mutate_methanol_to_methane_cc(configuration: dict):
 
 def mutate_ethane_to_methanol_cc(configuration: dict):  # not a loeffler system
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -452,7 +452,7 @@ def mutate_ethane_to_methanol_cc(configuration: dict):  # not a loeffler system
 
 def mutate_7_CPI_to_2_CPI_cc(configuration: dict):  # will be tested later on
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -525,7 +525,7 @@ def mutate_7_CPI_to_2_CPI_cc(configuration: dict):  # will be tested later on
 
 def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -608,7 +608,7 @@ def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
 
 def mutate_2_methylfuran_to_methane_cc(configuration: dict):
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -711,7 +711,7 @@ def mutate_2_methylfuran_to_methane_cc(configuration: dict):
 
 def mutate_neopentane_to_methane_cc(configuration: dict):
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -810,7 +810,7 @@ def mutate_neopentane_to_methane_cc(configuration: dict):
 
 def mutate_2_methylindole_to_methane_cc(configuration: dict):
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")

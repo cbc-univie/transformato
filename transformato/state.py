@@ -224,7 +224,6 @@ with open(file_name + '_system.xml','w') as outfile:
                 charmm_simulation_submit_script_target,
             )
 
-
             for env in self.system.envs:
                 if env == "waterbox":
                     # write charmm production scripte
@@ -280,7 +279,6 @@ with open(file_name + '_system.xml','w') as outfile:
                     # )
                 else:
                     raise NotImplementedError()
-        
 
         else:
             pass
@@ -411,7 +409,7 @@ with open(file_name + '_system.xml','w') as outfile:
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
         self._add_serializer(omm_simulation_script_target)
-        self._check_platform(omm_simulation_script_target)
+        self._change_platform(omm_simulation_script_target)
         self._check_switching_function(omm_simulation_script_target)
 
         # continue with vacuum
@@ -423,7 +421,7 @@ with open(file_name + '_system.xml','w') as outfile:
         )
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         self._add_serializer(omm_simulation_script_target)
-        self._check_platform(omm_simulation_script_target)
+        self._change_platform(omm_simulation_script_target)
 
     def _check_switching_function(self, file):
         """
@@ -443,7 +441,7 @@ with open(file_name + '_system.xml','w') as outfile:
                 f"Other switching functino called: {self.vdw_switch}."
             )
 
-    def _check_platform(self, file):
+    def _change_platform(self, file):
         # changin input script
         f = open(file, "r")
         g = open(f"{file}_tmp", "w+")

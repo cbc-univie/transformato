@@ -45,7 +45,7 @@ def test_convert_to_kT():
 
 
 def test_change_platform():
-    from ..constants import check_platform, platform
+    from ..constants import change_platform, platform
     from ..utils import load_config_yaml
 
     configuration = load_config_yaml(
@@ -54,7 +54,7 @@ def test_change_platform():
         output_dir=".",
     )
 
-    check_platform(configuration)
+    change_platform(configuration)
     print(configuration["simulation"]["GPU"])
     print(platform)
     if platform.upper() == "CPU":
