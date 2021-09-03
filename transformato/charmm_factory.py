@@ -43,7 +43,7 @@ class CharmmFactory:
             )
         elif env == "complex":
             charmm_postprocessing_script += (
-                self._get_CHARMM_complex_postprocessing_body()
+                self._get_CHARMM_waterbox_postprocessing_body()
             )   ### needs to be adapted from waterbox to complex
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
@@ -315,12 +315,16 @@ CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
 !Image centering by residue
-!IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+IMAGE BYSEGI XCEN @xcen YCEN @ycen ZCEN @zcen sele segid pro* end
+IMAGE BYSEGI XCEN @xcen YCEN @ycen ZCEN @zcen sele segid het* end
 
 !
 ! Nonbonded Options
 !
 ! cons fix sele segi solv end
+
+omm on
 
 nbonds atom vatom {switch} bycb -
        ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
@@ -385,7 +389,13 @@ CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
 !Image centering by residue
-!IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+calc xcen = @A / 2
+calc ycen = @B / 2
+calc zcen = @C / 2
+IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele segid IONS end
+IMAGE BYSEGI XCEN @xcen YCEN @ycen ZCEN @zcen sele segid pro* end
+IMAGE BYSEGI XCEN @xcen YCEN @ycen ZCEN @zcen sele segid het* end
 
 !
 ! Nonbonded Options
@@ -448,155 +458,6 @@ DYNA CPT leap start time 0.001 nstep @nstep -
 
 stop"""
         return body
-
-    def _get_CHARMM_complex_postprocessing_body(self):
-        ##### solv phase ######
-        switch = self.vdw_switching_keyword
-
-        body = f"""
-stream charmm_step3_pbcsetup.str
-
-!
-! Image Setup
-!
-
-open read unit 10 card name charmm_crystal_image.str
-CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
-CRYSTAL READ UNIT 10 CARD
-
-!Image centering by residue
-!IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
-
-!
-! Nonbonded Options
-!
-! cons fix sele segi solv end
-
-nbonds atom vatom {switch} bycb -
-       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
-       inbfrq 1 imgfrq 1 wmin 1.0 cdie eps 1.0 -
-       ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
-
-energy
-
-!
-!use a restraint to place center of mass of the molecules near the origin
-!
-
-open read file unit 41 name ../traj.dcd
-traj query unit 41
-
-set start ?start
-set nframes ?nfile
-set skip ?skip
-
-set nframes @nframes !?nfile
-traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
-
-open form writ unit 51 name ener_solv.log
-echu 51
-set idx 0
-label loop
-traj read
-energy
-echo ?ener
-incr idx by 1
-if @idx .lt. @nframes goto loop
-
-
-stop"""
-        return body
-
-    def _get_CHARMM_complex_production_body(self):
-        ##### waterbox ######
-        switch = self.vdw_switching_keyword
-
-        nstep = self.configuration["simulation"]["parameters"]["nstep"]
-        nstout = self.configuration["simulation"]["parameters"]["nstout"]
-        nstdcd = self.configuration["simulation"]["parameters"]["nstdcd"]
-        if self.configuration["simulation"].get("GPU", False) == True:
-            GPU = f"""domdec gpu only"""
-        else:
-            GPU = ""
-
-        body = f"""
-!
-! Setup PBC (Periodic Boundary Condition)
-!
-
-stream charmm_step3_pbcsetup.str
-
-!
-! Image Setup
-!
-
-open read unit 10 card name charmm_crystal_image.str
-CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
-CRYSTAL READ UNIT 10 CARD
-
-!Image centering by residue
-!IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
-
-!
-! Nonbonded Options
-!
-
-nbonds atom vatom {switch} bycb -
-       ctonnb 10.0 ctofnb 12.0 cutnb 16.0 cutim 16.0 -
-       inbfrq -1 imgfrq -1 wmin 1.0 cdie eps 1.0 -
-       ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
-
-energy
-
-!
-!use a restraint to place center of mass of the molecules near the origin
-!
-
-MMFP
-GEO rcm sphere -
-    Xref @xcen Yref @ycen Zref @zcen XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
-    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
-END
-
-shak bonh para fast sele segi SOLV end
-
-mini SD nstep 500
-mini ABNR nstep 500
-
-!
-! NPT dynamics:
-! you can change
-! nstep  : number of MD steps
-! nprint : print-out frequency
-! nsavc  : the trajectory saving frequency
-!
-
-! estimate Pmass from SYSmass (total system mass)
-! [there could be problems with exreme values, such as  Pmass << SYSmass or Pmass >> SYSmass
-scalar mass stat
-calc Pmass = int ( ?stot  /  50.0 )
-
-energy
-{GPU}
-energy
-
-set nstep = {nstep}
-set temp = {temperature.value_in_unit(unit.kelvin)}
-
-scalar fbeta set 5. sele all end
-open write unit 13 file name lig_in_waterbox.dcd
-
-DYNA CPT leap start time 0.001 nstep @nstep -
-     nprint {nstout} iprfrq {nstout} -
-     iunread -1 iunwri -1 iuncrd 13 iunvel -1 kunit -1 -
-     nsavc {nstdcd} nsavv 0 -
-     PCONSTANT pref   1.0  pmass @Pmass  pgamma   20.0 -
-     lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
-     ECHECK 0
-
-stop"""
-        return body
-
 
     def _get_CHARMM_postprocessing_header(self, env: str) -> str:
 
