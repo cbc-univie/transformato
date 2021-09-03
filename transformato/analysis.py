@@ -397,6 +397,7 @@ class FreeEnergyCalculator(object):
         save_results: bool,
         engine: str,
     ):
+        # lookup how many processores we can use for postprocessing
         from transformato.constants import NUM_PROC
 
         #########################################################
@@ -410,6 +411,7 @@ class FreeEnergyCalculator(object):
                 lambda_state for lambda_state in range(1, self.nr_of_states + 1)
             ]
 
+            # Decide if we want to use the multiprocessing library
             if NUM_PROC <= 1:
                 r = starmap(
                     self._evaluate_e_on_all_snapshots_openMM_sp,
@@ -417,13 +419,16 @@ class FreeEnergyCalculator(object):
                 )
 
             else:
+                # generate shared memory trajektory
                 xyz = np.asarray(snapshots.xyz)
                 shm = shared_memory.SharedMemory(create=True, size=xyz.nbytes)
                 shm_xyz = np.ndarray(xyz.shape, dtype=xyz.dtype, buffer=shm.buf)
                 shm_xyz[:] = xyz[:]
+                # copy unitcell lengths and vectors directly
                 unitcell_lengths = snapshots.unitcell_lengths
                 unitcell_vectors = snapshots.unitcell_vectors
 
+                # generate context for mp pool
                 ctx = mp.get_context("spawn")
                 pool = ctx.Pool(processes=NUM_PROC)
 
