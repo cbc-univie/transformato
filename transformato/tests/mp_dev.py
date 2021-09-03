@@ -3,8 +3,12 @@ from transformato.constants import initialize_NUM_PROC
 
 # read in specific topology with parameters
 from transformato import load_config_yaml, FreeEnergyCalculator
+from time import sleep
+import multiprocessing as mp
+import numpy as np
+from itertools import repeat
+from multiprocessing import shared_memory
 initialize_NUM_PROC(6)
-
 
 def postprocessing(
     configuration: dict,
@@ -66,14 +70,31 @@ def calculate_rbfe_mp():
         configuration, name="2OJ9-original", engine="openMM", max_snapshots=1000
     )
 
-def load_traj_span_mp():
-    
-    def proc(snapshots):
-        print(len(snapshots))
-        
-    
-    import _multiprocessing as mp
-    
+
+  
+def procft(snapshots):
+    print(snapshots.n_frames)
+    for i in range(snapshots.n_frames):
+        j=i*i
+        print(j,)
+        sleep(1)
+    return j
+
+def procsh(shr_name, dims, i):
+    print(shr_name)
+    print(i)
+    print(dims)
+    existing_shm = shared_memory.SharedMemory(name=shr_name)
+    np_array = np.ndarray(dims, dtype=np.float32, buffer=existing_shm.buf)
+
+    for i in range(len(np_array))[:50]:
+        j=i*i
+        print(j,)
+        sleep(1)
+    existing_shm.close()
+
+def create_data():
+
     name="2OJ9-original"
     conf = "config/test-2oj9-tautomer-pair-rbfe.yaml"
     configuration = load_config_yaml(
@@ -82,18 +103,37 @@ def load_traj_span_mp():
     
     f = FreeEnergyCalculator(configuration, name)
     f.load_trajs(nr_of_max_snapshots=1_000)
-    snapshots = f.snapshots
-    
-    #xyz = np.asarray(snapshots.xyz)
-    #shm = shared_memory.SharedMemory(create=True, size=xyz.nbytes)
-    #shm_xyz = np.ndarray(xyz.shape, dtype=xyz.dtype, buffer=shm.buf)
-    #shm_xyz[:] = xyz[:]
-    
-    ctx = mp.get_context("fork")
+    snapshots = f.snapshots['complex']
+    print(snapshots.n_frames)
+    xyz = np.asarray(snapshots.xyz)
+    dims = xyz.shape
+    print(dims)
+    print(xyz.dtype)
+    shm = shared_memory.SharedMemory(create=True, size=xyz.nbytes)
+    shm_xyz = np.ndarray(xyz.shape, dtype=xyz.dtype, buffer=shm.buf)
+    shm_xyz[:] = xyz[:]
+    return shm, shm_xyz, dims
+
+def load_traj_span_mp(shm, shm_xyz, dims):
+
+
+    ctx = mp.get_context("spawn")
     pool = ctx.Pool(processes=4)
-    pool.map(proc, snapshots)
+    #pool.map(proct, [i for i in range(snapshots.n_frames)])
 
-
+    #pool.map(procf, repeat(snapshots))
+    #map(procf, zip(repeat(snapshots), [i for i in range(7)]))
+    #r = map(procf, (snapshots, 1))
+    #print(list(r))
+    #r = map(procft, [snapshots])
+    #print(list(r))
+    #pool.map(procft, [snapshots,snapshots,snapshots,snapshots])
+    pool.starmap(procsh, zip(repeat(shm.name), repeat(dims), [i for i in range(4)]))
+    
 if __name__ == "__main__":
     # calculate_rsfe_mp()
     #calculate_rbfe_mp()
+    shm, shm_xyz, dims = create_data()
+    load_traj_span_mp(shm, shm_xyz, dims)
+    shm.close()
+    shm.unlink()
