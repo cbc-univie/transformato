@@ -204,8 +204,6 @@ class FreeEnergyCalculator(object):
         Calculates the potential energy with the correct periodic boundary conditions.
         """
         if env != "vacuum":
-            print("UNITCELL:")
-            print(unitcell_vectors[ts])
             simulation.context.setPeriodicBoxVectors(
                 unitcell_vectors[ts][0],
                 unitcell_vectors[ts][1],
