@@ -40,7 +40,7 @@ def test_rbfe_mutate_2oj9():
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir="."
     )
-    # check_platform(configuration)
+    # change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")

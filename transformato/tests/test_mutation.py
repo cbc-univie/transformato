@@ -1818,9 +1818,9 @@ def setup_2OJ9_tautomer_pair_rsfe(
     configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
-    from ..constants import check_platform
+    from ..constants import change_platform
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1841,12 +1841,12 @@ def setup_2OJ9_tautomer_pair_rsfe(
 
 
 def setup_2OJ9_tautomer_pair_rbfe(
-    configuration: dict, single_state:bool=False, nr_of_bonded_windows: int = 4
+    configuration: dict, single_state: bool = False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
-    from ..constants import check_platform
+    from ..constants import change_platform
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1870,12 +1870,12 @@ def setup_acetylacetone_tautomer_pair(
     configuration: dict, single_state=False, nr_of_bonded_windows=4
 ):
     from ..mutate import mutate_pure_tautomers
-    from ..constants import check_platform
+    from ..constants import change_platform
 
     conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
 
-    check_platform(configuration)
+    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
