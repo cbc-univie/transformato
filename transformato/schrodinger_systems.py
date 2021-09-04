@@ -99,12 +99,9 @@ def cdk2_structure1(conf_path: str, input_dir: str, output_dir: str):
         intst_nr=intst,
     )
     output_files.append(output_file_base)
+    return output_files # makes further processing easier
 
-    ###############################
-    ###### Structure 2     ########
-    ###############################
-
-    # is not necessary since we should use the same structure 2 for all cdk2 simulations
+    #system2 is not necessary since we should use the same structure 2 for all cdk2 simulations
 
 
 def cdk2_both_structures(conf_path: str, input_dir: str, output_dir: str):
