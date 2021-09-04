@@ -8,7 +8,6 @@ from transformato.mutate import ProposeMutationRoute
 from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
 from transformato.utils import load_config_yaml
-from transformato.constants import check_platform
 
 def cdk2_structure1(conf_path: str, input_dir: str, output_dir: str):
     configuration = load_config_yaml(
