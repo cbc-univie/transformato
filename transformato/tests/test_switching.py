@@ -41,7 +41,7 @@ def test_run_2OJ9_tautomer_pair_vfswitch(caplog):
     )
     # save dcd in freshly generated system
     traj.save_dcd(f"{system_path}/traj.dcd", force_overwrite=True)
-    l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, 1, env)
+    l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, 1, env)
     l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, 1, env)
     assert len(l_charmm) == len(l_openMM)
     s = abs(np.array(l_charmm) - np.array(l_openMM))
@@ -85,7 +85,7 @@ def test_run_2OJ9_tautomer_pair_vswitch(caplog):
     )
     # save dcd in freshly generated system
     traj.save_dcd(f"{system_path}/traj.dcd", force_overwrite=True)
-    l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, 1, env)
+    l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, 1, env)
     l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, 1, env)
     assert len(l_charmm) == len(l_openMM)
     assert np.isclose(l_charmm[0], -16445.54761007052, atol=1e-4)
@@ -98,4 +98,3 @@ def test_run_2OJ9_tautomer_pair_vswitch(caplog):
     for e_charmm, e_openMM in zip(l_charmm, l_openMM):
         print(f"{e_charmm}, {e_openMM}: {e_charmm - e_openMM}")
         assert np.isclose(e_charmm, e_openMM, atol=2.2)
-
