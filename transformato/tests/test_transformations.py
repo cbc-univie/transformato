@@ -3,20 +3,17 @@ Unit and regression test for the transformato package.
 """
 
 import sys
-
-import numpy as np
-import parmed as pm
-import pytest
 import shutil
 
 # Import package, test suite, and other packages as needed
-import transformato
 import logging
 
 # read in specific topology with parameters
 from transformato import (
     load_config_yaml,
 )
+
+transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
 
 
 def test_transformato_imported():
@@ -31,14 +28,20 @@ def test_generate_output_for_acetylacetone_tautomer_pair(caplog):
     (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair(
         nr_of_bonded_windows=8
     )
+    f = "/".join(output_files_t1[0].split("/")[:-3])
+    print(f)
+    shutil.rmtree(f)
 
 
-def test_generate_output_for_methane_cc_solvation_free_energy():
+def test_generate_output_for_methane_cc_rsfe():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
-    output_files, configuration = mutate_methane_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        input_dir=transformato_systems_dir,
+        output_dir=".",
     )
+    output_files = mutate_methane_to_methane_cc(configuration=configuration)
 
     assert len(output_files) == 3
     f = "/".join(output_files[0].split("/")[:-3])
@@ -46,60 +49,80 @@ def test_generate_output_for_methane_cc_solvation_free_energy():
     shutil.rmtree(f)
 
 
-def test_generate_output_for_toluene_cc_solvation_free_energy():
+def test_generate_output_for_toluene_cc_rsfe():
     from transformato.testsystems import mutate_toluene_to_methane_cc
 
-    output_files, configuration = mutate_toluene_to_methane_cc(
-        conf="transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        input_dir=transformato_systems_dir,
+        output_dir=".",
     )
+
+    output_files = mutate_toluene_to_methane_cc(configuration=configuration)
 
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
 
 
-def test_generate_output_for_neopentane_cc_solvation_free_energy():
+def test_generate_output_for_neopentane_cc_rsfe():
     from transformato.testsystems import mutate_neopentane_to_methane_cc
 
-    output_files, configuration = mutate_neopentane_to_methane_cc(
-        conf="transformato/tests/config/test-neopentane-methane-rsfe.yaml"
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-neopentane-methane-rsfe.yaml",
+        input_dir=transformato_systems_dir,
+        output_dir=".",
     )
+
+    output_files = mutate_neopentane_to_methane_cc(configuration=configuration)
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
 
 
-def test_generate_output_for_methanol_cc_solvation_free_energy():
+def test_generate_output_for_methanol_cc_rsfe():
     from transformato.testsystems import mutate_methanol_to_methane_cc
 
-    output_files, _ = mutate_methanol_to_methane_cc(
-        conf="transformato/tests/config/test-methanol-methane-rsfe.yaml"
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-methanol-methane-rsfe.yaml",
+        input_dir=transformato_systems_dir,
+        output_dir=".",
     )
+
+    output_files, _ = mutate_methanol_to_methane_cc(configuration=configuration)
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
 
 
-def test_generate_output_for_2_CPI_solvation_free_energy():
+def test_generate_output_for_2_CPI_rsfe():
     from transformato.testsystems import mutate_2_CPI_to_7_CPI_cc
 
-    output_files, _ = mutate_2_CPI_to_7_CPI_cc(
-        conf="transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml"
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
+        input_dir=transformato_systems_dir,
+        output_dir=".",
     )
+
+    output_files = mutate_2_CPI_to_7_CPI_cc(configuration=configuration)
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
 
 
-def test_generate_output_for_7_CPI_solvation_free_energy():
+def test_generate_output_for_7_CPI_rsfe():
     from transformato.testsystems import mutate_7_CPI_to_2_CPI_cc
 
-    output_files, _ = mutate_7_CPI_to_2_CPI_cc(
-        conf="transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml"
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
+        input_dir=transformato_systems_dir,
+        output_dir=".",
     )
+
+    output_files = mutate_7_CPI_to_2_CPI_cc(configuration=configuration)
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)

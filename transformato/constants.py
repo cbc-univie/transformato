@@ -3,7 +3,7 @@ from simtk import unit
 
 logger = logging.getLogger(__name__)
 
-platform = "CPU"
+platform = "CPU"  # CPU or GPU
 temperature = 303.15 * unit.kelvin
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
 kT = kB * temperature
@@ -19,7 +19,8 @@ def initialize_NUM_PROC(n_proc):
         this.NUM_PROC = n_proc
     else:
         msg = "NUM_PROC is already initialized to {0}."
-        raise RuntimeError(msg.format(this.NUM_PROC))
+        # raise RuntimeError(msg.format(this.NUM_PROC))
+        print(msg)
 
 
 def check_platform(configuration: dict):

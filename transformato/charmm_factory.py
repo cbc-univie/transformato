@@ -27,8 +27,10 @@ class CharmmFactory:
         elif vdw.lower() == "switch":
             return "vswitch"
         elif vdw.lower() == "no-switch":  # not implemented
-            return ""
             raise NotImplementedError()
+            return ""
+        else:
+            raise RuntimeError()
 
     def generate_CHARMM_postprocessing_files(self, env: str) -> str:
 
@@ -43,8 +45,11 @@ class CharmmFactory:
             )
         elif env == "complex":
             charmm_postprocessing_script += (
+
                 self._get_CHARMM_waterbox_postprocessing_body()
             )   ### needs to be adapted from waterbox to complex
+
+
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
 
@@ -58,8 +63,11 @@ class CharmmFactory:
             charmm_production_script += self._get_CHARMM_vacuum_production_body()
         elif env == "waterbox":
             charmm_production_script += self._get_CHARMM_waterbox_production_body()
+
         elif env == "complex": ###needs to be adaptet from waterbox to complex
             charmm_production_script += self._get_CHARMM_waterbox_production_body()
+
+
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
 

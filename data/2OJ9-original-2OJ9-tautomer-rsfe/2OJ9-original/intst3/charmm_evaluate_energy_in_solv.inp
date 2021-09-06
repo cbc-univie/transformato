@@ -1,4 +1,4 @@
-*Version September 2020 
+*Version from 2021-08-30 
 *Run script for CHARMM jobs from transformato 
 *
 
@@ -6,13 +6,12 @@
 stream charmm_toppar.str 
 
 ! Read PSF 
-open read unit 10 card name @{top}.psf 
+open read unit 10 card name lig_in_waterbox.psf 
 read psf  unit 10 card
 
 ! Read Coordinate 
-open read unit 10 card name @{top}.crd 
+open read unit 10 card name lig_in_waterbox.crd 
 read coor unit 10 card
-
 stream charmm_step3_pbcsetup.str
 
 !
@@ -24,19 +23,23 @@ CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
 !Image centering by residue
-IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
+!IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
 
 !
 ! Nonbonded Options
 !
-!cons fix sele segi solv end
+! cons fix sele segi solv end
 
-nbonds atom vatom VFSWItch bycb -                               ! hard coded switching function
-       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -         ! Add comment why this works
+nbonds atom vatom vfswitch bycb -
+       ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
        inbfrq 1 imgfrq 1 wmin 1.0 cdie eps 1.0 -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
 
 energy
+
+!
+!use a restraint to place center of mass of the molecules near the origin
+!
 
 open read file unit 41 name ../traj.dcd
 traj query unit 41
@@ -57,5 +60,6 @@ energy
 echo ?ener
 incr idx by 1
 if @idx .lt. @nframes goto loop
+        
   
 stop

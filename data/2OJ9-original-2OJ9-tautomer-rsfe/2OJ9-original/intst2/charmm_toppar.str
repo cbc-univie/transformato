@@ -1,5 +1,5 @@
 * Simplified toppar script 
-* Version from 2021-04-03 
+* Version from 2021-08-30 
 *
 
 ! Read Protein Topology and Parameter 
@@ -40,12 +40,12 @@ read para card unit 20 append flex
 ! Additional topologies and parameters for water and ions 
 stream ./toppar/toppar_water_ions.str
 
-! Read unk RTF 
-open read unit 10 card name unk_g.rtf 
+! Read bmi RTF 
+open read unit 10 card name bmi_g.rtf 
 read rtf card unit 10 append
 
-! Read unk prm 
-open read unit 10 card name unk.prm 
+! Read bmi prm 
+open read unit 10 card name bmi.prm 
 read para card unit 10 append flex
 
 ! Read dummy_atom RTF 
