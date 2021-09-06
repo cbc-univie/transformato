@@ -23,12 +23,12 @@ def initialize_NUM_PROC(n_proc):
         print(msg)
 
 
-def check_platform(configuration: dict):
+def change_platform(configuration: dict, change_to="CPU"):
 
-    if platform.upper() == "GPU":
+    if change_to.upper() == "GPU":
         configuration["simulation"]["GPU"] = True
         print("Setting platform to GPU")
-    elif platform.upper() == "CPU":
+    elif change_to.upper() == "CPU":
         configuration["simulation"]["GPU"] = False
         print("Setting platform to CPU")
     else:

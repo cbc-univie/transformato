@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 import logging
 from ..constants import initialize_NUM_PROC
+from transformato.constants import change_platform
 
 # read in specific topology with parameters
 from transformato import (
@@ -76,7 +77,7 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
-
+    change_platform(configuration)
     f = FreeEnergyCalculator(configuration, "2OJ9-original")
     for idx, b in enumerate(output_files_t1):
         traj = md.load_dcd(
@@ -84,8 +85,8 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
-        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM_sp(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
@@ -94,6 +95,57 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
         assert mae < 0.005
         for e_charmm, e_openMM in zip(l_charmm, l_openMM):
             assert np.isclose(e_charmm, e_openMM, rtol=0.2)
+
+
+@pytest.mark.system_2oj9
+def test_compare_energies_2OJ9_original_vacuum_mp(caplog):
+    caplog.set_level(logging.WARNING)
+    from transformato import FreeEnergyCalculator
+    import mdtraj as md
+    from multiprocessing import shared_memory
+    import multiprocessing as mp
+    from itertools import repeat, starmap
+
+    env = "vacuum"
+
+    base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/"
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
+
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+    change_platform(configuration)
+    f = FreeEnergyCalculator(configuration, "2OJ9-original")
+    for idx, b in enumerate(output_files_t1):
+        traj = md.load_dcd(
+            f"{b}/lig_in_{env}.dcd",
+            f"{b}/lig_in_{env}.psf",
+        )
+
+        xyz = np.asarray(traj.xyz)
+        shm = shared_memory.SharedMemory(create=True, size=xyz.nbytes)
+        shm_xyz = np.ndarray(xyz.shape, dtype=xyz.dtype, buffer=shm.buf)
+        shm_xyz[:] = xyz[:]
+        unitcell_lengths = traj.unitcell_lengths
+        unitcell_vectors = traj.unitcell_vectors
+
+        ctx = mp.get_context("spawn")
+        pool = ctx.Pool(processes=2)
+
+        l_openMM = pool.starmap(
+            f._evaluate_e_on_all_snapshots_openMM_mp,
+            zip(
+                repeat(shm.name),
+                [1],
+                repeat(env),
+                repeat(xyz.shape),
+                repeat(unitcell_lengths),
+                repeat(unitcell_vectors),
+            ),
+        )
+        print(l_openMM)
 
 
 @pytest.mark.system_2oj9
@@ -120,7 +172,7 @@ def test_compare_energies_2OJ9_original_waterbox(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
@@ -147,6 +199,7 @@ def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
+    change_platform(configuration)
 
     f = FreeEnergyCalculator(configuration, "2OJ9-tautomer")
     for idx, b in enumerate(output_files_t2):
@@ -155,8 +208,8 @@ def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
-        l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM_sp(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
@@ -191,7 +244,7 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
         )
         # traj = traj.center_coordinates()
         traj.save_dcd(f"{base}/traj.dcd", force_overwrite=True)
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
@@ -211,15 +264,19 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
 def test_2oj9_calculate_rsfe_with_openMM_mp(caplog):
     caplog.set_level(logging.DEBUG)
 
-    initialize_NUM_PROC(4)
+    initialize_NUM_PROC(2)
     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
+    change_platform(configuration)
 
     # 2OJ9-original to tautomer common core
     ddG_openMM, dddG, f_openMM = postprocessing(
-        configuration, name="2OJ9-original", engine="openMM", max_snapshots=600
+        configuration,
+        name="2OJ9-original",
+        engine="openMM",
+        max_snapshots=600,
     )
 
     assert np.isclose(ddG_openMM, 1.6614072591246014)
@@ -445,7 +502,7 @@ def test_compare_energies_acetylacetone_enol_vacuum(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
@@ -485,7 +542,7 @@ def test_compare_energies_acetylacetone_enol_waterbox(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
@@ -524,7 +581,7 @@ def test_compare_energies_acetylacetone_keto_vacuum(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
@@ -563,7 +620,7 @@ def test_compare_energies_acetylacetone_keto_waterbox(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
@@ -735,7 +792,7 @@ def test_compare_energies_methane_vacuum(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
@@ -772,7 +829,7 @@ def test_compare_energies_methane_waterbox(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
@@ -809,7 +866,7 @@ def test_compare_energies_toluene_vacuum(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
@@ -846,7 +903,7 @@ def test_compare_energies_toluene_waterbox(caplog):
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
-        l_charmm = f._evaluated_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         l_openMM = f._evaluated_e_on_all_snapshots_openMM(traj, idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
