@@ -42,13 +42,13 @@ system:
 simulation:
   ################
   parameters:
-    nstep: 5000
-    nstdcd: 25
-    nstout: 25
+    nstep: 20000
+    nstdcd: 10
+    nstout: 500
     cons: None
     dt: 0.001
     mini_nstep: 1000
-  GPU: False
+  GPU: True
 
   free-energy-type: "rbfe"
 ################

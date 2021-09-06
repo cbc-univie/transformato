@@ -12,7 +12,7 @@ read psf  unit 10 card
 ! Read Coordinate 
 open read unit 10 card name lig_in_vacuum.crd 
 read coor unit 10 card
-
+        
 !coor orie sele all end ! put the molecule at the origin
 
 MMFP
@@ -26,7 +26,7 @@ set ctonnb 980.
 set cutnb  1000.
 
 nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
-  atom swit vatom VFSWItch -
+  atom swit vatom vfswitch -
   inbfrq 1 
 
 energy   inbfrq 1
