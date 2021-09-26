@@ -2,12 +2,30 @@
 Unit and regression test for the transformato package.
 """
 
-import logging
 from transformato.utils import load_config_yaml
 from transformato.analysis import return_reduced_potential
-import pytest
 from simtk import unit
 import numpy as np
+
+def test_read_psf_with_openMM():
+    from simtk.openmm.app.charmmpsffile import CharmmPsfFile
+    system_name = '2OJ9-original'
+    # read psf for protein/ligand system
+    f = CharmmPsfFile(f'data/{system_name}/complex/openmm/step3_input.psf')
+    # read psf for ligand system
+    f = CharmmPsfFile(f'data/{system_name}/waterbox/openmm/step3_input.psf')
+
+    system_name = '2OJ9-tautomer'
+    # read psf for protein/ligand system
+    f = CharmmPsfFile(f'data/{system_name}/complex/openmm/step3_input.psf')
+    # read psf for ligand system
+    f = CharmmPsfFile(f'data/{system_name}/waterbox/openmm/step3_input.psf')
+
+    system_name = '2OJ9-original-2OJ9-tautomer-rbfe'
+    # read psf for protein/ligand system
+    f = CharmmPsfFile(f'data/{system_name}/2OJ9-original/intst1/lig_in_waterbox.psf')
+    # read psf for ligand system
+    f = CharmmPsfFile(f'data/{system_name}/2OJ9-original/intst1/lig_in_complex.psf')
 
 
 def test_reduced_energy():
@@ -76,16 +94,3 @@ def test_scaling():
         print(f"{i}:{f}")
 
     print("##########################")
-
-
-def test_old_scaling():
-    import numpy as np
-
-    for i in np.linspace(1, 0, 11):
-        f = 1 - (1 - i) * 2
-        print(f"{i}:{f}")
-    print("##########################")
-
-    for i in np.linspace(1, 0, 11):
-        f = 1 - (1 - (1 - i)) * 2
-        print(f"{i}:{f}")

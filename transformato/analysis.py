@@ -15,7 +15,7 @@ import numpy as np
 import seaborn as sns
 from pymbar import mbar
 from simtk import unit
-from simtk.openmm import Platform, XmlSerializer
+from simtk.openmm import Platform, XmlSerializer, vec3
 from simtk.openmm.app import CharmmPsfFile, Simulation
 from tqdm import tqdm
 
@@ -157,7 +157,7 @@ class FreeEnergyCalculator(object):
         """
 
         #############
-        # set all file paths for potential
+        # set all file paths for states
         if not os.path.isdir(f"{self.base_path}"):
             raise RuntimeError(f"{self.base_path} does not exist. Aborting.")
 
@@ -185,30 +185,34 @@ class FreeEnergyCalculator(object):
                         f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
                     )
 
-                confs.append(traj)
+                f = dcd_path
+                #confs.append(traj)
+                confs.append(f)
+                
                 logger.info(f"{dcd_path}")
                 logger.info(f"Nr of snapshots: {len(traj)}")
                 N_k[env].append(len(traj))
 
-            joined_trajs = mdtraj.join(confs, check_topology=True)
-            logger.info(f"Combined nr of snapshots: {len(joined_trajs)}")
+            #joined_trajs = mdtraj.join(confs, check_topology=True)
+            joined_trajs = confs
+            #logger.info(f"Combined nr of snapshots: {len(joined_trajs)}")
             snapshots[env] = joined_trajs
 
         return (snapshots, nr_of_states, N_k)
 
     @staticmethod
     def _energy_at_ts(
-        simulation: Simulation, configuration, env: str, ts: int, unitcell_vectors
+        simulation: Simulation, configuration, env: str, unitcell_lengths
     ):
         """
         Calculates the potential energy with the correct periodic boundary conditions.
         """
         if env != "vacuum":
-            simulation.context.setPeriodicBoxVectors(
-                unitcell_vectors[ts][0],
-                unitcell_vectors[ts][1],
-                unitcell_vectors[ts][2],
-            )
+            bxl_x = unitcell_lengths[0] * (unit.nanometer)
+            bxl_y = unitcell_lengths[1] * (unit.nanometer)
+            bxl_z = unitcell_lengths[2] * (unit.nanometer)
+
+            simulation.context.setPeriodicBoxVectors(vec3.Vec3(bxl_x,0,0), vec3.Vec3(0,bxl_y,0), vec3.Vec3(0,0,bxl_z)*unit.nanometer)
         simulation.context.setPositions(configuration)
         state = simulation.context.getState(getEnergy=True)
         return state.getPotentialEnergy()
@@ -334,22 +338,26 @@ class FreeEnergyCalculator(object):
     ):
         """call for single processor run"""
 
-        xyz_array = np.asarray(snapshots.xyz)
-        unitcell_lengths = snapshots.unitcell_lengths
-        unitcell_vectors = snapshots.unitcell_vectors
-
         energies = []
-        simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
+        for traj_file in snapshots:
+            traj = mdtraj.open(f"{traj_file}")
+            xyz, unitcell_lengths, _ = traj.read()
+            assert len(xyz) == len(unitcell_lengths)
+            xyz, unitcell_lengths = self._thinning_traj(xyz), self._thinning_traj(unitcell_lengths)
+            assert len(xyz) == len(unitcell_lengths)
+            xyz_array = np.asarray(xyz)
 
-        # reference shared memory trajectory
-        energies = self._evaluate_e_with_openMM(
-            xyz_array, simulation, env, unitcell_lengths, unitcell_vectors
-        )
+            simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
 
+            # calc energy
+            energies = self._evaluate_e_with_openMM(
+                xyz_array, simulation, env, unitcell_lengths
+            )
+            traj.close()
         return np.array(energies)
 
     def _evaluate_e_with_openMM(
-        self, xyz_array, simulation, env, unitcell_lengths, unitcell_vectors
+        self, xyz_array, simulation, env, unitcell_lengths
     ):
         """This function will be called from the mutliprocessing AND the single processor computational route"""
         energies = []
@@ -359,7 +367,7 @@ class FreeEnergyCalculator(object):
         ]
         for ts in tqdm(range(len(xyz_array))):
             # calculate the potential energy
-            e = self._energy_at_ts(simulation, xyz_array[ts], env, ts, unitcell_vectors)
+            e = self._energy_at_ts(simulation, xyz_array[ts], env, unitcell_lengths[ts])
             # obtain the reduced potential (for NpT)
             red_e = return_reduced_potential(e, volumn_list[ts], temperature)
             energies.append(red_e)
@@ -412,7 +420,7 @@ class FreeEnergyCalculator(object):
             ]
 
             # Decide if we want to use the multiprocessing library
-            if NUM_PROC <= 1:
+            if NUM_PROC == 1:
                 r = starmap(
                     self._evaluate_e_on_all_snapshots_openMM_sp,
                     zip(repeat(snapshots), lambda_states, repeat(env)),
