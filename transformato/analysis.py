@@ -350,9 +350,9 @@ class FreeEnergyCalculator(object):
             simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
 
             # calc energy
-            energies = self._evaluate_e_with_openMM(
+            energies.extend(self._evaluate_e_with_openMM(
                 xyz_array, simulation, env, unitcell_lengths
-            )
+            ))
             traj.close()
         return np.array(energies)
 
@@ -487,17 +487,20 @@ class FreeEnergyCalculator(object):
         logger.debug("#######################################")
         u_kn_ = copy.deepcopy(u_kn)
         start = 0
-        for d in range(u_kn.shape[0] - 1):
+        for lamb in range(u_kn.shape[0] - 1):
             logger.debug(self.N_k)
-            logger.debug(f"{d}->{d+1} [kT]")
-            nr_of_snapshots = self.N_k[env][d] + self.N_k[env][d + 1]
-            u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
+            logger.debug(f"{lamb }->{lamb +1} [kT]")
+            nr_of_snapshots = self.N_k[env][lamb ] + self.N_k[env][lamb  + 1]
+            u_kn_ = u_kn[lamb  : lamb  + 2 :, start : start + nr_of_snapshots]
+            print(u_kn.shape())
+            
 
-            m = mbar.MBAR(u_kn_, self.N_k[env][d : d + 2])
+            m = mbar.MBAR(u_kn_, self.N_k[env][lamb  : lamb  + 2])
             logger.debug(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
             logger.debug(m.getFreeEnergyDifferences(return_dict=True)["dDelta_f"][0, 1])
 
-            start += self.N_k[env][d]
+            start += self.N_k[env][lamb]
+
 
         logger.debug("#######################################")
         return mbar.MBAR(u_kn, self.N_k[env], initialize="BAR", verbose=True)
