@@ -28,13 +28,19 @@ def postprocessing(
     max_snapshots: int = 300,
     show_summary: bool = False,
     different_path_for_dcd: str = "",
-    only_vacuum: bool = False,
+    only_single_state:str = '',
 ):
     from transformato import FreeEnergyCalculator
 
     f = FreeEnergyCalculator(configuration, name)
-    if only_vacuum:
+    if only_single_state == 'vacuum':
         f.envs = ["vacuum"]
+    elif only_single_state == 'waterbox':
+        f.envs = ["waterbox"]
+    elif only_single_state == 'complex':
+        f.envs = ["complex"]
+    else:
+        print(f'Both states are considered')
 
     if different_path_for_dcd:
         # this is needed if the trajectories are stored at a different location than the
@@ -47,7 +53,7 @@ def postprocessing(
         f.load_trajs(nr_of_max_snapshots=max_snapshots)
 
     f.calculate_dG_to_common_core(engine=engine)
-    if only_vacuum:
+    if only_single_state:
         return -1, -1, f
     else:
         ddG, dddG = f.end_state_free_energy_difference
@@ -95,6 +101,29 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
         assert mae < 0.005
         for e_charmm, e_openMM in zip(l_charmm, l_openMM):
             assert np.isclose(e_charmm, e_openMM, rtol=0.2)
+
+
+def test_lazy_eval():
+    import mdtraj as md
+    base_path = f"data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/intst1/"
+    dcd_path = f"{base_path}/lig_in_waterbox.dcd"
+    psf_file = f"{base_path}/lig_in_waterbox.psf"
+    traj = md.load(
+        f"{dcd_path}",
+        top=f"{psf_file}",
+    )
+
+    with md.open(dcd_path) as f:
+        f.seek(10)
+        xyz, unitcell_lengths, unitcell_angles = f.read()
+
+    assert (xyz.shape) == (190, 2530, 3)
+    assert len(xyz) == 190
+
+    print(unitcell_lengths[0])
+    print(len(unitcell_lengths))
+    assert len(unitcell_lengths) == 190
+    print(unitcell_angles[0]) 
 
 
 @pytest.mark.system_2oj9
@@ -254,6 +283,31 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
         for e_charmm, e_openMM in zip(l_charmm, l_openMM):
             print(f"{e_charmm}, {e_openMM}: {e_charmm - e_openMM}")
             assert np.isclose(e_charmm, e_openMM, rtol=0.1)
+
+@pytest.mark.system_2oj9
+@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+)
+def test_2oj9_calculate_rbfe_with_openMM_only_complex():
+
+    initialize_NUM_PROC(1)
+
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rbfe.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    # 2OJ9-original to tautomer common core
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration, 
+        name="2OJ9-original", 
+        engine="openMM", 
+        max_snapshots=10_000, 
+        only_single_state='complex'
+    )
+
+
 
 
 @pytest.mark.system_2oj9

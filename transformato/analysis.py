@@ -15,7 +15,7 @@ import numpy as np
 import seaborn as sns
 from pymbar import mbar
 from simtk import unit
-from simtk.openmm import Platform, XmlSerializer
+from simtk.openmm import Platform, XmlSerializer, vec3
 from simtk.openmm.app import CharmmPsfFile, Simulation
 from tqdm import tqdm
 
@@ -102,7 +102,7 @@ class FreeEnergyCalculator(object):
 
         assert type(nr_of_max_snapshots) == int
         self.nr_of_max_snapshots = nr_of_max_snapshots
-        self.snapshots, self.nr_of_states, self.N_k = self._merge_trajs()
+        self.snapshots, self.unitcell, self.nr_of_states, self.N_k = self._merge_trajs()
 
     def _generate_openMM_system(self, env: str, lambda_state: int) -> Simulation:
         # read in necessary files
@@ -148,9 +148,9 @@ class FreeEnergyCalculator(object):
         further_thinning = max(
             int(new_length / self.nr_of_max_snapshots), 1
         )  # thinning
-        return traj[::further_thinning][: self.nr_of_max_snapshots]
+        return traj[::further_thinning][: self.nr_of_max_snapshots], start, further_thinning
 
-    def _merge_trajs(self) -> Tuple[dict, int, dict]:
+    def _merge_trajs(self) -> Tuple[dict, dict, int, dict]:
         """
         load trajectories, thin trajs and merge themn.
         Also calculate N_k for mbar.
@@ -165,50 +165,63 @@ class FreeEnergyCalculator(object):
 
         logger.info(f"Evaluating {nr_of_states} states.")
         snapshots: dict = {}
+        unitcell:dict = {}
         N_k: dict = defaultdict(list)
+        start = -1
+        stride = -1
         for env in self.envs:
             confs = []
+            unitcell_ = []
             conf_sub = self.configuration["system"][self.structure][env]
             for lambda_state in tqdm(range(1, nr_of_states + 1)):
                 dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
                 if not os.path.isfile(dcd_path):
                     raise RuntimeError(f"{dcd_path} does not exist.")
-                traj = mdtraj.load(
-                    f"{dcd_path}",
-                    top=f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
-                )
-                logger.info(f"Before: {len(traj)}")
-                # NOTE: removing the first 25% confs and thinning
-                traj = self._thinning_traj(traj)
-                if len(traj) < 10:
+                
+                traj = mdtraj.open(f"{dcd_path}")
+                if start == -1:
+                    xyz, unitcell_lengths, _ = traj.read()
+                    xyz, start, stride = self._thinning_traj(xyz)
+                    print(f'Len: {len(xyz)}, Start: {start}, Stride: {stride}')
+                    unitcell_lengths, _, _ = self._thinning_traj(unitcell_lengths)
+
+                else:
+                    traj.seek(start)
+                    xyz, unitcell_lengths, _ = traj.read(stride=stride)
+                    xyz, unitcell_lengths = xyz[:self.nr_of_max_snapshots], unitcell_lengths[:self.nr_of_max_snapshots]
+                    print(f'Len: {len(xyz)}, Start: {start}, Stride: {stride}')
+
+                if len(xyz) < 10:
                     raise RuntimeError(
                         f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
                     )
 
-                confs.append(traj)
+                confs.extend(xyz)
+                unitcell_.extend(unitcell_lengths)
                 logger.info(f"{dcd_path}")
-                logger.info(f"Nr of snapshots: {len(traj)}")
-                N_k[env].append(len(traj))
+                logger.info(f"Nr of snapshots: {len(xyz)}")
+                N_k[env].append(len(xyz))
 
-            joined_trajs = mdtraj.join(confs, check_topology=True)
-            logger.info(f"Combined nr of snapshots: {len(joined_trajs)}")
-            snapshots[env] = joined_trajs
+            logger.info(f"Combined nr of snapshots: {len(confs)}")
+            snapshots[env] = confs
+            unitcell[env] = unitcell_
+            assert len(confs) == len(unitcell_)
 
-        return (snapshots, nr_of_states, N_k)
+        return (snapshots, unitcell, nr_of_states, N_k)
 
     @staticmethod
     def _energy_at_ts(
-        simulation: Simulation, configuration, env: str, ts: int, unitcell_vectors
+        simulation: Simulation, configuration, env: str, unitcell_lengths:list
     ):
         """
         Calculates the potential energy with the correct periodic boundary conditions.
         """
         if env != "vacuum":
-            simulation.context.setPeriodicBoxVectors(
-                unitcell_vectors[ts][0],
-                unitcell_vectors[ts][1],
-                unitcell_vectors[ts][2],
-            )
+            bxl_x = unitcell_lengths[0] * (unit.nanometer)
+            bxl_y = unitcell_lengths[1] * (unit.nanometer)
+            bxl_z = unitcell_lengths[2] * (unit.nanometer)
+
+            simulation.context.setPeriodicBoxVectors(vec3.Vec3(bxl_x,0,0), vec3.Vec3(0,bxl_y,0), vec3.Vec3(0,0,bxl_z)*unit.nanometer)
         simulation.context.setPositions(configuration)
         state = simulation.context.getState(getEnergy=True)
         return state.getPotentialEnergy()
@@ -330,26 +343,24 @@ class FreeEnergyCalculator(object):
         )
 
     def _evaluate_e_on_all_snapshots_openMM_sp(
-        self, snapshots: mdtraj.Trajectory, lambda_state: int, env: str
+        self, snapshots: list, unitcell_lengths, lambda_state: int, env: str
     ):
         """call for single processor run"""
 
-        xyz_array = np.asarray(snapshots.xyz)
-        unitcell_lengths = snapshots.unitcell_lengths
-        unitcell_vectors = snapshots.unitcell_vectors
+        xyz_array = np.asarray(snapshots)
 
         energies = []
         simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
 
         # reference shared memory trajectory
         energies = self._evaluate_e_with_openMM(
-            xyz_array, simulation, env, unitcell_lengths, unitcell_vectors
+            xyz_array, simulation, env, unitcell_lengths
         )
 
         return np.array(energies)
 
     def _evaluate_e_with_openMM(
-        self, xyz_array, simulation, env, unitcell_lengths, unitcell_vectors
+        self, xyz_array, simulation, env, unitcell_lengths,
     ):
         """This function will be called from the mutliprocessing AND the single processor computational route"""
         energies = []
@@ -359,7 +370,7 @@ class FreeEnergyCalculator(object):
         ]
         for ts in tqdm(range(len(xyz_array))):
             # calculate the potential energy
-            e = self._energy_at_ts(simulation, xyz_array[ts], env, ts, unitcell_vectors)
+            e = self._energy_at_ts(simulation, xyz_array[ts], env, unitcell_lengths[ts])
             # obtain the reduced potential (for NpT)
             red_e = return_reduced_potential(e, volumn_list[ts], temperature)
             energies.append(red_e)
@@ -393,7 +404,8 @@ class FreeEnergyCalculator(object):
     def _analyse_results_using_mbar(
         self,
         env: str,
-        snapshots: mdtraj.Trajectory,
+        snapshots: list,
+        unitcell:list,
         save_results: bool,
         engine: str,
     ):
@@ -415,7 +427,7 @@ class FreeEnergyCalculator(object):
             if NUM_PROC <= 1:
                 r = starmap(
                     self._evaluate_e_on_all_snapshots_openMM_sp,
-                    zip(repeat(snapshots), lambda_states, repeat(env)),
+                    zip(repeat(snapshots), repeat(unitcell), lambda_states, repeat(env)),
                 )
 
             else:
@@ -507,7 +519,7 @@ class FreeEnergyCalculator(object):
         for env in self.envs:
             logger.info(f"Generating results for {env}.")
             self.mbar_results[env] = self._analyse_results_using_mbar(
-                env, self.snapshots[env], save_results, engine
+                env, self.snapshots[env], self.unitcell[env], save_results, engine
             )
 
     def load_waterbox_results(self, file: str):
