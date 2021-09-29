@@ -343,15 +343,11 @@ class FreeEnergyCalculator(object):
         )
 
     def _evaluate_e_on_all_snapshots_openMM_sp(
-        self, snapshots: list, unitcell_lengths, lambda_state: int, env: str
+        self, xyz_array: list, unitcell_lengths:list, lambda_state: int, env: str
     ):
         """call for single processor run"""
 
-        xyz_array = np.asarray(snapshots)
-
-        energies = []
         simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
-
         # reference shared memory trajectory
         energies = self._evaluate_e_with_openMM(
             xyz_array, simulation, env, unitcell_lengths
@@ -360,8 +356,8 @@ class FreeEnergyCalculator(object):
         return np.array(energies)
 
     def _evaluate_e_with_openMM(
-        self, xyz_array, simulation, env, unitcell_lengths,
-    ):
+        self, xyz_array:list, simulation, env, unitcell_lengths:list,
+    )->list:
         """This function will be called from the mutliprocessing AND the single processor computational route"""
         energies = []
         volumn_list = [
@@ -384,7 +380,7 @@ class FreeEnergyCalculator(object):
         xyz_shape: tuple,
         unitcell_lengths,
         unitcell_vectors,
-    ) -> np.ndarray:
+    ) -> list:
         """call for multiple processor run"""
 
         energies = []
@@ -399,7 +395,7 @@ class FreeEnergyCalculator(object):
         )
 
         existing_shm.close()
-        return np.array(energies)
+        return energies
 
     def _analyse_results_using_mbar(
         self,
@@ -422,12 +418,13 @@ class FreeEnergyCalculator(object):
             lambda_states = [
                 lambda_state for lambda_state in range(1, self.nr_of_states + 1)
             ]
+            xyz_array = snapshots
 
             # Decide if we want to use the multiprocessing library
             if NUM_PROC <= 1:
                 r = starmap(
                     self._evaluate_e_on_all_snapshots_openMM_sp,
-                    zip(repeat(snapshots), repeat(unitcell), lambda_states, repeat(env)),
+                    zip(repeat(xyz_array), repeat(unitcell), lambda_states, repeat(env)),
                 )
 
             else:
