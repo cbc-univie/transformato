@@ -86,21 +86,26 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
     change_platform(configuration)
     f = FreeEnergyCalculator(configuration, "2OJ9-original")
     for idx, b in enumerate(output_files_t1):
+        # used load_dcd for CHARMM
         traj = md.load_dcd(
             f"{b}/lig_in_{env}.dcd",
             f"{b}/lig_in_{env}.psf",
         )
         traj.save_dcd(f"{base}/traj.dcd")
         l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM_sp(traj, idx + 1, env)
+        # load dcd with openMM
+        traj = md.open(f"{b}/lig_in_{env}.dcd")
+        xyz, unitcell_lengths, _ = traj.read()
+        xyz = xyz/10 # correct the conversion
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
 
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         print(s)
-        mae = np.sum(s) / len(s)
-        assert mae < 0.005
         for e_charmm, e_openMM in zip(l_charmm, l_openMM):
             assert np.isclose(e_charmm, e_openMM, rtol=0.2)
+        mae = np.sum(s) / len(s)
+        assert mae < 0.005
 
 
 def test_lazy_eval():
