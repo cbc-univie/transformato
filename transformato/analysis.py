@@ -93,6 +93,7 @@ class FreeEnergyCalculator(object):
         self.N_k: dict = {}
         self.thinning: int = 0
         self.save_results_to_path: str = f"{self.configuration['system_dir']}/results/"
+        self.traj_files:list = []
 
     def load_trajs(self, nr_of_max_snapshots: int = 300):
         """
@@ -175,6 +176,7 @@ class FreeEnergyCalculator(object):
             conf_sub = self.configuration["system"][self.structure][env]
             for lambda_state in tqdm(range(1, nr_of_states + 1)):
                 dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
+                psf_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
                 if not os.path.isfile(dcd_path):
                     raise RuntimeError(f"{dcd_path} does not exist.")
                 
@@ -196,11 +198,12 @@ class FreeEnergyCalculator(object):
                         f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
                     )
 
-                confs.extend(xyz)
-                unitcell_.extend(unitcell_lengths)
+                confs.extend(xyz/10)
+                unitcell_.extend(unitcell_lengths/10)
                 logger.info(f"{dcd_path}")
                 logger.info(f"Nr of snapshots: {len(xyz)}")
                 N_k[env].append(len(xyz))
+                self.traj_files.append((dcd_path, psf_path))
 
             logger.info(f"Combined nr of snapshots: {len(confs)}")
             snapshots[env] = confs
@@ -342,7 +345,7 @@ class FreeEnergyCalculator(object):
             volumn_list=volumn_list,
         )
 
-    def _evaluate_e_on_all_snapshots_openMM_sp(
+    def _evaluate_e_on_all_snapshots_openMM(
         self, xyz_array: list, unitcell_lengths:list, lambda_state: int, env: str
     ):
         """call for single processor run"""
@@ -356,7 +359,7 @@ class FreeEnergyCalculator(object):
         return np.array(energies)
 
     def _evaluate_e_with_openMM(
-        self, xyz_array:list, simulation, env, unitcell_lengths:list,
+        self, xyz_array:list, simulation, env:str, unitcell_lengths:list,
     )->list:
         """This function will be called from the mutliprocessing AND the single processor computational route"""
         energies = []
@@ -364,6 +367,10 @@ class FreeEnergyCalculator(object):
             self._get_V_for_ts(unitcell_lengths, env, ts)
             for ts in range(len(xyz_array))
         ]
+        
+        if env == 'vacuum':
+            unitcell_lengths = [0.,0.,0.] * len(xyz_array)
+
         for ts in tqdm(range(len(xyz_array))):
             # calculate the potential energy
             e = self._energy_at_ts(simulation, xyz_array[ts], env, unitcell_lengths[ts])
@@ -372,30 +379,6 @@ class FreeEnergyCalculator(object):
             energies.append(red_e)
         return energies
 
-    def _evaluate_e_on_all_snapshots_openMM_mp(
-        self,
-        shr_name: str,
-        lambda_state: int,
-        env: str,
-        xyz_shape: tuple,
-        unitcell_lengths,
-        unitcell_vectors,
-    ) -> list:
-        """call for multiple processor run"""
-
-        energies = []
-        simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state)
-
-        # reference shared memory trajectory
-        existing_shm = shared_memory.SharedMemory(name=shr_name)
-        xyz_array = np.ndarray(xyz_shape, dtype=np.float32, buffer=existing_shm.buf)
-
-        energies = self._evaluate_e_with_openMM(
-            xyz_array, simulation, env, unitcell_lengths, unitcell_vectors
-        )
-
-        existing_shm.close()
-        return energies
 
     def _analyse_results_using_mbar(
         self,
@@ -406,13 +389,11 @@ class FreeEnergyCalculator(object):
         engine: str,
     ):
         # lookup how many processores we can use for postprocessing
-        from transformato.constants import NUM_PROC
 
         #########################################################
         #########################################################
         # main
         logger.debug(f"Evaluating with {engine}")
-        logger.debug(f"using {NUM_PROC} processes for the analysis")
 
         if engine == "openMM":
             lambda_states = [
@@ -421,46 +402,27 @@ class FreeEnergyCalculator(object):
             xyz_array = snapshots
 
             # Decide if we want to use the multiprocessing library
-            if NUM_PROC <= 1:
-                r = starmap(
-                    self._evaluate_e_on_all_snapshots_openMM_sp,
-                    zip(repeat(xyz_array), repeat(unitcell), lambda_states, repeat(env)),
-                )
-
-            else:
-                # generate shared memory trajektory
-                xyz = np.asarray(snapshots.xyz)
-                shm = shared_memory.SharedMemory(create=True, size=xyz.nbytes)
-                shm_xyz = np.ndarray(xyz.shape, dtype=xyz.dtype, buffer=shm.buf)
-                shm_xyz[:] = xyz[:]
-                # copy unitcell lengths and vectors directly
-                unitcell_lengths = snapshots.unitcell_lengths
-                unitcell_vectors = snapshots.unitcell_vectors
-
-                # generate context for mp pool
-                ctx = mp.get_context("spawn")
-                pool = ctx.Pool(processes=NUM_PROC)
-
-                r = pool.starmap(
-                    self._evaluate_e_on_all_snapshots_openMM_mp,
-                    zip(
-                        repeat(shm.name),
-                        lambda_states,
-                        repeat(env),
-                        repeat(xyz.shape),
-                        repeat(unitcell_lengths),
-                        repeat(unitcell_vectors),
-                    ),
-                )
-                # close and unlink shared memory
-                shm.close()
-                shm.unlink()
+            r = starmap(
+                self._evaluate_e_on_all_snapshots_openMM,
+                zip(repeat(xyz_array), repeat(unitcell), lambda_states, repeat(env)),
+            )
 
             u_kn = np.stack([r_i for r_i in r])
 
         elif engine == "CHARMM":
+            del snapshots
+            confs = []
             # write out traj in self.base_path
-            snapshots.save_dcd(f"{self.base_path}/traj.dcd")
+            for (dcd, psf) in self.traj_files:
+                traj = mdtraj.load(
+                f"{dcd}",
+                top=f"{psf}",
+                )
+                self._thinning_traj(traj)
+                confs.append(traj) 
+
+            joined_trajs = mdtraj.join(confs, check_topology=True)
+            joined_trajs.save_dcd(f"{self.base_path}/traj.dcd")
             u_kn = np.stack(
                 [
                     self._evaluate_e_on_all_snapshots_CHARMM(

@@ -2,12 +2,17 @@
 Unit and regression test for the transformato package.
 """
 
-import logging
 from transformato.utils import load_config_yaml
 from transformato.analysis import return_reduced_potential
-import pytest
 from simtk import unit
 import numpy as np
+# read in specific topology with parameters
+from transformato import (
+    load_config_yaml,
+)
+from .test_mutation import (
+    _set_output_files_2oj9_tautomer_pair,
+)
 
 
 def test_reduced_energy():
@@ -89,3 +94,30 @@ def test_old_scaling():
     for i in np.linspace(1, 0, 11):
         f = 1 - (1 - (1 - i)) * 2
         print(f"{i}:{f}")
+
+def test_reading_of_coords():
+
+    import mdtraj as md
+
+    env = "vacuum"
+    base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/"
+    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
+
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+
+    b = output_files_t1[0]
+    traj_load = md.load_dcd(
+        f"{b}/lig_in_{env}.dcd",
+        f"{b}/lig_in_{env}.psf",
+    )
+    print(traj_load.xyz[0])
+        
+    traj_open = md.open(f"{b}/lig_in_{env}.dcd")
+    xyz, unitcell_lengths, _ = traj_open.read()
+    xyz = xyz/10
+    print(xyz[0])
+    assert np.allclose(xyz[0], traj_load.xyz[0])
