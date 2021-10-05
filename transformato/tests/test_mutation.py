@@ -1820,8 +1820,6 @@ def setup_2OJ9_tautomer_pair_rsfe(
     from ..mutate import mutate_pure_tautomers
     from ..constants import change_platform
 
-    change_platform(configuration)
-
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
@@ -1845,8 +1843,6 @@ def setup_2OJ9_tautomer_pair_rbfe(
 ):
     from ..mutate import mutate_pure_tautomers
     from ..constants import change_platform
-
-    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1874,8 +1870,6 @@ def setup_acetylacetone_tautomer_pair(
 
     conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
-
-    change_platform(configuration)
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")

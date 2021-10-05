@@ -148,14 +148,15 @@ def psf_correction(str_object: StringIO):
                 raise RuntimeError(f"Error with the psf file: {line}")
 
         else:  # otherwise add line to new_str
+            new_str += f"{line}\n"
 
-            if "!NGRP NST2" in line:
-                second_line = i+1 # we want to remove the next line after !NGRP appears
-                new_str += f"{line.replace('1','0')}\n"
-            elif i == second_line:
-                new_str += ' \n'
-            else:
-                new_str += f"{line}\n"
+            # if "!NGRP NST2" in line:
+            #     second_line = i+1 # we want to remove the next line after !NGRP appears
+            #     new_str += f"{line.replace('1','0')}\n"
+            # elif i == second_line:
+            #     new_str += ' \n'
+            # else:
+            #     new_str += f"{line}\n"
 
 
 
