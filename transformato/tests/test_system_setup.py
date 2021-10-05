@@ -26,6 +26,22 @@ def test_read_yaml():
     assert settingsMap["system"]["name"] == "toluene-methane-rsfe"
     assert settingsMap["system"]["structure1"]["tlc"] == "UNL"
 
+def test_io_psf_files():
+    from transformato.testsystems import mutate_toluene_to_methane_cc
+    from .test_run_production import run_simulation
+    from simtk.openmm.app import CharmmPsfFile
+
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        input_dir="data/",
+        output_dir=".",
+    )
+
+    output_files = mutate_toluene_to_methane_cc(configuration=configuration)
+    output_path = output_files[0]
+    print(output_path)
+    CharmmPsfFile(f'{output_path}/lig_in_waterbox.psf')
+    CharmmPsfFile(f'{output_path}/lig_in_waterbox_corr.psf')
 
 def test_psf_files():
     test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")

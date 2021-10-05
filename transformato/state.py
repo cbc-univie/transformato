@@ -943,12 +943,17 @@ dummy_parameters.prm
         """
         Writes the new psf and pdb file.
         """
+        
+        with open(f"{output_file_base}/lig_in_{env}.psf", "w+") as f:
+            psf.write_psf(f)
+
         string_object = StringIO()
         psf.write_psf(string_object)
+        # read in psf and correct some aspects of the file not suitable for CHARMM 
         corrected_psf = psf_correction(string_object)
-        f = open(f"{output_file_base}/lig_in_{env}.psf", "w+")
-        f.write(corrected_psf)
-        f.close()
+        with open(f"{output_file_base}/lig_in_{env}_corr.psf", "w+") as f:
+            f.write(corrected_psf)
+        # write pdb
         psf.write_pdb(f"{output_file_base}/lig_in_{env}.pdb")
 
     def _init_intermediate_state_dir(self, nr: int):

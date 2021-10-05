@@ -3,7 +3,7 @@ from simtk import unit
 
 logger = logging.getLogger(__name__)
 
-platform = "CPU"  # CPU or GPU
+default_platform = "GPU"  # CPU or GPU
 temperature = 303.15 * unit.kelvin
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
 kT = kB * temperature
@@ -23,7 +23,9 @@ def initialize_NUM_PROC(n_proc):
         print(msg)
 
 
-def change_platform(configuration: dict, change_to="CPU"):
+def change_platform(configuration: dict):
+
+    change_to = default_platform
 
     if change_to.upper() == "GPU":
         configuration["simulation"]["GPU"] = True
