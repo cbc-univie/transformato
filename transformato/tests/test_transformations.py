@@ -24,8 +24,14 @@ def test_transformato_imported():
 def test_generate_output_for_acetylacetone_tautomer_pair(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_acetylacetone_tautomer_pair
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        input_dir=transformato_systems_dir,
+        output_dir=".",
+    )
 
     (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair(
+        configuration=configuration,
         nr_of_bonded_windows=8
     )
     f = "/".join(output_files_t1[0].split("/")[:-3])
@@ -90,7 +96,7 @@ def test_generate_output_for_methanol_cc_rsfe():
         output_dir=".",
     )
 
-    output_files, _ = mutate_methanol_to_methane_cc(configuration=configuration)
+    output_files = mutate_methanol_to_methane_cc(configuration=configuration)
     print(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)
