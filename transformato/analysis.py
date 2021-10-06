@@ -11,6 +11,7 @@ from typing import List, Set, Tuple
 
 import matplotlib.pyplot as plt
 import mdtraj
+import MDAnalysis
 import numpy as np
 import seaborn as sns
 from pymbar import mbar
@@ -179,7 +180,7 @@ class FreeEnergyCalculator(object):
                 psf_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
                 if not os.path.isfile(dcd_path):
                     raise RuntimeError(f"{dcd_path} does not exist.")
-                
+
                 traj = mdtraj.open(f"{dcd_path}")
                 if start == -1:
                     xyz, unitcell_lengths, _ = traj.read()
@@ -367,7 +368,7 @@ class FreeEnergyCalculator(object):
             self._get_V_for_ts(unitcell_lengths, env, ts)
             for ts in range(len(xyz_array))
         ]
-        
+
         if env == 'vacuum':
             unitcell_lengths = [0.,0.,0.] * len(xyz_array)
 
@@ -380,67 +381,117 @@ class FreeEnergyCalculator(object):
         return energies
 
 
-    def _analyse_results_using_mbar(
+    def _analyse_results_using_mdanalysis(
         self,
         env: str,
-        snapshots: list,
-        unitcell:list,
         save_results: bool,
         engine: str,
+        nr_of_max_snapshots: int,
     ):
-        # lookup how many processores we can use for postprocessing
 
-        #########################################################
-        #########################################################
-        # main
         logger.debug(f"Evaluating with {engine}")
 
+        nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
+        conf_sub = self.configuration["system"][self.structure][env]
+
         if engine == "openMM":
-            lambda_states = [
-                lambda_state for lambda_state in range(1, self.nr_of_states + 1)
-            ]
-            xyz_array = snapshots
+            u_kn_inter = []
+            # we generate a simulation context for each intst state
+            for lambda_state in range(1, nr_of_states + 1):
 
-            # Decide if we want to use the multiprocessing library
-            r = starmap(
-                self._evaluate_e_on_all_snapshots_openMM,
-                zip(repeat(xyz_array), repeat(unitcell), lambda_states, repeat(env)),
-            )
+                logger.info(f"Analysing lambda state {lambda_state} of {nr_of_states}")
+                simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state) #Simulation context for openMM
 
-            u_kn = np.stack([r_i for r_i in r])
+                # we iterate over all available lambda_states for each simulation contex (different psf file)
+                N_k: dict = defaultdict(list)
+                energies = []
+                for lambda_state in range(1, nr_of_states + 1):
+                    dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
+                    if not os.path.isfile(dcd_path):
+                        raise RuntimeError(f"{dcd_path} does not exist.")
 
-        elif engine == "CHARMM":
-            del snapshots
-            confs = []
-            # write out traj in self.base_path
-            for (dcd, psf) in self.traj_files:
-                traj = mdtraj.load(
-                f"{dcd}",
-                top=f"{psf}",
-                )
-                self._thinning_traj(traj)
-                confs.append(traj) 
-
-            joined_trajs = mdtraj.join(confs, check_topology=True)
-            joined_trajs.save_dcd(f"{self.base_path}/traj.dcd")
-            u_kn = np.stack(
-                [
-                    self._evaluate_e_on_all_snapshots_CHARMM(
-                        snapshots, lambda_state, env
+                    traj = MDAnalysis.Universe(
+                        f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
+                        f"{dcd_path}",
+                        in_memory = False,
                     )
-                    for lambda_state in range(1, self.nr_of_states + 1)
-                ]
-            )
-            # remove merged traj
-            os.remove(f"{self.base_path}/traj.dcd")
 
+                    # simple thinning of the Trajectory
+                    start = int(0.25 * len(traj.trajectory))
+                    skip = int((len(traj.trajectory) - start)/ nr_of_max_snapshots)
+                    N_k[env].append(len(traj.trajectory[start::skip]))
+
+                    for ts in tqdm(traj.trajectory[start::skip]):
+
+                        if env != "vacuum":
+                            bxl_x = ts.dimensions[0] /10 *unit.nanometer
+                            bxl_y = ts.dimensions[1] /10 *unit.nanometer
+                            bxl_z = ts.dimensions[2] /10 *unit.nanometer
+
+                        simulation.context.setPeriodicBoxVectors(vec3.Vec3(bxl_x,0,0), vec3.Vec3(0,bxl_y,0), vec3.Vec3(0,0,bxl_z)*unit.nanometer)
+                        simulation.context.setPositions((ts.positions/10))
+                        state = simulation.context.getState(getEnergy=True)
+
+                        e = state.getPotentialEnergy()
+                        assert type(temperature) == unit.Quantity
+                        pressure = 1.0 * unit.atmosphere  # atm
+                        kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
+                        beta = 1.0 / (kB * temperature)
+                        # potential_energy += pressure * volume
+                        red_e =  beta * e
+
+                        energies.append(red_e)
+
+                u_kn_inter.append(energies)
+                u_kn = np.asarray(u_kn_inter)
+
+
+        # if engine == "openMM":
+        #     lambda_states = [
+        #         lambda_state for lambda_state in range(1, self.nr_of_states + 1)
+        #     ]
+        #     xyz_array = snapshots
+        #
+        #     # Decide if we want to use the multiprocessing library
+        #     r = starmap(
+        #         self._evaluate_e_on_all_snapshots_openMM,
+        #         zip(repeat(xyz_array), repeat(unitcell), lambda_states, repeat(env)),
+        #     )
+        #
+        #     u_kn = np.stack([r_i for r_i in r])
+        #
+        # elif engine == "CHARMM":
+        #     del snapshots
+        #     confs = []
+        #     # write out traj in self.base_path
+        #     for (dcd, psf) in self.traj_files:
+        #         traj = mdtraj.load(
+        #         f"{dcd}",
+        #         top=f"{psf}",
+        #         )
+        #         self._thinning_traj(traj)
+        #         confs.append(traj)
+        #
+        #     joined_trajs = mdtraj.join(confs, check_topology=True)
+        #     joined_trajs.save_dcd(f"{self.base_path}/traj.dcd")
+        #     u_kn = np.stack(
+        #         [
+        #             self._evaluate_e_on_all_snapshots_CHARMM(
+        #                 snapshots, lambda_state, env
+        #             )
+        #             for lambda_state in range(1, self.nr_of_states + 1)
+        #         ]
+        #     )
+        #     # remove merged traj
+        #     os.remove(f"{self.base_path}/traj.dcd")
+        #
         else:
             raise RuntimeError(f"Either openMM or CHARMM engine, not {engine}")
 
         if save_results:
             file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
             logger.info(f"Saving results: {file}")
-            results = {"u_kn": u_kn, "N_k": self.N_k}
+            results = {"u_kn": u_kn, "N_k": N_k}
             pickle.dump(results, open(file, "wb+"))
 
         logger.debug("#######################################")
@@ -451,34 +502,36 @@ class FreeEnergyCalculator(object):
         u_kn_ = copy.deepcopy(u_kn)
         start = 0
         for d in range(u_kn.shape[0] - 1):
-            logger.debug(self.N_k)
-            logger.debug(f"{d}->{d+1} [kT]")
-            nr_of_snapshots = self.N_k[env][d] + self.N_k[env][d + 1]
+            logger.info(N_k)
+            logger.info(f"{d}->{d+1} [kT]")
+            nr_of_snapshots = N_k[env][d] + N_k[env][d + 1]
+            logger.info(f"snapshots {nr_of_snapshots}")
             u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
 
-            m = mbar.MBAR(u_kn_, self.N_k[env][d : d + 2])
+            m = mbar.MBAR(u_kn_, N_k[env][d : d + 2])
             logger.debug(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
             logger.debug(m.getFreeEnergyDifferences(return_dict=True)["dDelta_f"][0, 1])
 
-            start += self.N_k[env][d]
+            start += N_k[env][d]
 
         logger.debug("#######################################")
-        return mbar.MBAR(u_kn, self.N_k[env], initialize="BAR", verbose=True)
+        return mbar.MBAR(u_kn, N_k[env], initialize="BAR", verbose=True)
 
     def calculate_dG_to_common_core(
-        self, save_results: bool = True, engine: str = "openMM"
+        self, save_results: bool = True, engine: str = "openMM", nr_of_max_snapshots: int = 300
     ):
         """
         Calculate mbar results or load save results from a serialized mbar results.
         """
+
         if save_results:
             os.makedirs(f"{self.configuration['system_dir']}/results/", exist_ok=True)
             logger.info(f"Saving results in {self.save_results_to_path}")
 
         for env in self.envs:
             logger.info(f"Generating results for {env}.")
-            self.mbar_results[env] = self._analyse_results_using_mbar(
-                env, self.snapshots[env], self.unitcell[env], save_results, engine
+            self.mbar_results[env] = self._analyse_results_using_mdanalysis(
+                env, save_results, engine, nr_of_max_snapshots
             )
 
     def load_waterbox_results(self, file: str):
