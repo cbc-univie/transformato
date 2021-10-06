@@ -502,12 +502,8 @@ class FreeEnergyCalculator(object):
         u_kn_ = copy.deepcopy(u_kn)
         start = 0
         for d in range(u_kn.shape[0] - 1):
-            logger.info(N_k)
-            logger.info(f"{d}->{d+1} [kT]")
             nr_of_snapshots = N_k[env][d] + N_k[env][d + 1]
-            logger.info(f"snapshots {nr_of_snapshots}")
             u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
-
             m = mbar.MBAR(u_kn_, N_k[env][d : d + 2])
             logger.debug(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
             logger.debug(m.getFreeEnergyDifferences(return_dict=True)["dDelta_f"][0, 1])
