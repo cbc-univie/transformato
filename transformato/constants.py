@@ -7,7 +7,8 @@ default_platform = "GPU"  # CPU or GPU
 temperature = 303.15 * unit.kelvin
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
 kT = kB * temperature
-
+charmm_gpu = ''
+#charmm_gpu = 'domdec-gpu' #uncomment this if you want to use domdec-gpu
 this = sys.modules[__name__]
 # we can explicitly make assignments on it
 this.NUM_PROC = 1
@@ -27,6 +28,17 @@ def change_platform(configuration: dict):
 
     change_to = default_platform
 
+    if change_to.upper() == "GPU":
+        configuration["simulation"]["GPU"] = True
+        print("Setting platform to GPU")
+    elif change_to.upper() == "CPU":
+        configuration["simulation"]["GPU"] = False
+        print("Setting platform to CPU")
+    else:
+        raise RuntimeError("something went wrong")
+
+def change_platform_to(configuration: dict, change_to:str):
+    
     if change_to.upper() == "GPU":
         configuration["simulation"]["GPU"] = True
         print("Setting platform to GPU")
