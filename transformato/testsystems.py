@@ -8,6 +8,16 @@ from transformato.constants import change_platform
 
 transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
 
+def _performe_linear_scaling(nr_of_steps:int, intermediate_factory, mutation, current_lambda_state:int, output_files):
+    for lambda_value in np.linspace(1, 0, nr_of_steps)[1:]:
+        print(lambda_value)
+        # turn off charges
+        output_file_base, intst = intermediate_factory.write_state(
+            mutation_conf=mutation,
+            common_core_transformation=lambda_value,
+            intst_nr=intst,
+        )
+        output_files.append(output_file_base)
 
 def mutate_methane_to_methane_cc(configuration: dict):
 
@@ -221,15 +231,7 @@ def mutate_toluene_to_methane_cc(configuration: dict):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.75, 0, 4):
-        print(lambda_value)
-        # turn off charges
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=m, current_lambda_state=intst, output_files=output_files)
     return output_files
 
 
@@ -282,15 +284,7 @@ def mutate_ethane_to_methane_cc(configuration: dict):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.75, 0, 4):
-        print(lambda_value)
-        # turn off charges
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=m, current_lambda_state=intst, output_files=output_files)
     return output_files
 
 
@@ -379,14 +373,7 @@ def mutate_methanol_to_methane_cc(configuration: dict):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.75, 0, 4):
-        # turn off charges
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=m, current_lambda_state=intst, output_files=output_files)
     return output_files
 
 
@@ -439,7 +426,7 @@ def mutate_ethane_to_methanol_cc(configuration: dict):  # not a loeffler system
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.75, 0, 4):
+    for lambda_value in np.linspace(1, 0, 5)[1:]:
         # turn off charges
         output_file_base, intst = i.write_state(
             mutation_conf=m,
@@ -478,13 +465,7 @@ def mutate_7_CPI_to_2_CPI_cc(configuration: dict):  # will be tested later on
     # start with charges
     # turn off charges
     charges = mutation_list["charge"]
-    for lambda_value in np.linspace(1, 0, 4)[1:]:
-        output_file_base, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
@@ -551,13 +532,7 @@ def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
     # start with charges
     # turn off charges
     charges = mutation_list["charge"]
-    for lambda_value in np.linspace(1, 0, 4)[1:]:
-        output_file_base, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
@@ -595,14 +570,7 @@ def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(1, 0, 5)[1:]:
-        # turn off charges
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=m, current_lambda_state=intst, output_files=output_files)
     return output_files
 
 
@@ -627,15 +595,13 @@ def mutate_2_methylfuran_to_methane_cc(configuration: dict):
     output_file_base, intst = i.write_state(mutation_conf=[], intst_nr=1)
     output_files.append(output_file_base)
 
-    charges = mutation_list["charge"]
     # start with charges
     # turn off charges
-    output_file_base, intst = i.write_state(
-        mutation_conf=charges,
-        lambda_value_electrostatic=0.0,
-        intst_nr=intst,
+    charges = mutation_list["charge"]
+    nr_of_mutation_steps_charge = (
+        5  # defines the number of mutation steps for charge mutation
     )
-    output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_charge, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
@@ -698,14 +664,9 @@ def mutate_2_methylfuran_to_methane_cc(configuration: dict):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(1, 0, 5)[:1]:
-        # turn off charges
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    nr_of_mutation_steps_cc_bonded_terms = 5
+    print(m)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_cc_bonded_terms, intermediate_factory=i, mutation=m, current_lambda_state=intst, output_files=output_files)
     return output_files
 
 
@@ -739,13 +700,7 @@ def mutate_neopentane_to_methane_cc(configuration: dict):
     nr_of_mutation_steps_charge = (
         5  # defines the number of mutation steps for charge mutation
     )
-    for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_charge + 1)[1:]:
-        output_file_base, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_charge, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
@@ -797,14 +752,7 @@ def mutate_neopentane_to_methane_cc(configuration: dict):
     m = mutation_list["transform"]
     nr_of_mutation_steps_cc_bonded_terms = 5
 
-    for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_cc_bonded_terms + 1)[1:]:
-        # turn off charges
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_cc_bonded_terms, intermediate_factory=i, mutation=m, current_lambda_state=intst, output_files=output_files)
     return output_files
 
 
@@ -831,21 +779,11 @@ def mutate_2_methylindole_to_methane_cc(configuration: dict):
     charges = mutation_list["charge"]
     # start with charges
     # turn off charges
-    output_file_base, intst = i.write_state(
-        mutation_conf=charges,
-        lambda_value_electrostatic=0.5,
-        intst_nr=intst,
+    nr_of_mutation_steps_charge = (
+        5  # defines the number of mutation steps for charge mutation
     )
-    output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_charge, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
 
-    # start with charges
-    # turn off charges
-    output_file_base, intst = i.write_state(
-        mutation_conf=charges,
-        lambda_value_electrostatic=0.0,
-        intst_nr=intst,
-    )
-    output_files.append(output_file_base)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
@@ -940,14 +878,7 @@ def mutate_2_methylindole_to_methane_cc(configuration: dict):
     output_files.append(output_file_base)
 
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.75, 0, 4):
-        # turn off charges
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=m, current_lambda_state=intst, output_files=output_files)
     return output_files
 
 
@@ -993,13 +924,8 @@ def mutate_acetylaceton_methyl_common_core(configuration: dict):
     nr_of_mutation_steps_charge = (
         5  # defines the number of mutation steps for charge mutation
     )
-    for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_charge + 1)[1:]:
-        output_file_base, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_charge, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
+
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
@@ -1030,14 +956,7 @@ def mutate_acetylaceton_methyl_common_core(configuration: dict):
 
     # change charge on common core
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.75, 0, 4):
-        # interpolate between parameters
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=m, current_lambda_state=intst, output_files=output_files)
 
     ###############################
     ########### ENOL ##############
@@ -1060,13 +979,7 @@ def mutate_acetylaceton_methyl_common_core(configuration: dict):
     nr_of_mutation_steps_charge = (
         5  # defines the number of mutation steps for charge mutation
     )
-    for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_charge + 1)[1:]:
-        output_file_base, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_charge, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
@@ -1152,13 +1065,7 @@ def mutate_bmi_small_common_core(configuration: dict):
     nr_of_mutation_steps_charge = (
         5  # defines the number of mutation steps for charge mutation
     )
-    for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_charge + 1)[1:]:
-        output_file_base, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_charge, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
@@ -1195,14 +1102,7 @@ def mutate_bmi_small_common_core(configuration: dict):
 
     # change bonded parameters on common core
     m = mutation_list["transform"]
-    for lambda_value in np.linspace(0.75, 0, 4):
-        # interpolate between parameters
-        output_file_base, intst = i.write_state(
-            mutation_conf=m,
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=5, intermediate_factory=i, mutation=mutate_bmi_small_common_core, current_lambda_state=intst, output_files=output_files)
 
     ###############################
     ###### 2OJ9 - tautomer ########
@@ -1225,13 +1125,7 @@ def mutate_bmi_small_common_core(configuration: dict):
     nr_of_mutation_steps_charge = (
         5  # defines the number of mutation steps for charge mutation
     )
-    for lambda_value in np.linspace(1, 0, nr_of_mutation_steps_charge + 1)[1:]:
-        output_file_base, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files.append(output_file_base)
+    _performe_linear_scaling(nr_of_steps=nr_of_mutation_steps_charge, intermediate_factory=i, mutation=charges, current_lambda_state=intst, output_files=output_files)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
