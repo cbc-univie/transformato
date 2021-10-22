@@ -24,6 +24,7 @@ from transformato import (
     load_config_yaml,
 )
 
+from transformato.tests.paths import get_test_output_dir 
 
 def read_params(output_file_base):
     extlist = ["rtf", "prm", "str"]
@@ -159,11 +160,11 @@ def _set_output_files_toluene_methane_pair():
 def test_proposed_mutation_mcs():
 
     from rdkit.Chem import rdFMCS
-
+    workdir = get_test_output_dir()
     for conf in [
         "transformato/tests/config/test-2oj9-rsfe.yaml",
     ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -332,7 +333,7 @@ def test_proposed_mutation_mcs():
         assert set(a.get_common_core_idx_mol1()) == cc1
 
     for conf in ["transformato/tests/config/test-toluene-methane-rsfe.yaml"]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -362,11 +363,11 @@ def test_proposed_mutation_mcs():
 
 def test_proposed_mutation_terminal_dummy_real_atom_match():
     from rdkit.Chem import rdFMCS
-
+    workdir = get_test_output_dir()
     for conf in [
         "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
     ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -406,11 +407,11 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
 def test_find_connected_dummy_regions1():
-
+    workdir = get_test_output_dir()
     from rdkit.Chem import rdFMCS
 
     conf = "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -457,11 +458,10 @@ def test_find_connected_dummy_regions1():
 
 def test_find_connected_dummy_regions2():
 
-    from rdkit.Chem import rdFMCS
-
+    workdir = get_test_output_dir()
     ##################################################
     conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -547,13 +547,13 @@ def test_find_connected_dummy_regions2():
 
 
 def test_common_core_for_multiple_systems():
-
+    workdir = get_test_output_dir()
     for conf in [
         "transformato/tests/config/test-toluene-methane-rsfe.yaml",
         "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
         "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
     ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -571,7 +571,8 @@ def test_common_core_for_multiple_systems():
 
 
 def setup_systems(conf):
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    workdir = get_test_output_dir()
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -628,7 +629,7 @@ def test_generate_mutation_list_for_multiple_systems():
 
         if system_name == "neopentane-methane":
             configuration = load_config_yaml(
-                config=conf, input_dir="data/", output_dir="."
+                config=conf, input_dir="data/", output_dir=get_test_output_dir()
             )
             s1 = SystemStructure(configuration, "structure1")
             s2 = SystemStructure(configuration, "structure2")
@@ -743,7 +744,7 @@ def test_setup_dual_junction_system():
 
 
 def test_charge_mutation_for_multiple_systems():
-
+    workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
             "transformato/tests/config/test-toluene-methane-rsfe.yaml",
@@ -753,7 +754,7 @@ def test_charge_mutation_for_multiple_systems():
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
 
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         # scale charges with 0.5
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
@@ -806,7 +807,7 @@ def test_charge_mutation_for_multiple_systems():
 def test_vdw_mutation_for_hydrogens_system1():
     # testing terminal lj
     from rdkit.Chem import rdFMCS
-
+    workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
             "transformato/tests/config/test-toluene-methane-rsfe.yaml",
@@ -815,7 +816,7 @@ def test_vdw_mutation_for_hydrogens_system1():
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -885,14 +886,14 @@ def test_vdw_mutation_for_hydrogens_system1():
 
 def test_vdw_mutation_for_hydrogens_system2():
     from rdkit.Chem import rdFMCS
-
+    workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
             "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
         ],
         ["7-CPI-2-CPI"],
     ):
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -959,12 +960,13 @@ def test_vdw_mutation_for_hydrogens_system2():
 
 @pytest.mark.slowtest
 def test_bonded_mutation():
+    workdir = get_test_output_dir()
 
     for conf in [
         "transformato/tests/config/test-toluene-methane-rsfe.yaml",
     ]:
 
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -1031,6 +1033,7 @@ def test_bonded_mutation():
 
 @pytest.mark.slowtest
 def test_equivalent_endstates_vacuum():
+    workdir = get_test_output_dir()
 
     import simtk.openmm as mm
     import simtk.openmm.app as app
@@ -1380,9 +1383,10 @@ def test_bonded_mutation_atoms(caplog):
     caplog.set_level(logging.CRITICAL)
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
+    workdir = get_test_output_dir()
 
     conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -1426,11 +1430,12 @@ def test_bonded_mutation_atoms(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_bonds(caplog):
     caplog.set_level(logging.CRITICAL)
+    workdir = get_test_output_dir()
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
     conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -1482,9 +1487,10 @@ def test_bonded_mutation_angles(caplog):
     caplog.set_level(logging.CRITICAL)
     from copy import copy
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
+    workdir = get_test_output_dir()
 
     conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -1555,11 +1561,12 @@ def test_bonded_mutation_angles(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_dihedrals(caplog):
     caplog.set_level(logging.CRITICAL)
+    workdir = get_test_output_dir()
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -1672,6 +1679,7 @@ def test_bonded_mutation_dihedrals(caplog):
 
 def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
     from rdkit.Chem import rdFMCS
+    workdir = get_test_output_dir()
 
     for conf, system_name in zip(
         [
@@ -1681,7 +1689,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -1811,7 +1819,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
                             rtol=1e-3,
                         )
 
-        shutil.rmtree(f"{system_name}-rsfe")
+        shutil.rmtree(f"{workdir}/{system_name}-rsfe")
 
 
 def setup_2OJ9_tautomer_pair_rsfe(
@@ -1842,7 +1850,6 @@ def setup_2OJ9_tautomer_pair_rbfe(
     configuration: dict, single_state: bool = False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
-    from ..constants import change_platform
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1869,7 +1876,7 @@ def setup_acetylacetone_tautomer_pair(
     from ..constants import change_platform
 
     conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=get_test_output_dir())
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1890,25 +1897,28 @@ def setup_acetylacetone_tautomer_pair(
 
 
 def test_acetylacetone_tautomer_pair(caplog):
+    workdir = get_test_output_dir()
     caplog.set_level(logging.DEBUG)
     conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     setup_acetylacetone_tautomer_pair(configuration=configuration)
-    shutil.rmtree("acetylacetone-keto-acetylacetone-enol-rsfe")
+    shutil.rmtree(f"{workdir}/acetylacetone-keto-acetylacetone-enol-rsfe")
 
 
 def test_2OJ9_tautomer_pair(caplog):
+    workdir = get_test_output_dir()
     caplog.set_level(logging.DEBUG)
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     setup_2OJ9_tautomer_pair_rsfe(configuration=configuration)
-    shutil.rmtree("2OJ9-original-2OJ9-tautomer-rsfe")
+    shutil.rmtree(f"{workdir}/2OJ9-original-2OJ9-tautomer-rsfe")
 
 
 def test_full_mutation_system1(caplog):
     caplog.set_level(logging.WARNING)
+    workdir = get_test_output_dir()
 
     for conf, system_name in zip(
         [
@@ -1919,7 +1929,7 @@ def test_full_mutation_system1(caplog):
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
         print(system_name)
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -1968,10 +1978,11 @@ def test_full_mutation_system1(caplog):
         for mutation in terminal_lj_mutations:
             all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
-        shutil.rmtree(f"{system_name}-rsfe")
+        shutil.rmtree(f"{workdir}/{system_name}-rsfe")
 
 
 def test_full_mutation_system2():
+    workdir = get_test_output_dir()
 
     for conf, system_name in zip(
         [
@@ -1980,7 +1991,7 @@ def test_full_mutation_system2():
         ],
         ["toluene-methane", "neopentane-methane"],
     ):
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -2074,4 +2085,4 @@ def test_full_mutation_system2():
                     rtol=1e-3,
                 )
 
-        shutil.rmtree(f"{system_name}-rsfe")
+        shutil.rmtree(f"{workdir}/{system_name}-rsfe")
