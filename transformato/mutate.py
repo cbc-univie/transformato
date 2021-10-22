@@ -10,11 +10,168 @@ from IPython.core.display import display
 from rdkit import Chem
 from rdkit.Chem import AllChem, Draw, rdFMCS
 from rdkit.Chem.Draw import rdMolDraw2D
-from simtk.openmm.app.charmmpsffile import CharmmPsfFile
 
 from transformato.system import SystemStructure
 
 logger = logging.getLogger(__name__)
+
+
+def _performe_linear_charge_scaling(
+    nr_of_steps: int,
+    intermediate_factory,
+    mutation,
+    current_lambda_state: int,
+    output_files,
+) -> int:
+
+    print(mutation)
+    for lambda_value in np.linspace(1, 0, nr_of_steps)[1:]:
+        print(lambda_value)
+        output_file_base, current_lambda_state = intermediate_factory.write_state(
+            mutation_conf=mutation,
+            lambda_value_electrostatic=lambda_value,
+            intst_nr=current_lambda_state,
+        )
+        output_files.append(output_file_base)
+    return current_lambda_state
+
+
+def _performe_linear_cc_scaling(
+    nr_of_steps: int,
+    intermediate_factory,
+    mutation,
+    current_lambda_state: int,
+    output_files,
+) -> int:
+
+    print(mutation)
+    for lambda_value in np.linspace(1, 0, nr_of_steps)[1:]:
+        print(lambda_value)
+        output_file_base, current_lambda_state = intermediate_factory.write_state(
+            mutation_conf=mutation,
+            common_core_transformation=lambda_value,
+            intst_nr=current_lambda_state,
+        )
+        output_files.append(output_file_base)
+    return current_lambda_state
+
+
+def perform_mutations(
+    configuration: dict,
+    i,
+    mutation_list: list,
+    list_of_heavy_atoms_to_be_mutated: list = [],
+    nr_of_mutation_steps_charge: int = 5,
+    nr_of_mutation_steps_cc: int = 5,
+):
+    from transformato.utils import map_lj_mutations_to_atom_idx
+
+    # store all directories generated
+    output_files = []
+
+    ######################################
+    # write endpoint mutation
+    ######################################
+    output_file_base, intst = i.write_state(mutation_conf=[], intst_nr=1)
+    output_files.append(output_file_base)
+
+    ######################################
+    # turn off electrostatics
+    ######################################
+    print("Turn off electrostatics ...")
+    m = mutation_list["charge"]
+    # turn off charges
+    try:
+        nr_of_mutation_steps_charge = configuration["system"]["structure1"]["mutation"][
+            "steps_charge"
+        ]  # defines the number of mutation steps for charge mutation
+    except KeyError:
+        nr_of_mutation_steps_charge = nr_of_mutation_steps_charge
+
+    if nr_of_mutation_steps_charge == 1:
+        # if only a single step is requested we need to increase the count since we remove the 1 from the list
+        nr_of_mutation_steps_charge += 1
+    intst = _performe_linear_charge_scaling(
+        nr_of_steps=nr_of_mutation_steps_charge,
+        intermediate_factory=i,
+        mutation=m,
+        current_lambda_state=intst,
+        output_files=output_files,
+    )
+
+    ######################################
+    # turn off LJ
+    ######################################
+    print("Turn off LJ ...")
+
+    ######################################
+    # Turn off hydrogens
+
+    hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
+
+    output_file_base, intst = i.write_state(
+        mutation_conf=hydrogen_lj_mutations,
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    ######################################
+    # turn off lj of heavy atoms
+
+    try:
+        list_of_heavy_atoms_to_be_mutated = configuration["system"]["structure1"][
+            "mutation"
+        ]["heavy_atoms"]
+    except KeyError:
+        list_of_heavy_atoms_to_be_mutated = list_of_heavy_atoms_to_be_mutated
+
+    for h in list_of_heavy_atoms_to_be_mutated:
+        logger.info(f"turning off lj of heavy atom: {h}")
+        d = map_lj_mutations_to_atom_idx(mutation_list["lj"])
+        for m in [
+            [d[(h,)]],
+        ]:
+            output_file_base, intst = i.write_state(
+                mutation_conf=m,
+                lambda_value_vdw=0.0,
+                intst_nr=intst,
+            )
+            output_files.append(output_file_base)
+
+    ######################################
+    # generate terminal LJ
+    ######################################
+
+    output_file_base, intst = i.write_state(
+        mutation_conf=mutation_list["default-lj"],
+        lambda_value_vdw=0.0,
+        intst_nr=intst,
+    )
+    output_files.append(output_file_base)
+
+    ######################################
+    # mutate common core
+    ######################################
+
+    if mutation_list["transform"]:
+        try:
+            nr_of_mutation_steps_cc = configuration["system"]["structure1"]["mutation"][
+                "steps_common_core"
+            ]
+        except KeyError:
+            nr_of_mutation_steps_cc = nr_of_mutation_steps_cc
+
+        # change bonded parameters on common core
+        intst = _performe_linear_cc_scaling(
+            nr_of_steps=nr_of_mutation_steps_cc,
+            intermediate_factory=i,
+            mutation=mutation_list["transform"],
+            current_lambda_state=intst,
+            output_files=output_files,
+        )
+
+    return output_files
 
 
 @dataclass
@@ -641,12 +798,6 @@ class ProposeMutationRoute(object):
     def generate_mutations_to_common_core_for_mol1(self) -> dict:
         """
         Generates the mutation route to the common fore for mol1.
-        Parameters
-        ----------
-        nr_of_steps_for_electrostatic : int
-            nr of steps used for linearly scaling the charges to zero
-        nr_of_steps_for_cc_transformation : int
-        Returns
         ----------
         mutations: list
             list of mutations
@@ -1635,7 +1786,7 @@ def mutate_systems(
     output_dir: str = ".",
     connected_dummy_regions_cc1: list = [],
     connected_dummy_regions_cc2: list = [],
-    el_nr_of_states:int=5
+    el_nr_of_states: int = 5,
 ):
 
     from transformato import (
@@ -1671,7 +1822,7 @@ def mutate_systems(
         )
     else:
         raise RuntimeError()
-    
+
     # setup mutation and StateFactory
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
 
@@ -1694,7 +1845,7 @@ def mutate_systems(
             intst_nr=intst,
         )
         output_files_t1.append(o)
-        
+
     # turn off the lj of the hydrogen
     lj = mutation_list["lj"]
     o, intst = i.write_state(
