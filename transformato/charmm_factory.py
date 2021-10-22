@@ -1,6 +1,6 @@
 import datetime
 from os import stat
-from transformato.constants import temperature
+from transformato.constants import temperature, charmm_gpu
 from simtk import unit
 
 
@@ -12,6 +12,7 @@ class CharmmFactory:
         self.configuration = configuration
         self.structure = structure
         self.vdw_switching_keyword = self._check_switching_function()
+        self.charmm_gpu = charmm_gpu
 
     def _get_simulations_parameters(self):
         prms = {}
@@ -66,8 +67,6 @@ class CharmmFactory:
 
         elif env == "complex": ###needs to be adaptet from waterbox to complex
             charmm_production_script += self._get_CHARMM_waterbox_production_body()
-
-
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
 
@@ -210,7 +209,7 @@ read para card unit 10 append flex
 stream charmm_toppar.str
 
 ! Read PSF
-open read unit 10 card name {intermediate_filename}.psf
+open read unit 10 card name {intermediate_filename}_corr.psf
 read psf  unit 10 card
 
 ! Read Coordinate
@@ -310,6 +309,15 @@ stop"""
     def _get_CHARMM_waterbox_postprocessing_body(self):
         ##### solv phase ######
         switch = self.vdw_switching_keyword
+        if self.configuration["simulation"].get("GPU", False) == True and self.charmm_gpu == 'domdec-gpu':
+            GPU_domdec = "domdec gpu only"
+            GPU_openMM = ''
+        elif self.configuration["simulation"].get("GPU", False) == True and self.charmm_gpu != 'domdec-gpu':
+            GPU_openMM = "omm on"
+            GPU_domdec = ''
+        else:
+            GPU_openMM = ""
+            GPU_domdec = ''
 
         body = f"""
 stream charmm_step3_pbcsetup.str
@@ -332,7 +340,7 @@ IMAGE BYSEGI XCEN @xcen YCEN @ycen ZCEN @zcen sele segid het* end
 !
 ! cons fix sele segi solv end
 
-omm on
+{GPU_openMM} !omm on
 
 nbonds atom vatom {switch} bycb -
        ctonnb 10.0 ctofnb 12.0 cutnb 12.0 cutim 12.0 -
@@ -376,10 +384,22 @@ stop"""
         nstep = self.configuration["simulation"]["parameters"]["nstep"]
         nstout = self.configuration["simulation"]["parameters"]["nstout"]
         nstdcd = self.configuration["simulation"]["parameters"]["nstdcd"]
-        # if self.configuration["simulation"].get("GPU", False) == True:
-        #     GPU = f"""domdec gpu only"""
-        # else:
-        #     GPU = ""
+        if self.configuration["simulation"].get("GPU", False) == True and self.charmm_gpu == 'domdec-gpu':
+            GPU_domdec = "!domdec gpu only"
+            GPU_openMM = ''
+            dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
+    ECHECK 0"""
+        elif self.configuration["simulation"].get("GPU", False) == True and self.charmm_gpu != 'domdec-gpu':
+            GPU_openMM = "omm on"
+            GPU_domdec = ''
+            dyn = """    omm langevin gamma 10 firstt @temp finalt @temp -
+     prmc pref 1.0 iprsfrq 15"""
+
+        else:
+            GPU_openMM = ""
+            GPU_domdec = ''
+            dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
+    ECHECK 0"""
 
         body = f"""
 !
@@ -409,7 +429,7 @@ IMAGE BYSEGI XCEN @xcen YCEN @ycen ZCEN @zcen sele segid het* end
 ! Nonbonded Options
 !
 
-omm on
+{GPU_openMM} !omm on
 
 nbonds atom vatom {switch} bycb -
        ctonnb 10.0 ctofnb 12.0 cutnb 16.0 cutim 16.0 -
@@ -417,16 +437,6 @@ nbonds atom vatom {switch} bycb -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
 
 energy
-
-!
-!use a restraint to place center of mass of the molecules near the origin
-!
-
-!MMFP
-!GEO rcm sphere -
-!    Xref @xcen Yref @ycen Zref @zcen XDIR 1.0 YDIR 1.0 ZDIR 1.0 -
-!    harmonic FORCE 1.0 select .not. ( hydrogen .or. resname TIP3 ) end
-!END
 
 shak bonh para fast sele segi SOLV end
 
@@ -446,9 +456,9 @@ mini ABNR nstep 500
 scalar mass stat
 calc Pmass = int ( ?stot  /  50.0 )
 
-!energy
-!GPU
-!energy
+energy
+{GPU_domdec}
+energy
 
 set nstep = {nstep}
 set temp = {temperature.value_in_unit(unit.kelvin)}
@@ -461,8 +471,7 @@ DYNA CPT leap start time 0.001 nstep @nstep -
      iunread -1 iunwri -1 iuncrd 13 iunvel -1 kunit -1 -
      nsavc {nstdcd} nsavv 0 -
      PCONSTANT pref   1.0  pmass @Pmass  pgamma   20.0 -
-     omm langevin gamma 10 firstt @temp finalt @temp -
-     prmc pref 1.0 iprsfrq 15
+     {dyn}
 
 stop"""
         return body
@@ -482,7 +491,7 @@ stop"""
 stream charmm_toppar.str
 
 ! Read PSF
-open read unit 10 card name {intermediate_filename}.psf
+open read unit 10 card name {intermediate_filename}_corr.psf
 read psf  unit 10 card
 
 ! Read Coordinate
