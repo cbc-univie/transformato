@@ -64,6 +64,19 @@ def perform_mutations(
     nr_of_mutation_steps_charge: int = 5,
     nr_of_mutation_steps_cc: int = 5,
 ):
+    """Performs the mutations necessary to mutate the physical endstate to the defined common core.
+
+    Args:
+        configuration (dict): A configuration dictionary.
+        i ([type]): IntermediateState instance
+        mutation_list (list): list of mutation objects
+        list_of_heavy_atoms_to_be_mutated (list, optional): A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].
+        nr_of_mutation_steps_charge (int, optional): Nr of steps to turne of the charges. Defaults to 5.
+        nr_of_mutation_steps_cc (int, optional): Nr of steps to interpolate between the common core parameters. Defaults to 5.
+
+    Returns:
+        list: list of directories with the parameter and topology files
+    """
     from transformato.utils import map_lj_mutations_to_atom_idx
 
     # store all directories generated

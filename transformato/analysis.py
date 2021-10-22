@@ -149,7 +149,11 @@ class FreeEnergyCalculator(object):
         further_thinning = max(
             int(new_length / self.nr_of_max_snapshots), 1
         )  # thinning
-        return any_list[::further_thinning][: self.nr_of_max_snapshots], start, further_thinning
+        return (
+            any_list[::further_thinning][: self.nr_of_max_snapshots],
+            start,
+            further_thinning,
+        )
 
     def _merge_trajs(self) -> Tuple[dict, dict, int, dict]:
         """
@@ -176,11 +180,10 @@ class FreeEnergyCalculator(object):
             conf_sub = self.configuration["system"][self.structure][env]
             for lambda_state in tqdm(range(1, nr_of_states + 1)):
                 dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
-                print(dcd_path)
                 psf_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
                 if not os.path.isfile(dcd_path):
                     raise RuntimeError(f"{dcd_path} does not exist.")
-                
+
                 traj = mdtraj.open(f"{dcd_path}")
                 # read trajs, determin offset, start ,stride and unitcell lengths
                 if start == -1:
@@ -190,9 +193,9 @@ class FreeEnergyCalculator(object):
                 else:
                     traj.seek(start)
                     xyz, unitcell_lengths, _ = traj.read(stride=stride)
-                    xyz = xyz[:self.nr_of_max_snapshots]
+                    xyz = xyz[: self.nr_of_max_snapshots]
 
-                print(f'Len: {len(xyz)}, Start: {start}, Stride: {stride}')
+                logger.debug(f"Len: {len(xyz)}, Start: {start}, Stride: {stride}")
 
                 # check that we have enough samples
                 if len(xyz) < 10:
@@ -202,16 +205,15 @@ class FreeEnergyCalculator(object):
 
                 # thin unitcell_lengths
                 # make sure that we can work with vacuum environments
-                if env != 'vacuum':
-                    unitcell_lengths = unitcell_lengths[:self.nr_of_max_snapshots]
+                if env != "vacuum":
+                    unitcell_lengths = unitcell_lengths[: self.nr_of_max_snapshots]
                 else:
                     unitcell_lengths = np.zeros(len(xyz))
-                
 
-                confs.extend(xyz/10)
-                unitcell_.extend(unitcell_lengths/10)
-                logger.info(f"{dcd_path}")
-                logger.info(f"Nr of snapshots: {len(xyz)}")
+                confs.extend(xyz / 10)
+                unitcell_.extend(unitcell_lengths / 10)
+                logger.debug(f"{dcd_path}")
+                logger.debug(f"Nr of snapshots: {len(xyz)}")
                 N_k[env].append(len(xyz))
                 self.traj_files[env].append((dcd_path, psf_path))
 
@@ -219,13 +221,13 @@ class FreeEnergyCalculator(object):
             snapshots[env] = confs
             unitcell[env] = unitcell_
             assert len(confs) == len(unitcell_)
-            print(len(confs))
-        print(N_k)
+            logger.debug(len(confs))
+        logger.debug(N_k)
         return (snapshots, unitcell, nr_of_states, N_k)
 
     @staticmethod
     def _energy_at_ts(
-        simulation: Simulation, configuration, env: str, unitcell_lengths:list
+        simulation: Simulation, configuration, env: str, unitcell_lengths: list
     ):
         """
         Calculates the potential energy with the correct periodic boundary conditions.
@@ -235,7 +237,11 @@ class FreeEnergyCalculator(object):
             bxl_y = unitcell_lengths[1] * (unit.nanometer)
             bxl_z = unitcell_lengths[2] * (unit.nanometer)
 
-            simulation.context.setPeriodicBoxVectors(vec3.Vec3(bxl_x,0,0), vec3.Vec3(0,bxl_y,0), vec3.Vec3(0,0,bxl_z)*unit.nanometer)
+            simulation.context.setPeriodicBoxVectors(
+                vec3.Vec3(bxl_x, 0, 0),
+                vec3.Vec3(0, bxl_y, 0),
+                vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
+            )
         simulation.context.setPositions(configuration)
         state = simulation.context.getState(getEnergy=True)
         return state.getPotentialEnergy()
@@ -317,9 +323,9 @@ class FreeEnergyCalculator(object):
             f.write(exe.stderr)
 
         pot_energies = self._parse_CHARMM_energy_output(path, env)
-
-        logger.info(f"Number of entries in pot_energies list: {len(pot_energies)}")
-        logger.info(f"Number of entries in pot_energies list: {len(volumn_list)}")
+        logger.debug(f"Number of entries in pot_energies list: {len(pot_energies)}")
+        logger.debug(f"Number of entries in pot_energies list: {len(volumn_list)}")
+        assert len(pot_energies) == len(volumn_list)
 
         if volumn_list:
             assert len(volumn_list) == len(pot_energies)
@@ -340,11 +346,13 @@ class FreeEnergyCalculator(object):
     ):
         if env == "waterbox":
             unitcell_lengths = [
-            (snapshots.unitcell_lengths[ts][0], 
-            snapshots.unitcell_lengths[ts][1], 
-            snapshots.unitcell_lengths[ts][2]) 
-            for ts in range(len(snapshots))
-        ]
+                (
+                    snapshots.unitcell_lengths[ts][0],
+                    snapshots.unitcell_lengths[ts][1],
+                    snapshots.unitcell_lengths[ts][2],
+                )
+                for ts in range(len(snapshots))
+            ]
 
             volumn_list = [
                 self._get_V_for_ts(unitcell_lengths, env, ts)
@@ -363,7 +371,7 @@ class FreeEnergyCalculator(object):
         )
 
     def _evaluate_e_on_all_snapshots_openMM(
-        self, xyz_array: list, unitcell_lengths:list, lambda_state: int, env: str
+        self, xyz_array: list, unitcell_lengths: list, lambda_state: int, env: str
     ):
         """call for single processor run"""
 
@@ -376,17 +384,21 @@ class FreeEnergyCalculator(object):
         return np.array(energies)
 
     def _evaluate_e_with_openMM(
-        self, xyz_array:list, simulation, env:str, unitcell_lengths:list,
-    )->list:
+        self,
+        xyz_array: list,
+        simulation,
+        env: str,
+        unitcell_lengths: list,
+    ) -> list:
         """This function will be called from the mutliprocessing AND the single processor computational route"""
         energies = []
         volumn_list = [
             self._get_V_for_ts(unitcell_lengths, env, ts)
             for ts in range(len(xyz_array))
         ]
-        
-        if env == 'vacuum':
-            unitcell_lengths = [0.,0.,0.] * len(xyz_array)
+
+        if env == "vacuum":
+            unitcell_lengths = [0.0, 0.0, 0.0] * len(xyz_array)
 
         for ts in tqdm(range(len(xyz_array))):
             # calculate the potential energy
@@ -396,12 +408,11 @@ class FreeEnergyCalculator(object):
             energies.append(red_e)
         return energies
 
-
     def _analyse_results_using_mbar(
         self,
         env: str,
         snapshots: list,
-        unitcell:list,
+        unitcell: list,
         save_results: bool,
         engine: str,
     ):
@@ -431,12 +442,12 @@ class FreeEnergyCalculator(object):
             # write out traj in self.base_path
             for (dcd, psf) in self.traj_files[env]:
                 traj = mdtraj.load(
-                f"{dcd}",
-                top=f"{psf}",
+                    f"{dcd}",
+                    top=f"{psf}",
                 )
                 # return and append thinned trajs
                 traj, _, _ = self._thinning(traj)
-                confs.append(traj) 
+                confs.append(traj)
 
             joined_trajs = mdtraj.join(confs, check_topology=True)
             joined_trajs.save_dcd(f"{self.base_path}/traj.dcd")
