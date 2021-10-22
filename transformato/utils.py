@@ -6,6 +6,7 @@ from io import StringIO
 
 logger = logging.getLogger(__name__)
 
+
 def postprocessing(
     configuration: dict,
     name: str = "methane",
@@ -13,19 +14,19 @@ def postprocessing(
     max_snapshots: int = 300,
     show_summary: bool = False,
     different_path_for_dcd: str = "",
-    only_single_state:str = '',
+    only_single_state: str = "",
 ):
     from transformato import FreeEnergyCalculator
 
     f = FreeEnergyCalculator(configuration, name)
-    if only_single_state == 'vacuum':
+    if only_single_state == "vacuum":
         f.envs = ["vacuum"]
-    elif only_single_state == 'waterbox':
+    elif only_single_state == "waterbox":
         f.envs = ["waterbox"]
-    elif only_single_state == 'complex':
+    elif only_single_state == "complex":
         f.envs = ["complex"]
     else:
-        print(f'Both states are considered')
+        print(f"Both states are considered")
 
     if different_path_for_dcd:
         # this is needed if the trajectories are stored at a different location than the
@@ -47,6 +48,7 @@ def postprocessing(
         if show_summary:
             f.show_summary()
         return ddG, dddG, f
+
 
 def run_simulation(output_files, engine="openMM", only_vacuum=False):
     for path in sorted(output_files):
@@ -119,7 +121,8 @@ def print_mutations(mutation: dict):
 
 def load_config_yaml(config, input_dir, output_dir) -> dict:
 
-    from transformato.constants  import change_platform
+    from transformato.constants import change_platform
+
     with open(f"{config}", "r") as stream:
         try:
             settingsMap = yaml.load(stream)
@@ -220,7 +223,5 @@ def psf_correction(str_object: StringIO):
             #     new_str += ' \n'
             # else:
             #     new_str += f"{line}\n"
-
-
 
     return new_str
