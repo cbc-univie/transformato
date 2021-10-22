@@ -1,12 +1,73 @@
 import os
 import logging
-
-import parmed as pm
 import yaml
-
+import subprocess
 from io import StringIO
 
 logger = logging.getLogger(__name__)
+
+def postprocessing(
+    configuration: dict,
+    name: str = "methane",
+    engine: str = "openMM",
+    max_snapshots: int = 300,
+    show_summary: bool = False,
+    different_path_for_dcd: str = "",
+    only_single_state:str = '',
+):
+    from transformato import FreeEnergyCalculator
+
+    f = FreeEnergyCalculator(configuration, name)
+    if only_single_state == 'vacuum':
+        f.envs = ["vacuum"]
+    elif only_single_state == 'waterbox':
+        f.envs = ["waterbox"]
+    elif only_single_state == 'complex':
+        f.envs = ["complex"]
+    else:
+        print(f'Both states are considered')
+
+    if different_path_for_dcd:
+        # this is needed if the trajectories are stored at a different location than the
+        # potential definitions
+        path = f.base_path
+        f.base_path = different_path_for_dcd
+        f.load_trajs(nr_of_max_snapshots=max_snapshots)
+        f.base_path = path
+    else:
+        f.load_trajs(nr_of_max_snapshots=max_snapshots)
+
+    f.calculate_dG_to_common_core(engine=engine)
+    if only_single_state:
+        return -1, -1, f
+    else:
+        ddG, dddG = f.end_state_free_energy_difference
+        print(f"Free energy difference: {ddG}")
+        print(f"Uncertanty: {dddG}")
+        if show_summary:
+            f.show_summary()
+        return ddG, dddG, f
+
+def run_simulation(output_files, engine="openMM", only_vacuum=False):
+    for path in sorted(output_files):
+        # because path is object not string
+        print(f"Start sampling for: {path}")
+        runfile = "simulation.sh"
+        calculate_solv_and_vac = 2  # 2 means yes, 1 only vacuum
+        if engine.upper() == "CHARMM":
+            runfile = "simulation_charmm.sh"
+        if only_vacuum:
+            calculate_solv_and_vac = 1
+
+        exe = subprocess.run(
+            ["bash", f"{str(path)}/{runfile}", str(path), str(calculate_solv_and_vac)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        print(exe.stdout)
+        print("Capture stderr")
+        print(exe.stderr)
 
 
 def get_bin_dir():
@@ -58,6 +119,7 @@ def print_mutations(mutation: dict):
 
 def load_config_yaml(config, input_dir, output_dir) -> dict:
 
+    from transformato.constants  import change_platform
     with open(f"{config}", "r") as stream:
         try:
             settingsMap = yaml.load(stream)
@@ -100,6 +162,7 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
         "charmm_gui_dir"
     ] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure2']['name']}/"
     settingsMap["system"]["name"] = system_name
+    change_platform(settingsMap)
     return settingsMap
 
 
