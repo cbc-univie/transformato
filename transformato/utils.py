@@ -16,6 +16,20 @@ def postprocessing(
     different_path_for_dcd: str = "",
     only_single_state: str = "",
 ):
+    """Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.
+
+    Args:
+        configuration (dict): Configuration file.
+        name (str, optional): The name of the system as deposited in the configuration file. Defaults to "methane".
+        engine (str, optional): The MD engine, either openMM or CHARMM. Defaults to "openMM".
+        max_snapshots (int, optional): Maximum number of snapshots per lambda window. Defaults to 300.
+        show_summary (bool, optional): Plot the accumulated free energy estimate and overlap plot. Defaults to False.
+        different_path_for_dcd (str, optional): For debugging purpose only. Defaults to "".
+        only_single_state (str, optional): For debugging purpose only. Defaults to "".
+
+    Returns:
+        [type]: [description]
+    """
     from transformato import FreeEnergyCalculator
 
     f = FreeEnergyCalculator(configuration, name)
@@ -43,14 +57,26 @@ def postprocessing(
         return -1, -1, f
     else:
         ddG, dddG = f.end_state_free_energy_difference
-        print(f"Free energy difference: {ddG}")
-        print(f"Uncertanty: {dddG}")
+        print("######################################")
+        print("Free energy to common core in kT")
+        print("######################################")
+        print(f"Free energy difference: {ddG} [kT]")
+        print(f"Uncertanty: {dddG} [kT]")
+        print("######################################")
+        print("######################################")
         if show_summary:
             f.show_summary()
         return ddG, dddG, f
 
 
-def run_simulation(output_files, engine="openMM", only_vacuum=False):
+def run_simulation(output_files: list, engine="openMM", only_vacuum: bool = False):
+    """Performs sampling given a list of directories with topology and parameter definitions
+
+    Args:
+        output_files (list): List of directories with topology and parameter files in CHARMM format
+        engine (str, optional): The MD engines used to perform the sampling. Defaults to "openMM".
+        only_vacuum (bool, optional): For debugging only. Defaults to False.
+    """
     for path in sorted(output_files):
         # because path is object not string
         print(f"Start sampling for: {path}")
@@ -67,9 +93,9 @@ def run_simulation(output_files, engine="openMM", only_vacuum=False):
             capture_output=True,
             text=True,
         )
-        print(exe.stdout)
-        print("Capture stderr")
-        print(exe.stderr)
+        logger.debug(exe.stdout)
+        logger.debug("Capture stderr")
+        logger.debug(exe.stderr)
 
 
 def get_bin_dir():
