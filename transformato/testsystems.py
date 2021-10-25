@@ -7,7 +7,7 @@ from transformato.system import SystemStructure
 from transformato.constants import change_platform
 
 
-transformato_systems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
+loeffler_testsystems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
 
 
 def mutate_methane_to_methane_cc(configuration: dict):
@@ -26,14 +26,14 @@ def mutate_methane_to_methane_cc(configuration: dict):
         configuration=configuration,
     )
 
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
         nr_of_mutation_steps_charge=1,
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_toluene_to_methane_cc(configuration: dict):
@@ -51,14 +51,14 @@ def mutate_toluene_to_methane_cc(configuration: dict):
         configuration=configuration,
     )
 
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
-        list_of_heavy_atoms_to_be_mutated=[13, 11, 9, 3, 1],
+        list_of_heavy_atoms_to_be_mutated=[13, (11, 9), (3, 1)],
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_ethane_to_methane_cc(configuration: dict):
@@ -77,13 +77,13 @@ def mutate_ethane_to_methane_cc(configuration: dict):
         configuration=configuration,
     )
 
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_methanol_to_methane_cc(configuration: dict):
@@ -102,13 +102,13 @@ def mutate_methanol_to_methane_cc(configuration: dict):
         configuration=configuration,
     )
 
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_ethane_to_methanol_cc(configuration: dict):  # not a loeffler system
@@ -126,13 +126,13 @@ def mutate_ethane_to_methanol_cc(configuration: dict):  # not a loeffler system
         system=s1,
         configuration=configuration,
     )
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_7_CPI_to_2_CPI_cc(configuration: dict):  # will be tested later on
@@ -155,13 +155,13 @@ def mutate_7_CPI_to_2_CPI_cc(configuration: dict):  # will be tested later on
         system=s2,
         configuration=configuration,
     )
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
         list_of_heavy_atoms_to_be_mutated=[13, (11, 8), 0, (2, 10), (4, 7)],
     )
-    return output_files
+    return i.output_files
 
 
 def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
@@ -184,14 +184,14 @@ def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
         system=s1,
         configuration=configuration,
     )
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
         list_of_heavy_atoms_to_be_mutated=[(2, 4), (0, 6), 11, 8, (12, 9)],
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_2_methylfuran_to_methane_cc(configuration: dict):
@@ -211,14 +211,14 @@ def mutate_2_methylfuran_to_methane_cc(configuration: dict):
     )
 
     # write out endpoint
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
         list_of_heavy_atoms_to_be_mutated=[10, 8, 2, 0],
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_neopentane_to_methane_cc(configuration: dict):
@@ -241,14 +241,14 @@ def mutate_neopentane_to_methane_cc(configuration: dict):
     )
 
     # write out endpoint
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
-        list_of_heavy_atoms_to_be_mutated=[13, 9, 8, 0],
+        list_of_heavy_atoms_to_be_mutated=[13, 9, 5],
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_2_methylindole_to_methane_cc(configuration: dict):
@@ -266,14 +266,14 @@ def mutate_2_methylindole_to_methane_cc(configuration: dict):
         system=s1,
         configuration=configuration,
     )
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
         list_of_heavy_atoms_to_be_mutated=[17, 15, 9, 7, 3, 2, 5, 0],
     )
 
-    return output_files
+    return i.output_files
 
 
 def mutate_acetylaceton_methyl_common_core(configuration: dict):
@@ -308,7 +308,7 @@ def mutate_acetylaceton_methyl_common_core(configuration: dict):
         configuration=configuration,
     )
 
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
@@ -326,11 +326,11 @@ def mutate_acetylaceton_methyl_common_core(configuration: dict):
         configuration=configuration,
     )
 
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
-        list_of_heavy_atoms_to_be_mutated=[0, 6, 1],
+        list_of_heavy_atoms_to_be_mutated=[0, 5, 1],
     )
 
 
@@ -379,11 +379,11 @@ def mutate_bmi_small_common_core(configuration: dict):
     )
 
     # perform mutations
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
-        list_of_heavy_atoms_to_be_mutated=[(18,22),14,(21,16),20,11],
+        list_of_heavy_atoms_to_be_mutated=[(18, 22), 14, (21, 16), 20, 11],
     )
 
     ###############################
@@ -398,11 +398,11 @@ def mutate_bmi_small_common_core(configuration: dict):
     )
 
     # perform mutations
-    output_files = perform_mutations(
+    perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
-        list_of_heavy_atoms_to_be_mutated=[(18,22, 14),(21,16),20,11],
+        list_of_heavy_atoms_to_be_mutated=[(18, 22, 14), (21, 16), 20, 11],
     )
 
 

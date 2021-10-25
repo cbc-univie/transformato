@@ -103,12 +103,3 @@ def test_initialize_systems(caplog):
     assert int(s2.offset["waterbox"]) == 0
     assert int(s2.offset["vacuum"]) == 0
 
-    configuration = load_config_yaml(
-        config="transformato/tests/config/test-tautomer-min-example-rsfe.yaml",
-        input_dir="data/",
-        output_dir=get_test_output_dir(),
-    )
-
-    s1 = SystemStructure(configuration, "structure1")
-    assert int(s1.offset["waterbox"]) == 0
-    assert int(s1.offset["vacuum"]) == 0
