@@ -124,8 +124,8 @@ def map_lj_mutations_to_atom_idx(lj_mutations: list) -> dict:
     """
     d = {}
     for lj in lj_mutations:
-        key = lj.vdw_atom_idx
-        d[tuple(key)] = lj
+        key = lj.vdw_atom_idx[0]  # this only works if a single atom is mutated
+        d[key] = lj
 
     return d
 
