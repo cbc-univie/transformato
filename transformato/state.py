@@ -68,8 +68,7 @@ class IntermediateStateFactory(object):
             automatically incremented intst nr
         """
 
-        logger.info("#########################################")
-        logger.info("#########################################")
+        logger.debug("#########################################")
         output_file_base = self._init_intermediate_state_dir(self.current_step)
         logger.info(f"Writing to {output_file_base}")
 
@@ -448,7 +447,7 @@ with open(file_name + '_system.xml','w') as outfile:
         i = 0  # counting lines
 
         if self.configuration["simulation"]["GPU"]:
-            logger.info("Preparing for CUDA")
+            logger.debug("Preparing for CUDA")
             for line in f.readlines():
                 if "CudaPrecision" in line and i == 0:
                     i += 1
@@ -728,7 +727,7 @@ with open(file_name + '_system.xml','w') as outfile:
             if any(hasattr(atom, "initial_type") for atom in [atom1, atom2, atom3]):
 
                 if [atom1.type, atom2.type, atom3.type] in already_seen:
-                    logger.info(f"Skipping {[atom1.type, atom2.type, atom3.type]}")
+                    logger.debug(f"Skipping {[atom1.type, atom2.type, atom3.type]}")
                     continue
                 else:
                     already_seen.append([atom1.type, atom2.type, atom3.type])
@@ -962,7 +961,7 @@ dummy_parameters.prm
         """
         output_file_base = f"{self.path}/intst{nr}/"
 
-        logger.info(f" - Created directory: - {os.path.abspath(output_file_base)}")
+        logger.debug(f" - Created directory: - {os.path.abspath(output_file_base)}")
         os.makedirs(output_file_base)
         logger.info(f" - Writing in - {os.path.abspath(output_file_base)}")
         return output_file_base

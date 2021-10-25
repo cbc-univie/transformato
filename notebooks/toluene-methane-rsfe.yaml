@@ -3,8 +3,8 @@
 system:
   ################
   structure1:
-    name: "ethane"
-    tlc: "UNL"
+    name: "toluene"
+    tlc: "unl"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_charmm2omm"
@@ -21,8 +21,8 @@ system:
       intermediate-filename: "lig_in_waterbox"
 
   structure2:
-    name: "methanol"
-    tlc: "UNK"
+    name: "methane"
+    tlc: "LIG"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_charmm2omm"
@@ -50,7 +50,6 @@ simulation:
     switch: "vfswitch"
     mini_nstep: 1000
   GPU: True
-
   free-energy-type: "rsfe"
 ################
 solvation:

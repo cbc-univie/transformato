@@ -191,7 +191,6 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
         "charmm_gui_dir"
     ] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure2']['name']}/"
     settingsMap["system"]["name"] = system_name
-    change_platform(settingsMap)
     return settingsMap
 
 

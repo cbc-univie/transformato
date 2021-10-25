@@ -253,7 +253,6 @@ def test_2oj9_calculate_rsfe_with_openMM(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
-    #change_platform(configuration)
 
     # 2OJ9-original to tautomer common core
     ddG_openMM, dddG, f_openMM = postprocessing(
