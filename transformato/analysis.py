@@ -325,7 +325,8 @@ class FreeEnergyCalculator(object):
         pot_energies = self._parse_CHARMM_energy_output(path, env)
         logger.debug(f"Number of entries in pot_energies list: {len(pot_energies)}")
         logger.debug(f"Number of entries in pot_energies list: {len(volumn_list)}")
-        assert len(pot_energies) == len(volumn_list)
+        if env != "vacuum":
+            assert len(pot_energies) == len(volumn_list)
 
         if volumn_list:
             assert len(volumn_list) == len(pot_energies)
