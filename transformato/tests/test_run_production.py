@@ -14,9 +14,6 @@ from transformato.utils import run_simulation
 
 @pytest.mark.slowtest
 @pytest.mark.rsfe
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
 def test_run_toluene_to_methane_cc_rsfe_with_openMM():
     from transformato.testsystems import mutate_toluene_to_methane_cc
     from .test_run_production import run_simulation
@@ -39,9 +36,6 @@ def test_run_toluene_to_methane_cc_rsfe_with_openMM():
 
 @pytest.mark.slowtest
 @pytest.mark.rsfe
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
 def test_run_methane_to_methane_cc_rsfe_with_openMM():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
