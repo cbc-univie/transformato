@@ -133,13 +133,19 @@ def perform_mutations(
         logger.info(
             f"turning off lj of heavy atom: {heavy_atoms_to_turn_off_in_a_single_step}"
         )
-        mutations = [
-            mapping_of_atom_idx_to_mutation[heavy_atom_idx]
-            for heavy_atom_idx in heavy_atoms_to_turn_off_in_a_single_step
-        ]
-
+        try: # heavy_atoms_to_turn_off_in_a_single_step can be a tuple or an integer
+            mutations = [
+                mapping_of_atom_idx_to_mutation[heavy_atom_idx]
+                for heavy_atom_idx in heavy_atoms_to_turn_off_in_a_single_step
+            ]
+        except TypeError:
+            mutations = [
+                mapping_of_atom_idx_to_mutation[heavy_atoms_to_turn_off_in_a_single_step]
+            ]
         print("####################")
-        print(f"Turn off Heavy atom vdW parameter in: {i.current_step} on atoms: {idx}")
+        print(
+            f"Turn off Heavy atom vdW parameter in: {i.current_step} on atoms: {heavy_atoms_to_turn_off_in_a_single_step}"
+        )
         print("####################")
 
         i.write_state(

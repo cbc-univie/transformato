@@ -4,10 +4,7 @@ import transformato
 from transformato.mutate import ProposeMutationRoute, perform_mutations
 from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
-from transformato.constants import change_platform
-
-
-loeffler_testsystems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
+from transformato.constants import change_platform, loeffler_testsystems_dir
 
 
 def mutate_methane_to_methane_cc(configuration: dict):
