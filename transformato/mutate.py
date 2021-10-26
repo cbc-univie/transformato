@@ -10,11 +10,181 @@ from IPython.core.display import display
 from rdkit import Chem
 from rdkit.Chem import AllChem, Draw, rdFMCS
 from rdkit.Chem.Draw import rdMolDraw2D
-from simtk.openmm.app.charmmpsffile import CharmmPsfFile
 
 from transformato.system import SystemStructure
 
 logger = logging.getLogger(__name__)
+
+
+def _performe_linear_charge_scaling(
+    nr_of_steps: int,
+    intermediate_factory,
+    mutation,
+):
+
+    for lambda_value in np.linspace(1, 0, nr_of_steps + 1)[1:]:
+        print("####################")
+        print(
+            f"Coulomb scaling in step: {intermediate_factory.current_step} with lamb: {lambda_value}"
+        )
+        print("####################")
+        intermediate_factory.write_state(
+            mutation_conf=mutation,
+            lambda_value_electrostatic=lambda_value,
+        )
+
+
+def _performe_linear_cc_scaling(
+    nr_of_steps: int,
+    intermediate_factory,
+    mutation,
+) -> int:
+
+    for lambda_value in np.linspace(1, 0, nr_of_steps + 1)[1:]:
+        print("####################")
+        print(
+            f"Perform paramteter scaling on cc in step: {intermediate_factory.current_step} with lamb: {lambda_value}"
+        )
+        print("####################")
+        intermediate_factory.write_state(
+            mutation_conf=mutation,
+            common_core_transformation=lambda_value,
+        )
+
+
+def perform_mutations(
+    configuration: dict,
+    i,
+    mutation_list: list,
+    list_of_heavy_atoms_to_be_mutated: list = [],
+    nr_of_mutation_steps_charge: int = 5,
+    nr_of_mutation_steps_cc: int = 5,
+):
+    """Performs the mutations necessary to mutate the physical endstate to the defined common core.
+
+    Args:
+        configuration (dict): A configuration dictionary.
+        i ([type]): IntermediateState instance
+        mutation_list (list): list of mutation objects
+        list_of_heavy_atoms_to_be_mutated (list, optional): A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].
+        nr_of_mutation_steps_charge (int, optional): Nr of steps to turne of the charges. Defaults to 5.
+        nr_of_mutation_steps_cc (int, optional): Nr of steps to interpolate between the common core parameters. Defaults to 5.
+
+    Returns:
+        list: list of directories with the parameter and topology files
+    """
+    from transformato.utils import map_lj_mutations_to_atom_idx
+
+    ######################################
+    # write endpoint mutation
+    ######################################
+    print("####################")
+    print(f"Physical endstate in step: 1")
+    print("####################")
+
+    i.write_state(mutation_conf=[])
+
+    ######################################
+    # turn off electrostatics
+    ######################################
+    m = mutation_list["charge"]
+    # turn off charges
+    try:
+        nr_of_mutation_steps_charge = configuration["system"]["structure1"]["mutation"][
+            "steps_charge"
+        ]  # defines the number of mutation steps for charge mutation
+    except KeyError:
+        nr_of_mutation_steps_charge = nr_of_mutation_steps_charge
+
+    _performe_linear_charge_scaling(
+        nr_of_steps=nr_of_mutation_steps_charge,
+        intermediate_factory=i,
+        mutation=m,
+    )
+
+    ######################################
+    # turn off LJ
+    ######################################
+
+    ######################################
+    # Turn off hydrogens
+
+    if mutation_list["hydrogen-lj"]:
+        print("####################")
+        print(f"Hydrogen vdW scaling in step: {i.current_step} with lamb: {0.0}")
+        print("####################")
+        i.write_state(
+            mutation_conf=mutation_list["hydrogen-lj"],
+            lambda_value_vdw=0.0,
+        )
+
+    ######################################
+    # turn off lj of heavy atoms
+
+    try:
+        list_of_heavy_atoms_to_be_mutated = configuration["system"]["structure1"][
+            "mutation"
+        ]["heavy_atoms"]
+    except KeyError:
+        list_of_heavy_atoms_to_be_mutated = list_of_heavy_atoms_to_be_mutated
+
+    mapping_of_atom_idx_to_mutation = map_lj_mutations_to_atom_idx(mutation_list["lj"])
+    for heavy_atoms_to_turn_off_in_a_single_step in list_of_heavy_atoms_to_be_mutated:
+        logger.info(
+            f"turning off lj of heavy atom: {heavy_atoms_to_turn_off_in_a_single_step}"
+        )
+        try:  # heavy_atoms_to_turn_off_in_a_single_step can be a tuple or an integer
+            mutations = [
+                mapping_of_atom_idx_to_mutation[heavy_atom_idx]
+                for heavy_atom_idx in heavy_atoms_to_turn_off_in_a_single_step
+            ]
+        except TypeError:
+            mutations = [
+                mapping_of_atom_idx_to_mutation[
+                    heavy_atoms_to_turn_off_in_a_single_step
+                ]
+            ]
+        print("####################")
+        print(
+            f"Turn off Heavy atom vdW parameter in: {i.current_step} on atoms: {heavy_atoms_to_turn_off_in_a_single_step}"
+        )
+        print("####################")
+
+        i.write_state(
+            mutation_conf=mutations,
+            lambda_value_vdw=0.0,
+        )
+
+    ######################################
+    # generate terminal LJ
+    ######################################
+    print("####################")
+    print(f"Generate terminal LJ particle in step: {i.current_step}")
+    print("####################")
+
+    i.write_state(
+        mutation_conf=mutation_list["default-lj"],
+        lambda_value_vdw=0.0,
+    )
+
+    ######################################
+    # mutate common core
+    ######################################
+
+    if mutation_list["transform"]:
+        try:
+            nr_of_mutation_steps_cc = configuration["system"]["structure1"]["mutation"][
+                "steps_common_core"
+            ]
+        except KeyError:
+            nr_of_mutation_steps_cc = nr_of_mutation_steps_cc
+
+        # change bonded parameters on common core
+        _performe_linear_cc_scaling(
+            nr_of_steps=nr_of_mutation_steps_cc,
+            intermediate_factory=i,
+            mutation=mutation_list["transform"],
+        )
 
 
 @dataclass
@@ -641,12 +811,6 @@ class ProposeMutationRoute(object):
     def generate_mutations_to_common_core_for_mol1(self) -> dict:
         """
         Generates the mutation route to the common fore for mol1.
-        Parameters
-        ----------
-        nr_of_steps_for_electrostatic : int
-            nr of steps used for linearly scaling the charges to zero
-        nr_of_steps_for_cc_transformation : int
-        Returns
         ----------
         mutations: list
             list of mutations
@@ -1356,7 +1520,7 @@ class Mutation(object):
             round(sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms]))
         )
         # scale the charge of all atoms
-        logger.info(f"Scaling charge on: {self.atoms_to_be_mutated}")
+        print(f"Scaling charge on: {self.atoms_to_be_mutated}")
         for idx in self.atoms_to_be_mutated:
             odx = idx + offset
             atom = psf[odx]
@@ -1557,190 +1721,59 @@ def mutate_pure_tautomers(
 
     # setup mutation and StateFactory
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-    i = IntermediateStateFactory(
+    i_tautomer1 = IntermediateStateFactory(
         system=system1,
         configuration=configuration,
     )
 
     # write out states
     # start with charge
-    intst = 1
     charges = mutation_list["charge"]
-    output_files_t1 = []
     for lambda_value in np.linspace(1, 0, 2):
         # turn off charges
-        o, intst = i.write_state(
+        i_tautomer1.write_state(
             mutation_conf=charges,
             lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
         )
-        output_files_t1.append(o)
         if single_state:
-            return (output_files_t1, [])
+            return (i_tautomer1.output_files, [])
+
     # turn off the lj of the hydrogen
     lj = mutation_list["lj"]
-    o, intst = i.write_state(
+    i_tautomer1.write_state(
         mutation_conf=lj,
         lambda_value_vdw=0.0,
-        intst_nr=intst,
     )
-    output_files_t1.append(o)
 
     # transform common core
     for lambda_value in np.linspace(1, 0, nr_of_bonded_windows + 1)[1:]:
         # turn off charges
-        o, intst = i.write_state(
+        i_tautomer1.write_state(
             mutation_conf=mutation_list["transform"],
             common_core_transformation=lambda_value,
-            intst_nr=intst,
         )
-        output_files_t1.append(o)
 
     # setup other tautomer
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
-    i = IntermediateStateFactory(
+    i_tautomer2 = IntermediateStateFactory(
         system=system2,
         configuration=configuration,
     )
     # write out states
     # start with charge
-    intst = 1
-    output_files_t2 = []
     charges = mutation_list["charge"]
     for lambda_value in np.linspace(1, 0, 2):
         # turn off charges
-        o, intst = i.write_state(
+        i_tautomer2.write_state(
             mutation_conf=charges,
             lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
         )
-        output_files_t2.append(o)
 
     # turn off the lj of the hydrogen
     lj = mutation_list["lj"]
-    o, intst = i.write_state(
+    i_tautomer2.write_state(
         mutation_conf=lj,
         lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files_t2.append(o)
-
-    return (output_files_t1, output_files_t2)
-
-
-def mutate_systems(
-    config: str,
-    nr_of_bonded_windows: int = 4,
-    input_dir: str = "../data/",
-    output_dir: str = ".",
-    connected_dummy_regions_cc1: list = [],
-    connected_dummy_regions_cc2: list = [],
-    el_nr_of_states:int=5
-):
-
-    from transformato import (
-        IntermediateStateFactory,
-        ProposeMutationRoute,
-        SystemStructure,
-        load_config_yaml,
     )
 
-    configuration = load_config_yaml(
-        config=config, input_dir=input_dir, output_dir=output_dir
-    )
-    s1 = SystemStructure(configuration, "structure1")
-    s2 = SystemStructure(configuration, "structure2")
-    s1_to_s2 = ProposeMutationRoute(s1, s2)
-
-    # setup mutation route
-    if connected_dummy_regions_cc1:
-        s1_to_s2.propose_common_core()
-        s1_to_s2.finish_common_core(
-            connected_dummy_regions_cc1=connected_dummy_regions_cc1
-        )
-    elif connected_dummy_regions_cc2:
-        s1_to_s2.propose_common_core()
-        s1_to_s2.finish_common_core(
-            connected_dummy_regions_cc2=connected_dummy_regions_cc2
-        )
-    elif connected_dummy_regions_cc2 and connected_dummy_regions_cc1:
-        s1_to_s2.propose_common_core()
-        s1_to_s2.finish_common_core(
-            connected_dummy_regions_cc1=connected_dummy_regions_cc1,
-            connected_dummy_regions_cc2=connected_dummy_regions_cc2,
-        )
-    else:
-        raise RuntimeError()
-    
-    # setup mutation and StateFactory
-    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-
-    # system 1
-    i = IntermediateStateFactory(
-        system=s1,
-        configuration=configuration,
-    )
-
-    # write out states
-    # start with charge
-    intst = 1
-    charges = mutation_list["charge"]
-    output_files_t1 = []
-    for lambda_value in np.linspace(1, 0, el_nr_of_states):
-        # turn off charges
-        o, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files_t1.append(o)
-        
-    # turn off the lj of the hydrogen
-    lj = mutation_list["lj"]
-    o, intst = i.write_state(
-        mutation_conf=lj,
-        lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files_t1.append(o)
-
-    # transform common core
-    for lambda_value in np.linspace(1, 0, nr_of_bonded_windows + 1)[1:]:
-        # turn off charges
-        o, intst = i.write_state(
-            mutation_conf=mutation_list["transform"],
-            common_core_transformation=lambda_value,
-            intst_nr=intst,
-        )
-        output_files_t1.append(o)
-
-    # setup other tautomer
-    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
-    i = IntermediateStateFactory(
-        system=system2,
-        configuration=configuration,
-    )
-    # write out states
-    # start with charge
-    intst = 1
-    output_files_t2 = []
-    charges = mutation_list["charge"]
-    for lambda_value in np.linspace(1, 0, 2):
-        # turn off charges
-        o, intst = i.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-            intst_nr=intst,
-        )
-        output_files_t2.append(o)
-
-    # turn off the lj of the hydrogen
-    lj = mutation_list["lj"]
-    o, intst = i.write_state(
-        mutation_conf=lj,
-        lambda_value_vdw=0.0,
-        intst_nr=intst,
-    )
-    output_files_t2.append(o)
-
-    return (output_files_t1, output_files_t2)
+    return (i_tautomer1.output_files, i_tautomer2.output_files)
