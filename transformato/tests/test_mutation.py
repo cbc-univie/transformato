@@ -939,7 +939,6 @@ def test_vdw_mutation_for_hydrogens_system2():
             i.write_state(
                 mutation_conf=hydrogen_lj_mutations,
                 lambda_value_vdw=lambda_value,
-                intst_nr=0,
             )
             print("Set epsilon/rmin for selected atoms")
 

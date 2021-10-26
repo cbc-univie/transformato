@@ -60,12 +60,6 @@ class IntermediateStateFactory(object):
         common_core_transformation : float, optional
             [description], by default 1.0
 
-        Returns
-        -------
-        [type]
-            [description]
-        intst_nr : int
-            automatically incremented intst nr
         """
 
         logger.debug("#########################################")
