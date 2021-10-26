@@ -7,9 +7,14 @@ import os
 import numpy as np
 import pytest
 import logging
-from transformato.constants import change_platform_to, initialize_NUM_PROC, change_platform
-from transformato.tests.paths import get_test_output_dir 
+from transformato.constants import (
+    change_platform_to,
+    initialize_NUM_PROC,
+    change_platform_to_test_platform,
+)
+from transformato.tests.paths import get_test_output_dir
 from transformato.utils import postprocessing
+
 # read in specific topology with parameters
 from transformato import (
     load_config_yaml,
@@ -21,7 +26,7 @@ from .test_mutation import (
 )
 
 
-rbfe_test_systemes_generated = False
+rbfe_test_systemes_generated = os.path.isdir("data/2OJ9-original-2OJ9-tautomer-rbfe")
 
 
 ###########################################
@@ -43,7 +48,7 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
-    change_platform(configuration)
+
     f = FreeEnergyCalculator(configuration, "2OJ9-original")
     for idx, b in enumerate(output_files_t1):
         # used load_dcd for CHARMM
@@ -56,8 +61,10 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
 
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
@@ -70,6 +77,7 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
 
 def test_lazy_eval():
     import mdtraj as md
+
     base_path = f"data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/intst1/"
     dcd_path = f"{base_path}/lig_in_waterbox.dcd"
     psf_file = f"{base_path}/lig_in_waterbox.psf"
@@ -88,10 +96,7 @@ def test_lazy_eval():
     print(unitcell_lengths[0])
     print(len(unitcell_lengths))
     assert len(unitcell_lengths) == 190
-    print(unitcell_angles[0]) 
-
-
-
+    print(unitcell_angles[0])
 
 
 @pytest.mark.system_2oj9
@@ -117,13 +122,15 @@ def test_compare_energies_2OJ9_original_waterbox(caplog):
             f"{b}/lig_in_{env}.dcd",
             f"{b}/lig_in_{env}.psf",
         )
-        traj.save_dcd(f"{base}/traj.dcd",force_overwrite=True)
+        traj.save_dcd(f"{base}/traj.dcd", force_overwrite=True)
         l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        unitcell_lengths = unitcell_lengths/10
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        unitcell_lengths = unitcell_lengths / 10
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
 
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
@@ -163,8 +170,10 @@ def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
 
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
@@ -203,9 +212,11 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        unitcell_lengths = unitcell_lengths/10
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        unitcell_lengths = unitcell_lengths / 10
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -214,6 +225,7 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
         for e_charmm, e_openMM in zip(l_charmm, l_openMM):
             print(f"{e_charmm}, {e_openMM}: {e_charmm - e_openMM}")
             assert np.isclose(e_charmm, e_openMM, rtol=0.1)
+
 
 # @pytest.mark.system_2oj9
 # @pytest.mark.slowtest
@@ -231,14 +243,12 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
 
 #     # 2OJ9-original to tautomer common core
 #     ddG_openMM, dddG, f_openMM = postprocessing(
-#         configuration, 
-#         name="2OJ9-original", 
-#         engine="openMM", 
-#         max_snapshots=10_000, 
+#         configuration,
+#         name="2OJ9-original",
+#         engine="openMM",
+#         max_snapshots=10_000,
 #         only_single_state='complex'
 #     )
-
-
 
 
 @pytest.mark.system_2oj9
@@ -276,12 +286,12 @@ def test_2oj9_calculate_rsfe_with_different_engines():
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
-    change_platform(configuration)
 
     # 2OJ9-original to tautomer common core
     ddG_charmm, dddG, f_charmm = postprocessing(
         configuration, name="2OJ9-original", engine="CHARMM", max_snapshots=600
     )
+    change_platform_to(configuration, "GPU")
 
     ddG_openMM, dddG, f_openMM = postprocessing(
         configuration, name="2OJ9-original", engine="openMM", max_snapshots=600
@@ -304,9 +314,12 @@ def test_2oj9_calculate_rsfe_with_different_engines():
     assert np.isclose(ddG_charmm, 1.6579906682671464)
     print(ddG_openMM, ddG_charmm)
     # 2OJ9-tautomer to tautomer common core
+    change_platform_to(configuration, "CPU")
+
     ddG_charmm, dddG, f_charmm = postprocessing(
         configuration, name="2OJ9-tautomer", engine="CHARMM", max_snapshots=600
     )
+    change_platform_to(configuration, "GPU")
     ddG_openMM, dddG, f_openMM = postprocessing(
         configuration, name="2OJ9-tautomer", engine="openMM", max_snapshots=600
     )
@@ -346,7 +359,7 @@ def test_2oj9_calculate_rsfe_with_different_switches(caplog):
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir=get_test_output_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
-    change_platform_to(configuration, change_to='CPU')
+    change_platform_to(configuration, change_to="CPU")
 
     # generate samples
     (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rsfe(
@@ -444,11 +457,12 @@ def test_2oj9_calculate_rsfe_with_different_switches(caplog):
 @pytest.mark.system_2oj9
 @pytest.mark.slowtest
 @pytest.mark.skipif(
-    rbfe_test_systemes_generated == False, reason="These calculations need outside testsystems."
+    rbfe_test_systemes_generated == False,
+    reason="These calculations need outside testsystems.",
 )
 def test_2oj9_calculate_rbfe_with_openMM():
 
-    initialize_NUM_PROC(4)
+    initialize_NUM_PROC(1)
 
     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rbfe.yaml"
     configuration = load_config_yaml(
@@ -495,8 +509,10 @@ def test_compare_energies_acetylacetone_enol_vacuum(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -539,9 +555,11 @@ def test_compare_energies_acetylacetone_enol_waterbox(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        unitcell_lengths = unitcell_lengths/10
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        unitcell_lengths = unitcell_lengths / 10
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -583,8 +601,10 @@ def test_compare_energies_acetylacetone_keto_vacuum(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -626,9 +646,11 @@ def test_compare_energies_acetylacetone_keto_waterbox(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        unitcell_lengths = unitcell_lengths/10
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        unitcell_lengths = unitcell_lengths / 10
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -719,7 +741,7 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
         name="acetylacetone-enol",
         engine="CHARMM",
         max_snapshots=10_000,
-        only_single_state='vacuum',
+        only_single_state="vacuum",
     )
     print(ddG_charmm, dddG)
 
@@ -728,7 +750,7 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
         name="acetylacetone-enol",
         engine="openMM",
         max_snapshots=10_000,
-        only_single_state='vacuum',
+        only_single_state="vacuum",
     )
     print(ddG_charmm, dddG)
 
@@ -744,7 +766,7 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
         name="acetylacetone-keto",
         engine="CHARMM",
         max_snapshots=10_000,
-        only_single_state='vacuum',
+        only_single_state="vacuum",
     )
     print(ddG_charmm, dddG)
     ddG_openMM, dddG, f_openMM = postprocessing(
@@ -752,7 +774,7 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
         name="acetylacetone-keto",
         engine="openMM",
         max_snapshots=10_000,
-        only_single_state='vacuum',
+        only_single_state="vacuum",
     )
     print(ddG_charmm, dddG)
     assert np.isclose(
@@ -803,9 +825,11 @@ def test_compare_energies_methane_vacuum(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
+        xyz = xyz / 10  # correct the conversion
         unitcell_lengths = unitcell_lengths
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -845,9 +869,11 @@ def test_compare_energies_methane_waterbox(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        unitcell_lengths = unitcell_lengths/10
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        unitcell_lengths = unitcell_lengths / 10
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -887,9 +913,11 @@ def test_compare_energies_toluene_vacuum(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
+        xyz = xyz / 10  # correct the conversion
         unitcell_lengths = unitcell_lengths
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -929,9 +957,11 @@ def test_compare_energies_toluene_waterbox(caplog):
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
-        xyz = xyz/10 # correct the conversion
-        unitcell_lengths = unitcell_lengths/10
-        l_openMM = f._evaluate_e_on_all_snapshots_openMM(xyz, unitcell_lengths,idx + 1, env)
+        xyz = xyz / 10  # correct the conversion
+        unitcell_lengths = unitcell_lengths / 10
+        l_openMM = f._evaluate_e_on_all_snapshots_openMM(
+            xyz, unitcell_lengths, idx + 1, env
+        )
         assert len(l_charmm) == len(l_openMM)
         s = abs(np.array(l_charmm) - np.array(l_openMM))
         mae = np.sum(s) / len(s)
@@ -997,8 +1027,8 @@ def test_toluene_to_methane_calculate_rsfe_with_different_engines():
     assert np.isclose(ddG_openMM, ddG_charmm, rtol=1e-1)
     print(f_charmm.vacuum_free_energy_differences[0, -1])
     print(f_openMM.vacuum_free_energy_differences[0, -1])
-    assert np.isclose(ddG_openMM, 5.651522313536532,rtol=1e-3)
-    assert np.isclose(ddG_charmm, 5.651678173410401,rtol=1e-3)
+    assert np.isclose(ddG_openMM, 5.651522313536532, rtol=1e-3)
+    assert np.isclose(ddG_charmm, 5.651678173410401, rtol=1e-3)
 
 
 def test_postprocessing_thinning():

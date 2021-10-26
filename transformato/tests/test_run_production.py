@@ -10,6 +10,7 @@ import shutil
 from transformato import load_config_yaml
 from transformato.tests.paths import get_test_output_dir
 from transformato.utils import run_simulation
+from transformato.constants import change_platform_to_test_platform
 
 
 @pytest.mark.slowtest
@@ -25,7 +26,7 @@ def test_run_toluene_to_methane_cc_rsfe_with_openMM():
         input_dir="data/",
         output_dir=workdir,
     )
-
+    change_platform_to_test_platform(configuration=configuration, engine="openMM")
     output_files = mutate_toluene_to_methane_cc(configuration=configuration)
 
     run_simulation(output_files)
@@ -46,7 +47,7 @@ def test_run_methane_to_methane_cc_rsfe_with_openMM():
         input_dir="data/",
         output_dir=workdir,
     )
-
+    change_platform_to_test_platform(configuration=configuration, engine="openMM")
     output_files = mutate_methane_to_methane_cc(configuration=configuration)
     run_simulation(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
@@ -69,7 +70,7 @@ def test_run_methane_to_methane_cc_rsfe_with_CHARMM():
         input_dir="data/",
         output_dir=workdir,
     )
-
+    change_platform_to_test_platform(configuration=configuration, engine="CHARMM")
     output_files = mutate_methane_to_methane_cc(configuration=configuration)
     run_simulation(output_files)
     f = "/".join(output_files[0].split("/")[:-3])
@@ -93,7 +94,7 @@ def test_run_acetylacetone_tautomer_pair_rsfe(caplog):
         input_dir="data/",
         output_dir=workdir,
     )
-
+    change_platform_to_test_platform(configuration=configuration, engine="openMM")
     (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair(
         configuration=configuration
     )
@@ -118,6 +119,7 @@ def test_run_acetylacetone_tautomer_pair_only_in_vacuum(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir=workdir
     )  # NOTE: for preprocessing input_dir is the output dir
+    change_platform_to_test_platform(configuration=configuration, engine="openMM")
 
     (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair(
         configuration=configuration, nr_of_bonded_windows=16
@@ -135,7 +137,7 @@ def test_run_acetylacetone_tautomer_pair_only_in_vacuum(caplog):
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_2OJ9_tautomer_pair_rsfe_openMM(caplog):
+def test_run_2OJ9_tautomer_pair_rsfe_with_openMM(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
@@ -145,6 +147,7 @@ def test_run_2OJ9_tautomer_pair_rsfe_openMM(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir=workdir
     )  # NOTE: for preprocessing input_dir is the output dir
+    change_platform_to_test_platform(configuration=configuration, engine="openMM")
 
     (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -161,7 +164,7 @@ def test_run_2OJ9_tautomer_pair_rsfe_openMM(caplog):
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_2OJ9_tautomer_pair_rbfe_openMM(caplog):
+def test_run_2OJ9_tautomer_pair_rbfe_with_openMM(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair_rbfe
 
@@ -171,6 +174,7 @@ def test_run_2OJ9_tautomer_pair_rbfe_openMM(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir=workdir
     )  # NOTE: for preprocessing input_dir is the output dir
+    change_platform_to_test_platform(configuration=configuration, engine="openMM")
 
     (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rbfe(
         configuration=configuration
@@ -187,7 +191,7 @@ def test_run_2OJ9_tautomer_pair_rbfe_openMM(caplog):
 @pytest.mark.skipif(
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
-def test_run_2OJ9_tautomer_pair_charmm(caplog):
+def test_run_2OJ9_tautomer_pair_with_CHARMM(caplog):
     caplog.set_level(logging.WARNING)
     from transformato.constants import change_platform_to
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
@@ -197,7 +201,7 @@ def test_run_2OJ9_tautomer_pair_charmm(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir=workdir
     )  # NOTE: for preprocessing input_dir is the output dir
-    change_platform_to(configuration, change_to="cpu")
+    change_platform_to_test_platform(configuration=configuration, engine="CHARMM")
 
     (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -224,6 +228,7 @@ def test_get_free_energy_acetylaceton_tautomer_pair(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir=workdir
     )  # NOTE: for preprocessing input_dir is the output dir
+    change_platform_to_test_platform(configuration=configuration, engine="openMM")
 
     (output_files_t1, output_files_t2), conf, _ = setup_acetylacetone_tautomer_pair(
         configuration=configuration
