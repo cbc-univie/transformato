@@ -1838,7 +1838,6 @@ def setup_2OJ9_tautomer_pair_rsfe(
     configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
-    from ..constants import change_platform
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
