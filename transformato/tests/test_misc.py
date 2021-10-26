@@ -6,6 +6,7 @@ from transformato.utils import load_config_yaml
 from transformato.analysis import return_reduced_potential
 from simtk import unit
 import numpy as np
+
 # read in specific topology with parameters
 from transformato import (
     load_config_yaml,
@@ -13,6 +14,7 @@ from transformato import (
 from .test_mutation import (
     _set_output_files_2oj9_tautomer_pair,
 )
+from transformato.tests.paths import get_test_output_dir
 
 
 def test_reduced_energy():
@@ -50,19 +52,31 @@ def test_convert_to_kT():
 
 
 def test_change_platform():
-    from ..constants import change_platform, platform
+    from ..constants import (
+        change_platform_to_test_platform,
+        test_platform_openMM,
+        test_platform_CHARMM,
+    )
     from ..utils import load_config_yaml
 
     configuration = load_config_yaml(
         config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
         input_dir=".",
-        output_dir=".",
+        output_dir=get_test_output_dir(),
     )
 
-    change_platform(configuration)
+    change_platform_to_test_platform(configuration, engine="openMM")
     print(configuration["simulation"]["GPU"])
-    print(platform)
-    if platform.upper() == "CPU":
+    print(test_platform_openMM)
+    if test_platform_openMM.upper() == "CPU":
+        assert configuration["simulation"]["GPU"] == False
+    else:
+        assert configuration["simulation"]["GPU"] == True
+
+    change_platform_to_test_platform(configuration, engine="CHARMM")
+    print(configuration["simulation"]["GPU"])
+    print(test_platform_openMM)
+    if test_platform_CHARMM.upper() == "CPU":
         assert configuration["simulation"]["GPU"] == False
     else:
         assert configuration["simulation"]["GPU"] == True
@@ -95,6 +109,7 @@ def test_old_scaling():
         f = 1 - (1 - (1 - i)) * 2
         print(f"{i}:{f}")
 
+
 def test_reading_of_coords():
 
     import mdtraj as md
@@ -115,9 +130,9 @@ def test_reading_of_coords():
         f"{b}/lig_in_{env}.psf",
     )
     print(traj_load.xyz[0])
-        
+
     traj_open = md.open(f"{b}/lig_in_{env}.dcd")
     xyz, unitcell_lengths, _ = traj_open.read()
-    xyz = xyz/10
+    xyz = xyz / 10
     print(xyz[0])
     assert np.allclose(xyz[0], traj_load.xyz[0])

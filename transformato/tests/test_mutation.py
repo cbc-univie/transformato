@@ -24,6 +24,8 @@ from transformato import (
     load_config_yaml,
 )
 
+from transformato.tests.paths import get_test_output_dir
+
 
 def read_params(output_file_base):
     extlist = ["rtf", "prm", "str"]
@@ -160,10 +162,13 @@ def test_proposed_mutation_mcs():
 
     from rdkit.Chem import rdFMCS
 
+    workdir = get_test_output_dir()
     for conf in [
         "transformato/tests/config/test-2oj9-rsfe.yaml",
     ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -332,7 +337,9 @@ def test_proposed_mutation_mcs():
         assert set(a.get_common_core_idx_mol1()) == cc1
 
     for conf in ["transformato/tests/config/test-toluene-methane-rsfe.yaml"]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -363,10 +370,13 @@ def test_proposed_mutation_mcs():
 def test_proposed_mutation_terminal_dummy_real_atom_match():
     from rdkit.Chem import rdFMCS
 
+    workdir = get_test_output_dir()
     for conf in [
         "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
     ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -406,11 +416,11 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
 )
 def test_find_connected_dummy_regions1():
-
+    workdir = get_test_output_dir()
     from rdkit.Chem import rdFMCS
 
     conf = "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -457,11 +467,10 @@ def test_find_connected_dummy_regions1():
 
 def test_find_connected_dummy_regions2():
 
-    from rdkit.Chem import rdFMCS
-
+    workdir = get_test_output_dir()
     ##################################################
     conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -547,13 +556,15 @@ def test_find_connected_dummy_regions2():
 
 
 def test_common_core_for_multiple_systems():
-
+    workdir = get_test_output_dir()
     for conf in [
         "transformato/tests/config/test-toluene-methane-rsfe.yaml",
         "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
         "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
     ]:
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -571,7 +582,8 @@ def test_common_core_for_multiple_systems():
 
 
 def setup_systems(conf):
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    workdir = get_test_output_dir()
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
@@ -628,7 +640,7 @@ def test_generate_mutation_list_for_multiple_systems():
 
         if system_name == "neopentane-methane":
             configuration = load_config_yaml(
-                config=conf, input_dir="data/", output_dir="."
+                config=conf, input_dir="data/", output_dir=get_test_output_dir()
             )
             s1 = SystemStructure(configuration, "structure1")
             s2 = SystemStructure(configuration, "structure2")
@@ -660,11 +672,19 @@ def test_write_endpoint_state():
             i_s2,
         ) = setup_systems(conf)
 
-        output_file_base, _ = i_s1.write_state(mutation_conf=[], intst_nr=1)
-        shutil.rmtree(output_file_base)
+        assert i_s1.current_step == 1
+        i_s1.write_state(mutation_conf=[])
+        assert i_s1.current_step == 2
+        print(i_s1.output_files)
+        for opath in i_s1.output_files:
+            shutil.rmtree(opath)
 
-        output_file_base, _ = i_s2.write_state(mutation_conf=[], intst_nr=1)
-        shutil.rmtree(output_file_base)
+        assert i_s2.current_step == 1
+        i_s2.write_state(mutation_conf=[])
+        assert i_s2.current_step == 2
+        print(i_s2.output_files)
+        for opath in i_s2.output_files:
+            shutil.rmtree(opath)
 
 
 def test_charges_at_endstate():
@@ -686,7 +706,7 @@ def test_charges_at_endstate():
             i_s2,
         ) = setup_systems(conf)
         for i in [i_s1, i_s2]:
-            output_file_base, _ = i.write_state(mutation_conf=[], intst_nr=1)
+            i.write_state(mutation_conf=[])
 
             # original psfs without charge change
             original_psf = {}
@@ -696,7 +716,7 @@ def test_charges_at_endstate():
             for env in i.system.envs:
                 offset = i.system.offset[env]
 
-                mutated_psf, param = generate_psf(output_file_base, env)
+                mutated_psf, param = generate_psf(i.output_files[-1], env)
                 for atom in i.system.mol.GetAtoms():
                     idx = atom.GetIdx()
                     print(original_psf[env].atoms[idx + offset].charge)
@@ -706,7 +726,9 @@ def test_charges_at_endstate():
                         mutated_psf.atoms[idx + offset].charge,
                         rtol=1e-3,
                     )
-            shutil.rmtree(output_file_base)
+
+            for opath in i.output_files:
+                shutil.rmtree(opath)
 
 
 def test_setup_dual_junction_system():
@@ -717,33 +739,28 @@ def test_setup_dual_junction_system():
     )
     # write out endpoint
     output_files = []
-    output_file_base, intst = i_s1.write_state(mutation_conf=[], intst_nr=1)
-    output_files.append(output_file_base)
+    i_s1.write_state(mutation_conf=[])
 
     charges = mutation_list_mol1["charge"]
     # start with charges
     # turn off charges
-    output_file_base, intst = i_s1.write_state(
+    i_s1.write_state(
         mutation_conf=charges,
         lambda_value_electrostatic=0.0,
-        intst_nr=intst,
     )
-    output_files.append(output_file_base)
 
     # Turn off hydrogens
     hydrogen_lj_mutations = mutation_list_mol1["hydrogen-lj"]
-    output_file_base, intst = i_s1.write_state(
+    i_s1.write_state(
         mutation_conf=hydrogen_lj_mutations,
         lambda_value_vdw=0.0,
-        intst_nr=intst,
     )
-    output_files.append(output_file_base)
-    for f in output_files:
+    for f in i_s1.output_files:
         shutil.rmtree(f)
 
 
 def test_charge_mutation_for_multiple_systems():
-
+    workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
             "transformato/tests/config/test-toluene-methane-rsfe.yaml",
@@ -753,7 +770,9 @@ def test_charge_mutation_for_multiple_systems():
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
 
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         # scale charges with 0.5
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
@@ -783,15 +802,14 @@ def test_charge_mutation_for_multiple_systems():
 
                 mutation_list = a.generate_mutations_to_common_core_for_mol1()
                 charges = mutation_list["charge"]
-                output_file_base, intst_nr = i.write_state(
+                i.write_state(
                     mutation_conf=charges,
                     lambda_value_electrostatic=lambda_charge,
-                    intst_nr=0,
                 )
                 for env in system.envs:
                     offset = system.offset[env]
                     # read in newly generated psf
-                    mutated_psf, params = generate_psf(output_file_base, env)
+                    mutated_psf, params = generate_psf(i.output_files[-1], env)
                     for idx in charges[0].atoms_to_be_mutated:
                         assert np.isclose(
                             original_psf[env].atoms[idx + offset].charge
@@ -799,14 +817,14 @@ def test_charge_mutation_for_multiple_systems():
                             mutated_psf.atoms[idx + offset].charge,
                             rtol=1e-03,
                         )
-
-                shutil.rmtree(output_file_base)
+                for opath in i.output_files:
+                    shutil.rmtree(opath)
 
 
 def test_vdw_mutation_for_hydrogens_system1():
     # testing terminal lj
-    from rdkit.Chem import rdFMCS
 
+    workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
             "transformato/tests/config/test-toluene-methane-rsfe.yaml",
@@ -815,7 +833,9 @@ def test_vdw_mutation_for_hydrogens_system1():
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -840,15 +860,14 @@ def test_vdw_mutation_for_hydrogens_system1():
         for env in s1.envs:
             original_psf[env] = copy.deepcopy(s1.psfs[env])
         terminal_lj_mutations = mutation_list["default-lj"]
-        output_file_base, intst_nr = i.write_state(
+        i.write_state(
             mutation_conf=terminal_lj_mutations,
             lambda_value_vdw=0.0,
-            intst_nr=0,
         )
         print("Set epsilon/rmin to zero for selected atoms")
 
         for env in s1.envs:
-            new_psf, params = generate_psf(output_file_base, env)
+            new_psf, params = generate_psf(i.output_files[-1], env)
             # are the terminal lj parameter correctly set?
             offset = s1.offset[env]
             for terminal_lj in terminal_lj_mutations:
@@ -879,20 +898,23 @@ def test_vdw_mutation_for_hydrogens_system1():
                         new_psf.atoms[idx].rmin,
                         rtol=1e-3,
                     )
-
-        shutil.rmtree(output_file_base)
+        for opath in i.output_files:
+            shutil.rmtree(opath)
 
 
 def test_vdw_mutation_for_hydrogens_system2():
     from rdkit.Chem import rdFMCS
 
+    workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
             "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
         ],
         ["7-CPI-2-CPI"],
     ):
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -914,15 +936,14 @@ def test_vdw_mutation_for_hydrogens_system2():
         for lambda_value in [1.0, 0.5, 0.25]:
             # lj hydrogens scaling
             hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-            output_file_base, _ = i.write_state(
+            i.write_state(
                 mutation_conf=hydrogen_lj_mutations,
                 lambda_value_vdw=lambda_value,
-                intst_nr=0,
             )
             print("Set epsilon/rmin for selected atoms")
 
             for env in s1.envs:
-                new_psf, params = generate_psf(output_file_base, env)
+                new_psf, params = generate_psf(i.output_files[-1], env)
                 # are the terminal lj parameter correctly set?
                 offset = s1.offset[env]
                 for hydrogen_lj in hydrogen_lj_mutations:
@@ -953,18 +974,21 @@ def test_vdw_mutation_for_hydrogens_system2():
                             new_psf.atoms[idx].rmin,
                             rtol=1e-3,
                         )
-
-            shutil.rmtree(output_file_base)
+            for opath in i.output_files:
+                shutil.rmtree(opath)
 
 
 @pytest.mark.slowtest
 def test_bonded_mutation():
+    workdir = get_test_output_dir()
 
     for conf in [
         "transformato/tests/config/test-toluene-methane-rsfe.yaml",
     ]:
 
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -984,53 +1008,45 @@ def test_bonded_mutation():
         # mutate everything else before touching bonded terms
         charges = mutation_list["charge"]
         # turn off charges
-        output_file_base, intst_nr = i.write_state(
+        i.write_state(
             mutation_conf=charges,
             lambda_value_electrostatic=0.0,
-            intst_nr=1,
         )
-        output_files.append(output_file_base)
 
         # Turn of hydrogens
         hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-        output_file_base, intst_nr = i.write_state(
+        i.write_state(
             mutation_conf=hydrogen_lj_mutations,
             lambda_value_vdw=0.0,
-            intst_nr=intst_nr,
         )
-        output_files.append(output_file_base)
 
         # turn off heavy atoms
-        output_file_base, intst_nr = i.write_state(
+        i.write_state(
             mutation_conf=mutation_list["lj"],
             lambda_value_vdw=0.0,
-            intst_nr=intst_nr,
         )
-        output_files.append(output_file_base)
 
         # generate terminal lj
-        output_file_base, intst_nr = i.write_state(
+        i.write_state(
             mutation_conf=mutation_list["default-lj"],
             lambda_value_vdw=0.0,
-            intst_nr=intst_nr,
         )
-        output_files.append(output_file_base)
 
         m = mutation_list["transform"]
         for lambda_value in np.linspace(0.75, 0, 3):
             print(lambda_value)
             # turn off charges
-            output_file_base, intst_nr = i.write_state(
+            i.write_state(
                 mutation_conf=m,
                 common_core_transformation=lambda_value,
-                intst_nr=intst_nr,
             )
-            output_files.append(output_file_base)
-        shutil.rmtree(output_file_base)
+        for opath in i.output_files:
+            shutil.rmtree(opath)
 
 
 @pytest.mark.slowtest
 def test_equivalent_endstates_vacuum():
+    workdir = get_test_output_dir()
 
     import simtk.openmm as mm
     import simtk.openmm.app as app
@@ -1381,8 +1397,10 @@ def test_bonded_mutation_atoms(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
+    workdir = get_test_output_dir()
+
     conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -1426,11 +1444,12 @@ def test_bonded_mutation_atoms(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_bonds(caplog):
     caplog.set_level(logging.CRITICAL)
+    workdir = get_test_output_dir()
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
     conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -1483,8 +1502,10 @@ def test_bonded_mutation_angles(caplog):
     from copy import copy
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
+    workdir = get_test_output_dir()
+
     conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -1555,11 +1576,12 @@ def test_bonded_mutation_angles(caplog):
 @pytest.mark.slowtest
 def test_bonded_mutation_dihedrals(caplog):
     caplog.set_level(logging.CRITICAL)
+    workdir = get_test_output_dir()
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
         configuration=configuration
@@ -1673,6 +1695,8 @@ def test_bonded_mutation_dihedrals(caplog):
 def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
     from rdkit.Chem import rdFMCS
 
+    workdir = get_test_output_dir()
+
     for conf, system_name in zip(
         [
             "transformato/tests/config/test-toluene-methane-rsfe.yaml",
@@ -1681,7 +1705,9 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -1712,7 +1738,6 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
             original_psf[env] = copy.deepcopy(s1.psfs[env])
 
         #
-        intst_nr = 1
         for lambda_vdw in [1.0, 0.0]:
             print(f"Lambda: {lambda_vdw}")
             output_files = []
@@ -1723,12 +1748,10 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
             print(
                 f"Turn off lj for hydrogen atoms : {[e.atoms_to_be_mutated for e in hydrogen_lj_mutations]}"
             )
-            output_file_base, intst_nr = i.write_state(
+            i.write_state(
                 mutation_conf=hydrogen_lj_mutations,
                 lambda_value_vdw=lambda_vdw,
-                intst_nr=intst_nr,
             )
-            output_files.append(output_file_base)
             for mutation in hydrogen_lj_mutations:
                 all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
@@ -1736,13 +1759,11 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
             for mutation in mutation_list["lj"]:
                 print(f"Turn off lj for heavy atom : {mutation.atoms_to_be_mutated}")
 
-                output_file_base, intst_nr = i.write_state(
+                i.write_state(
                     mutation_conf=[mutation],
                     lambda_value_vdw=lambda_vdw,
-                    intst_nr=intst_nr,
                 )
                 all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
-                output_files.append(output_file_base)
 
             # change to default lj
             terminal_lj_mutations = mutation_list["default-lj"]
@@ -1754,12 +1775,10 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
                 f"Turn off lj for terminal atom : {all_atoms_for_which_lj_turned_off}"
             )
 
-            output_file_base, intst_nr = i.write_state(
+            i.write_state(
                 mutation_conf=terminal_lj_mutations,
                 lambda_value_vdw=0.0,
-                intst_nr=intst_nr,
             )
-            output_files.append(output_file_base)
 
             print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
 
@@ -1767,7 +1786,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
             for env in s1.envs:
                 print(env)
                 # read in generated psf at last mutation step
-                new_psf, params = generate_psf(output_file_base, env)
+                new_psf, params = generate_psf(i.output_files[-1], env)
                 offset = s1.offset[env]
                 for idx in all_atoms_for_which_lj_turned_off:
                     idxo = idx + offset
@@ -1811,14 +1830,13 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
                             rtol=1e-3,
                         )
 
-        shutil.rmtree(f"{system_name}-rsfe")
+        shutil.rmtree(f"{workdir}/{system_name}-rsfe")
 
 
 def setup_2OJ9_tautomer_pair_rsfe(
     configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
-    from ..constants import change_platform
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1842,7 +1860,6 @@ def setup_2OJ9_tautomer_pair_rbfe(
     configuration: dict, single_state: bool = False, nr_of_bonded_windows: int = 4
 ):
     from ..mutate import mutate_pure_tautomers
-    from ..constants import change_platform
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1866,10 +1883,6 @@ def setup_acetylacetone_tautomer_pair(
     configuration: dict, single_state=False, nr_of_bonded_windows=4
 ):
     from ..mutate import mutate_pure_tautomers
-    from ..constants import change_platform
-
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1890,25 +1903,28 @@ def setup_acetylacetone_tautomer_pair(
 
 
 def test_acetylacetone_tautomer_pair(caplog):
+    workdir = get_test_output_dir()
     caplog.set_level(logging.DEBUG)
     conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     setup_acetylacetone_tautomer_pair(configuration=configuration)
-    shutil.rmtree("acetylacetone-keto-acetylacetone-enol-rsfe")
+    shutil.rmtree(f"{workdir}/acetylacetone-keto-acetylacetone-enol-rsfe")
 
 
 def test_2OJ9_tautomer_pair(caplog):
+    workdir = get_test_output_dir()
     caplog.set_level(logging.DEBUG)
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
-    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     setup_2OJ9_tautomer_pair_rsfe(configuration=configuration)
-    shutil.rmtree("2OJ9-original-2OJ9-tautomer-rsfe")
+    shutil.rmtree(f"{workdir}/2OJ9-original-2OJ9-tautomer-rsfe")
 
 
 def test_full_mutation_system1(caplog):
     caplog.set_level(logging.WARNING)
+    workdir = get_test_output_dir()
 
     for conf, system_name in zip(
         [
@@ -1919,7 +1935,9 @@ def test_full_mutation_system1(caplog):
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
         print(system_name)
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -1939,14 +1957,12 @@ def test_full_mutation_system1(caplog):
             system=s1,
             configuration=configuration,
         )
-        intst = 1
         charges = mutation_list["charge"]
         for lambda_value in np.linspace(0, 1, 5):
             # turn off charges
-            output_file_base, intst = i.write_state(
+            i.write_state(
                 mutation_conf=charges,
                 lambda_value_electrostatic=1 - lambda_value,
-                intst_nr=intst,
             )
 
         original_psf = {}
@@ -1960,18 +1976,18 @@ def test_full_mutation_system1(caplog):
         print(mutation_list.keys())
         # Turn of hydrogens
         terminal_lj_mutations = mutation_list["default-lj"]
-        _, intst = i.write_state(
+        i.write_state(
             mutation_conf=terminal_lj_mutations,
             lambda_value_vdw=lambda_vdw,
-            intst_nr=intst,
         )
         for mutation in terminal_lj_mutations:
             all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
-        shutil.rmtree(f"{system_name}-rsfe")
+        shutil.rmtree(f"{workdir}/{system_name}-rsfe")
 
 
 def test_full_mutation_system2():
+    workdir = get_test_output_dir()
 
     for conf, system_name in zip(
         [
@@ -1980,7 +1996,9 @@ def test_full_mutation_system2():
         ],
         ["toluene-methane", "neopentane-methane"],
     ):
-        configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=".")
+        configuration = load_config_yaml(
+            config=conf, input_dir="data/", output_dir=workdir
+        )
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
@@ -2001,14 +2019,12 @@ def test_full_mutation_system2():
             configuration=configuration,
         )
 
-        intst = 1
         charges = mutation_list["charge"]
         for lambda_value in np.linspace(0, 1, 5):
             # turn off charges
-            output_file_base, intst = i.write_state(
+            i.write_state(
                 mutation_conf=charges,
                 lambda_value_electrostatic=1 - lambda_value,
-                intst_nr=intst,
             )
 
         original_psf = {}
@@ -2022,10 +2038,9 @@ def test_full_mutation_system2():
         print(mutation_list.keys())
         # Turn of hydrogens
         hydrogen_lj_mutations = mutation_list["hydrogen-lj"]
-        output_file_base, intst = i.write_state(
+        i.write_state(
             mutation_conf=hydrogen_lj_mutations,
             lambda_value_vdw=lambda_vdw,
-            intst_nr=intst,
         )
 
         for mutation in hydrogen_lj_mutations:
@@ -2034,14 +2049,13 @@ def test_full_mutation_system2():
         # turn off heavy atoms
         for mutation in mutation_list["lj"]:
 
-            output_file_base, intst = i.write_state(
+            i.write_state(
                 mutation_conf=[mutation],
                 lambda_value_vdw=lambda_vdw,
-                intst_nr=intst,
             )
             all_atoms_for_which_lj_turned_off.extend(mutation.vdw_atom_idx)
 
-        new_psf, params = generate_psf(output_file_base, env)
+        new_psf, params = generate_psf(i.output_files[-1], env)
         print(f"Set epsilon/rmin to base * {lambda_vdw} for selected atoms")
 
         print(all_atoms_for_which_lj_turned_off)
@@ -2074,4 +2088,61 @@ def test_full_mutation_system2():
                     rtol=1e-3,
                 )
 
-        shutil.rmtree(f"{system_name}-rsfe")
+        shutil.rmtree(f"{workdir}/{system_name}-rsfe")
+
+
+def test_generate_list_of_heavy_atoms_to_mutate():
+    from transformato.testsystems import mutate_neopentane_to_methane_cc
+    from transformato.utils import map_lj_mutations_to_atom_idx
+    from transformato.constants import loeffler_testsystems_dir
+
+    # neopentane to methane 
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-neopentane-methane-rsfe.yaml",
+        input_dir=loeffler_testsystems_dir,
+        output_dir=get_test_output_dir(),
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core(
+        connected_dummy_regions_cc1=[{0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}]
+    )
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    list_of_heavy_atom_mutations = map_lj_mutations_to_atom_idx(mutation_list["lj"])
+    for key in list_of_heavy_atom_mutations:
+        print(key)
+        print(list_of_heavy_atom_mutations[key])
+    assert list(list_of_heavy_atom_mutations.keys()) == [5, 9, 13]
+
+    # toluene to methane 
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        input_dir=loeffler_testsystems_dir,
+        output_dir=get_test_output_dir(),
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    list_of_heavy_atom_mutations = map_lj_mutations_to_atom_idx(mutation_list["lj"])
+    for key in list_of_heavy_atom_mutations:
+        print(key)
+        print(list_of_heavy_atom_mutations[key])
+    assert list(list_of_heavy_atom_mutations.keys()) == [1, 3, 9, 11, 13]

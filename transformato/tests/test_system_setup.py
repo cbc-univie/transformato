@@ -13,6 +13,7 @@ from transformato import (
     load_config_yaml,
     psf_correction,
 )
+from transformato.tests.paths import get_test_output_dir 
 
 
 def test_read_yaml():
@@ -34,7 +35,7 @@ def test_io_psf_files():
     configuration = load_config_yaml(
         config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
         input_dir="data/",
-        output_dir=".",
+        output_dir=get_test_output_dir(),
     )
 
     output_files = mutate_toluene_to_methane_cc(configuration=configuration)
@@ -74,7 +75,7 @@ def test_initialize_systems(caplog):
     configuration = load_config_yaml(
         config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
         input_dir="data/",
-        output_dir=".",
+        output_dir=get_test_output_dir(),
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -91,7 +92,7 @@ def test_initialize_systems(caplog):
     configuration = load_config_yaml(
         config="transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml",
         input_dir="data/",
-        output_dir=".",
+        output_dir=get_test_output_dir(),
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -102,12 +103,3 @@ def test_initialize_systems(caplog):
     assert int(s2.offset["waterbox"]) == 0
     assert int(s2.offset["vacuum"]) == 0
 
-    configuration = load_config_yaml(
-        config="transformato/tests/config/test-tautomer-min-example-rsfe.yaml",
-        input_dir="data/",
-        output_dir=".",
-    )
-
-    s1 = SystemStructure(configuration, "structure1")
-    assert int(s1.offset["waterbox"]) == 0
-    assert int(s1.offset["vacuum"]) == 0
