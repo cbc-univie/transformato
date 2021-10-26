@@ -3,8 +3,8 @@
 system:
   ################
   structure1:
-    name: "acetylacetone-keto"
-    tlc: "UNK"
+    name: "2-methylindole"
+    tlc: "UNL"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_charmm2omm"
@@ -21,8 +21,8 @@ system:
       intermediate-filename: "lig_in_waterbox"
 
   structure2:
-    name: "acetylacetone-enol"
-    tlc: "UNK"
+    name: "methane"
+    tlc: "LIG"
     vacuum:
       dirname: "vacuum"
       psf_file_name: "step3_charmm2omm"
@@ -42,16 +42,11 @@ system:
 simulation:
   ################
   parameters:
-    nstep: 100000
-    nstdcd: 250
-    nstout: 5000
-    cons: None
+    nstep: 2_000
+    nstdcd: 100
+    nstout: 50
     dt: 0.001
-    mini_nstep: 1000
-  GPU: False
-
+    switch: "vfswitch"
+  GPU: True
   free-energy-type: "rsfe"
 ################
-solvation:
-  ################
-  steps_for_equilibration: 1000
