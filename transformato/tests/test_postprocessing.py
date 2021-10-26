@@ -8,9 +8,7 @@ import numpy as np
 import pytest
 import logging
 from transformato.constants import (
-    change_platform_to,
     initialize_NUM_PROC,
-    change_platform_to_test_platform,
 )
 from transformato.tests.paths import get_test_output_dir
 from transformato.utils import postprocessing
@@ -156,7 +154,6 @@ def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
-    change_platform(configuration)
 
     f = FreeEnergyCalculator(configuration, "2OJ9-tautomer")
     for idx, b in enumerate(output_files_t2):
@@ -291,7 +288,6 @@ def test_2oj9_calculate_rsfe_with_different_engines():
     ddG_charmm, dddG, f_charmm = postprocessing(
         configuration, name="2OJ9-original", engine="CHARMM", max_snapshots=600
     )
-    change_platform_to(configuration, "GPU")
 
     ddG_openMM, dddG, f_openMM = postprocessing(
         configuration, name="2OJ9-original", engine="openMM", max_snapshots=600
@@ -314,12 +310,10 @@ def test_2oj9_calculate_rsfe_with_different_engines():
     assert np.isclose(ddG_charmm, 1.6579906682671464)
     print(ddG_openMM, ddG_charmm)
     # 2OJ9-tautomer to tautomer common core
-    change_platform_to(configuration, "CPU")
 
     ddG_charmm, dddG, f_charmm = postprocessing(
         configuration, name="2OJ9-tautomer", engine="CHARMM", max_snapshots=600
     )
-    change_platform_to(configuration, "GPU")
     ddG_openMM, dddG, f_openMM = postprocessing(
         configuration, name="2OJ9-tautomer", engine="openMM", max_snapshots=600
     )
@@ -359,7 +353,6 @@ def test_2oj9_calculate_rsfe_with_different_switches(caplog):
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir=get_test_output_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
-    change_platform_to(configuration, change_to="CPU")
 
     # generate samples
     (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rsfe(
