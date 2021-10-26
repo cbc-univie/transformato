@@ -3,7 +3,6 @@ from simtk import unit
 
 logger = logging.getLogger(__name__)
 
-default_platform = "CPU"  # CPU or GPU
 temperature = 303.15 * unit.kelvin
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
 kT = kB * temperature
@@ -13,6 +12,13 @@ this = sys.modules[__name__]
 # we can explicitly make assignments on it
 this.NUM_PROC = 1
 loeffler_testsystems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
+
+#####################################
+# config for tets
+test_platform_openMM = "GPU"
+test_platform_CHARMM = "CPU"
+test_platform_override = True
+#####################################
 
 
 def initialize_NUM_PROC(n_proc):
@@ -25,9 +31,14 @@ def initialize_NUM_PROC(n_proc):
         print(msg)
 
 
-def change_platform(configuration: dict):
+def change_platform_to_test_platform(configuration: dict, engine: str):
 
-    change_to = default_platform
+    if engine == "openMM":
+        change_to = test_platform_openMM
+    elif engine == "CHARMM":
+        change_to = test_platform_CHARMM
+    else:
+        raise RecursionError()
 
     if change_to.upper() == "GPU":
         configuration["simulation"]["GPU"] = True

@@ -147,8 +147,6 @@ def print_mutations(mutation: dict):
 
 def load_config_yaml(config, input_dir, output_dir) -> dict:
 
-    from transformato.constants import change_platform
-
     with open(f"{config}", "r") as stream:
         try:
             settingsMap = yaml.load(stream)

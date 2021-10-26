@@ -6,15 +6,12 @@ channels:
   - defaults
 dependencies:
   # Base depends
-  - python
   - openmm
   - numpy
   - pymbar
   - rdkit
   - parmed
   - pyyaml
-  - ipython
-  - jupyter
   - mdtraj
   - matplotlib
   - networkx

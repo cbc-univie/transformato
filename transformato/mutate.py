@@ -1520,7 +1520,7 @@ class Mutation(object):
             round(sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms]))
         )
         # scale the charge of all atoms
-        logger.info(f"Scaling charge on: {self.atoms_to_be_mutated}")
+        print(f"Scaling charge on: {self.atoms_to_be_mutated}")
         for idx in self.atoms_to_be_mutated:
             odx = idx + offset
             atom = psf[odx]
