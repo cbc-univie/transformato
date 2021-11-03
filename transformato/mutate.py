@@ -5,11 +5,16 @@ from dataclasses import dataclass, field
 from typing import List, Tuple
 
 import numpy as np
+import networkx as nx
 import parmed as pm
 from IPython.core.display import display
 from rdkit import Chem
 from rdkit.Chem import AllChem, Draw, rdFMCS
 from rdkit.Chem.Draw import rdMolDraw2D
+from rdkit.Chem.Draw import IPythonConsole
+
+IPythonConsole.molSize = (900, 900)  # Change image size
+IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
 
@@ -679,72 +684,29 @@ class ProposeMutationRoute(object):
         from itertools import chain
 
         sub = self._get_common_core(mol_name)
-
         #############################
         # start
         #############################
         mol = self.mols[mol_name]
+        G = self.graphs[mol_name].copy()
         # find all dummy atoms
-        dummy_list_mol = [
+        list_of_dummy_atoms_idx = [
             atom.GetIdx() for atom in mol.GetAtoms() if atom.GetIdx() not in sub
         ]
-        nr_of_dummy_atoms_mol = len(dummy_list_mol) + 1
-        # add all unique subgraphs here
-        unique_subgraphs = []
+        nr_of_dummy_atoms = len(list_of_dummy_atoms_idx) + 1
+        list_of_real_atoms_idx = [
+            atom.GetIdx() for atom in mol.GetAtoms() if atom.GetIdx() in sub
+        ]
+        # remove real atoms from graph to obtain multiple connected compounds
+        for real_atom_idx in list_of_real_atoms_idx:
+            G.remove_node(real_atom_idx)
 
-        # iterate over dummy regions
-        for real_atom in match_terminal_atoms_cc:
-            logger.debug(f"real atom: {real_atom}")
-            set_of_terminal_dummy_atoms = match_terminal_atoms_cc[real_atom]
-            for terminal_dummy_atom in set_of_terminal_dummy_atoms:
-                logger.debug(f"terminal_dummy_atom: {terminal_dummy_atom}")
-                # start with biggest possible subgraph at final dummy atom
-                for i in range(nr_of_dummy_atoms_mol, -1, -1):
-                    subgraphs_of_length_i = []
-                    logger.debug(f"Length: {i}")
-                    all_subgraphs = Chem.FindUniqueSubgraphsOfLengthN(
-                        mol=mol,
-                        length=i,
-                        useHs=True,
-                        useBO=False,
-                        rootedAtAtom=terminal_dummy_atom,
-                    )
-                    for subgraphs in all_subgraphs:
-                        subgraphs = set(
-                            chain.from_iterable(
-                                [
-                                    self._return_atom_idx_from_bond_idx(
-                                        mol=mol, bond_idx=e
-                                    )
-                                    for e in subgraphs
-                                ]
-                            )
-                        )
+        # find these connected compounds
+        from networkx.algorithms.components import connected_components
 
-                        # test that only dummy atoms are in subgraph
-                        if any([real_atom in subgraphs for real_atom in sub]):
-                            pass
-                        else:
-                            subgraphs_of_length_i.append(set(subgraphs))
-
-                    # test that new subgraphs are not already contained in bigger subgraphs
-                    for subgraphs in subgraphs_of_length_i:
-                        if any(
-                            [
-                                subgraphs.issubset(old_subgraph)
-                                for old_subgraph in unique_subgraphs
-                            ]
-                        ):
-                            # not new set
-                            pass
-                        else:
-                            unique_subgraphs.append(subgraphs)
-                            logger.debug(subgraphs)
-
-        # adding single dummy atoms that are not in a path
-        for dummy_atom in dummy_list_mol:
-            if dummy_atom not in list(chain.from_iterable(unique_subgraphs)):
-                unique_subgraphs.append(set([dummy_atom]))
+        unique_subgraphs = [
+            c for c in sorted(nx.connected_components(G), key=len, reverse=True)
+        ]
 
         logger.debug(unique_subgraphs)
         return unique_subgraphs
