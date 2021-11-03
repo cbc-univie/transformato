@@ -93,6 +93,7 @@ def run_simulation(output_files: list, engine="openMM", only_vacuum: bool = Fals
             capture_output=True,
             text=True,
         )
+        exe.check_returncode()
         logger.debug(exe.stdout)
         logger.debug("Capture stderr")
         logger.debug(exe.stderr)
