@@ -13,6 +13,44 @@ from transformato.utils import run_simulation
 from transformato.constants import change_platform_to_test_platform
 
 
+@pytest.mark.rsfe
+def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
+    import logging
+
+    # Test that TF can handel multiple dummy regions
+    caplog.set_level(logging.INFO)
+    import warnings
+    from transformato import (
+        load_config_yaml,
+        SystemStructure,
+        IntermediateStateFactory,
+        ProposeMutationRoute,
+    )
+    from transformato.mutate import perform_mutations
+
+    warnings.filterwarnings("ignore", module="parmed")
+
+    workdir = get_test_output_dir()
+    conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+    )
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+    # generate the mutation list for the original
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    print(mutation_list.keys())
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
+    run_simulation(i.output_files)
+
+
 @pytest.mark.slowtest
 @pytest.mark.rsfe
 def test_run_toluene_to_methane_cc_rsfe_with_openMM():
