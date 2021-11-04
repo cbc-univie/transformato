@@ -192,15 +192,6 @@ with open(file_name + '_system.xml','w') as outfile:
                     ) as f:
                         f.write(charmm_input)
 
-                    # # copy evaluation script
-                    # charmm_simulation_submit_script_source = (
-                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
-                    # )
-                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
-                    # shutil.copyfile(
-                    #     charmm_simulation_submit_script_source,
-                    #     charmm_simulation_submit_script_target,
-                    # )
                 else:
                     raise NotImplementedError()
 
@@ -261,15 +252,6 @@ with open(file_name + '_system.xml','w') as outfile:
                     ) as f:
                         f.write(charmm_input)
 
-                    # # copy evaluation script
-                    # charmm_simulation_submit_script_source = (
-                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
-                    # )
-                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
-                    # shutil.copyfile(
-                    #     charmm_simulation_submit_script_source,
-                    #     charmm_simulation_submit_script_target,
-                    # )
                 else:
                     raise NotImplementedError()
 
