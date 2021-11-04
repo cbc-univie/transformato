@@ -212,7 +212,7 @@ def test_generate_output_for_7_CPI_rsfe():
     shutil.rmtree(f)
 
 
-def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
+def test_generate_output_for_1a0q_1a07_rsfe(caplog):
     import logging
 
     # Test that TF can handel multiple dummy regions
@@ -246,4 +246,4 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
         configuration=configuration,
     )
     perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
-    run_simulation(i.output_files, engine="openMM")
+    assert False
