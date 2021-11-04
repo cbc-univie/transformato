@@ -21,6 +21,10 @@ from transformato.system import SystemStructure
 logger = logging.getLogger(__name__)
 
 
+def _flattened(list_of_lists: list) -> list:
+    return [item for sublist in list_of_lists for item in sublist]
+
+
 def _performe_linear_charge_scaling(
     nr_of_steps: int,
     intermediate_factory,
@@ -94,19 +98,20 @@ def perform_mutations(
     ######################################
     m = mutation_list["charge"]
     # turn off charges
+    # if number of charge mutation steps are defined in config file overwrite default or passed value
     try:
-        nr_of_mutation_steps_charge = configuration["system"]["structure1"]["mutation"][
-            "steps_charge"
-        ]  # defines the number of mutation steps for charge mutation
+        nr_of_mutation_steps_charge = configuration["system"][i.system.structure][
+            "mutation"
+        ]["steps_charge"]
+        print("Using number of steps for charge mutattions as defined in config file")
     except KeyError:
-        nr_of_mutation_steps_charge = nr_of_mutation_steps_charge
+        pass
 
     _performe_linear_charge_scaling(
         nr_of_steps=nr_of_mutation_steps_charge,
         intermediate_factory=i,
         mutation=m,
     )
-
     ######################################
     # turn off LJ
     ######################################
@@ -125,13 +130,26 @@ def perform_mutations(
 
     ######################################
     # turn off lj of heavy atoms
-
+    # take the order from either config file, passed to this function or the default ordering
     try:
-        list_of_heavy_atoms_to_be_mutated = configuration["system"]["structure1"][
+        list_of_heavy_atoms_to_be_mutated = configuration["system"][i.system.structure][
             "mutation"
         ]["heavy_atoms"]
+        print("Using ordering of LJ mutations as defined in config file.")
     except KeyError:
-        list_of_heavy_atoms_to_be_mutated = list_of_heavy_atoms_to_be_mutated
+        if not list_of_heavy_atoms_to_be_mutated:
+            # Use the ordering provided by _calculate_order_of_LJ_mutations
+            list_of_heavy_atoms_to_be_mutated = [
+                lj.vdw_atom_idx[0] for lj in (mutation_list["lj"])
+            ]
+            print("Using calculated ordering of LJ mutations.")
+        else:
+            print("Using passed ordering of LJ mutations.")
+
+    print(mutation_list["lj"])
+    for lj in mutation_list["lj"]:
+        print(lj)
+    print()
 
     mapping_of_atom_idx_to_mutation = map_lj_mutations_to_atom_idx(mutation_list["lj"])
     for heavy_atoms_to_turn_off_in_a_single_step in list_of_heavy_atoms_to_be_mutated:
@@ -178,9 +196,9 @@ def perform_mutations(
 
     if mutation_list["transform"]:
         try:
-            nr_of_mutation_steps_cc = configuration["system"]["structure1"]["mutation"][
-                "steps_common_core"
-            ]
+            nr_of_mutation_steps_cc = configuration["system"][i.system.structure][
+                "mutation"
+            ]["steps_common_core"]
         except KeyError:
             nr_of_mutation_steps_cc = nr_of_mutation_steps_cc
 
@@ -436,6 +454,37 @@ class ProposeMutationRoute(object):
 
         return (lj_default_cc1, lj_default_cc2)
 
+    @staticmethod
+    def _calculate_order_of_LJ_mutations(
+        connected_dummy_regions: list, match_terminal_atoms: dict, G: nx.Graph
+    ) -> list:
+
+        ordered_LJ_mutations = []
+        for real_atom in match_terminal_atoms:
+            for dummy_atom in match_terminal_atoms[real_atom]:
+                for connected_dummy_region in connected_dummy_regions:
+                    # stop at connected dummy region with specific dummy_atom in it
+                    if dummy_atom not in connected_dummy_region:
+                        continue
+
+                    G_dummy = G.copy()
+                    # delete all nodes not in dummy region
+                    remove_nodes = [
+                        node for node in G.nodes() if node not in connected_dummy_region
+                    ]
+                    for remove_node in remove_nodes:
+                        G_dummy.remove_node(remove_node)
+
+                    # root is the dummy atom that connects the real region with the dummy region
+                    root = dummy_atom
+
+                    edges = list(nx.dfs_edges(G_dummy, source=root))
+                    nodes = [root] + [v for u, v in edges]
+                    nodes.reverse()  # NOTE: reverse the mutation
+                    ordered_LJ_mutations.append(nodes)
+
+        return ordered_LJ_mutations
+
     def propose_common_core(self):
         mcs = self._find_mcs("m1", "m2")
         return mcs
@@ -454,15 +503,33 @@ class ProposeMutationRoute(object):
         # define connected dummy regions
         if not connected_dummy_regions_cc1:
             connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
-                mol_name="m1", match_terminal_atoms_cc=match_terminal_atoms_cc1
+                mol_name="m1",
             )
         if not connected_dummy_regions_cc2:
             connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
-                mol_name="m2", match_terminal_atoms_cc=match_terminal_atoms_cc2
+                mol_name="m2",
             )
 
-        logger.info(f"connected dummy regions for mol1: {connected_dummy_regions_cc1}")
-        logger.info(f"connected dummy regions for mol2: {connected_dummy_regions_cc2}")
+        logger.debug(f"connected dummy regions for mol1: {connected_dummy_regions_cc1}")
+        logger.debug(f"connected dummy regions for mol2: {connected_dummy_regions_cc2}")
+
+        # calculate the ordering or LJ mutations
+        odered_connected_dummy_regions_cc1 = self._calculate_order_of_LJ_mutations(
+            connected_dummy_regions_cc1,
+            match_terminal_atoms_cc1,
+            self.graphs["m1"].copy(),
+        )
+        odered_connected_dummy_regions_cc2 = self._calculate_order_of_LJ_mutations(
+            connected_dummy_regions_cc2,
+            match_terminal_atoms_cc2,
+            self.graphs["m2"].copy(),
+        )
+        logger.info(
+            f"sorted connected dummy regions for mol1: {odered_connected_dummy_regions_cc1}"
+        )
+        logger.info(
+            f"sorted connected dummy regions for mol2: {odered_connected_dummy_regions_cc2}"
+        )
 
         # find the atoms from dummy_region in s1 that needs to become lj default
         (
@@ -476,7 +543,7 @@ class ProposeMutationRoute(object):
             mol_name="m1",
             tlc=self.s1_tlc,
             match_termin_real_and_dummy_atoms=match_terminal_atoms_cc1,
-            connected_dummy_regions=connected_dummy_regions_cc1,
+            connected_dummy_regions=odered_connected_dummy_regions_cc1,
             lj_default=lj_default_cc1,
         )
 
@@ -484,7 +551,7 @@ class ProposeMutationRoute(object):
             mol_name="m2",
             tlc=self.s2_tlc,
             match_termin_real_and_dummy_atoms=match_terminal_atoms_cc2,
-            connected_dummy_regions=connected_dummy_regions_cc2,
+            connected_dummy_regions=odered_connected_dummy_regions_cc2,
             lj_default=lj_default_cc2,
         )
 
@@ -677,11 +744,7 @@ class ProposeMutationRoute(object):
             mol.GetBondWithIdx(bond_idx).GetEndAtomIdx(),
         )
 
-    def _find_connected_dummy_regions(
-        self, mol_name: str, match_terminal_atoms_cc: dict
-    ) -> List[set]:
-
-        from itertools import chain
+    def _find_connected_dummy_regions(self, mol_name: str) -> List[set]:
 
         sub = self._get_common_core(mol_name)
         #############################
