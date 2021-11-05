@@ -246,4 +246,4 @@ def test_generate_output_for_1a0q_1a07_rsfe(caplog):
         configuration=configuration,
     )
     perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
-    assert False
+    assert i.current_step == 24
