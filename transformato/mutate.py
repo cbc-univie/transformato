@@ -146,11 +146,6 @@ def perform_mutations(
         else:
             print("Using passed ordering of LJ mutations.")
 
-    print(mutation_list["lj"])
-    for lj in mutation_list["lj"]:
-        print(lj)
-    print()
-
     mapping_of_atom_idx_to_mutation = map_lj_mutations_to_atom_idx(mutation_list["lj"])
     for heavy_atoms_to_turn_off_in_a_single_step in list_of_heavy_atoms_to_be_mutated:
         logger.info(
@@ -182,7 +177,9 @@ def perform_mutations(
     # generate terminal LJ
     ######################################
     print("####################")
-    print(f"Generate terminal LJ particle in step: {i.current_step}")
+    print(
+        f"Generate terminal LJ particle in step: {i.current_step} on atoms: {[v.vdw_atom_idx for v in mutation_list['default-lj']]}"
+    )
     print("####################")
 
     i.write_state(
@@ -980,7 +977,6 @@ class ProposeMutationRoute(object):
         mol = self.mols[name]
         mutations = defaultdict(list)
 
-        # TODO: this needs some work!
         # get the atom that connects the common core to the dummy regiom
         match_termin_real_and_dummy_atoms = (
             dummy_region.match_termin_real_and_dummy_atoms
