@@ -926,13 +926,16 @@ def test_vdw_mutation_for_hydrogens_system2():
         configuration = load_config_yaml(
             config=conf, input_dir="data/", output_dir=workdir
         )
+
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
         s1_to_s2 = ProposeMutationRoute(s1, s2)
-        s1_to_s2.bondCompare = rdFMCS.BondCompare.CompareOrderExact
         s1_to_s2.completeRingsOnly = True
-        s1_to_s2.calculate_common_core()
+        s1_to_s2.propose_common_core()
+        s1_to_s2.remove_idx_from_common_core_of_mol1([14])
+        s1_to_s2.remove_idx_from_common_core_of_mol2([6])
+        s1_to_s2.finish_common_core()
 
         mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
         i = IntermediateStateFactory(
@@ -985,8 +988,8 @@ def test_vdw_mutation_for_hydrogens_system2():
                             new_psf.atoms[idx].rmin,
                             rtol=1e-3,
                         )
-            for opath in i.output_files:
-                shutil.rmtree(opath)
+        for opath in i.output_files:
+            shutil.rmtree(opath)
 
 
 @pytest.mark.slowtest
