@@ -18,7 +18,7 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
     import logging
 
     # Test that TF can handel multiple dummy regions
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)
     import warnings
     from transformato import (
         load_config_yaml,
@@ -247,32 +247,6 @@ def test_run_2OJ9_tautomer_pair_with_CHARMM(caplog):
 
     run_simulation(output_files_t1, engine="CHARMM")
     run_simulation(output_files_t2, engine="CHARMM")
-    f = "/".join(output_files_t1[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
-
-
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_get_free_energy_acetylaceton_tautomer_pair(caplog):
-    caplog.set_level(logging.WARNING)
-    from .test_mutation import setup_acetylacetone_tautomer_pair
-
-    workdir = get_test_output_dir()
-
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir=workdir
-    )  # NOTE: for preprocessing input_dir is the output dir
-    change_platform_to_test_platform(configuration=configuration, engine="openMM")
-
-    (output_files_t1, output_files_t2), conf, _ = setup_acetylacetone_tautomer_pair(
-        configuration=configuration
-    )
-    run_simulation(output_files_t1, only_vacuum=True)
-    run_simulation(output_files_t2, only_vacuum=True)
     f = "/".join(output_files_t1[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
