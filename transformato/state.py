@@ -192,15 +192,6 @@ with open(file_name + '_system.xml','w') as outfile:
                     ) as f:
                         f.write(charmm_input)
 
-                    # # copy evaluation script
-                    # charmm_simulation_submit_script_source = (
-                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
-                    # )
-                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
-                    # shutil.copyfile(
-                    #     charmm_simulation_submit_script_source,
-                    #     charmm_simulation_submit_script_target,
-                    # )
                 else:
                     raise NotImplementedError()
 
@@ -261,15 +252,6 @@ with open(file_name + '_system.xml','w') as outfile:
                     ) as f:
                         f.write(charmm_input)
 
-                    # # copy evaluation script
-                    # charmm_simulation_submit_script_source = (
-                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
-                    # )
-                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
-                    # shutil.copyfile(
-                    #     charmm_simulation_submit_script_source,
-                    #     charmm_simulation_submit_script_target,
-                    # )
                 else:
                     raise NotImplementedError()
 
@@ -569,11 +551,18 @@ with open(file_name + '_system.xml','w') as outfile:
         if not all(elem in overwrite_parameters.keys() for elem in common_keywords):
             for elem in common_keywords:
                 if elem not in overwrite_parameters.keys():
-                    logger.critical(f"###################")
-                    logger.critical(
-                        f"{elem} is not set in config yaml. Was this a mistake?"
-                    )
-                    logger.critical(f"###################")
+                    if elem == "cons":
+                        logger.critical(f"###################")
+                        logger.critical(
+                            f"{elem} is not set in config yaml. This is very likely a mistake!"
+                        )
+                        logger.critical(f"###################")
+                    else:
+                        logger.critical(f"###################")
+                        logger.critical(
+                            f"{elem} is not set in config yaml. Was this a mistake?"
+                        )
+                        logger.critical(f"###################")
 
         for l in input_simulation_parameter.readlines():
             if l.strip():

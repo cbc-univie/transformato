@@ -47,6 +47,7 @@ simulation:
     nstout: 50
     dt: 0.001
     switch: "vfswitch"
+    cons: None
   GPU: True
   free-energy-type: "rsfe"
 ################

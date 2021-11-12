@@ -13,6 +13,44 @@ from transformato.utils import run_simulation
 from transformato.constants import change_platform_to_test_platform
 
 
+@pytest.mark.rsfe
+def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
+    import logging
+
+    # Test that TF can handel multiple dummy regions
+    caplog.set_level(logging.DEBUG)
+    import warnings
+    from transformato import (
+        load_config_yaml,
+        SystemStructure,
+        IntermediateStateFactory,
+        ProposeMutationRoute,
+    )
+    from transformato.mutate import perform_mutations
+
+    warnings.filterwarnings("ignore", module="parmed")
+
+    workdir = get_test_output_dir()
+    conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+    )
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+    # generate the mutation list for the original
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    print(mutation_list.keys())
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
+    run_simulation(i.output_files, engine="openMM")
+
+
 @pytest.mark.slowtest
 @pytest.mark.rsfe
 def test_run_toluene_to_methane_cc_rsfe_with_openMM():
@@ -209,32 +247,6 @@ def test_run_2OJ9_tautomer_pair_with_CHARMM(caplog):
 
     run_simulation(output_files_t1, engine="CHARMM")
     run_simulation(output_files_t2, engine="CHARMM")
-    f = "/".join(output_files_t1[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
-
-
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_get_free_energy_acetylaceton_tautomer_pair(caplog):
-    caplog.set_level(logging.WARNING)
-    from .test_mutation import setup_acetylacetone_tautomer_pair
-
-    workdir = get_test_output_dir()
-
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir=workdir
-    )  # NOTE: for preprocessing input_dir is the output dir
-    change_platform_to_test_platform(configuration=configuration, engine="openMM")
-
-    (output_files_t1, output_files_t2), conf, _ = setup_acetylacetone_tautomer_pair(
-        configuration=configuration
-    )
-    run_simulation(output_files_t1, only_vacuum=True)
-    run_simulation(output_files_t2, only_vacuum=True)
     f = "/".join(output_files_t1[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
