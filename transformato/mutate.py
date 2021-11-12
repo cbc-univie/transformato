@@ -768,7 +768,6 @@ class ProposeMutationRoute(object):
             c for c in sorted(nx.connected_components(G), key=len, reverse=True)
         ]
 
-        logger.debug(unique_subgraphs)
         return unique_subgraphs
 
     def _display_mol(self, mol: Chem.Mol):
@@ -1153,11 +1152,10 @@ class CommonCoreTransformation(object):
                     logger.debug(f"Template atom: {ligand2_atom}")
 
                     # scale epsilon
-                    logger.debug(f"Original charge: {ligand1_atom.charge}")
                     modified_charge = (
                         scale * ligand1_atom.charge + (1 - scale) * ligand2_atom.charge
                     )
-                    logger.debug(f"New charge: {modified_charge}")
+                    logger.debug(f"Current charge: {ligand1_atom.charge}; target charge: {ligand2_atom.charge}; modified charge: {modified_charge}")
                     ligand1_atom.charge = modified_charge
 
             if not found:
@@ -1201,21 +1199,22 @@ class CommonCoreTransformation(object):
                             logger.debug(f"Template atom: {ligand2_atom}")
 
                             # scale epsilon
-                            logger.debug(f"Real epsilon: {ligand1_atom.epsilon}")
                             modified_epsilon = (
                                 lambda_value * ligand1_atom.epsilon
                                 + (1.0 - lambda_value) * ligand2_atom.epsilon
                             )
-                            logger.debug(f"New epsilon: {modified_epsilon}")
 
                             # scale rmin
-                            logger.debug(f"Real rmin: {ligand1_atom.rmin}")
                             modified_rmin = (
                                 lambda_value * ligand1_atom.rmin
                                 + (1.0 - lambda_value) * ligand2_atom.rmin
                             )
-                            logger.debug(f"New rmin: {modified_rmin}")
-
+                            logger.debug(
+                                f"Original LJ: eps: {ligand1_atom.epsilon}; rmin: {ligand1_atom.rmin}"
+                            )
+                            logger.debug(
+                                f"New LJ: eps: {modified_epsilon}; rmin: {modified_rmin}"
+                            )
                             ligand1_atom.mod_type = mod_type(
                                 modified_epsilon, modified_rmin
                             )
@@ -1269,23 +1268,22 @@ class CommonCoreTransformation(object):
                     logger.debug(f"Modifying bond: {ligand1_bond}")
 
                     logger.debug(f"Template bond: {ligand2_bond}")
-                    logger.debug(f"Original value for k: {ligand1_bond.type.k}")
-                    logger.debug(f"Target k: {ligand2_bond.type.k}")
-                    new_k = (lambda_value * ligand1_bond.type.k) + (
+                    modified_k = (lambda_value * ligand1_bond.type.k) + (
                         (1.0 - lambda_value) * ligand2_bond.type.k
                     )
-                    logger.debug(new_k)
 
-                    modified_k = new_k
+                    logger.debug(
+                        f"Current k: {ligand1_bond.type.k}; target k: {ligand2_bond.type.k}; new k: {modified_k}"
+                    )
 
-                    logger.debug(f"New k: {modified_k}")
-
-                    logger.debug(f"Old req: {ligand1_bond.type.req}")
                     # interpolating from ligand1 (original) to ligand2 (new) bond parameters
                     modified_req = (lambda_value * ligand1_bond.type.req) + (
                         (1.0 - lambda_value) * ligand2_bond.type.req
                     )
-                    logger.debug(f"Modified bond: {ligand1_bond}")
+
+                    logger.debug(
+                        f"Current req: {ligand1_bond.type.req}; target req: {ligand2_bond.type.req}; new req: {modified_req}"
+                    )
 
                     ligand1_bond.mod_type = mod_type(modified_k, modified_req)
                     logger.debug(ligand1_bond.mod_type)
@@ -1692,7 +1690,6 @@ class Mutation(object):
         )
 
         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
-            print(psf)
             raise RuntimeError(
                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
             )

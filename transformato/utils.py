@@ -77,7 +77,7 @@ def run_simulation(output_files: list, engine="openMM", only_vacuum: bool = Fals
         engine (str, optional): The MD engines used to perform the sampling. Defaults to "openMM".
         only_vacuum (bool, optional): For debugging only. Defaults to False.
     """
-    for path in sorted(output_files):
+    for path in output_files:
         # because path is object not string
         print(f"Start sampling for: {path}")
         runfile = "simulation.sh"
