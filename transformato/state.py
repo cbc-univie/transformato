@@ -551,11 +551,18 @@ with open(file_name + '_system.xml','w') as outfile:
         if not all(elem in overwrite_parameters.keys() for elem in common_keywords):
             for elem in common_keywords:
                 if elem not in overwrite_parameters.keys():
-                    logger.critical(f"###################")
-                    logger.critical(
-                        f"{elem} is not set in config yaml. Was this a mistake?"
-                    )
-                    logger.critical(f"###################")
+                    if elem == "cons":
+                        logger.critical(f"###################")
+                        logger.critical(
+                            f"{elem} is not set in config yaml. This is very likely a mistake!"
+                        )
+                        logger.critical(f"###################")
+                    else:
+                        logger.critical(f"###################")
+                        logger.critical(
+                            f"{elem} is not set in config yaml. Was this a mistake?"
+                        )
+                        logger.critical(f"###################")
 
         for l in input_simulation_parameter.readlines():
             if l.strip():
