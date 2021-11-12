@@ -5,15 +5,24 @@ from dataclasses import dataclass, field
 from typing import List, Tuple
 
 import numpy as np
+import networkx as nx
 import parmed as pm
 from IPython.core.display import display
 from rdkit import Chem
 from rdkit.Chem import AllChem, Draw, rdFMCS
 from rdkit.Chem.Draw import rdMolDraw2D
+from rdkit.Chem.Draw import IPythonConsole
+
+IPythonConsole.molSize = (900, 900)  # Change image size
+IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
 
 logger = logging.getLogger(__name__)
+
+
+def _flattened(list_of_lists: list) -> list:
+    return [item for sublist in list_of_lists for item in sublist]
 
 
 def _performe_linear_charge_scaling(
@@ -89,19 +98,20 @@ def perform_mutations(
     ######################################
     m = mutation_list["charge"]
     # turn off charges
+    # if number of charge mutation steps are defined in config file overwrite default or passed value
     try:
-        nr_of_mutation_steps_charge = configuration["system"]["structure1"]["mutation"][
-            "steps_charge"
-        ]  # defines the number of mutation steps for charge mutation
+        nr_of_mutation_steps_charge = configuration["system"][i.system.structure][
+            "mutation"
+        ]["steps_charge"]
+        print("Using number of steps for charge mutattions as defined in config file")
     except KeyError:
-        nr_of_mutation_steps_charge = nr_of_mutation_steps_charge
+        pass
 
     _performe_linear_charge_scaling(
         nr_of_steps=nr_of_mutation_steps_charge,
         intermediate_factory=i,
         mutation=m,
     )
-
     ######################################
     # turn off LJ
     ######################################
@@ -120,13 +130,21 @@ def perform_mutations(
 
     ######################################
     # turn off lj of heavy atoms
-
+    # take the order from either config file, passed to this function or the default ordering
     try:
-        list_of_heavy_atoms_to_be_mutated = configuration["system"]["structure1"][
+        list_of_heavy_atoms_to_be_mutated = configuration["system"][i.system.structure][
             "mutation"
         ]["heavy_atoms"]
+        print("Using ordering of LJ mutations as defined in config file.")
     except KeyError:
-        list_of_heavy_atoms_to_be_mutated = list_of_heavy_atoms_to_be_mutated
+        if not list_of_heavy_atoms_to_be_mutated:
+            # Use the ordering provided by _calculate_order_of_LJ_mutations
+            list_of_heavy_atoms_to_be_mutated = [
+                lj.vdw_atom_idx[0] for lj in (mutation_list["lj"])
+            ]
+            print("Using calculated ordering of LJ mutations.")
+        else:
+            print("Using passed ordering of LJ mutations.")
 
     mapping_of_atom_idx_to_mutation = map_lj_mutations_to_atom_idx(mutation_list["lj"])
     for heavy_atoms_to_turn_off_in_a_single_step in list_of_heavy_atoms_to_be_mutated:
@@ -159,7 +177,9 @@ def perform_mutations(
     # generate terminal LJ
     ######################################
     print("####################")
-    print(f"Generate terminal LJ particle in step: {i.current_step}")
+    print(
+        f"Generate terminal LJ particle in step: {i.current_step} on atoms: {[v.vdw_atom_idx for v in mutation_list['default-lj']]}"
+    )
     print("####################")
 
     i.write_state(
@@ -173,9 +193,9 @@ def perform_mutations(
 
     if mutation_list["transform"]:
         try:
-            nr_of_mutation_steps_cc = configuration["system"]["structure1"]["mutation"][
-                "steps_common_core"
-            ]
+            nr_of_mutation_steps_cc = configuration["system"][i.system.structure][
+                "mutation"
+            ]["steps_common_core"]
         except KeyError:
             nr_of_mutation_steps_cc = nr_of_mutation_steps_cc
 
@@ -431,6 +451,37 @@ class ProposeMutationRoute(object):
 
         return (lj_default_cc1, lj_default_cc2)
 
+    @staticmethod
+    def _calculate_order_of_LJ_mutations(
+        connected_dummy_regions: list, match_terminal_atoms: dict, G: nx.Graph
+    ) -> list:
+
+        ordered_LJ_mutations = []
+        for real_atom in match_terminal_atoms:
+            for dummy_atom in match_terminal_atoms[real_atom]:
+                for connected_dummy_region in connected_dummy_regions:
+                    # stop at connected dummy region with specific dummy_atom in it
+                    if dummy_atom not in connected_dummy_region:
+                        continue
+
+                    G_dummy = G.copy()
+                    # delete all nodes not in dummy region
+                    remove_nodes = [
+                        node for node in G.nodes() if node not in connected_dummy_region
+                    ]
+                    for remove_node in remove_nodes:
+                        G_dummy.remove_node(remove_node)
+
+                    # root is the dummy atom that connects the real region with the dummy region
+                    root = dummy_atom
+
+                    edges = list(nx.dfs_edges(G_dummy, source=root))
+                    nodes = [root] + [v for u, v in edges]
+                    nodes.reverse()  # NOTE: reverse the mutation
+                    ordered_LJ_mutations.append(nodes)
+
+        return ordered_LJ_mutations
+
     def propose_common_core(self):
         mcs = self._find_mcs("m1", "m2")
         return mcs
@@ -449,15 +500,33 @@ class ProposeMutationRoute(object):
         # define connected dummy regions
         if not connected_dummy_regions_cc1:
             connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
-                mol_name="m1", match_terminal_atoms_cc=match_terminal_atoms_cc1
+                mol_name="m1",
             )
         if not connected_dummy_regions_cc2:
             connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
-                mol_name="m2", match_terminal_atoms_cc=match_terminal_atoms_cc2
+                mol_name="m2",
             )
 
-        logger.info(f"connected dummy regions for mol1: {connected_dummy_regions_cc1}")
-        logger.info(f"connected dummy regions for mol2: {connected_dummy_regions_cc2}")
+        logger.debug(f"connected dummy regions for mol1: {connected_dummy_regions_cc1}")
+        logger.debug(f"connected dummy regions for mol2: {connected_dummy_regions_cc2}")
+
+        # calculate the ordering or LJ mutations
+        odered_connected_dummy_regions_cc1 = self._calculate_order_of_LJ_mutations(
+            connected_dummy_regions_cc1,
+            match_terminal_atoms_cc1,
+            self.graphs["m1"].copy(),
+        )
+        odered_connected_dummy_regions_cc2 = self._calculate_order_of_LJ_mutations(
+            connected_dummy_regions_cc2,
+            match_terminal_atoms_cc2,
+            self.graphs["m2"].copy(),
+        )
+        logger.info(
+            f"sorted connected dummy regions for mol1: {odered_connected_dummy_regions_cc1}"
+        )
+        logger.info(
+            f"sorted connected dummy regions for mol2: {odered_connected_dummy_regions_cc2}"
+        )
 
         # find the atoms from dummy_region in s1 that needs to become lj default
         (
@@ -471,7 +540,7 @@ class ProposeMutationRoute(object):
             mol_name="m1",
             tlc=self.s1_tlc,
             match_termin_real_and_dummy_atoms=match_terminal_atoms_cc1,
-            connected_dummy_regions=connected_dummy_regions_cc1,
+            connected_dummy_regions=odered_connected_dummy_regions_cc1,
             lj_default=lj_default_cc1,
         )
 
@@ -479,7 +548,7 @@ class ProposeMutationRoute(object):
             mol_name="m2",
             tlc=self.s2_tlc,
             match_termin_real_and_dummy_atoms=match_terminal_atoms_cc2,
-            connected_dummy_regions=connected_dummy_regions_cc2,
+            connected_dummy_regions=odered_connected_dummy_regions_cc2,
             lj_default=lj_default_cc2,
         )
 
@@ -672,81 +741,33 @@ class ProposeMutationRoute(object):
             mol.GetBondWithIdx(bond_idx).GetEndAtomIdx(),
         )
 
-    def _find_connected_dummy_regions(
-        self, mol_name: str, match_terminal_atoms_cc: dict
-    ) -> List[set]:
-
-        from itertools import chain
+    def _find_connected_dummy_regions(self, mol_name: str) -> List[set]:
 
         sub = self._get_common_core(mol_name)
-
         #############################
         # start
         #############################
         mol = self.mols[mol_name]
+        G = self.graphs[mol_name].copy()
         # find all dummy atoms
-        dummy_list_mol = [
+        list_of_dummy_atoms_idx = [
             atom.GetIdx() for atom in mol.GetAtoms() if atom.GetIdx() not in sub
         ]
-        nr_of_dummy_atoms_mol = len(dummy_list_mol) + 1
-        # add all unique subgraphs here
-        unique_subgraphs = []
+        nr_of_dummy_atoms = len(list_of_dummy_atoms_idx) + 1
+        list_of_real_atoms_idx = [
+            atom.GetIdx() for atom in mol.GetAtoms() if atom.GetIdx() in sub
+        ]
+        # remove real atoms from graph to obtain multiple connected compounds
+        for real_atom_idx in list_of_real_atoms_idx:
+            G.remove_node(real_atom_idx)
 
-        # iterate over dummy regions
-        for real_atom in match_terminal_atoms_cc:
-            logger.debug(f"real atom: {real_atom}")
-            set_of_terminal_dummy_atoms = match_terminal_atoms_cc[real_atom]
-            for terminal_dummy_atom in set_of_terminal_dummy_atoms:
-                logger.debug(f"terminal_dummy_atom: {terminal_dummy_atom}")
-                # start with biggest possible subgraph at final dummy atom
-                for i in range(nr_of_dummy_atoms_mol, -1, -1):
-                    subgraphs_of_length_i = []
-                    logger.debug(f"Length: {i}")
-                    all_subgraphs = Chem.FindUniqueSubgraphsOfLengthN(
-                        mol=mol,
-                        length=i,
-                        useHs=True,
-                        useBO=False,
-                        rootedAtAtom=terminal_dummy_atom,
-                    )
-                    for subgraphs in all_subgraphs:
-                        subgraphs = set(
-                            chain.from_iterable(
-                                [
-                                    self._return_atom_idx_from_bond_idx(
-                                        mol=mol, bond_idx=e
-                                    )
-                                    for e in subgraphs
-                                ]
-                            )
-                        )
+        # find these connected compounds
+        from networkx.algorithms.components import connected_components
 
-                        # test that only dummy atoms are in subgraph
-                        if any([real_atom in subgraphs for real_atom in sub]):
-                            pass
-                        else:
-                            subgraphs_of_length_i.append(set(subgraphs))
+        unique_subgraphs = [
+            c for c in sorted(nx.connected_components(G), key=len, reverse=True)
+        ]
 
-                    # test that new subgraphs are not already contained in bigger subgraphs
-                    for subgraphs in subgraphs_of_length_i:
-                        if any(
-                            [
-                                subgraphs.issubset(old_subgraph)
-                                for old_subgraph in unique_subgraphs
-                            ]
-                        ):
-                            # not new set
-                            pass
-                        else:
-                            unique_subgraphs.append(subgraphs)
-                            logger.debug(subgraphs)
-
-        # adding single dummy atoms that are not in a path
-        for dummy_atom in dummy_list_mol:
-            if dummy_atom not in list(chain.from_iterable(unique_subgraphs)):
-                unique_subgraphs.append(set([dummy_atom]))
-
-        logger.debug(unique_subgraphs)
         return unique_subgraphs
 
     def _display_mol(self, mol: Chem.Mol):
@@ -955,7 +976,6 @@ class ProposeMutationRoute(object):
         mol = self.mols[name]
         mutations = defaultdict(list)
 
-        # TODO: this needs some work!
         # get the atom that connects the common core to the dummy regiom
         match_termin_real_and_dummy_atoms = (
             dummy_region.match_termin_real_and_dummy_atoms
@@ -1132,11 +1152,10 @@ class CommonCoreTransformation(object):
                     logger.debug(f"Template atom: {ligand2_atom}")
 
                     # scale epsilon
-                    logger.debug(f"Original charge: {ligand1_atom.charge}")
                     modified_charge = (
                         scale * ligand1_atom.charge + (1 - scale) * ligand2_atom.charge
                     )
-                    logger.debug(f"New charge: {modified_charge}")
+                    logger.debug(f"Current charge: {ligand1_atom.charge}; target charge: {ligand2_atom.charge}; modified charge: {modified_charge}")
                     ligand1_atom.charge = modified_charge
 
             if not found:
@@ -1180,21 +1199,22 @@ class CommonCoreTransformation(object):
                             logger.debug(f"Template atom: {ligand2_atom}")
 
                             # scale epsilon
-                            logger.debug(f"Real epsilon: {ligand1_atom.epsilon}")
                             modified_epsilon = (
                                 lambda_value * ligand1_atom.epsilon
                                 + (1.0 - lambda_value) * ligand2_atom.epsilon
                             )
-                            logger.debug(f"New epsilon: {modified_epsilon}")
 
                             # scale rmin
-                            logger.debug(f"Real rmin: {ligand1_atom.rmin}")
                             modified_rmin = (
                                 lambda_value * ligand1_atom.rmin
                                 + (1.0 - lambda_value) * ligand2_atom.rmin
                             )
-                            logger.debug(f"New rmin: {modified_rmin}")
-
+                            logger.debug(
+                                f"Original LJ: eps: {ligand1_atom.epsilon}; rmin: {ligand1_atom.rmin}"
+                            )
+                            logger.debug(
+                                f"New LJ: eps: {modified_epsilon}; rmin: {modified_rmin}"
+                            )
                             ligand1_atom.mod_type = mod_type(
                                 modified_epsilon, modified_rmin
                             )
@@ -1248,23 +1268,22 @@ class CommonCoreTransformation(object):
                     logger.debug(f"Modifying bond: {ligand1_bond}")
 
                     logger.debug(f"Template bond: {ligand2_bond}")
-                    logger.debug(f"Original value for k: {ligand1_bond.type.k}")
-                    logger.debug(f"Target k: {ligand2_bond.type.k}")
-                    new_k = (lambda_value * ligand1_bond.type.k) + (
+                    modified_k = (lambda_value * ligand1_bond.type.k) + (
                         (1.0 - lambda_value) * ligand2_bond.type.k
                     )
-                    logger.debug(new_k)
 
-                    modified_k = new_k
+                    logger.debug(
+                        f"Current k: {ligand1_bond.type.k}; target k: {ligand2_bond.type.k}; new k: {modified_k}"
+                    )
 
-                    logger.debug(f"New k: {modified_k}")
-
-                    logger.debug(f"Old req: {ligand1_bond.type.req}")
                     # interpolating from ligand1 (original) to ligand2 (new) bond parameters
                     modified_req = (lambda_value * ligand1_bond.type.req) + (
                         (1.0 - lambda_value) * ligand2_bond.type.req
                     )
-                    logger.debug(f"Modified bond: {ligand1_bond}")
+
+                    logger.debug(
+                        f"Current req: {ligand1_bond.type.req}; target req: {ligand2_bond.type.req}; new req: {modified_req}"
+                    )
 
                     ligand1_bond.mod_type = mod_type(modified_k, modified_req)
                     logger.debug(ligand1_bond.mod_type)
@@ -1671,7 +1690,6 @@ class Mutation(object):
         )
 
         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
-            print(psf)
             raise RuntimeError(
                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
             )

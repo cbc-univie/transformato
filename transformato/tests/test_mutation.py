@@ -367,6 +367,25 @@ def test_proposed_mutation_mcs():
         assert set(a.get_common_core_idx_mol2()) == cc2
 
 
+def test_mutation_with_multiple_dummy_regions(caplog):
+    # Test that TF can handel multiple dummy regions
+    caplog.set_level(logging.INFO)
+    import warnings
+
+    warnings.filterwarnings("ignore", module="parmed")
+
+    workdir = get_test_output_dir()
+    conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+    )
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+
+
 def test_proposed_mutation_terminal_dummy_real_atom_match():
     from rdkit.Chem import rdFMCS
 
@@ -445,12 +464,8 @@ def test_find_connected_dummy_regions1():
     assert len(match_terminal_atoms_cc2[15]) == 1
 
     # find connected dummy regions
-    connected_dummy_regions_cc1 = a._find_connected_dummy_regions(
-        "m1", match_terminal_atoms_cc1
-    )
-    connected_dummy_regions_cc2 = a._find_connected_dummy_regions(
-        "m2", match_terminal_atoms_cc2
-    )
+    connected_dummy_regions_cc1 = a._find_connected_dummy_regions("m1")
+    connected_dummy_regions_cc2 = a._find_connected_dummy_regions("m2")
 
     lj_default_cc1, lj_default_cc2 = a._match_terminal_dummy_atoms_between_common_cores(
         match_terminal_atoms_cc1,
@@ -483,12 +498,8 @@ def test_find_connected_dummy_regions2():
     match_terminal_atoms_cc2 = a._match_terminal_real_and_dummy_atoms_for_mol2()
 
     # find connected dummy regions
-    connected_dummy_regions_cc1 = a._find_connected_dummy_regions(
-        "m1", match_terminal_atoms_cc1
-    )
-    connected_dummy_regions_cc2 = a._find_connected_dummy_regions(
-        "m2", match_terminal_atoms_cc2
-    )
+    connected_dummy_regions_cc1 = a._find_connected_dummy_regions("m1")
+    connected_dummy_regions_cc2 = a._find_connected_dummy_regions("m2")
 
     lj_default_cc1, lj_default_cc2 = a._match_terminal_dummy_atoms_between_common_cores(
         match_terminal_atoms_cc1,
@@ -915,13 +926,16 @@ def test_vdw_mutation_for_hydrogens_system2():
         configuration = load_config_yaml(
             config=conf, input_dir="data/", output_dir=workdir
         )
+
         s1 = SystemStructure(configuration, "structure1")
         s2 = SystemStructure(configuration, "structure2")
 
         s1_to_s2 = ProposeMutationRoute(s1, s2)
-        s1_to_s2.bondCompare = rdFMCS.BondCompare.CompareOrderExact
         s1_to_s2.completeRingsOnly = True
-        s1_to_s2.calculate_common_core()
+        s1_to_s2.propose_common_core()
+        s1_to_s2.remove_idx_from_common_core_of_mol1([14])
+        s1_to_s2.remove_idx_from_common_core_of_mol2([6])
+        s1_to_s2.finish_common_core()
 
         mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
         i = IntermediateStateFactory(
@@ -974,8 +988,8 @@ def test_vdw_mutation_for_hydrogens_system2():
                             new_psf.atoms[idx].rmin,
                             rtol=1e-3,
                         )
-            for opath in i.output_files:
-                shutil.rmtree(opath)
+        for opath in i.output_files:
+            shutil.rmtree(opath)
 
 
 @pytest.mark.slowtest
@@ -2096,7 +2110,10 @@ def test_generate_list_of_heavy_atoms_to_mutate():
     from transformato.utils import map_lj_mutations_to_atom_idx
     from transformato.constants import loeffler_testsystems_dir
 
-    # neopentane to methane 
+    #########################################
+    #########################################
+    # neopentane to methane
+    # with user defined connected dummy region
     configuration = load_config_yaml(
         config="transformato/tests/config/test-neopentane-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
@@ -2117,13 +2134,55 @@ def test_generate_list_of_heavy_atoms_to_mutate():
         system=s1,
         configuration=configuration,
     )
-    list_of_heavy_atom_mutations = map_lj_mutations_to_atom_idx(mutation_list["lj"])
-    for key in list_of_heavy_atom_mutations:
-        print(key)
-        print(list_of_heavy_atom_mutations[key])
-    assert list(list_of_heavy_atom_mutations.keys()) == [5, 9, 13]
 
-    # toluene to methane 
+    # get the order of the heavy atom lj mutation
+    list_of_heavy_atoms_to_be_mutated = [
+        lj.vdw_atom_idx[0] for lj in (mutation_list["lj"])
+    ]
+    # map the order to the actual mutations
+    mapping_of_atom_idx_to_mutation = map_lj_mutations_to_atom_idx(mutation_list["lj"])
+
+    assert set([atom_idx for atom_idx in list_of_heavy_atoms_to_be_mutated]) == set(
+        [5, 9, 13]
+    )
+
+    #########################################
+    #########################################
+    # neopentane to methane
+    # without user defined connected dummy region
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-neopentane-methane-rsfe.yaml",
+        input_dir=loeffler_testsystems_dir,
+        output_dir=get_test_output_dir(),
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+
+    # get the order of the heavy atom lj mutation
+    list_of_heavy_atoms_to_be_mutated = [
+        lj.vdw_atom_idx[0] for lj in (mutation_list["lj"])
+    ]
+    # map the order to the actual mutations
+    mapping_of_atom_idx_to_mutation = map_lj_mutations_to_atom_idx(mutation_list["lj"])
+
+    assert set([atom_idx for atom_idx in list_of_heavy_atoms_to_be_mutated]) == set(
+        [5, 9, 13]
+    )
+
+    #########################################
+    #########################################
+    # toluene to methane
     configuration = load_config_yaml(
         config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
@@ -2141,8 +2200,11 @@ def test_generate_list_of_heavy_atoms_to_mutate():
         system=s1,
         configuration=configuration,
     )
-    list_of_heavy_atom_mutations = map_lj_mutations_to_atom_idx(mutation_list["lj"])
-    for key in list_of_heavy_atom_mutations:
-        print(key)
-        print(list_of_heavy_atom_mutations[key])
-    assert list(list_of_heavy_atom_mutations.keys()) == [1, 3, 9, 11, 13]
+    # get the order of the heavy atom lj mutation
+    list_of_heavy_atoms_to_be_mutated = [
+        lj.vdw_atom_idx[0] for lj in (mutation_list["lj"])
+    ]
+    # map the order to the actual mutations
+    mapping_of_atom_idx_to_mutation = map_lj_mutations_to_atom_idx(mutation_list["lj"])
+
+    assert set(list_of_heavy_atoms_to_be_mutated) == set([1, 3, 9, 11, 13])

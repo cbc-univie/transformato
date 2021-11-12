@@ -3,37 +3,37 @@
 system:
   ################
   structure1:
-    name: "2-methylindole"
-    tlc: "UNL"
+    name: "1a0q"
+    tlc: "LIG"
     vacuum:
       dirname: "vacuum"
-      psf_file_name: "step3_charmm2omm"
-      crd_file_name: "step3_charmm2omm"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
       rst_file_name: "step4_equilibration"
       simulation_parameter: "step5_production.inp"
       intermediate-filename: "lig_in_vacuum"
     waterbox:
       dirname: "waterbox"
-      psf_file_name: "step3_charmm2omm"
-      crd_file_name: "step3_charmm2omm"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
       rst_file_name: "step4_equilibration"
       simulation_parameter: "step5_production.inp"
       intermediate-filename: "lig_in_waterbox"
 
   structure2:
-    name: "methane"
+    name: "1a07"
     tlc: "LIG"
     vacuum:
       dirname: "vacuum"
-      psf_file_name: "step3_charmm2omm"
-      crd_file_name: "step3_charmm2omm"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
       rst_file_name: "step4_equilibration"
       simulation_parameter: "step5_production.inp"
       intermediate-filename: "lig_in_vacuum"
     waterbox:
       dirname: "waterbox"
-      psf_file_name: "step3_charmm2omm"
-      crd_file_name: "step3_charmm2omm"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
       rst_file_name: "step4_equilibration"
       simulation_parameter: "step5_production.inp"
       intermediate-filename: "lig_in_waterbox"
@@ -42,10 +42,11 @@ system:
 simulation:
   ################
   parameters:
-    nstep: 2_000
+    nstep: 50_000
     nstdcd: 100
     nstout: 50
     dt: 0.001
+    mini_nstep: 200
     switch: "vfswitch"
     cons: None
   GPU: True
