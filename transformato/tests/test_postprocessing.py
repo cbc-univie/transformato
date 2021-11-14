@@ -227,7 +227,7 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
 @pytest.mark.system_2oj9
 @pytest.mark.postprocessing
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_2oj9_postprocessing_with_different_engines():
@@ -292,7 +292,7 @@ def test_2oj9_postprocessing_with_different_engines():
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_2oj9_postprocessing_with_openMM():
@@ -360,7 +360,7 @@ def test_compare_energies_acetylacetone_enol_vacuum(caplog):
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_compare_energies_acetylacetone_enol_waterbox(caplog):
@@ -456,7 +456,7 @@ def test_compare_energies_acetylacetone_keto_vacuum(caplog):
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_compare_energies_acetylacetone_keto_waterbox(caplog):
@@ -507,7 +507,7 @@ def test_compare_energies_acetylacetone_keto_waterbox(caplog):
 @pytest.mark.rsfe
 @pytest.mark.postprocessing
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_acetylacetone_postprocessing_different_engines():
@@ -568,7 +568,7 @@ def test_acetylacetone_postprocessing_different_engines():
 @pytest.mark.rsfe
 @pytest.mark.postprocessing
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
@@ -686,7 +686,7 @@ def test_compare_energies_methane_vacuum(caplog):
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_compare_energies_methane_waterbox(caplog):
@@ -777,7 +777,7 @@ def test_compare_energies_toluene_vacuum(caplog):
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_compare_energies_toluene_waterbox(caplog):
@@ -827,7 +827,7 @@ def test_compare_energies_toluene_waterbox(caplog):
 @pytest.mark.rsfe
 @pytest.mark.postprocessing
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_toluene_to_methane_calculate_rsfe_with_different_engines():
