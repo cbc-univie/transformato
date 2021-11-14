@@ -430,10 +430,6 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
         # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 16 : cc2: 15
 
 
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
 def test_find_connected_dummy_regions1():
     workdir = get_test_output_dir()
     from rdkit.Chem import rdFMCS
