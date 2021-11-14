@@ -30,7 +30,7 @@ rbfe_test_systemes_generated = os.path.isdir("data/2OJ9-original-2OJ9-tautomer-r
 ###########################################
 # 2OJ9-tautomer system
 ###########################################
-@pytest.mark.system_2oj9
+@pytest.mark.rsfe
 def test_compare_energies_2OJ9_original_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -97,7 +97,7 @@ def test_lazy_eval():
     print(unitcell_angles[0])
 
 
-@pytest.mark.system_2oj9
+@pytest.mark.rsfe
 def test_compare_energies_2OJ9_original_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -139,7 +139,7 @@ def test_compare_energies_2OJ9_original_waterbox(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=0.1)
 
 
-@pytest.mark.system_2oj9
+@pytest.mark.rsfe
 def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -181,7 +181,7 @@ def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-1)
 
 
-@pytest.mark.system_2oj9
+@pytest.mark.rsfe
 def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -224,60 +224,13 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=0.1)
 
 
-# @pytest.mark.system_2oj9
-# @pytest.mark.slowtest
-# @pytest.mark.skipif(
-#     os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-# )
-# def test_2oj9_calculate_rbfe_with_openMM_only_complex():
-
-#     initialize_NUM_PROC(1)
-
-#     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rbfe.yaml"
-#     configuration = load_config_yaml(
-#         config=conf, input_dir="data/", output_dir="data"
-#     )  # NOTE: for preprocessing input_dir is the output dir
-
-#     # 2OJ9-original to tautomer common core
-#     ddG_openMM, dddG, f_openMM = postprocessing(
-#         configuration,
-#         name="2OJ9-original",
-#         engine="openMM",
-#         max_snapshots=10_000,
-#         only_single_state='complex'
-#     )
-
-
 @pytest.mark.system_2oj9
-@pytest.mark.slowtest
+@pytest.mark.postprocessing
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
 )
-def test_2oj9_calculate_rsfe_with_openMM(caplog):
-    caplog.set_level(logging.DEBUG)
-
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="data"
-    )  # NOTE: for preprocessing input_dir is the output dir
-
-    # 2OJ9-original to tautomer common core
-    ddG_openMM, dddG, f_openMM = postprocessing(
-        configuration,
-        name="2OJ9-original",
-        engine="openMM",
-        max_snapshots=600,
-    )
-
-    assert np.isclose(ddG_openMM, 1.661582340891158)
-
-
-@pytest.mark.system_2oj9
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
-)
-def test_2oj9_calculate_rsfe_with_different_engines():
+def test_2oj9_postprocessing_with_different_engines():
 
     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
@@ -337,123 +290,12 @@ def test_2oj9_calculate_rsfe_with_different_engines():
     assert np.isclose(ddG_charmm, -0.4459798541540181)
 
 
-@pytest.mark.system_2oj9
-@pytest.mark.slowtest
+@pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
 )
-def test_2oj9_calculate_rsfe_with_different_switches(caplog):
-    caplog.set_level(logging.WARNING)
-    from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
-    from .test_run_production import run_simulation
-    from ..analysis import FreeEnergyCalculator
-
-    # vfswitch
-    conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe_vfswitch.yaml"
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir=get_test_output_dir()
-    )  # NOTE: for preprocessing input_dir is the output dir
-
-    # generate samples
-    (output_files_t1, output_files_t2), _, _ = setup_2OJ9_tautomer_pair_rsfe(
-        configuration=configuration
-    )
-    run_simulation(output_files_t1)
-
-    f = FreeEnergyCalculator(configuration, "2OJ9-original")
-
-    # 2OJ9-original to tautomer common core
-    ddG_charmm, dddG, f_charmm_vfswitch = postprocessing(
-        configuration,
-        name="2OJ9-original",
-        engine="CHARMM",
-        max_snapshots=600,
-        different_path_for_dcd="data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original",
-    )
-    ddG_openMM, dddG, f_openMM_vfswitch = postprocessing(
-        configuration,
-        name="2OJ9-original",
-        engine="openMM",
-        max_snapshots=600,
-        different_path_for_dcd="data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original",
-    )
-
-    assert np.isclose(
-        f_charmm_vfswitch.vacuum_free_energy_differences[0, -1],
-        f_openMM_vfswitch.vacuum_free_energy_differences[0, -1],
-        atol=1e-2,
-    )
-
-    assert np.isclose(
-        f_charmm_vfswitch.waterbox_free_energy_differences[0, -1],
-        f_openMM_vfswitch.waterbox_free_energy_differences[0, -1],
-        atol=1e-2,
-    )
-
-    # switch
-    conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe_vswitch.yaml"
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir=get_test_output_dir()
-    )  # NOTE: for preprocessing input_dir is the output dir
-
-    run_simulation(output_files_t1)
-    configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir=get_test_output_dir()
-    )  # NOTE: for preprocessing input_dir is the output dir
-    f = FreeEnergyCalculator(configuration, "2OJ9-original")
-
-    # 2OJ9-original to tautomer common core
-    ddG_charmm, dddG, f_charmm_switch = postprocessing(
-        configuration,
-        name="2OJ9-original",
-        engine="CHARMM",
-        max_snapshots=600,
-        different_path_for_dcd="data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original",
-    )
-    ddG_charmm, dddG, f_openMM_switch = postprocessing(
-        configuration,
-        name="2OJ9-original",
-        engine="openMM",
-        max_snapshots=600,
-        different_path_for_dcd="data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original",
-    )
-
-    assert np.isclose(
-        f_charmm_switch.vacuum_free_energy_differences[0, -1],
-        f_openMM_switch.vacuum_free_energy_differences[0, -1],
-        atol=1e-2,
-    )
-
-    assert np.isclose(
-        f_charmm_switch.waterbox_free_energy_differences[0, -1],
-        f_openMM_switch.waterbox_free_energy_differences[0, -1],
-        atol=1e-2,
-    )
-
-    assert np.isclose(
-        f_charmm_vfswitch.vacuum_free_energy_differences[0, -1],
-        f_charmm_switch.vacuum_free_energy_differences[0, -1],
-        atol=1e-2,
-    )
-    assert np.isclose(
-        f_charmm_vfswitch.waterbox_free_energy_differences[0, -1],
-        f_charmm_switch.waterbox_free_energy_differences[0, -1],
-        atol=1e-2,
-    )
-    assert np.isclose(
-        f_openMM_vfswitch.waterbox_free_energy_differences[0, -1],
-        f_openMM_switch.waterbox_free_energy_differences[0, -1],
-        atol=1e-2,
-    )
-
-
-@pytest.mark.system_2oj9
-@pytest.mark.slowtest
-@pytest.mark.skipif(
-    rbfe_test_systemes_generated == False,
-    reason="These calculations need outside testsystems.",
-)
-def test_2oj9_calculate_rbfe_with_openMM():
+def test_2oj9_postprocessing_with_openMM():
 
     initialize_NUM_PROC(1)
 
@@ -471,7 +313,7 @@ def test_2oj9_calculate_rbfe_with_openMM():
 ###########################################
 # acetylacetone-tautomer system
 ###########################################
-@pytest.mark.system_acetylacetone
+@pytest.mark.rsfe
 def test_compare_energies_acetylacetone_enol_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -516,7 +358,11 @@ def test_compare_energies_acetylacetone_enol_vacuum(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.system_acetylacetone
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_compare_energies_acetylacetone_enol_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -563,7 +409,7 @@ def test_compare_energies_acetylacetone_enol_waterbox(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.system_acetylacetone
+@pytest.mark.rsfe
 def test_compare_energies_acetylacetone_keto_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -608,7 +454,11 @@ def test_compare_energies_acetylacetone_keto_vacuum(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.system_acetylacetone
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_compare_energies_acetylacetone_keto_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -654,12 +504,13 @@ def test_compare_energies_acetylacetone_keto_waterbox(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.system_acetylacetone
-@pytest.mark.slowtest
+@pytest.mark.rsfe
+@pytest.mark.postprocessing
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
 )
-def test_acetylacetone_calculate_rsfe_with_different_engines():
+def test_acetylacetone_postprocessing_different_engines():
 
     conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
@@ -714,10 +565,11 @@ def test_acetylacetone_calculate_rsfe_with_different_engines():
     assert np.isclose(ddG_charmm, 2.699116266252545, rtol=0.01)
 
 
-@pytest.mark.system_acetylacetone
-@pytest.mark.slowtest
+@pytest.mark.rsfe
+@pytest.mark.postprocessing
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
 )
 def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
     from ..constants import kT
@@ -787,7 +639,7 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
 ###########################################
 # toluene-methane system
 ###########################################
-@pytest.mark.system_toluene_methane
+@pytest.mark.rsfe
 def test_compare_energies_methane_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -832,7 +684,11 @@ def test_compare_energies_methane_vacuum(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.system_toluene_methane
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_compare_energies_methane_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -875,7 +731,7 @@ def test_compare_energies_methane_waterbox(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.system_toluene_methane
+@pytest.mark.rsfe
 def test_compare_energies_toluene_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -919,7 +775,11 @@ def test_compare_energies_toluene_vacuum(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.system_toluene_methane
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_compare_energies_toluene_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -964,10 +824,11 @@ def test_compare_energies_toluene_waterbox(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=1e-2)
 
 
-@pytest.mark.system_toluene_methane
-@pytest.mark.slowtest
+@pytest.mark.rsfe
+@pytest.mark.postprocessing
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("ACTIONS") == "1",
+    reason="Skipping tests that cannot pass in github actions",
 )
 def test_toluene_to_methane_calculate_rsfe_with_different_engines():
 
