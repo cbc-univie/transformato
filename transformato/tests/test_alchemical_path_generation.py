@@ -83,7 +83,7 @@ def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_methane_common_core():
@@ -102,7 +102,7 @@ def test_generate_alchemical_path_for_methane_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_toluene_commmon_core():
@@ -121,7 +121,7 @@ def test_generate_alchemical_path_for_toluene_commmon_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_2MIN_common_core():
@@ -140,7 +140,7 @@ def test_generate_alchemical_path_for_2MIN_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_2MFN_common_core():
@@ -159,7 +159,7 @@ def test_generate_alchemical_path_for_2MFN_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_neopentane_common_core():
@@ -178,7 +178,7 @@ def test_generate_alchemical_path_for_neopentane_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_methanol_common_core():
@@ -197,7 +197,7 @@ def test_generate_alchemical_path_for_methanol_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_2_CPI_to_common_core():
@@ -216,7 +216,7 @@ def test_generate_alchemical_path_for_2_CPI_to_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_7_CPI_to_common_core():

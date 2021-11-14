@@ -15,7 +15,7 @@ from transformato.constants import change_platform_to_test_platform
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
@@ -57,7 +57,7 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_toluene_to_methane_cc_rsfe_with_openMM():
@@ -78,7 +78,7 @@ def test_run_toluene_to_methane_cc_rsfe_with_openMM():
 
 
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 @pytest.mark.rsfe
@@ -99,7 +99,7 @@ def test_run_methane_to_methane_cc_with_openMM():
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_methane_to_methane_common_core_with_CHARMM():
@@ -122,7 +122,7 @@ def test_run_methane_to_methane_common_core_with_CHARMM():
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_acetylacetone_tautomer_pair(caplog):
@@ -145,7 +145,7 @@ def test_run_acetylacetone_tautomer_pair(caplog):
 
 
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_acetylacetone_tautomer_pair_only_in_vacuum(caplog):
@@ -170,7 +170,7 @@ def test_run_acetylacetone_tautomer_pair_only_in_vacuum(caplog):
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_2OJ9_tautomer_pair_with_openMM(caplog):
@@ -194,7 +194,7 @@ def test_run_2OJ9_tautomer_pair_with_openMM(caplog):
 
 @pytest.mark.rbfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_2OJ9_tautomer_pair_with_openMM(caplog):
@@ -218,7 +218,7 @@ def test_run_2OJ9_tautomer_pair_with_openMM(caplog):
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.getenv("ACTIONS") == "1",
+    os.getenv("CI") == True,
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_2OJ9_tautomer_pair_with_CHARMM(caplog):
