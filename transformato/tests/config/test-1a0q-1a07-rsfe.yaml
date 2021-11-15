@@ -42,9 +42,9 @@ system:
 simulation:
   ################
   parameters:
-    nstep: 50_000
+    nstep: 100_000
     nstdcd: 100
-    nstout: 50
+    nstout: 500
     dt: 0.001
     mini_nstep: 200
     switch: "vfswitch"

@@ -1,13 +1,12 @@
 name: test
 channels:
   - conda-forge
-  - omnia/label/dev
-  - omnia
   - defaults
 dependencies:
   # Base depends
   - openmm
   - numpy
+  - ipython
   - pymbar
   - rdkit
   - parmed
