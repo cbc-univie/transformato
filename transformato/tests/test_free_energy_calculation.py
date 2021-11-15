@@ -13,7 +13,7 @@ from transformato.utils import postprocessing
 @pytest.mark.rsfe
 @pytest.mark.full_workflow
 @pytest.mark.skipif(
-    os.getenv("CI") == True,
+    os.getenv("CI") == 'true',
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
@@ -63,7 +63,7 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
 @pytest.mark.rsfe
 @pytest.mark.full_workflow
 @pytest.mark.skipif(
-    os.getenv("CI") == True,
+    os.getenv("CI") == 'true',
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_2oj9_rsfe_with_different_switches(caplog):
