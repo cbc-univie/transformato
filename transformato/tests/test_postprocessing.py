@@ -30,6 +30,11 @@ rbfe_test_systemes_generated = os.path.isdir("data/2OJ9-original-2OJ9-tautomer-r
 ###########################################
 # 2OJ9-tautomer system
 ###########################################
+@pytest.mark.requires_charmm_installation
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require CHARMM.",
+)
 @pytest.mark.rsfe
 def test_compare_energies_2OJ9_original_vacuum(caplog):
     caplog.set_level(logging.WARNING)
@@ -98,6 +103,10 @@ def test_lazy_eval():
 
 
 @pytest.mark.rsfe
+@pytest.mark.requires_charmm_installation
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require CHARMM.",
 def test_compare_energies_2OJ9_original_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -140,6 +149,10 @@ def test_compare_energies_2OJ9_original_waterbox(caplog):
 
 
 @pytest.mark.rsfe
+@pytest.mark.requires_charmm_installation
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require CHARMM.",
 def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -182,6 +195,10 @@ def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
 
 
 @pytest.mark.rsfe
+@pytest.mark.requires_charmm_installation
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require CHARMM.",
 def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -226,10 +243,10 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
 
 @pytest.mark.system_2oj9
 @pytest.mark.postprocessing
+@pytest.mark.requires_charmm_installation
 @pytest.mark.skipif(
     os.getenv("CI") == 'true',
-    reason="Skipping tests that cannot pass in github actions",
-)
+    reason="Skipping tests that require CHARMM.",
 def test_2oj9_postprocessing_with_different_engines():
 
     conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
@@ -314,6 +331,10 @@ def test_2oj9_postprocessing_with_openMM():
 # acetylacetone-tautomer system
 ###########################################
 @pytest.mark.rsfe
+@pytest.mark.requires_charmm_installation
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require CHARMM.",
 def test_compare_energies_acetylacetone_enol_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -410,6 +431,10 @@ def test_compare_energies_acetylacetone_enol_waterbox(caplog):
 
 
 @pytest.mark.rsfe
+@pytest.mark.requires_charmm_installation
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require CHARMM.",
 def test_compare_energies_acetylacetone_keto_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -640,6 +665,10 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
 # toluene-methane system
 ###########################################
 @pytest.mark.rsfe
+@pytest.mark.requires_charmm_installation
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require CHARMM.",
 def test_compare_energies_methane_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
@@ -732,6 +761,10 @@ def test_compare_energies_methane_waterbox(caplog):
 
 
 @pytest.mark.rsfe
+@pytest.mark.requires_charmm_installation
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require CHARMM.",
 def test_compare_energies_toluene_vacuum(caplog):
     caplog.set_level(logging.WARNING)
     from transformato import FreeEnergyCalculator
