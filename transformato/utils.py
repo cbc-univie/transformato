@@ -150,7 +150,7 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
 
     with open(f"{config}", "r") as stream:
         try:
-            settingsMap = yaml.load(stream)
+            settingsMap = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 

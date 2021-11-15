@@ -14,6 +14,10 @@ from transformato.constants import change_platform_to_test_platform
 
 
 @pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
     import logging
 
@@ -51,8 +55,11 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
     run_simulation(i.output_files, engine="openMM")
 
 
-@pytest.mark.slowtest
 @pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_run_toluene_to_methane_cc_rsfe_with_openMM():
     from transformato.testsystems import mutate_toluene_to_methane_cc
     from .test_run_production import run_simulation
@@ -68,14 +75,14 @@ def test_run_toluene_to_methane_cc_rsfe_with_openMM():
     output_files = mutate_toluene_to_methane_cc(configuration=configuration)
 
     run_simulation(output_files)
-    f = "/".join(output_files[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
 
 
-@pytest.mark.slowtest
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 @pytest.mark.rsfe
-def test_run_methane_to_methane_cc_rsfe_with_openMM():
+def test_run_methane_to_methane_cc_with_openMM():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
     workdir = get_test_output_dir()
@@ -88,17 +95,14 @@ def test_run_methane_to_methane_cc_rsfe_with_openMM():
     change_platform_to_test_platform(configuration=configuration, engine="openMM")
     output_files = mutate_methane_to_methane_cc(configuration=configuration)
     run_simulation(output_files)
-    f = "/".join(output_files[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
 
 
-@pytest.mark.slowtest
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
 )
-def test_run_methane_to_methane_cc_rsfe_with_CHARMM():
+def test_run_methane_to_methane_common_core_with_CHARMM():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
     workdir = get_test_output_dir()
@@ -116,12 +120,12 @@ def test_run_methane_to_methane_cc_rsfe_with_CHARMM():
     shutil.rmtree(f)
 
 
-@pytest.mark.slowtest
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
 )
-def test_run_acetylacetone_tautomer_pair_rsfe(caplog):
+def test_run_acetylacetone_tautomer_pair(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_acetylacetone_tautomer_pair
 
@@ -138,14 +142,11 @@ def test_run_acetylacetone_tautomer_pair_rsfe(caplog):
     )
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    f = "/".join(output_files_t1[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
 
 
-@pytest.mark.slowtest
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_acetylacetone_tautomer_pair_only_in_vacuum(caplog):
     caplog.set_level(logging.WARNING)
@@ -165,17 +166,14 @@ def test_run_acetylacetone_tautomer_pair_only_in_vacuum(caplog):
 
     run_simulation(output_files_t1, only_vacuum=True)
     run_simulation(output_files_t2, only_vacuum=True)
-    f = "/".join(output_files_t1[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
 
 
-@pytest.mark.slowtest
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
 )
-def test_run_2OJ9_tautomer_pair_rsfe_with_openMM(caplog):
+def test_run_2OJ9_tautomer_pair_with_openMM(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
@@ -192,17 +190,14 @@ def test_run_2OJ9_tautomer_pair_rsfe_with_openMM(caplog):
     )
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    f = "/".join(output_files_t1[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
 
 
-@pytest.mark.slowtest
 @pytest.mark.rbfe
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
 )
-def test_run_2OJ9_tautomer_pair_rbfe_with_openMM(caplog):
+def test_run_2OJ9_tautomer_pair_with_openMM(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_2OJ9_tautomer_pair_rbfe
 
@@ -219,15 +214,12 @@ def test_run_2OJ9_tautomer_pair_rbfe_with_openMM(caplog):
     )
     run_simulation(output_files_t1)
     run_simulation(output_files_t2)
-    f = "/".join(output_files_t1[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
 
 
-@pytest.mark.slowtest
 @pytest.mark.rsfe
 @pytest.mark.skipif(
-    os.environ.get("TRAVIS", None) == "true", reason="Skip slow test on travis."
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_2OJ9_tautomer_pair_with_CHARMM(caplog):
     caplog.set_level(logging.WARNING)
@@ -247,6 +239,3 @@ def test_run_2OJ9_tautomer_pair_with_CHARMM(caplog):
 
     run_simulation(output_files_t1, engine="CHARMM")
     run_simulation(output_files_t2, engine="CHARMM")
-    f = "/".join(output_files_t1[0].split("/")[:-3])
-    print(f)
-    shutil.rmtree(f)
