@@ -2100,9 +2100,12 @@ def test_full_mutation_system2():
 
         shutil.rmtree(f"{workdir}/{system_name}-rsfe")
 
-
+@pytest.mark.requires_loeffler_systems
+@pytest.mark.skipif(
+    os.getenv("CI") == 'true',
+    reason="Skipping tests that require loeffler system installed.",
+)
 def test_generate_list_of_heavy_atoms_to_mutate():
-    from transformato.testsystems import mutate_neopentane_to_methane_cc
     from transformato.utils import map_lj_mutations_to_atom_idx
     from transformato.constants import loeffler_testsystems_dir
 
