@@ -579,31 +579,6 @@ class FreeEnergyCalculator(object):
 
         return self.calculate_dG_using_mbar(u_kn, self.N_k, env)
 
-    def calculate_dG_to_common_core_mda(
-        self,
-        save_results: bool = True,
-        engine: str = "openMM",
-        nr_of_max_snapshots: int = 300,
-        num_proc: int = 1,
-        in_memory=False,
-    ):
-        """
-        Calculate mbar results using the python package MDAnalysis
-        or load save results from a serialized mbar results.
-        In defult setup only ~3GB of RAM are allocated. Trjaectories can also
-        be loaded into memory by setting in_memory = True that can be useful when
-        analysing many snapshots per trajectory.
-        """
-
-        if save_results:
-            os.makedirs(f"{self.configuration['system_dir']}/results/", exist_ok=True)
-            logger.info(f"Saving results in {self.save_results_to_path}")
-
-        for env in self.envs:
-            logger.info(f"Generating results for {env}.")
-            self.mbar_results[env] = self._analyse_results_using_mda(
-                env, save_results, engine, nr_of_max_snapshots, num_proc, in_memory
-            )
 
     def calculate_dG_to_common_core(
         self,
