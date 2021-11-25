@@ -16,6 +16,7 @@ dependencies:
   - ipython
   - jupyter
   - mdtraj
+  - mdanalysis
   - matplotlib
   - networkx
   - tqdm
