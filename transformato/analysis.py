@@ -1,4 +1,5 @@
 import copy
+import gc
 import logging
 import multiprocessing as mp
 import os
@@ -6,12 +7,11 @@ import pickle
 import subprocess
 from collections import defaultdict
 from itertools import repeat, starmap
-from multiprocessing import shared_memory
 from typing import List, Set, Tuple
 
 import matplotlib.pyplot as plt
-import mdtraj
 import MDAnalysis
+import mdtraj
 import numpy as np
 import seaborn as sns
 from pymbar import mbar
@@ -23,11 +23,13 @@ from tqdm import tqdm
 from transformato.constants import temperature
 from transformato.utils import get_structure_name
 
-import gc
 logger = logging.getLogger(__name__)
 
+
 def return_reduced_potential(
-    potential_energy: unit.Quantity, volume: unit.Quantity, temperature: unit.Quantity
+    potential_energy: unit.Quantity,
+    volume: unit.Quantity,
+    temperature: unit.Quantity = temperature,
 ) -> float:
     """Retrieve the reduced potential for a given context.
     The reduced potential is defined as in Ref. [1]
@@ -47,20 +49,6 @@ def return_reduced_potential(
     potential_energy : simtk.unit of float
     context
     ensamble: NVT or NPT
-    """
-
-    assert type(temperature) == unit.Quantity
-    pressure = 1.0 * unit.atmosphere  # atm
-    kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
-    beta = 1.0 / (kB * temperature)
-    # potential_energy += pressure * volume
-    return beta * potential_energy
-
-def return_reduced_potential_mod(
-    potential_energy: unit.Quantity) -> float:
-# potential_energy: unit.Quantity, volume: unit.Quantity, temperature: unit.Quantity # volume is not used?
-    """ Same as the reduced potential function without temperature and
-    volume
     """
 
     assert type(temperature) == unit.Quantity
@@ -106,7 +94,7 @@ class FreeEnergyCalculator(object):
         self.N_k: dict = {}
         self.thinning: int = 0
         self.save_results_to_path: str = f"{self.configuration['system_dir']}/results/"
-        self.traj_files:list = []
+        self.traj_files: list = []
 
     def load_trajs(self, nr_of_max_snapshots: int = 300):
         """
@@ -162,7 +150,11 @@ class FreeEnergyCalculator(object):
         further_thinning = max(
             int(new_length / self.nr_of_max_snapshots), 1
         )  # thinning
-        return traj[::further_thinning][: self.nr_of_max_snapshots], start, further_thinning
+        return (
+            traj[::further_thinning][: self.nr_of_max_snapshots],
+            start,
+            further_thinning,
+        )
 
     def _merge_trajs(self) -> Tuple[dict, dict, int, dict]:
         """
@@ -179,7 +171,7 @@ class FreeEnergyCalculator(object):
 
         logger.info(f"Evaluating {nr_of_states} states.")
         snapshots: dict = {}
-        unitcell:dict = {}
+        unitcell: dict = {}
         N_k: dict = defaultdict(list)
         start = -1
         stride = -1
@@ -197,22 +189,25 @@ class FreeEnergyCalculator(object):
                 if start == -1:
                     xyz, unitcell_lengths, _ = traj.read()
                     xyz, start, stride = self._thinning_traj(xyz)
-                    print(f'Len: {len(xyz)}, Start: {start}, Stride: {stride}')
+                    print(f"Len: {len(xyz)}, Start: {start}, Stride: {stride}")
                     unitcell_lengths, _, _ = self._thinning_traj(unitcell_lengths)
 
                 else:
                     traj.seek(start)
                     xyz, unitcell_lengths, _ = traj.read(stride=stride)
-                    xyz, unitcell_lengths = xyz[:self.nr_of_max_snapshots], unitcell_lengths[:self.nr_of_max_snapshots]
-                    print(f'Len: {len(xyz)}, Start: {start}, Stride: {stride}')
+                    xyz, unitcell_lengths = (
+                        xyz[: self.nr_of_max_snapshots],
+                        unitcell_lengths[: self.nr_of_max_snapshots],
+                    )
+                    print(f"Len: {len(xyz)}, Start: {start}, Stride: {stride}")
 
                 if len(xyz) < 10:
                     raise RuntimeError(
                         f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
                     )
 
-                confs.extend(xyz/10)
-                unitcell_.extend(unitcell_lengths/10)
+                confs.extend(xyz / 10)
+                unitcell_.extend(unitcell_lengths / 10)
                 logger.info(f"{dcd_path}")
                 logger.info(f"Nr of snapshots: {len(xyz)}")
                 N_k[env].append(len(xyz))
@@ -227,7 +222,7 @@ class FreeEnergyCalculator(object):
 
     @staticmethod
     def _energy_at_ts(
-        simulation: Simulation, configuration, env: str, unitcell_lengths:list
+        simulation: Simulation, configuration, env: str, unitcell_lengths: list
     ):
         """
         Calculates the potential energy with the correct periodic boundary conditions.
@@ -237,7 +232,11 @@ class FreeEnergyCalculator(object):
             bxl_y = unitcell_lengths[1] * (unit.nanometer)
             bxl_z = unitcell_lengths[2] * (unit.nanometer)
 
-            simulation.context.setPeriodicBoxVectors(vec3.Vec3(bxl_x,0,0), vec3.Vec3(0,bxl_y,0), vec3.Vec3(0,0,bxl_z)*unit.nanometer)
+            simulation.context.setPeriodicBoxVectors(
+                vec3.Vec3(bxl_x, 0, 0),
+                vec3.Vec3(0, bxl_y, 0),
+                vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
+            )
         simulation.context.setPositions(configuration)
         state = simulation.context.getState(getEnergy=True)
         return state.getPotentialEnergy()
@@ -378,7 +377,7 @@ class FreeEnergyCalculator(object):
         )
 
     def _evaluate_e_on_all_snapshots_openMM(
-        self, xyz_array: list, unitcell_lengths:list, lambda_state: int, env: str
+        self, xyz_array: list, unitcell_lengths: list, lambda_state: int, env: str
     ):
         """call for single processor run"""
 
@@ -391,8 +390,12 @@ class FreeEnergyCalculator(object):
         return np.array(energies)
 
     def _evaluate_e_with_openMM(
-        self, xyz_array:list, simulation, env:str, unitcell_lengths:list,
-    )->list:
+        self,
+        xyz_array: list,
+        simulation,
+        env: str,
+        unitcell_lengths: list,
+    ) -> list:
         """This function will be called from the mutliprocessing AND the single processor computational route"""
         energies = []
         volumn_list = [
@@ -400,8 +403,8 @@ class FreeEnergyCalculator(object):
             for ts in range(len(xyz_array))
         ]
 
-        if env == 'vacuum':
-            unitcell_lengths = [0.,0.,0.] * len(xyz_array)
+        if env == "vacuum":
+            unitcell_lengths = [0.0, 0.0, 0.0] * len(xyz_array)
 
         for ts in tqdm(range(len(xyz_array))):
             # calculate the potential energy
@@ -411,12 +414,14 @@ class FreeEnergyCalculator(object):
             energies.append(red_e)
         return energies
 
-    def energy_of_lambda(self, lambda_state: int, env: str, nr_of_max_snapshots: int, in_memory: bool) -> Tuple:
+    def energy_at_lambda(self, lambda_state: int, env: str, in_memory: bool) -> Tuple:
 
         gc.enable()
         logger.info(f"Analysing lambda state {lambda_state} of {self.nr_of_states}")
         conf_sub = self.configuration["system"][self.structure][env]
-        simulation = self._generate_openMM_system(env=env, lambda_state=lambda_state) #Simulation context for openMM
+        simulation = self._generate_openMM_system(
+            env=env, lambda_state=lambda_state
+        )  # Simulation context for openMM
         # we iterate over all available lambda_states for each simulation contex (different psf file)
         self.N_k: dict = defaultdict(list)
         energies = []
@@ -429,34 +434,30 @@ class FreeEnergyCalculator(object):
             traj = MDAnalysis.Universe(
                 f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
                 f"{dcd_path}",
-                in_memory = in_memory,
+                in_memory=in_memory,
             )
 
             # simple thinning of the Trajectory
-            start = int(0.25 * len(traj.trajectory))
-            skip = int((len(traj.trajectory) - start)/ nr_of_max_snapshots)
-            self.N_k[env].append(len(traj.trajectory[start::skip]))
+            trajectory = self._thinning_traj(traj.trajectory)
+            self.N_k[env].append(len(trajectory))
 
-            for ts in tqdm(traj.trajectory[start::skip]):
+            for ts in tqdm(trajectory):
 
                 if env != "vacuum":
-                    bxl_x = ts.dimensions[0] /10 *unit.nanometer
-                    bxl_y = ts.dimensions[1] /10 *unit.nanometer
-                    bxl_z = ts.dimensions[2] /10 *unit.nanometer
+                    bxl_x = ts.dimensions[0] / 10 * unit.nanometer
+                    bxl_y = ts.dimensions[1] / 10 * unit.nanometer
+                    bxl_z = ts.dimensions[2] / 10 * unit.nanometer
 
-                simulation.context.setPeriodicBoxVectors(vec3.Vec3(bxl_x,0,0), vec3.Vec3(0,bxl_y,0), vec3.Vec3(0,0,bxl_z)*unit.nanometer)
-                simulation.context.setPositions((ts.positions/10))
+                simulation.context.setPeriodicBoxVectors(
+                    vec3.Vec3(bxl_x, 0, 0),
+                    vec3.Vec3(0, bxl_y, 0),
+                    vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
+                )
+                simulation.context.setPositions((ts.positions / 10))
                 state = simulation.context.getState(getEnergy=True)
                 e = state.getPotentialEnergy()
 
-                ### used from the reduced_potentials function
-                # assert type(temperature) == unit.Quantity
-                # pressure = 1.0 * unit.atmosphere  # atm
-                # kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
-                # beta = 1.0 / (kB * temperature)
-                # red_e =  beta * e
-
-                red_e = return_reduced_potential_mod(e)
+                red_e = return_reduced_potential(e, volume=(0.0 * unit.nanometer) ** 3)
                 energies.append(red_e)
 
             logger.debug(f"Status before collection: {gc.get_count()}")
@@ -473,7 +474,6 @@ class FreeEnergyCalculator(object):
         env: str,
         save_results: bool,
         engine: str,
-        nr_of_max_snapshots: int,
         num_proc: int,
         in_memory: bool,
     ):
@@ -486,24 +486,29 @@ class FreeEnergyCalculator(object):
             ctx = mp.get_context("fork")
             pool = ctx.Pool(processes=num_proc)
             # for each lambda step all trajectories are read in for each intst state
-            r, N_k = zip(*pool.starmap(self.energy_of_lambda, zip([lambda_state for lambda_state in range(1, self.nr_of_states + 1)], repeat(env) , repeat(nr_of_max_snapshots), repeat(in_memory))))
+            r, N_k = zip(
+                *pool.starmap(
+                    self.energy_at_lambda,
+                    zip(
+                        [
+                            lambda_state
+                            for lambda_state in range(1, self.nr_of_states + 1)
+                        ],
+                        repeat(env),
+                        repeat(in_memory),
+                    ),
+                )
+            )
 
-            u_kn = np.stack([r_i for r_i in r]) # not sure if needed!
-            N_k = N_k[0] #necessary because python seems to forget about self.N_k declared in the energy_of_lambda function
-
-            # u_kn_inter = []
-            # for lambda_state in range(1, self.nr_of_states + 1):
-            #
-            #     energies = self.energy_of_lambdastate(lambda_state, conf_sub, env , nr_of_max_snapshots)
-            #
-            #     u_kn_inter.append(energies)
-            #     u_kn = np.asarray(u_kn_inter)
-            #
-            #     print(u_kn)
-            #     print(len(u_kn))
+            u_kn = np.stack([r_i for r_i in r])  # not sure if needed!
+            N_k = N_k[
+                0
+            ]  # necessary because python seems to forget about self.N_k declared in the energy_of_lambda function
 
         else:
-            raise RuntimeError(f"Currently only openMM is supported for the use with MDAnalysis, not {engine}")
+            raise RuntimeError(
+                f"Currently only openMM is supported for the use with MDAnalysis, not {engine}"
+            )
 
         if save_results:
             file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
@@ -575,7 +580,12 @@ class FreeEnergyCalculator(object):
         return self.calculate_dG_using_mbar(u_kn, self.N_k, env)
 
     def calculate_dG_to_common_core_mda(
-        self, save_results: bool = True, engine: str = "openMM", nr_of_max_snapshots: int = 300 , num_proc: int = 1 , in_memory = False
+        self,
+        save_results: bool = True,
+        engine: str = "openMM",
+        nr_of_max_snapshots: int = 300,
+        num_proc: int = 1,
+        in_memory=False,
     ):
         """
         Calculate mbar results using the python package MDAnalysis
@@ -596,23 +606,41 @@ class FreeEnergyCalculator(object):
             )
 
     def calculate_dG_to_common_core(
-        self, save_results: bool = True, engine: str = "openMM"
+        self,
+        save_results: bool = True,
+        engine: str = "openMM",
+        analyze_traj_with="mdtraj",
+        num_proc: int = 1,
+        in_memory: bool = False,
+        nr_of_max_snapshots: int = -1,
     ):
         """
-        Calculate mbar results using the python package mdtraj
-        or load save results from a serialized mbar results.
+        Calculate mbar results using either the python package mdtraj
+        or MDAnalysis or load save results from a serialized mbar results.
         MDTraj creates one big trajectory which is analysed with different psf.
         Can lead to high overload of memory but is very fast!
+        In defult setup only ~3GB of RAM are allocated. Trjaectories can also
+        be loaded into memory by setting in_memory = True that can be useful when
+        analysing many snapshots per trajectory.
         """
+        assert analyze_traj_with in ["mda", "mdtraj"]
         if save_results:
             os.makedirs(f"{self.configuration['system_dir']}/results/", exist_ok=True)
             logger.info(f"Saving results in {self.save_results_to_path}")
 
         for env in self.envs:
             logger.info(f"Generating results for {env}.")
-            self.mbar_results[env] = self._analyse_results_using_mdtraj(
-                env, self.snapshots[env], self.unitcell[env], save_results, engine
-            )
+            if analyze_traj_with == "mda":
+                assert nr_of_max_snapshots > 10
+                self.mbar_results[env] = self._analyse_results_using_mda(
+                    env, save_results, engine, nr_of_max_snapshots, num_proc, in_memory
+                )
+            elif analyze_traj_with == "mdtraj":
+                self.mbar_results[env] = self._analyse_results_using_mdtraj(
+                    env, self.snapshots[env], self.unitcell[env], save_results, engine
+                )
+            else:
+                raise RuntimeError("Either mda or mdtray")
 
     def load_waterbox_results(self, file: str):
         self.mbar_results["waterbox"] = self._load_mbar_results(file)
@@ -730,7 +758,7 @@ class FreeEnergyCalculator(object):
             f"{self.save_results_to_path}/ddG_to_common_core_overlap_{env}_for_{self.structure_name}.png"
         )
 
-        # plt.show()   # after closing TF freezes when using in terminal without jupyter
+        plt.show()
         plt.close()
 
     def plot_free_energy(self, env: str):
@@ -769,7 +797,7 @@ class FreeEnergyCalculator(object):
         plt.savefig(
             f"{self.save_results_to_path}/ddG_to_common_core_line_plot_{env}_for_{self.structure_name}.png"
         )
-        # plt.show()
+        plt.show()
         plt.close()
 
     def plot_vacuum_free_energy_overlap(self):
@@ -812,15 +840,20 @@ class FreeEnergyCalculator(object):
             raise RuntimeError()
 
     def show_summary(self):
-        print(f"sind im summary")
+        from transformato.utils import isnotebook
+
         if self.configuration["simulation"]["free-energy-type"] == "rsfe":
-            self.plot_vacuum_free_energy_overlap()
-            self.plot_waterbox_free_energy_overlap()
+            if isnotebook:
+                # only show this if we are in a notebook
+                self.plot_vacuum_free_energy_overlap()
+                self.plot_waterbox_free_energy_overlap()
             self.plot_vacuum_free_energy()
             self.plot_waterbox_free_energy()
         else:
-            self.plot_complex_free_energy_overlap()
-            self.plot_waterbox_free_energy_overlap()
+            if isnotebook:
+                # only show this if we are in a notebook
+                self.plot_complex_free_energy_overlap()
+                self.plot_waterbox_free_energy_overlap()
             self.plot_complex_free_energy()
             self.plot_waterbox_free_energy()
 
