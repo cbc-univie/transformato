@@ -240,6 +240,7 @@ def psf_correction(str_object: StringIO):
         else:  # otherwise add line to new_str
             new_str += f"{line}\n"
 
+    return new_str
             # if "!NGRP NST2" in line:
             #     second_line = i+1 # we want to remove the next line after !NGRP appears
             #     new_str += f"{line.replace('1','0')}\n"
@@ -248,4 +249,14 @@ def psf_correction(str_object: StringIO):
             # else:
             #     new_str += f"{line}\n"
 
-    return new_str
+def isnotebook():
+    try:
+        shell = get_ipython().__class__.__name__
+        if shell == "ZMQInteractiveShell":
+            return True  # Jupyter notebook or qtconsole
+        elif shell == "TerminalInteractiveShell":
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False  # Probably standard Python interpreter
