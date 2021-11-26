@@ -1,0 +1,53 @@
+---
+################
+system:
+  ################
+  structure1:
+    name: "2-methylfuran"
+    tlc: "UNL"
+    vacuum:
+      dirname: "vacuum"
+      psf_file_name: "step3_charmm2omm"
+      crd_file_name: "step3_charmm2omm"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_vacuum"
+    waterbox:
+      dirname: "waterbox"
+      psf_file_name: "step3_charmm2omm"
+      crd_file_name: "step3_charmm2omm"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_waterbox"
+
+  structure2:
+    name: "methane"
+    tlc: "LIG"
+    vacuum:
+      dirname: "vacuum"
+      psf_file_name: "step3_charmm2omm"
+      crd_file_name: "step3_charmm2omm"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_vacuum"
+    waterbox:
+      dirname: "waterbox"
+      psf_file_name: "step3_charmm2omm"
+      crd_file_name: "step3_charmm2omm"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_waterbox"
+
+################
+simulation:
+  ################
+  parameters:
+    nstep: 2_000
+    nstdcd: 100
+    nstout: 50
+    dt: 0.001
+    switch: "vfswitch"
+    cons: None
+  GPU: True
+  free-energy-type: "rsfe"
+################

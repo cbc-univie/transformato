@@ -36,11 +36,12 @@ class IntermediateStateFactory(object):
         self.configuration = configuration
         self.vdw_switch: str
         self.charmm_factory = CharmmFactory(configuration, self.system.structure)
+        self.output_files = []
+        self.current_step = 1
 
     def write_state(
         self,
         mutation_conf: List,
-        intst_nr: int,
         lambda_value_electrostatic: float = 1.0,
         lambda_value_vdw: float = 1.0,
         common_core_transformation: float = 1.0,
@@ -52,8 +53,6 @@ class IntermediateStateFactory(object):
         ----------
         mutation_conf : List
             [description]
-        intst_nr : int
-            [description]
         lambda_value_electrostatic : float, optional
             [description], by default 1.0
         lambda_value_vdw : float, optional
@@ -61,17 +60,10 @@ class IntermediateStateFactory(object):
         common_core_transformation : float, optional
             [description], by default 1.0
 
-        Returns
-        -------
-        [type]
-            [description]
-        intst_nr : int
-            automatically incremented intst nr
         """
 
-        logger.info("#########################################")
-        logger.info("#########################################")
-        output_file_base = self._init_intermediate_state_dir(intst_nr)
+        logger.debug("#########################################")
+        output_file_base = self._init_intermediate_state_dir(self.current_step)
         logger.info(f"Writing to {output_file_base}")
 
         for env in self.system.envs:
@@ -107,7 +99,8 @@ class IntermediateStateFactory(object):
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_toppar_str(output_file_base)
         self._copy_files(output_file_base)
-        return output_file_base, intst_nr + 1
+        self.output_files.append(output_file_base)
+        self.current_step += 1
 
     def _add_serializer(self, file):
         # adding serializer functions
@@ -199,15 +192,6 @@ with open(file_name + '_system.xml','w') as outfile:
                     ) as f:
                         f.write(charmm_input)
 
-                    # # copy evaluation script
-                    # charmm_simulation_submit_script_source = (
-                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
-                    # )
-                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
-                    # shutil.copyfile(
-                    #     charmm_simulation_submit_script_source,
-                    #     charmm_simulation_submit_script_target,
-                    # )
                 else:
                     raise NotImplementedError()
 
@@ -268,15 +252,6 @@ with open(file_name + '_system.xml','w') as outfile:
                     ) as f:
                         f.write(charmm_input)
 
-                    # # copy evaluation script
-                    # charmm_simulation_submit_script_source = (
-                    #     f"{self.configuration['bin_dir']}/evaluate_energy_in_vac.inp"
-                    # )
-                    # charmm_simulation_submit_script_target = f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp"
-                    # shutil.copyfile(
-                    #     charmm_simulation_submit_script_source,
-                    #     charmm_simulation_submit_script_target,
-                    # )
                 else:
                     raise NotImplementedError()
 
@@ -448,7 +423,7 @@ with open(file_name + '_system.xml','w') as outfile:
         i = 0  # counting lines
 
         if self.configuration["simulation"]["GPU"]:
-            logger.info("Preparing for CUDA")
+            logger.debug("Preparing for CUDA")
             for line in f.readlines():
                 if "CudaPrecision" in line and i == 0:
                     i += 1
@@ -576,11 +551,18 @@ with open(file_name + '_system.xml','w') as outfile:
         if not all(elem in overwrite_parameters.keys() for elem in common_keywords):
             for elem in common_keywords:
                 if elem not in overwrite_parameters.keys():
-                    logger.critical(f"###################")
-                    logger.critical(
-                        f"{elem} is not set in config yaml. Was this a mistake?"
-                    )
-                    logger.critical(f"###################")
+                    if elem == "cons":
+                        logger.critical(f"###################")
+                        logger.critical(
+                            f"{elem} is not set in config yaml. This is very likely a mistake!"
+                        )
+                        logger.critical(f"###################")
+                    else:
+                        logger.critical(f"###################")
+                        logger.critical(
+                            f"{elem} is not set in config yaml. Was this a mistake?"
+                        )
+                        logger.critical(f"###################")
 
         for l in input_simulation_parameter.readlines():
             if l.strip():
@@ -728,7 +710,7 @@ with open(file_name + '_system.xml','w') as outfile:
             if any(hasattr(atom, "initial_type") for atom in [atom1, atom2, atom3]):
 
                 if [atom1.type, atom2.type, atom3.type] in already_seen:
-                    logger.info(f"Skipping {[atom1.type, atom2.type, atom3.type]}")
+                    logger.debug(f"Skipping {[atom1.type, atom2.type, atom3.type]}")
                     continue
                 else:
                     already_seen.append([atom1.type, atom2.type, atom3.type])
@@ -943,12 +925,17 @@ dummy_parameters.prm
         """
         Writes the new psf and pdb file.
         """
+
+        with open(f"{output_file_base}/lig_in_{env}.psf", "w+") as f:
+            psf.write_psf(f)
+
         string_object = StringIO()
         psf.write_psf(string_object)
+        # read in psf and correct some aspects of the file not suitable for CHARMM
         corrected_psf = psf_correction(string_object)
-        f = open(f"{output_file_base}/lig_in_{env}.psf", "w+")
-        f.write(corrected_psf)
-        f.close()
+        with open(f"{output_file_base}/lig_in_{env}_corr.psf", "w+") as f:
+            f.write(corrected_psf)
+        # write pdb
         psf.write_pdb(f"{output_file_base}/lig_in_{env}.pdb")
 
     def _init_intermediate_state_dir(self, nr: int):
@@ -957,7 +944,7 @@ dummy_parameters.prm
         """
         output_file_base = f"{self.path}/intst{nr}/"
 
-        logger.info(f" - Created directory: - {os.path.abspath(output_file_base)}")
+        logger.debug(f" - Created directory: - {os.path.abspath(output_file_base)}")
         os.makedirs(output_file_base)
         logger.info(f" - Writing in - {os.path.abspath(output_file_base)}")
         return output_file_base

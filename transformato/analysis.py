@@ -94,7 +94,7 @@ class FreeEnergyCalculator(object):
         self.N_k: dict = {}
         self.thinning: int = 0
         self.save_results_to_path: str = f"{self.configuration['system_dir']}/results/"
-        self.traj_files: list = []
+        self.traj_files = defaultdict(list)
 
     def load_trajs(self, nr_of_max_snapshots: int = 300):
         """
@@ -142,16 +142,16 @@ class FreeEnergyCalculator(object):
         )
         return simulation
 
-    def _thinning_traj(self, traj):
-        lenght = int(len(traj))
+    def _thinning(self, any_list):
+        lenght = int(len(any_list))
         start = int(lenght / 4)
-        traj = traj[start:]  # remove the first 25% confs
-        new_length = int(len(traj))
+        any_list = any_list[start:]  # remove the first 25% confs
+        new_length = int(len(any_list))
         further_thinning = max(
             int(new_length / self.nr_of_max_snapshots), 1
         )  # thinning
         return (
-            traj[::further_thinning][: self.nr_of_max_snapshots],
+            any_list[::further_thinning][: self.nr_of_max_snapshots],
             start,
             further_thinning,
         )
@@ -170,11 +170,10 @@ class FreeEnergyCalculator(object):
         nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
 
         logger.info(f"Evaluating {nr_of_states} states.")
-        snapshots: dict = {}
-        unitcell: dict = {}
+        snapshots, unitcell = {}, {}
         N_k: dict = defaultdict(list)
-        start = -1
-        stride = -1
+        start, stride = -1, -1
+
         for env in self.envs:
             confs = []
             unitcell_ = []
@@ -186,38 +185,43 @@ class FreeEnergyCalculator(object):
                     raise RuntimeError(f"{dcd_path} does not exist.")
 
                 traj = mdtraj.open(f"{dcd_path}")
+                # read trajs, determin offset, start ,stride and unitcell lengths
                 if start == -1:
                     xyz, unitcell_lengths, _ = traj.read()
-                    xyz, start, stride = self._thinning_traj(xyz)
-                    print(f"Len: {len(xyz)}, Start: {start}, Stride: {stride}")
-                    unitcell_lengths, _, _ = self._thinning_traj(unitcell_lengths)
-
+                    xyz, start, stride = self._thinning(xyz)
                 else:
                     traj.seek(start)
                     xyz, unitcell_lengths, _ = traj.read(stride=stride)
-                    xyz, unitcell_lengths = (
-                        xyz[: self.nr_of_max_snapshots],
-                        unitcell_lengths[: self.nr_of_max_snapshots],
-                    )
-                    print(f"Len: {len(xyz)}, Start: {start}, Stride: {stride}")
+                    xyz = xyz[: self.nr_of_max_snapshots]
 
+                logger.debug(f"Len: {len(xyz)}, Start: {start}, Stride: {stride}")
+
+                # check that we have enough samples
                 if len(xyz) < 10:
                     raise RuntimeError(
                         f"Below 10 conformations per lambda ({len(traj)}) -- decrease the thinning factor (currently: {self.thinning})."
                     )
 
+                # thin unitcell_lengths
+                # make sure that we can work with vacuum environments
+                if env != "vacuum":
+                    unitcell_lengths = unitcell_lengths[: self.nr_of_max_snapshots]
+                else:
+                    unitcell_lengths = np.zeros(len(xyz))
+
                 confs.extend(xyz / 10)
                 unitcell_.extend(unitcell_lengths / 10)
-                logger.info(f"{dcd_path}")
-                logger.info(f"Nr of snapshots: {len(xyz)}")
+                logger.debug(f"{dcd_path}")
+                logger.debug(f"Nr of snapshots: {len(xyz)}")
                 N_k[env].append(len(xyz))
-                self.traj_files.append((dcd_path, psf_path))
+                self.traj_files[env].append((dcd_path, psf_path))
 
             logger.info(f"Combined nr of snapshots: {len(confs)}")
             snapshots[env] = confs
             unitcell[env] = unitcell_
             assert len(confs) == len(unitcell_)
-
+            logger.debug(len(confs))
+        logger.debug(N_k)
         return (snapshots, unitcell, nr_of_states, N_k)
 
     @staticmethod
@@ -337,9 +341,10 @@ class FreeEnergyCalculator(object):
             f.write(exe.stderr)
 
         pot_energies = self._parse_CHARMM_energy_output(path, env)
-
-        logger.info(f"Number of entries in pot_energies list: {len(pot_energies)}")
-        logger.info(f"Number of entries in pot_energies list: {len(volumn_list)}")
+        logger.debug(f"Number of entries in pot_energies list: {len(pot_energies)}")
+        logger.debug(f"Number of entries in pot_energies list: {len(volumn_list)}")
+        if env != "vacuum":
+            assert len(pot_energies) == len(volumn_list)
 
         if volumn_list:
             assert len(volumn_list) == len(pot_energies)
@@ -358,10 +363,18 @@ class FreeEnergyCalculator(object):
     def _evaluate_e_on_all_snapshots_CHARMM(
         self, snapshots: mdtraj.Trajectory, lambda_state: int, env: str
     ):
-
         if env == "waterbox":
+            unitcell_lengths = [
+                (
+                    snapshots.unitcell_lengths[ts][0],
+                    snapshots.unitcell_lengths[ts][1],
+                    snapshots.unitcell_lengths[ts][2],
+                )
+                for ts in range(len(snapshots))
+            ]
+
             volumn_list = [
-                self._get_V_for_ts(snapshots, env, ts)
+                self._get_V_for_ts(unitcell_lengths, env, ts)
                 for ts in range(snapshots.n_frames)
             ]
 
@@ -519,6 +532,7 @@ class FreeEnergyCalculator(object):
         return self.calculate_dG_using_mbar(u_kn, N_k, env)
 
     def _analyse_results_using_mdtraj(
+
         self,
         env: str,
         snapshots: list,
