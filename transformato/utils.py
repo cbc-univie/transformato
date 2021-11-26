@@ -1,12 +1,102 @@
 import os
 import logging
-
-import parmed as pm
 import yaml
-
+import subprocess
 from io import StringIO
 
 logger = logging.getLogger(__name__)
+
+
+def postprocessing(
+    configuration: dict,
+    name: str = "methane",
+    engine: str = "openMM",
+    max_snapshots: int = 300,
+    show_summary: bool = False,
+    different_path_for_dcd: str = "",
+    only_single_state: str = "",
+):
+    """Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.
+
+    Args:
+        configuration (dict): Configuration file.
+        name (str, optional): The name of the system as deposited in the configuration file. Defaults to "methane".
+        engine (str, optional): The MD engine, either openMM or CHARMM. Defaults to "openMM".
+        max_snapshots (int, optional): Maximum number of snapshots per lambda window. Defaults to 300.
+        show_summary (bool, optional): Plot the accumulated free energy estimate and overlap plot. Defaults to False.
+        different_path_for_dcd (str, optional): For debugging purpose only. Defaults to "".
+        only_single_state (str, optional): For debugging purpose only. Defaults to "".
+
+    Returns:
+        [type]: [description]
+    """
+    from transformato import FreeEnergyCalculator
+
+    f = FreeEnergyCalculator(configuration, name)
+    if only_single_state == "vacuum":
+        f.envs = ["vacuum"]
+    elif only_single_state == "waterbox":
+        f.envs = ["waterbox"]
+    elif only_single_state == "complex":
+        f.envs = ["complex"]
+    else:
+        print(f"Both states are considered")
+
+    if different_path_for_dcd:
+        # this is needed if the trajectories are stored at a different location than the
+        # potential definitions
+        path = f.base_path
+        f.base_path = different_path_for_dcd
+        f.load_trajs(nr_of_max_snapshots=max_snapshots)
+        f.base_path = path
+    else:
+        f.load_trajs(nr_of_max_snapshots=max_snapshots)
+
+    f.calculate_dG_to_common_core(engine=engine)
+    if only_single_state:
+        return -1, -1, f
+    else:
+        ddG, dddG = f.end_state_free_energy_difference
+        print("######################################")
+        print("Free energy to common core in kT")
+        print("######################################")
+        print(f"Free energy difference: {ddG} [kT]")
+        print(f"Uncertanty: {dddG} [kT]")
+        print("######################################")
+        print("######################################")
+        if show_summary:
+            f.show_summary()
+        return ddG, dddG, f
+
+
+def run_simulation(output_files: list, engine="openMM", only_vacuum: bool = False):
+    """Performs sampling given a list of directories with topology and parameter definitions
+
+    Args:
+        output_files (list): List of directories with topology and parameter files in CHARMM format
+        engine (str, optional): The MD engines used to perform the sampling. Defaults to "openMM".
+        only_vacuum (bool, optional): For debugging only. Defaults to False.
+    """
+    for path in output_files:
+        # because path is object not string
+        print(f"Start sampling for: {path}")
+        runfile = "simulation.sh"
+        calculate_solv_and_vac = 2  # 2 means yes, 1 only vacuum
+        if engine.upper() == "CHARMM":
+            runfile = "simulation_charmm.sh"
+        if only_vacuum:
+            calculate_solv_and_vac = 1
+
+        exe = subprocess.run(
+            ["bash", f"{str(path)}/{runfile}", str(path), str(calculate_solv_and_vac)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        exe.check_returncode()
+        logger.debug(exe.stdout)
+        logger.debug("Capture stderr")
+        logger.debug(exe.stderr)
 
 
 def get_bin_dir():
@@ -35,8 +125,8 @@ def map_lj_mutations_to_atom_idx(lj_mutations: list) -> dict:
     """
     d = {}
     for lj in lj_mutations:
-        key = lj.vdw_atom_idx
-        d[tuple(key)] = lj
+        key = lj.vdw_atom_idx[0]  # this only works if a single atom is mutated
+        d[key] = lj
 
     return d
 
@@ -60,7 +150,7 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
 
     with open(f"{config}", "r") as stream:
         try:
-            settingsMap = yaml.load(stream)
+            settingsMap = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 
@@ -148,19 +238,16 @@ def psf_correction(str_object: StringIO):
                 raise RuntimeError(f"Error with the psf file: {line}")
 
         else:  # otherwise add line to new_str
-
-            if "!NGRP NST2" in line:
-                second_line = (
-                    i + 1
-                )  # we want to remove the next line after !NGRP appears
-                new_str += f"{line.replace('1','0')}\n"
-            elif i == second_line:
-                new_str += " \n"
-            else:
-                new_str += f"{line}\n"
+            new_str += f"{line}\n"
 
     return new_str
-
+            # if "!NGRP NST2" in line:
+            #     second_line = i+1 # we want to remove the next line after !NGRP appears
+            #     new_str += f"{line.replace('1','0')}\n"
+            # elif i == second_line:
+            #     new_str += ' \n'
+            # else:
+            #     new_str += f"{line}\n"
 
 def isnotebook():
     try:

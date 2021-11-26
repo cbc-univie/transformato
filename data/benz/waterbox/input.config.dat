@@ -1,1 +1,0 @@
-{"systype":null,"dimensions":["27","27","27","90.0","90.0","90.0"],"input":["openmm"],"forcefield":{"type":"c36m","files":["default"],"custom":["bmi\/bmi.rtf","bmi\/bmi.prm"]},"hmr":false}
