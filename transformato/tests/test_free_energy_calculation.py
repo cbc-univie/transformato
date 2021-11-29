@@ -207,8 +207,8 @@ def test_run_28_1h1q_rbfe_with_openMM():
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
-        nr_of_mutation_steps_charge=2,
-        nr_of_mutation_steps_cc=2,
+        nr_of_mutation_steps_charge=5,
+        nr_of_mutation_steps_cc=5,
     )
 
     run_simulation(i.output_files, engine="openMM")
