@@ -977,8 +977,8 @@ def test_postprocessing_cdk2_ligand():
         configuration,
         name="cdk2-28",
         engine="openMM",
-        max_snapshots=75,
+        max_snapshots=50,
         num_proc=4,
-        analyze_traj_with="mdtraj",
+        analyze_traj_with="mda",
     )
     print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT")
