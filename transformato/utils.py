@@ -12,9 +12,12 @@ def postprocessing(
     name: str = "methane",
     engine: str = "openMM",
     max_snapshots: int = 300,
+    num_proc: int = 4,
     show_summary: bool = False,
     different_path_for_dcd: str = "",
     only_single_state: str = "",
+    analyze_traj_with: str = "mdtraj",
+    in_memory: bool = False,
 ):
     """Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.
 
@@ -26,6 +29,7 @@ def postprocessing(
         show_summary (bool, optional): Plot the accumulated free energy estimate and overlap plot. Defaults to False.
         different_path_for_dcd (str, optional): For debugging purpose only. Defaults to "".
         only_single_state (str, optional): For debugging purpose only. Defaults to "".
+        analyze_traj_with (str,optional): Select package for loading trajectories (either mdanalysis or mdtraj). Defaults to mdtraj.
 
     Returns:
         [type]: [description]
@@ -42,17 +46,25 @@ def postprocessing(
     else:
         print(f"Both states are considered")
 
-    if different_path_for_dcd:
+    if different_path_for_dcd and analyze_traj_with == "mdtraj":
         # this is needed if the trajectories are stored at a different location than the
         # potential definitions
         path = f.base_path
         f.base_path = different_path_for_dcd
         f.load_trajs(nr_of_max_snapshots=max_snapshots)
         f.base_path = path
-    else:
+    elif analyze_traj_with == "mdtraj":
         f.load_trajs(nr_of_max_snapshots=max_snapshots)
+    else:
+        logger.info(f"using {analyze_traj_with} for analysis")
 
-    f.calculate_dG_to_common_core(engine=engine)
+    f.calculate_dG_to_common_core(
+        engine=engine,
+        analyze_traj_with=analyze_traj_with,
+        num_proc=num_proc,
+        nr_of_max_snapshots=max_snapshots,
+    )
+
     if only_single_state:
         return -1, -1, f
     else:
@@ -241,13 +253,14 @@ def psf_correction(str_object: StringIO):
             new_str += f"{line}\n"
 
     return new_str
-            # if "!NGRP NST2" in line:
-            #     second_line = i+1 # we want to remove the next line after !NGRP appears
-            #     new_str += f"{line.replace('1','0')}\n"
-            # elif i == second_line:
-            #     new_str += ' \n'
-            # else:
-            #     new_str += f"{line}\n"
+    # if "!NGRP NST2" in line:
+    #     second_line = i+1 # we want to remove the next line after !NGRP appears
+    #     new_str += f"{line.replace('1','0')}\n"
+    # elif i == second_line:
+    #     new_str += ' \n'
+    # else:
+    #     new_str += f"{line}\n"
+
 
 def isnotebook():
     try:
