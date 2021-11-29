@@ -427,7 +427,9 @@ class FreeEnergyCalculator(object):
             energies.append(red_e)
         return energies
 
-    def energy_at_lambda(self, lambda_state: int, env: str, in_memory: bool) -> Tuple:
+    def energy_at_lambda(
+        self, lambda_state: int, env: str, nr_of_max_snapshots: int, in_memory: bool
+    ) -> Tuple:
 
         gc.enable()
         logger.info(f"Analysing lambda state {lambda_state} of {self.nr_of_states}")
@@ -451,10 +453,14 @@ class FreeEnergyCalculator(object):
             )
 
             # simple thinning of the Trajectory
-            trajectory = self._thinning_traj(traj.trajectory)
-            self.N_k[env].append(len(trajectory))
+            start = int(0.25 * len(traj.trajectory))
+            skip = int((len(traj.trajectory) - start) / nr_of_max_snapshots)
+            self.N_k[env].append(len(traj.trajectory[start::skip]))
 
-            for ts in tqdm(trajectory):
+            # trajectory = self._thinning_traj(traj.trajectory)
+            # self.N_k[env].append(len(trajectory))
+
+            for ts in tqdm(traj.trajectory[start::skip]):
 
                 if env != "vacuum":
                     bxl_x = ts.dimensions[0] / 10 * unit.nanometer
@@ -488,7 +494,8 @@ class FreeEnergyCalculator(object):
         save_results: bool,
         engine: str,
         num_proc: int,
-        in_memory: bool,
+        nr_of_max_snapshots: int,
+        in_memory: bool = False,
     ):
 
         logger.info(f"Evaluating with {engine}, using {num_proc} CPUs")
@@ -508,6 +515,7 @@ class FreeEnergyCalculator(object):
                             for lambda_state in range(1, self.nr_of_states + 1)
                         ],
                         repeat(env),
+                        repeat(nr_of_max_snapshots),
                         repeat(in_memory),
                     ),
                 )
@@ -532,7 +540,6 @@ class FreeEnergyCalculator(object):
         return self.calculate_dG_using_mbar(u_kn, N_k, env)
 
     def _analyse_results_using_mdtraj(
-
         self,
         env: str,
         snapshots: list,
@@ -593,12 +600,11 @@ class FreeEnergyCalculator(object):
 
         return self.calculate_dG_using_mbar(u_kn, self.N_k, env)
 
-
     def calculate_dG_to_common_core(
         self,
         save_results: bool = True,
         engine: str = "openMM",
-        analyze_traj_with="mdtraj",
+        analyze_traj_with: str = "mdtraj",
         num_proc: int = 1,
         in_memory: bool = False,
         nr_of_max_snapshots: int = -1,
@@ -622,7 +628,11 @@ class FreeEnergyCalculator(object):
             if analyze_traj_with == "mda":
                 assert nr_of_max_snapshots > 10
                 self.mbar_results[env] = self._analyse_results_using_mda(
-                    env, save_results, engine, nr_of_max_snapshots, num_proc, in_memory
+                    env,
+                    save_results,
+                    engine,
+                    num_proc,
+                    nr_of_max_snapshots,
                 )
             elif analyze_traj_with == "mdtraj":
                 self.mbar_results[env] = self._analyse_results_using_mdtraj(
