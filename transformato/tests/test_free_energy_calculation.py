@@ -13,7 +13,7 @@ from transformato.utils import postprocessing
 @pytest.mark.rsfe
 @pytest.mark.full_workflow
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
@@ -63,7 +63,7 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
 @pytest.mark.rsfe
 @pytest.mark.full_workflow
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_2oj9_rsfe_with_different_switches(caplog):
@@ -169,3 +169,46 @@ def test_run_2oj9_rsfe_with_different_switches(caplog):
         f_openMM_switch.waterbox_free_energy_differences[0, -1],
         atol=1e-2,
     )
+
+
+def test_run_28_1h1q_rbfe_with_openMM():
+    # Generating output for a run of the CDK2 Ligand System
+    from transformato import (
+        load_config_yaml,
+        SystemStructure,
+        IntermediateStateFactory,
+        ProposeMutationRoute,
+    )
+    from transformato.mutate import perform_mutations
+    from IPython.display import SVG
+    from transformato.utils import run_simulation, postprocessing
+
+    configuration = load_config_yaml(
+        config="notebooks/28_1h1q_rbfe.yaml",
+        input_dir="data/",
+        output_dir="notebooks/",
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    print(mutation_list.keys())
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=2,
+        nr_of_mutation_steps_cc=2,
+    )
+
+    run_simulation(i.output_files, engine="openMM")
