@@ -958,3 +958,27 @@ def test_postprocessing_thinning():
     print(f.snapshots["vacuum"])
     assert len(f.snapshots["vacuum"]) == 1950
     assert len(f.snapshots["waterbox"]) == 1950
+
+
+def test_postprocessing_cdk2_ligand():
+    from transformato import (
+        load_config_yaml,
+        SystemStructure,
+        IntermediateStateFactory,
+        ProposeMutationRoute,
+    )
+    from transformato.utils import postprocessing
+
+    configuration = load_config_yaml(
+        config="notebooks/28_1h1q_rbfe.yaml", input_dir="data/", output_dir="notebooks/"
+    )
+
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration,
+        name="cdk2-28",
+        engine="openMM",
+        max_snapshots=75,
+        num_proc=4,
+        analyze_traj_with="mdtraj",
+    )
+    print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT")
