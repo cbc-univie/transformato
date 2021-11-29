@@ -320,7 +320,7 @@ def test_2oj9_postprocessing_with_openMM():
 
     initialize_NUM_PROC(1)
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rbfe.yaml"
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
