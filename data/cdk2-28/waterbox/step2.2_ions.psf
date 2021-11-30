@@ -1,0 +1,50 @@
+PSF EXT CMAP CHEQ XPLOR
+
+         5 !NTITLE
+* SET NIONTYPES = 1                                                             
+* SET NPOSTOT = 3                                                               
+* SET NNEGTOT = 3                                                               
+* SET NIONTOT = 6                                                               
+*  DATE:     8/17/21     10: 1:50      CREATED BY USER: apache                  
+
+         6 !NATOM
+         1 IONS     1        POT      POT      POT       1.00000       39.0983           0   0.00000     -0.301140E-02
+         2 IONS     2        POT      POT      POT       1.00000       39.0983           0   0.00000     -0.301140E-02
+         3 IONS     3        POT      POT      POT       1.00000       39.0983           0   0.00000     -0.301140E-02
+         4 IONS     4        CLA      CLA      CLA      -1.00000       35.4500           0   0.00000       0.00000    
+         5 IONS     5        CLA      CLA      CLA      -1.00000       35.4500           0   0.00000       0.00000    
+         6 IONS     6        CLA      CLA      CLA      -1.00000       35.4500           0   0.00000       0.00000    
+
+         0 !NBOND: bonds
+
+
+         0 !NTHETA: angles
+
+
+         0 !NPHI: dihedrals
+
+
+         0 !NIMPHI: impropers
+
+
+         0 !NDON: donors
+
+
+         0 !NACC: acceptors
+
+
+         0 !NNB
+
+         0         0         0         0         0         0
+
+         6         0 !NGRP NST2
+         0         2         0         1         2         0         2         2         0
+         3         2         0         4         2         0         5         2         0
+
+         1 !MOLNT
+         1         1         1         1         1         1
+
+         0         0 !NUMLP NUMLPH
+
+         0 !NCRTERM: cross-terms
+
