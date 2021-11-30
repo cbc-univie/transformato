@@ -988,7 +988,6 @@ def test_vdw_mutation_for_hydrogens_system2():
             shutil.rmtree(opath)
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation():
     workdir = get_test_output_dir()
 
@@ -1054,7 +1053,6 @@ def test_bonded_mutation():
             shutil.rmtree(opath)
 
 
-@pytest.mark.slowtest
 def test_equivalent_endstates_vacuum():
     workdir = get_test_output_dir()
 
@@ -1140,7 +1138,6 @@ def test_equivalent_endstates_vacuum():
     assert np.isclose(e1, e2)
 
 
-@pytest.mark.slowtest
 def test_equivalent_endstates_waterbox():
 
     import simtk.openmm as mm
@@ -1245,7 +1242,6 @@ def test_equivalent_endstates_waterbox():
     assert np.isclose(e1, e2)
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s1(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
@@ -1259,7 +1255,6 @@ def test_bonded_mutation_energies_t1_s1(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s2(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
@@ -1275,7 +1270,6 @@ def test_bonded_mutation_energies_t1_s2(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s3(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
@@ -1291,7 +1285,6 @@ def test_bonded_mutation_energies_t1_s3(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s4(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
@@ -1307,7 +1300,6 @@ def test_bonded_mutation_energies_t1_s4(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s5(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
@@ -1323,7 +1315,6 @@ def test_bonded_mutation_energies_t1_s5(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s6(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
@@ -1339,7 +1330,6 @@ def test_bonded_mutation_energies_t1_s6(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t1_s7(caplog):
     caplog.set_level(logging.CRITICAL)
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
@@ -1355,7 +1345,6 @@ def test_bonded_mutation_energies_t1_s7(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s1(caplog):
     caplog.set_level(logging.CRITICAL)
     _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
@@ -1371,7 +1360,6 @@ def test_bonded_mutation_energies_t2_s1(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s2(caplog):
     caplog.set_level(logging.CRITICAL)
     _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
@@ -1385,7 +1373,6 @@ def test_bonded_mutation_energies_t2_s2(caplog):
     assert np.isclose(e_t2_s2.value_in_unit(unit.kilocalorie_per_mole), 63.196164016286)
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_energies_t2_s3(caplog):
     caplog.set_level(logging.CRITICAL)
     _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
@@ -1401,7 +1388,6 @@ def test_bonded_mutation_energies_t2_s3(caplog):
     )
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_atoms(caplog):
     caplog.set_level(logging.CRITICAL)
 
@@ -1451,7 +1437,6 @@ def test_bonded_mutation_atoms(caplog):
             pass
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_bonds(caplog):
     caplog.set_level(logging.CRITICAL)
     workdir = get_test_output_dir()
@@ -1506,7 +1491,6 @@ def test_bonded_mutation_bonds(caplog):
                 prm_at_t1_cc[bond_t1_idx] = prm_at_t2_cc[bond_t2_idx]
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_angles(caplog):
     caplog.set_level(logging.CRITICAL)
     from copy import copy
@@ -1583,7 +1567,6 @@ def test_bonded_mutation_angles(caplog):
             raise AssertionError()
 
 
-@pytest.mark.slowtest
 def test_bonded_mutation_dihedrals(caplog):
     caplog.set_level(logging.CRITICAL)
     workdir = get_test_output_dir()

@@ -12,6 +12,7 @@ dependencies:
   - parmed
   - pyyaml
   - mdtraj
+  - mdanalysis
   - matplotlib
   - networkx
   - tqdm

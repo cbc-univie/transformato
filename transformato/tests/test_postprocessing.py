@@ -244,7 +244,6 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
             assert np.isclose(e_charmm, e_openMM, rtol=0.1)
 
 
-@pytest.mark.system_2oj9
 @pytest.mark.postprocessing
 @pytest.mark.requires_charmm_installation
 @pytest.mark.skipif(
@@ -320,7 +319,7 @@ def test_2oj9_postprocessing_with_openMM():
 
     initialize_NUM_PROC(1)
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rbfe.yaml"
+    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -958,3 +957,45 @@ def test_postprocessing_thinning():
     print(f.snapshots["vacuum"])
     assert len(f.snapshots["vacuum"]) == 1950
     assert len(f.snapshots["waterbox"]) == 1950
+
+
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_postprocessing_toluene_methane_rsfe_with_mda():
+    from transformato import (
+        load_config_yaml,
+    )
+    from transformato.utils import postprocessing
+
+    conf = "transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir="data/", output_dir="data"
+    )  # NOTE: for preprocessing input_dir is the output dir
+    # methane
+    ddG_openMM_mda, dddG, f_openMM = postprocessing(
+        configuration,
+        name="methane",
+        engine="openMM",
+        max_snapshots=600,
+        num_proc=4,
+        analyze_traj_with="mda",
+    )
+
+    print(f"Free energy difference: {ddG_openMM_mda} +- {dddG} [kT")
+
+    ddG_openMM_mdtraj, dddG, f_openMM = postprocessing(
+        configuration,
+        name="methane",
+        engine="openMM",
+        max_snapshots=600,
+        num_proc=4,
+        analyze_traj_with="mdtraj",
+    )
+
+    print(f"Free energy difference: {ddG_openMM_mdtraj} +- {dddG} [kT]")
+    assert np.isclose(ddG_openMM_mdtraj, ddG_openMM_mda)
+    assert np.isclose(ddG_openMM_mdtraj, -1.3682027088661721 )
+    assert np.isclose(ddG_openMM_mda   , -1.3682018563018001 )
