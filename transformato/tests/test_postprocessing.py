@@ -958,6 +958,7 @@ def test_postprocessing_thinning():
     assert len(f.snapshots["vacuum"]) == 1950
     assert len(f.snapshots["waterbox"]) == 1950
 
+
 @pytest.mark.rsfe
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
@@ -974,7 +975,7 @@ def test_postprocessing_toluene_methane_rsfe_with_mda():
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
     # methane
-    ddG_openMM, dddG, f_openMM = postprocessing(
+    ddG_openMM_mda, dddG, f_openMM = postprocessing(
         configuration,
         name="methane",
         engine="openMM",
@@ -983,4 +984,18 @@ def test_postprocessing_toluene_methane_rsfe_with_mda():
         analyze_traj_with="mda",
     )
 
-    print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT")
+    print(f"Free energy difference: {ddG_openMM_mda} +- {dddG} [kT")
+
+    ddG_openMM_mdtraj, dddG, f_openMM = postprocessing(
+        configuration,
+        name="methane",
+        engine="openMM",
+        max_snapshots=600,
+        num_proc=4,
+        analyze_traj_with="mdtraj",
+    )
+
+    print(f"Free energy difference: {ddG_openMM_mdtraj} +- {dddG} [kT]")
+    assert np.isclose(ddG_openMM_mdtraj, ddG_openMM_mda)
+    assert np.isclose(ddG_openMM_mdtraj, -1.3682027088661721 )
+    assert np.isclose(ddG_openMM_mda   , -1.3682018563018001 )
