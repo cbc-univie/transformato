@@ -440,6 +440,7 @@ class FreeEnergyCalculator(object):
         # we iterate over all available lambda_states for each simulation contex (different psf file)
         self.N_k: dict = defaultdict(list)
         energies = []
+
         for lambda_state in range(1, self.nr_of_states + 1):
 
             dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
@@ -454,24 +455,28 @@ class FreeEnergyCalculator(object):
 
             # simple thinning of the Trajectory
             start = int(0.25 * len(traj.trajectory))
-            skip = int((len(traj.trajectory) - start) / nr_of_max_snapshots)
+            skip = int(np.ceil((len(traj.trajectory) - start) / nr_of_max_snapshots))
             self.N_k[env].append(len(traj.trajectory[start::skip]))
-
             # trajectory = self._thinning_traj(traj.trajectory)
             # self.N_k[env].append(len(trajectory))
 
             for ts in tqdm(traj.trajectory[start::skip]):
-
                 if env != "vacuum":
                     bxl_x = ts.dimensions[0] / 10 * unit.nanometer
                     bxl_y = ts.dimensions[1] / 10 * unit.nanometer
                     bxl_z = ts.dimensions[2] / 10 * unit.nanometer
 
-                simulation.context.setPeriodicBoxVectors(
-                    vec3.Vec3(bxl_x, 0, 0),
-                    vec3.Vec3(0, bxl_y, 0),
-                    vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
-                )
+                    simulation.context.setPeriodicBoxVectors(
+                        vec3.Vec3(bxl_x, 0, 0),
+                        vec3.Vec3(0, bxl_y, 0),
+                        vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
+                    )
+
+                else:
+                    bxl_x = 0
+                    bxl_y = 0
+                    bxl_z = 0
+
                 simulation.context.setPositions((ts.positions / 10))
                 state = simulation.context.getState(getEnergy=True)
                 e = state.getPotentialEnergy()
@@ -506,6 +511,7 @@ class FreeEnergyCalculator(object):
             ctx = mp.get_context("fork")
             pool = ctx.Pool(processes=num_proc)
             # for each lambda step all trajectories are read in for each intst state
+
             r, N_k = zip(
                 *pool.starmap(
                     self.energy_at_lambda,
