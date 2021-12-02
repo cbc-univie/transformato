@@ -67,8 +67,8 @@ def perform_mutations(
     mutation_list: list,
     list_of_heavy_atoms_to_be_mutated: list = [],
     nr_of_mutation_steps_charge: int = 5,
-    nr_of_mutation_steps_lj_of_hydrogens: int = 0,
-    nr_of_mutation_steps_lj_of_heavy_atoms: int = 0,
+    nr_of_mutation_steps_lj_of_hydrogens: int = 1,
+    nr_of_mutation_steps_lj_of_heavy_atoms: int = 1,
     nr_of_mutation_steps_cc: int = 5,
 ):
     """Performs the mutations necessary to mutate the physical endstate to the defined common core.
@@ -122,19 +122,30 @@ def perform_mutations(
 
     ######################################
     # Turn off hydrogens
-    # reversed linespace is necessary to ensure lambda_value = 0 when using the default
-    if mutation_list["hydrogen-lj"]:
-        for lambda_value in reversed(np.linspace(
-            0, 0.75, nr_of_mutation_steps_lj_of_hydrogens + 1
-        )):
+    if nr_of_mutation_steps_lj_of_hydrogens == 1:
+        if mutation_list["hydrogen-lj"]:
             print("####################")
-            print(f"Hydrogen vdW scaling in step: {i.current_step} with lamb: {lambda_value}")
+            print(f"Hydrogen vdW scaling in step: {i.current_step} with lamb: {0.0}")
             print("####################")
             i.write_state(
                 mutation_conf=mutation_list["hydrogen-lj"],
-                lambda_value_vdw=lambda_value,
+                lambda_value_vdw=0.0,
             )
-
+    else:
+        # Scaling lj-parameters in multiple steps
+        if mutation_list["hydrogen-lj"]:
+            for lambda_value in np.linspace(
+                0.75, 0, nr_of_mutation_steps_lj_of_hydrogens + 1
+            ):
+                print("####################")
+                print(
+                    f"Hydrogen vdW scaling in step: {i.current_step} with lamb: {lambda_value}"
+                )
+                print("####################")
+                i.write_state(
+                    mutation_conf=mutation_list["hydrogen-lj"],
+                    lambda_value_vdw=lambda_value,
+                )
     ######################################
     # turn off lj of heavy atoms
     # take the order from either config file, passed to this function or the default ordering
@@ -175,13 +186,19 @@ def perform_mutations(
         )
         print("####################")
 
-        for lambda_value in reversed(np.linspace(
-            0, 0.75, nr_of_mutation_steps_lj_of_heavy_atoms + 1
-        )):
+        if nr_of_mutation_steps_lj_of_heavy_atoms == 1:
             i.write_state(
                 mutation_conf=mutations,
-                lambda_value_vdw=lambda_value,
+                lambda_value_vdw=0.0,
             )
+        else:
+            for lambda_value in np.linspace(
+                0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
+            ):
+                i.write_state(
+                    mutation_conf=mutations,
+                    lambda_value_vdw=lambda_value,
+                )
 
     ######################################
     # generate terminal LJ
