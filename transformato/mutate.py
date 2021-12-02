@@ -122,11 +122,11 @@ def perform_mutations(
 
     ######################################
     # Turn off hydrogens
-
+    # reversed linespace is necessary to ensure lambda_value = 0 when using the default
     if mutation_list["hydrogen-lj"]:
-        for lambda_value in np.linspace(
-            0.75, 0, nr_of_mutation_steps_lj_of_hydrogens + 1
-        ):
+        for lambda_value in reversed(np.linspace(
+            0, 0.75, nr_of_mutation_steps_lj_of_hydrogens + 1
+        )):
             print("####################")
             print(f"Hydrogen vdW scaling in step: {i.current_step} with lamb: {lambda_value}")
             print("####################")
@@ -175,12 +175,12 @@ def perform_mutations(
         )
         print("####################")
 
-        for lambda_value in np.linspace(
-            0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
-        ):
+        for lambda_value in reversed(np.linspace(
+            0, 0.75, nr_of_mutation_steps_lj_of_heavy_atoms + 1
+        )):
             i.write_state(
                 mutation_conf=mutations,
-                lambda_value_vdw=0.0,
+                lambda_value_vdw=lambda_value,
             )
 
     ######################################
