@@ -67,6 +67,8 @@ def perform_mutations(
     mutation_list: list,
     list_of_heavy_atoms_to_be_mutated: list = [],
     nr_of_mutation_steps_charge: int = 5,
+    nr_of_mutation_steps_lj_of_hydrogens: int = 0,
+    nr_of_mutation_steps_lj_of_heavy_atoms: int = 0,
     nr_of_mutation_steps_cc: int = 5,
 ):
     """Performs the mutations necessary to mutate the physical endstate to the defined common core.
@@ -77,6 +79,8 @@ def perform_mutations(
         mutation_list (list): list of mutation objects
         list_of_heavy_atoms_to_be_mutated (list, optional): A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].
         nr_of_mutation_steps_charge (int, optional): Nr of steps to turne of the charges. Defaults to 5.
+        nr_of_mutation_steps_lj_of_hydrogens (int, optional): Nr of steps to turne of lj of hydrogens. Only needed for systems with many hydrogens in dummy region
+        nr_of_mutation_steps_lj_of_heavy_atoms (int, optional): Nr of steps to turne of the lj of heavy atoms
         nr_of_mutation_steps_cc (int, optional): Nr of steps to interpolate between the common core parameters. Defaults to 5.
 
     Returns:
@@ -120,13 +124,16 @@ def perform_mutations(
     # Turn off hydrogens
 
     if mutation_list["hydrogen-lj"]:
-        print("####################")
-        print(f"Hydrogen vdW scaling in step: {i.current_step} with lamb: {0.0}")
-        print("####################")
-        i.write_state(
-            mutation_conf=mutation_list["hydrogen-lj"],
-            lambda_value_vdw=0.0,
-        )
+        for lambda_value in np.linspace(
+            0.75, 0, nr_of_mutation_steps_lj_of_hydrogens + 1
+        ):
+            print("####################")
+            print(f"Hydrogen vdW scaling in step: {i.current_step} with lamb: {lambda_value}")
+            print("####################")
+            i.write_state(
+                mutation_conf=mutation_list["hydrogen-lj"],
+                lambda_value_vdw=lambda_value,
+            )
 
     ######################################
     # turn off lj of heavy atoms
@@ -168,10 +175,13 @@ def perform_mutations(
         )
         print("####################")
 
-        i.write_state(
-            mutation_conf=mutations,
-            lambda_value_vdw=0.0,
-        )
+        for lambda_value in np.linspace(
+            0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
+        ):
+            i.write_state(
+                mutation_conf=mutations,
+                lambda_value_vdw=0.0,
+            )
 
     ######################################
     # generate terminal LJ
@@ -1155,7 +1165,9 @@ class CommonCoreTransformation(object):
                     modified_charge = (
                         scale * ligand1_atom.charge + (1 - scale) * ligand2_atom.charge
                     )
-                    logger.debug(f"Current charge: {ligand1_atom.charge}; target charge: {ligand2_atom.charge}; modified charge: {modified_charge}")
+                    logger.debug(
+                        f"Current charge: {ligand1_atom.charge}; target charge: {ligand2_atom.charge}; modified charge: {modified_charge}"
+                    )
                     ligand1_atom.charge = modified_charge
 
             if not found:
