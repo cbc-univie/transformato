@@ -117,12 +117,25 @@ class FreeEnergyCalculator(object):
         psf = CharmmPsfFile(psf_file_path)
 
         # generate simulations object and set states
-        if self.configuration["simulation"]["GPU"] == True:
+        if (
+            self.configuration["simulation"]["GPU"]
+            and self.configuration["simulation"]["GPU"] == True
+        ):
             platform = Platform.getPlatformByName(
                 "CUDA"
             )  # NOTE: FIXME: this needs to be set dynamically
             platformProperties = {"CudaPrecision": "mixed"}
-
+            simulation = Simulation(
+                psf.topology, system, integrator, platform, platformProperties
+            )
+        elif (
+            self.configuration["simulation"]["GPU"]
+            and self.configuration["simulation"]["GPU"] != True
+        ):
+            platform = Platform.getPlatformByName(
+                "OpenCL"
+            )  # NOTE: FIXME: this needs to be set dynamically
+            platformProperties = dict()
             simulation = Simulation(
                 psf.topology, system, integrator, platform, platformProperties
             )

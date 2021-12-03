@@ -422,12 +422,32 @@ with open(file_name + '_system.xml','w') as outfile:
         g = open(f"{file}_tmp", "w+")
         i = 0  # counting lines
 
-        if self.configuration["simulation"]["GPU"]:
+        if (
+            self.configuration["simulation"]["GPU"]
+            and self.configuration["simulation"]["GPU"] == True
+        ):
             logger.debug("Preparing for CUDA")
             for line in f.readlines():
                 if "CudaPrecision" in line and i == 0:
                     i += 1
                     g.write("prop = dict(CudaPrecision='mixed')\n")
+                else:
+                    g.write(line)
+        elif (
+            self.configuration["simulation"]["GPU"]
+            and self.configuration["simulation"]["GPU"] != True
+        ):
+            logger.debug("Preparing for OpenCL")
+            for line in f.readlines():
+                if "# Set platform" in line and i == 0:
+                    i += 1
+                    g.write(line)
+                elif i == 1:
+                    i += 1
+                    g.write("platform = Platform.getPlatformByName('OpenCL')\n")
+                elif i == 2:
+                    i += 2
+                    g.write("prop = dict()\n")
                 else:
                     g.write(line)
         else:
