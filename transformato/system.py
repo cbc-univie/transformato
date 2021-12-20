@@ -148,7 +148,7 @@ class SystemStructure(object):
                 logger.info(f"CGenFF version: {cgenff}")
                 cgenff_version = re.findall("\d+\.\d+", cgenff)[0]
                 self.cgenff_version = float(cgenff_version)
-
+        toppar_dir = f"{charmm_gui_env}/toppar"
         parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
         parameter_files += (f"{toppar_dir}/par_all36m_prot.prm",)
         parameter_files += (f"{toppar_dir}/par_all36_na.prm",)
