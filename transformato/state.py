@@ -491,7 +491,8 @@ with open(file_name + '_system.xml','w') as outfile:
 
         # copy central toppar folder
         toppar_dir = get_toppar_dir()
-        toppar_source = f"{toppar_dir}"
+        #toppar_source = f"{toppar_dir}"
+        toppar_source = f"{basedir}/waterbox/toppar"
         toppar_target = f"{intermediate_state_file_path}/toppar"
         shutil.copytree(toppar_source, toppar_target)
 
