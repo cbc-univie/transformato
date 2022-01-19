@@ -1,10 +1,10 @@
-name: test
+name: fep
 channels:
   - conda-forge
   - defaults
 dependencies:
   # Base depends
-  - openmm
+  - openmm==7.5.1
   - numpy
   - ipython
   - pymbar
