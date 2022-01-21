@@ -856,7 +856,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 
     def _init_base_dir(self):
         """
-        Generates the base directory which all intermediate states are located
+        Generates the base directory in which all intermediate states are located
         and create the central toppar dir.
         """
 
@@ -870,7 +870,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
         toppar_dir = get_toppar_dir()
         toppar_source = f"{toppar_dir}"
         toppar_target = f"{self.configuration['system_dir']}/toppar"
-        shutil.copytree(toppar_source, toppar_target)
+        shutil.copytree(toppar_source, toppar_target, dirs_exist_ok=True)
 
     def _write_toppar_str(self, output_file_base):
 
