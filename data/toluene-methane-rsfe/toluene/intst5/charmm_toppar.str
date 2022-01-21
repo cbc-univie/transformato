@@ -41,11 +41,11 @@ read para card unit 20 append flex
 stream ../../toppar/toppar_water_ions.str
 
 ! Read unk RTF 
-open read unit 10 card name unk_g.rtf 
+open read unit 10 card name unl_g.rtf 
 read rtf card unit 10 append
 
 ! Read unk prm 
-open read unit 10 card name unk.prm 
+open read unit 10 card name unl.prm 
 read para card unit 10 append flex
 
 ! Read dummy_atom RTF 
