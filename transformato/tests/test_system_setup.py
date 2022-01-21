@@ -2,18 +2,19 @@
 Unit and regression test for the transformato package.
 """
 
-import parmed as pm
-
-from io import StringIO
+# Import package, test suite, and other packages as needed
 import logging
+import os
+from io import StringIO
+
+import parmed as pm
+import pytest
 
 # read in specific topology with parameters
-from transformato import (
-    SystemStructure,
-    load_config_yaml,
-    psf_correction,
-)
-from transformato.tests.paths import get_test_output_dir 
+# read in specific topology with parameters
+from transformato import SystemStructure, load_config_yaml, psf_correction
+from transformato.constants import loeffler_testsystems_dir
+from transformato.tests.paths import get_test_output_dir
 
 
 def test_read_yaml():
@@ -27,10 +28,12 @@ def test_read_yaml():
     assert settingsMap["system"]["name"] == "toluene-methane-rsfe"
     assert settingsMap["system"]["structure1"]["tlc"] == "UNL"
 
+
 def test_io_psf_files():
-    from transformato.testsystems import mutate_toluene_to_methane_cc
-    from .test_run_production import run_simulation
     from simtk.openmm.app import CharmmPsfFile
+    from transformato.testsystems import mutate_toluene_to_methane_cc
+
+    from .test_run_production import run_simulation
 
     configuration = load_config_yaml(
         config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
@@ -41,8 +44,9 @@ def test_io_psf_files():
     output_files = mutate_toluene_to_methane_cc(configuration=configuration)
     output_path = output_files[0]
     print(output_path)
-    CharmmPsfFile(f'{output_path}/lig_in_waterbox.psf')
-    CharmmPsfFile(f'{output_path}/lig_in_waterbox_corr.psf')
+    CharmmPsfFile(f"{output_path}/lig_in_waterbox.psf")
+    CharmmPsfFile(f"{output_path}/lig_in_waterbox_corr.psf")
+
 
 def test_psf_files():
     test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
@@ -103,3 +107,21 @@ def test_initialize_systems(caplog):
     assert int(s2.offset["waterbox"]) == 0
     assert int(s2.offset["vacuum"]) == 0
 
+
+@pytest.mark.rsfe
+@pytest.mark.requires_loeffler_systems
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_setup_system_for_methane_common_core():
+    from transformato.testsystems import mutate_methane_to_methane_cc
+
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        input_dir=loeffler_testsystems_dir,
+        output_dir=get_test_output_dir(),
+    )
+    output_files = mutate_methane_to_methane_cc(configuration=configuration)
+
+    assert len(output_files) == 3
