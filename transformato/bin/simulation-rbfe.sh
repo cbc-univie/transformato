@@ -16,6 +16,7 @@ SWITCH=$2
 cd ${path}
 pwd
 hostname
+export OPENMM_CPU_THREADS=4
 
 run_complex () {
 input=lig_in_complex
