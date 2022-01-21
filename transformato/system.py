@@ -34,7 +34,7 @@ class SystemStructure(object):
         self.offset: defaultdict = defaultdict(int)
         self.parameter = self._read_parameters("waterbox")
         self.cgenff_version: float
-        self.envs: set
+        self.envs = set()
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "rbfe":
             self.envs = set(["complex", "waterbox"])
