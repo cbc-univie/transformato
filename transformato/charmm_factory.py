@@ -46,10 +46,8 @@ class CharmmFactory:
             )
         elif env == "complex":
             charmm_postprocessing_script += (
-
                 self._get_CHARMM_waterbox_postprocessing_body()
-            )   ### needs to be adapted from waterbox to complex
-
+            )  ### needs to be adapted from waterbox to complex
 
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
@@ -65,7 +63,7 @@ class CharmmFactory:
         elif env == "waterbox":
             charmm_production_script += self._get_CHARMM_waterbox_production_body()
 
-        elif env == "complex": ###needs to be adaptet from waterbox to complex
+        elif env == "complex":  ###needs to be adaptet from waterbox to complex
             charmm_production_script += self._get_CHARMM_waterbox_production_body()
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
@@ -80,101 +78,100 @@ class CharmmFactory:
 *
 
 ! protein topology and parameter
-open read card unit 10 name toppar/top_all36_prot.rtf
+open read card unit 10 name ../toppar/top_all36_prot.rtf
 read  rtf card unit 10
 
-open read card unit 20 name toppar/par_all36m_prot.prm
+open read card unit 20 name ../toppar/par_all36m_prot.prm
 read para card unit 20 flex
 
 ! nucleic acids
-open read card unit 10 name toppar/top_all36_na.rtf
+open read card unit 10 name ../toppar/top_all36_na.rtf
 read  rtf card unit 10 append
 
-open read card unit 20 name toppar/par_all36_na.prm
+open read card unit 20 name ../toppar/par_all36_na.prm
 read para card unit 20 append flex
 
 ! carbohydrates
-open read card unit 10 name toppar/top_all36_carb.rtf
+open read card unit 10 name ../toppar/top_all36_carb.rtf
 read  rtf card unit 10 append
 
-open read card unit 20 name toppar/par_all36_carb.prm
+open read card unit 20 name ../toppar/par_all36_carb.prm
 read para card unit 20 append flex
 
 ! lipids
-open read card unit 10 name toppar/top_all36_lipid.rtf
+open read card unit 10 name ../toppar/top_all36_lipid.rtf
 read  rtf card unit 10 append
 
-open read card unit 20 name toppar/par_all36_lipid.prm
+open read card unit 20 name ../toppar/par_all36_lipid.prm
 read para card unit 20 append flex
 
 ! CGENFF
-open read card unit 10 name toppar/top_all36_cgenff.rtf
+open read card unit 10 name ../toppar/top_all36_cgenff.rtf
 read  rtf card unit 10 append
 
-open read card unit 20 name toppar/par_all36_cgenff.prm
+open read card unit 20 name ../toppar/par_all36_cgenff.prm
 read para card unit 20 append flex
 
 ! Interface FF
-open read card unit 10 name toppar/top_interface.rtf
+open read card unit 10 name ../toppar/top_interface.rtf
 read  rtf card unit 10 append
 
-open read card unit 10 name toppar/par_interface.prm
+open read card unit 10 name ../toppar/par_interface.prm
 read para card unit 10 append flex
 
-stream toppar/toppar_all36_nano_lig.str
-stream toppar/toppar_all36_nanolig_patch.str
+stream ../toppar/toppar_all36_nano_lig.str
+stream ../toppar/toppar_all36_nanolig_patch.str
 
 ! Additional topologies and parameters for synthetic polymer
-stream toppar/toppar_all36_synthetic_polymer.str
-stream toppar/toppar_all36_synthetic_polymer_patch.str
-stream toppar/toppar_all36_polymer_solvent.str
+stream ../toppar/toppar_all36_synthetic_polymer.str
+stream ../toppar/toppar_all36_synthetic_polymer_patch.str
+stream ../toppar/toppar_all36_polymer_solvent.str
 
 ! Additional topologies and parameters for water and ions
-stream toppar/toppar_water_ions.str
-stream toppar/toppar_dum_noble_gases.str
-stream toppar/toppar_ions_won.str
+stream ../toppar/toppar_water_ions.str
+stream ../toppar/toppar_dum_noble_gases.str
+stream ../toppar/toppar_ions_won.str
 
 ! Additional topologies and parameters for protein
-stream toppar/toppar_all36_prot_arg0.str
-stream toppar/toppar_all36_prot_c36m_d_aminoacids.str
-stream toppar/toppar_all36_prot_fluoro_alkanes.str
-stream toppar/toppar_all36_prot_heme.str
-stream toppar/toppar_all36_prot_na_combined.str
-stream toppar/toppar_all36_prot_retinol.str
-stream toppar/toppar_all36_prot_modify_res.str
+stream ../toppar/toppar_all36_prot_arg0.str
+stream ../toppar/toppar_all36_prot_c36m_d_aminoacids.str
+stream ../toppar/toppar_all36_prot_fluoro_alkanes.str
+stream ../toppar/toppar_all36_prot_heme.str
+stream ../toppar/toppar_all36_prot_retinol.str
+stream ../toppar/toppar_all36_prot_modify_res.str
 
 ! Additional topologies and parameters for nucleic acids
-stream toppar/toppar_all36_na_nad_ppi.str
-stream toppar/toppar_all36_na_rna_modified.str
+stream ../toppar/toppar_all36_na_nad_ppi.str
+stream ../toppar/toppar_all36_na_rna_modified.str
 
 ! Additional topologies and parameters for lipids
-!stream toppar/toppar_all36_lipid_archaeal.str
-stream toppar/toppar_all36_lipid_bacterial.str
-stream toppar/toppar_all36_lipid_cardiolipin.str
-stream toppar/toppar_all36_lipid_cholesterol.str
-stream toppar/toppar_all36_lipid_dag.str
-stream toppar/toppar_all36_lipid_inositol.str
-!stream toppar/toppar_all36_lipid_lnp.str
-stream toppar/toppar_all36_lipid_lps.str
-!stream toppar/toppar_all36_lipid_mycobacterial.str
-stream toppar/toppar_all36_lipid_miscellaneous.str
-stream toppar/toppar_all36_lipid_model.str
-stream toppar/toppar_all36_lipid_prot.str
-stream toppar/toppar_all36_lipid_sphingo.str
-!stream toppar/toppar_all36_lipid_tag.str
-stream toppar/toppar_all36_lipid_yeast.str
-stream toppar/toppar_all36_lipid_hmmm.str
-stream toppar/toppar_all36_lipid_detergent.str
-stream toppar/toppar_all36_lipid_ether.str
+!stream ../toppar/toppar_all36_lipid_archaeal.str
+stream ../toppar/toppar_all36_lipid_bacterial.str
+stream ../toppar/toppar_all36_lipid_cardiolipin.str
+stream ../toppar/toppar_all36_lipid_cholesterol.str
+stream ../toppar/toppar_all36_lipid_dag.str
+stream ../toppar/toppar_all36_lipid_inositol.str
+!stream ../toppar/toppar_all36_lipid_lnp.str
+stream ../toppar/toppar_all36_lipid_lps.str
+!stream ../toppar/toppar_all36_lipid_mycobacterial.str
+stream ../toppar/toppar_all36_lipid_miscellaneous.str
+stream ../toppar/toppar_all36_lipid_model.str
+stream ../toppar/toppar_all36_lipid_prot.str
+stream ../toppar/toppar_all36_lipid_sphingo.str
+!stream ../toppar/toppar_all36_lipid_tag.str
+stream ../toppar/toppar_all36_lipid_yeast.str
+stream ../toppar/toppar_all36_lipid_hmmm.str
+stream ../toppar/toppar_all36_lipid_detergent.str
+stream ../toppar/toppar_all36_lipid_ether.str
 
 ! Additional topologies and parameters for carbohydrates
-stream toppar/toppar_all36_carb_glycolipid.str
-stream toppar/toppar_all36_carb_glycopeptide.str
-stream toppar/toppar_all36_carb_imlab.str
+stream ../toppar/toppar_all36_carb_glycolipid.str
+stream ../toppar/toppar_all36_carb_glycopeptide.str
+stream ../toppar/toppar_all36_carb_imlab.str
 
 ! Additional topologies and parameters for spin/fluorophore labels
-stream toppar/toppar_all36_label_spin.str
-stream toppar/toppar_all36_label_fluorophore.str
+stream ../toppar/toppar_all36_label_spin.str
+stream ../toppar/toppar_all36_label_fluorophore.str
 
 
 ! Read {tlc} RTF
@@ -309,15 +306,21 @@ stop"""
     def _get_CHARMM_waterbox_postprocessing_body(self):
         ##### solv phase ######
         switch = self.vdw_switching_keyword
-        if self.configuration["simulation"].get("GPU", False) == True and self.charmm_gpu == 'domdec-gpu':
+        if (
+            self.configuration["simulation"].get("GPU", False) == True
+            and self.charmm_gpu == "domdec-gpu"
+        ):
             GPU_domdec = "domdec gpu only"
-            GPU_openMM = ''
-        elif self.configuration["simulation"].get("GPU", False) == True and self.charmm_gpu != 'domdec-gpu':
+            GPU_openMM = ""
+        elif (
+            self.configuration["simulation"].get("GPU", False) == True
+            and self.charmm_gpu != "domdec-gpu"
+        ):
             GPU_openMM = "omm on"
-            GPU_domdec = ''
+            GPU_domdec = ""
         else:
             GPU_openMM = ""
-            GPU_domdec = ''
+            GPU_domdec = ""
 
         body = f"""
 stream charmm_step3_pbcsetup.str
@@ -384,20 +387,26 @@ stop"""
         nstep = self.configuration["simulation"]["parameters"]["nstep"]
         nstout = self.configuration["simulation"]["parameters"]["nstout"]
         nstdcd = self.configuration["simulation"]["parameters"]["nstdcd"]
-        if self.configuration["simulation"].get("GPU", False) == True and self.charmm_gpu == 'domdec-gpu':
+        if (
+            self.configuration["simulation"].get("GPU", False) == True
+            and self.charmm_gpu == "domdec-gpu"
+        ):
             GPU_domdec = "!domdec gpu only"
-            GPU_openMM = ''
+            GPU_openMM = ""
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
-        elif self.configuration["simulation"].get("GPU", False) == True and self.charmm_gpu != 'domdec-gpu':
+        elif (
+            self.configuration["simulation"].get("GPU", False) == True
+            and self.charmm_gpu != "domdec-gpu"
+        ):
             GPU_openMM = "omm on"
-            GPU_domdec = ''
+            GPU_domdec = ""
             dyn = """    omm langevin gamma 10 firstt @temp finalt @temp -
      prmc pref 1.0 iprsfrq 15"""
 
         else:
             GPU_openMM = ""
-            GPU_domdec = ''
+            GPU_domdec = ""
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
 
