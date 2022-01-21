@@ -489,12 +489,6 @@ with open(file_name + '_system.xml','w') as outfile:
 
         self._copy_ligand_specific_top_and_par(basedir, intermediate_state_file_path)
 
-        # copy central toppar folder
-        toppar_dir = get_toppar_dir()
-        toppar_source = f"{toppar_dir}"
-        toppar_target = f"{intermediate_state_file_path}/toppar"
-        shutil.copytree(toppar_source, toppar_target)
-
         # copy crd file
         self._copy_crd_file((intermediate_state_file_path))
 
@@ -862,7 +856,8 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 
     def _init_base_dir(self):
         """
-        Generates the base directory which all intermediate states are located.
+        Generates the base directory which all intermediate states are located
+        and create the central toppar dir.
         """
 
         if os.path.isdir(self.path):
@@ -871,36 +866,42 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
         else:
             os.makedirs(self.path)
 
+        # copy central toppar folder
+        toppar_dir = get_toppar_dir()
+        toppar_source = f"{toppar_dir}"
+        toppar_target = f"{self.path}/toppar"
+        shutil.copytree(toppar_source, self.path)
+
     def _write_toppar_str(self, output_file_base):
 
         toppar_format = f"""
-toppar/top_all36_prot.rtf
-toppar/par_all36m_prot.prm
-toppar/top_all36_na.rtf
-toppar/par_all36_na.prm
-toppar/top_all36_carb.rtf
-toppar/par_all36_carb.prm
-toppar/top_all36_lipid.rtf
-toppar/par_all36_lipid.prm
-toppar/top_all36_cgenff.rtf
-toppar/par_all36_cgenff.prm
-toppar/toppar_water_ions.str
-toppar/toppar_dum_noble_gases.str
-toppar/toppar_all36_prot_c36m_d_aminoacids.str
-toppar/toppar_all36_prot_fluoro_alkanes.str
-toppar/toppar_all36_prot_heme.str
-toppar/toppar_all36_prot_na_combined.str
-toppar/toppar_all36_prot_retinol.str
-toppar/toppar_all36_na_nad_ppi.str
-toppar/toppar_all36_lipid_bacterial.str
-toppar/toppar_all36_lipid_cardiolipin.str
-toppar/toppar_all36_lipid_cholesterol.str
-toppar/toppar_all36_lipid_inositol.str
-toppar/toppar_all36_lipid_lps.str
-toppar/toppar_all36_lipid_miscellaneous.str
-toppar/toppar_all36_lipid_model.str
-toppar/toppar_all36_lipid_prot.str
-toppar/toppar_all36_lipid_sphingo.str
+../toppar/top_all36_prot.rtf
+../toppar/par_all36m_prot.prm
+../toppar/top_all36_na.rtf
+../toppar/par_all36_na.prm
+../toppar/top_all36_carb.rtf
+../toppar/par_all36_carb.prm
+../toppar/top_all36_lipid.rtf
+../toppar/par_all36_lipid.prm
+../toppar/top_all36_cgenff.rtf
+../toppar/par_all36_cgenff.prm
+../toppar/toppar_water_ions.str
+../toppar/toppar_dum_noble_gases.str
+../toppar/toppar_all36_prot_c36m_d_aminoacids.str
+../toppar/toppar_all36_prot_fluoro_alkanes.str
+../toppar/toppar_all36_prot_heme.str
+../toppar/toppar_all36_prot_na_combined.str
+../toppar/toppar_all36_prot_retinol.str
+../toppar/toppar_all36_na_nad_ppi.str
+../toppar/toppar_all36_lipid_bacterial.str
+../toppar/toppar_all36_lipid_cardiolipin.str
+../toppar/toppar_all36_lipid_cholesterol.str
+../toppar/toppar_all36_lipid_inositol.str
+../toppar/toppar_all36_lipid_lps.str
+../toppar/toppar_all36_lipid_miscellaneous.str
+../toppar/toppar_all36_lipid_model.str
+../toppar/toppar_all36_lipid_prot.str
+../toppar/toppar_all36_lipid_sphingo.str
 {self.system.tlc.lower()}_g.rtf
 {self.system.tlc.lower()}.prm
 dummy_atom_definitions.rtf
@@ -911,7 +912,7 @@ dummy_parameters.prm
         f.write(toppar_format)
         f.close()
 
-        # TODO for BB: write charmm toppar.str file: charmm_toppar.str
+        # write charmm_toppar.str
         charmm_toppar = self.charmm_factory.build_reduced_toppar(
             self.system.tlc.lower()
         )
