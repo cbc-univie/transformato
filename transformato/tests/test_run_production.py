@@ -114,7 +114,7 @@ def test_run_methane_to_methane_common_core_with_CHARMM():
     )
     change_platform_to_test_platform(configuration=configuration, engine="CHARMM")
     output_files = mutate_methane_to_methane_cc(configuration=configuration)
-    run_simulation(output_files)
+    run_simulation(output_files, engine="CHARMM")
     f = "/".join(output_files[0].split("/")[:-3])
     print(f)
     shutil.rmtree(f)
