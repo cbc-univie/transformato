@@ -86,25 +86,6 @@ def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
     os.getenv("CI") == 'true',
     reason="Skipping tests that cannot pass in github actions",
 )
-def test_generate_alchemical_path_for_methane_common_core():
-    from transformato.testsystems import mutate_methane_to_methane_cc
-
-    configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
-        output_dir=get_test_output_dir(),
-    )
-    output_files = mutate_methane_to_methane_cc(configuration=configuration)
-
-    assert len(output_files) == 3
-
-
-@pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == 'true',
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_toluene_commmon_core():
     from transformato.testsystems import mutate_toluene_to_methane_cc
 

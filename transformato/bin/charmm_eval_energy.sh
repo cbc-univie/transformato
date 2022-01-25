@@ -18,4 +18,4 @@ echo 'Path: ' ${path}
 echo 'top: ' ${top}
 echo 'script: ' ${script}
 
-${CHARMM} top:${top} path:${path} -i ${script}
+OMP_NUM_THREADS=8 ${CHARMM} top:${top} path:${path} -i ${script}
