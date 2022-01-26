@@ -125,7 +125,12 @@ class SystemStructure(object):
         charmm_gui_env = self.charmm_gui_base + env
         tlc = self.tlc
         tlc_lower = str(tlc).lower()
-        toppar_dir = get_toppar_dir()
+        toppar_dir = f"{charmm_gui_env}/toppar"
+
+        if os.path.isdir(toppar_dir):
+            pass
+        else:
+            toppar_dir = get_toppar_dir()
 
         # if custom parameter are added they are located in l1,l2
         parameter_files = tuple()
