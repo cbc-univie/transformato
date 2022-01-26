@@ -867,8 +867,19 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
             os.makedirs(self.path)
 
         # copy central toppar folder
-        toppar_dir = get_toppar_dir()
-        toppar_source = f"{toppar_dir}"
+
+        basedir = self.system.charmm_gui_base
+        toppar_source = f"{basedir}/waterbox/toppar"
+
+        if os.path.isdir(toppar_source):
+            pass
+        else:
+            toppar_dir = get_toppar_dir()
+            toppar_source = f"{toppar_dir}"
+            logger.warning(
+                f"will use the toppar version available within the Transformato package"
+            )
+
         toppar_target = f"{self.configuration['system_dir']}/toppar"
         shutil.copytree(toppar_source, toppar_target, dirs_exist_ok=True)
 
