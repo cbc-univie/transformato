@@ -17,7 +17,6 @@ def postprocessing(
     different_path_for_dcd: str = "",
     only_single_state: str = "",
     analyze_traj_with: str = "mdtraj",
-    in_memory: bool = False,
 ):
     """Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.
 
