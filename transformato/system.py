@@ -1,14 +1,14 @@
 import logging
 import os
-from collections import namedtuple
+import re
+from collections import defaultdict
+from typing import Tuple
 
 import networkx as nx
 import parmed as pm
-from typing import Tuple
 from rdkit import Chem
-from collections import defaultdict
+
 from .utils import get_toppar_dir
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,8 @@ class SystemStructure(object):
                 self.psfs[env] = self._initialize_system(configuration, env)
                 # load parameters
                 self.psfs[env].load_parameters(parameter)
+                # check if HMR is set
+                self._set_hmr(configuration, env)
                 # get offset
                 self.offset[
                     env
@@ -65,6 +67,8 @@ class SystemStructure(object):
                 self.psfs[env] = self._initialize_system(configuration, env)
                 # load parameters
                 self.psfs[env].load_parameters(parameter)
+                # check if HMR is set
+                self._set_hmr(configuration, env)
                 # get offset
                 self.offset[
                     env
@@ -81,6 +85,31 @@ class SystemStructure(object):
             raise NotImplementedError(
                 "only binding and solvation free energy implemented."
             )
+
+    def _set_hmr(self, configuration: dict, env: str):
+        # check if HMR is set
+        if configuration["simulation"].get("HMR", False):
+            logger.info("Using HMR.")
+            for bond in self.psfs[env].bonds:
+                # Only take the ones with at least one hydrogen
+                atom1, atom2 = bond.atom1, bond.atom2
+                # print(dir(atom1))
+                if atom1.atomic_number != 1 and atom2.atomic_number != 1:
+                    continue
+                if "TIP3" in [atom1.residue.name, atom2.residue.name]:
+                    continue
+                if atom2.atomic_number == 1:
+                    atom1, atom2 = (
+                        atom2,
+                        atom1,
+                    )  # now atom1 is hydrogen for sure
+                if atom2.atomic_number != 1:
+                    mass1 = atom1.mass
+                    mass2 = atom2.mass
+                    new_mass1 = mass1 * 3.0
+                    new_mass2 = mass2 - new_mass1 + mass1
+                    atom1.mass = new_mass1
+                    atom2.mass = new_mass2
 
     @staticmethod
     def _mol_to_nx(mol: Chem.Mol):
@@ -203,6 +232,8 @@ class SystemStructure(object):
             crd_file_path = (
                 f"{self.charmm_gui_base}/{taken_from}/openmm/{crd_file_name}.crd"
             )
+
+            # load psf
             psf = pm.charmm.CharmmPsfFile(psf_file_path)
             coord = pm.charmm.CharmmCrdFile(crd_file_path)
             psf.coordinates = coord.coordinates
