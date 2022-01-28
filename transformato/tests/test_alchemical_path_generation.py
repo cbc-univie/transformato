@@ -14,6 +14,9 @@ from transformato import (
 )
 from transformato.tests.paths import get_test_output_dir
 from transformato.constants import loeffler_testsystems_dir
+import warnings
+
+warnings.filterwarnings("ignore", module="parmed")
 
 
 def test_transformato_imported():
@@ -83,7 +86,7 @@ def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_toluene_commmon_core():
@@ -98,11 +101,60 @@ def test_generate_alchemical_path_for_toluene_commmon_core():
     output_files = mutate_toluene_to_methane_cc(configuration=configuration)
     assert len(output_files) == 16
 
+    with open(
+        f"{get_test_output_dir()}/toluene-methane-rsfe/toluene/intst1/openmm_run.py",
+        "r",
+    ) as f:
+        i = 0
+        for line in f.readlines():
+            if "# Set platform" in line and i == 0:
+                i += 1
+            elif i == 1:
+                assert "CPU" in line
+                print(line)
+                i += 1
+
 
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_generate_alchemical_path_for_toluene_commmon_core_with_CUDA():
+    from transformato.testsystems import mutate_toluene_to_methane_cc
+
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-toluene-methane-rsfe-CUDA.yaml",
+        input_dir=loeffler_testsystems_dir,
+        output_dir=get_test_output_dir(),
+    )
+
+    output_files = mutate_toluene_to_methane_cc(configuration=configuration)
+    assert len(output_files) == 16
+
+    with open(
+        f"{get_test_output_dir()}/toluene-methane-rsfe/toluene/intst1/openmm_run.py",
+        "r",
+    ) as f:
+        i = 0
+        for line in f.readlines():
+            if "# Set platform" in line and i == 0:
+                i += 1
+            elif i == 1:
+                assert "CUDA" in line
+                print(line)
+                i += 1
+            elif i == 2:
+                print(line)
+                assert "dict(CudaPrecision='mixed')" in line
+                i += 1
+
+
+@pytest.mark.rsfe
+@pytest.mark.requires_loeffler_systems
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_2MIN_common_core():
@@ -121,7 +173,7 @@ def test_generate_alchemical_path_for_2MIN_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_2MFN_common_core():
@@ -140,7 +192,7 @@ def test_generate_alchemical_path_for_2MFN_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_neopentane_common_core():
@@ -159,7 +211,7 @@ def test_generate_alchemical_path_for_neopentane_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_methanol_common_core():
@@ -178,7 +230,7 @@ def test_generate_alchemical_path_for_methanol_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_2_CPI_to_common_core():
@@ -197,7 +249,7 @@ def test_generate_alchemical_path_for_2_CPI_to_common_core():
 @pytest.mark.rsfe
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_generate_alchemical_path_for_7_CPI_to_common_core():
