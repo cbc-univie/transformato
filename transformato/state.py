@@ -423,7 +423,10 @@ with open(file_name + '_system.xml','w') as outfile:
                 with open(f"{file}_tmp", "w+") as g:
                     for line in f.readlines():
                         if "system = psf.createSystem" in line:
-                            g.write("nboptions['hydrogenMass'] = 1.5 *atom_mass_units")
+                            g.write("# Adding HMR\n")
+                            g.write(
+                                "nboptions['hydrogenMass'] = 1.5 *atom_mass_units\n"
+                            )
                             g.write(line)
                         else:
                             g.write(line)
