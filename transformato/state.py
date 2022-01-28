@@ -385,8 +385,8 @@ with open(file_name + '_system.xml','w') as outfile:
         # add serialization
         self._add_serializer(omm_simulation_script_target)
         self._change_platform(omm_simulation_script_target)
-        self._check_switching_function(omm_simulation_script_target)
-
+        self._check_switching_function()
+        self._check_hmr(omm_simulation_script_target)
         # continue with vacuum
         omm_simulation_script_source = (
             f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
@@ -398,7 +398,7 @@ with open(file_name + '_system.xml','w') as outfile:
         self._add_serializer(omm_simulation_script_target)
         self._change_platform(omm_simulation_script_target)
 
-    def _check_switching_function(self, file):
+    def _check_switching_function(self):
         """
         There are three possibilities for the CHARMM/openMM switching functions:
         - vfswitch
@@ -415,6 +415,19 @@ with open(file_name + '_system.xml','w') as outfile:
             raise NotImplementedError(
                 f"Other switching functino called: {self.vdw_switch}."
             )
+
+    def _check_hmr(self, file):
+        "add hmr if requested in config file"
+        if self.configuration["simulation"].get("HMR", False):
+            with open(file, "r") as f:
+                with open(f"{file}_tmp", "w+") as g:
+                    for line in f.readlines():
+                        if "system = psf.createSystem" in line:
+                            g.write("nboptions['hydrogenMass'] = 1.5 *atom_mass_units")
+                            g.write(line)
+                        else:
+                            g.write(line)
+            shutil.move(f"{file}_tmp", file)
 
     def _change_platform(self, file):
         # changin input script
