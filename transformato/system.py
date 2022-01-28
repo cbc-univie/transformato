@@ -44,8 +44,6 @@ class SystemStructure(object):
                 self.psfs[env] = self._initialize_system(configuration, env)
                 # load parameters
                 self.psfs[env].load_parameters(parameter)
-                # check if HMR is set
-                self._set_hmr(configuration, env)
                 # get offset
                 self.offset[
                     env
@@ -67,8 +65,6 @@ class SystemStructure(object):
                 self.psfs[env] = self._initialize_system(configuration, env)
                 # load parameters
                 self.psfs[env].load_parameters(parameter)
-                # check if HMR is set
-                self._set_hmr(configuration, env)
                 # get offset
                 self.offset[
                     env
