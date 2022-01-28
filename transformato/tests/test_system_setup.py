@@ -10,6 +10,7 @@ from io import StringIO
 
 import parmed as pm
 import pytest
+
 # read in specific topology with parameters
 # read in specific topology with parameters
 from transformato import SystemStructure, load_config_yaml, psf_correction
@@ -17,6 +18,7 @@ from transformato.constants import loeffler_testsystems_dir
 from transformato.tests.paths import get_test_output_dir
 
 warnings.filterwarnings("ignore", module="parmed")
+
 
 def test_read_yaml():
     """Sample test, will check ability to read yaml files"""
@@ -134,6 +136,41 @@ def test_setup_system_for_methane_common_core():
     os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
+def test_setup_system_for_toluene_common_core_with_HMR():
+    from transformato.testsystems import mutate_toluene_to_methane_cc
+
+    configuration = load_config_yaml(
+        config="transformato/tests/config/test-toluene-methane-rsfe-HMR.yaml",
+        input_dir=loeffler_testsystems_dir,
+        output_dir=get_test_output_dir(),
+    )
+    output_files = mutate_toluene_to_methane_cc(configuration=configuration)
+    assert len(output_files) == 16
+    # set up openMM system
+    base = f"{get_test_output_dir()}/toluene-methane-rsfe/toluene/intst10/"
+    import sys
+
+    # sys.path is a list of absolute path strings
+    sys.path.append(base)
+    system, psf = generate_openMM_system_using_cgui_scripts(base)
+
+    # enumearte and iterate over all constraints in the system
+    for cons_idx in range(system.getNumConstraints()):
+        idx1, idx2, value = system.getConstraintParameters(cons_idx)
+        print(
+            f"{psf.atom_list[idx1]}: {system.getParticleMass(idx1)}; {psf.atom_list[idx2]}: {system.getParticleMass(idx2)}"
+        )
+        print(value)
+    print("Finsihed.")
+    assert system.getNumConstraints() == 2552
+
+
+@pytest.mark.rsfe
+@pytest.mark.requires_loeffler_systems
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_setup_system_for_methane_common_core_with_HMR():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
@@ -145,3 +182,53 @@ def test_setup_system_for_methane_common_core_with_HMR():
     output_files = mutate_methane_to_methane_cc(configuration=configuration)
 
     assert len(output_files) == 3
+
+    # set up openMM system
+    base = f"{get_test_output_dir()}/toluene-methane-rsfe/methane/intst3/"
+    import sys
+
+    # sys.path is a list of absolute path strings
+    sys.path.append(base)
+    system, psf = generate_openMM_system_using_cgui_scripts(base)
+
+    # enumearte and iterate over all constraints in the system
+    for cons_idx in range(system.getNumConstraints()):
+        idx1, idx2, value = system.getConstraintParameters(cons_idx)
+        print(
+            f"{psf.atom_list[idx1]}: {system.getParticleMass(idx1)}; {psf.atom_list[idx2]}: {system.getParticleMass(idx2)}"
+        )
+        print(value)
+    print("Finsihed.")
+    assert system.getNumConstraints() == 2557
+
+
+def generate_openMM_system_using_cgui_scripts(base: str):
+
+    # change working directory
+    current_dir = os.curdir
+    os.chdir(base)
+    # imports
+    from omm_readinputs import read_inputs
+    from omm_readparams import read_params, read_psf, read_crd, gen_box
+    from simtk.openmm import unit
+
+    # Load parameters
+    print("Loading parameters")
+    inputs = read_inputs(f"{base}/lig_in_waterbox.inp")
+    params = read_params(f"{base}/toppar.str")
+    psf = read_psf(f"{base}/lig_in_waterbox.psf")
+    crd = read_crd(f"{base}/lig_in_waterbox.crd")
+    psf = gen_box(psf, crd)
+
+    # Build system
+    system = psf.createSystem(
+        params,
+        nonbondedMethod=inputs.coulomb,
+        nonbondedCutoff=inputs.r_off * unit.nanometers,
+        constraints=inputs.cons,
+        ewaldErrorTolerance=inputs.ewald_Tol,
+        hydrogenMass=3.0 * unit.atom_mass_units,
+    )
+    print(inputs.cons)
+    os.chdir(current_dir)
+    return system, psf
