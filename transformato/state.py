@@ -425,8 +425,14 @@ with open(file_name + '_system.xml','w') as outfile:
         if self.configuration["simulation"]["GPU"]:
             logger.debug("Preparing for CUDA")
             for line in f.readlines():
-                if "CudaPrecision" in line and i == 0:
+                if "# Set platform" in line and i == 0:
                     i += 1
+                    g.write(line)
+                elif i == 1:
+                    i += 1
+                    g.write("platform = Platform.getPlatformByName('CUDA')\n")
+                elif i == 2:
+                    i += 2
                     g.write("prop = dict(CudaPrecision='mixed')\n")
                 else:
                     g.write(line)
