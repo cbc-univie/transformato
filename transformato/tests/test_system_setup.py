@@ -232,3 +232,77 @@ def generate_openMM_system_using_cgui_scripts(base: str):
     print(inputs.cons)
     os.chdir(current_dir)
     return system, psf
+
+
+@pytest.mark.rbfe
+def test_lonepairs():
+
+    from transformato import (
+        load_config_yaml,
+        SystemStructure,
+        IntermediateStateFactory,
+        ProposeMutationRoute,
+    )
+    from transformato.mutate import perform_mutations
+    from IPython.display import SVG
+    from transformato.utils import run_simulation, postprocessing
+    import glob
+    import subprocess
+    import warnings
+    import os
+    import sys
+
+    warnings.filterwarnings("ignore", module="parmed")
+
+    molecule = "17124_18631"
+
+    folder = "/site/raid3/johannes/run_1"
+
+    ### should be the same within each system ###
+    input_dir = "/site/raid3/student4/alex/rbfe-data/jnk1/"
+    config = "/site/raid3/johannes/rbfe-data/config/jnk1/{}.yaml".format(molecule)
+
+    configuration = load_config_yaml(
+        config=config, input_dir=input_dir, output_dir=folder
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+
+    s1_to_s2.propose_common_core()
+
+    odered_connected_dummy_regions_cc1 = [[46, 22], [45, 44, 43, 26, 25]]
+    s1_to_s2.finish_common_core(
+        odered_connected_dummy_regions_cc1=odered_connected_dummy_regions_cc1
+    )
+
+    # generate the mutation list for the original
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    # nr_of_mutation_steps_lj_of_hydrogens =3, nr_of_mutation_steps_lj_of_heavy_atoms = 2,
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=2,
+        nr_of_mutation_steps_cc=2,
+    )
+
+    # # Not necessary in this case!
+    # mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    # print(mutation_list.keys())
+    # i = IntermediateStateFactory(
+    #     system=s2,
+    #     configuration=configuration,
+    # )
+    # # nr_of_mutation_steps_lj_of_hydrogens =3,nr_of_mutation_steps_lj_of_heavy_atoms = 2,
+    # perform_mutations(
+    #     configuration=configuration,
+    #     i=i,
+    #     mutation_list=mutation_list,
+    #     nr_of_mutation_steps_charge=2,
+    # )
