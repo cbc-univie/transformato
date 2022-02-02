@@ -1019,10 +1019,15 @@ class ProposeMutationRoute(object):
             list_termin_dummy_atoms.extend(list(m))
         logger.info(f"Terminal dummy atoms: {list_termin_dummy_atoms}")
 
+        tlc = self.s1_tlc
+        if mol_name == "mol2":
+            tlc = self.s2_tlc
+
         # iterate through atoms and select atoms that need to be mutated
         atoms_to_be_mutated = []
         hydrogens = []
-        for atom in psf.view[f":{'UNK'}"].atoms:
+
+        for atom in psf.view[f":{tlc}"].atoms:
             # idx = atom.idx - self.offset
             idx = atom.idx
             if idx not in cc_idx:
