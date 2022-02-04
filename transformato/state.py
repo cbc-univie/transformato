@@ -383,20 +383,23 @@ with open(file_name + '_system.xml','w') as outfile:
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
+        self._check_hmr(omm_simulation_script_target)
         self._add_serializer(omm_simulation_script_target)
         self._change_platform(omm_simulation_script_target)
         self._check_switching_function()
-        self._check_hmr(omm_simulation_script_target)
-        # continue with vacuum
-        omm_simulation_script_source = (
-            f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
-        )
-        omm_simulation_script_target = (
-            f"{intermediate_state_file_path}/openmm_run_vacuum.py"
-        )
-        shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
-        self._add_serializer(omm_simulation_script_target)
-        self._change_platform(omm_simulation_script_target)
+
+        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
+            # add vacuum scripts
+            omm_simulation_script_source = (
+                f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
+            )
+            omm_simulation_script_target = (
+                f"{intermediate_state_file_path}/openmm_run_vacuum.py"
+            )
+            shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
+            self._check_hmr(omm_simulation_script_target)
+            self._add_serializer(omm_simulation_script_target)
+            self._change_platform(omm_simulation_script_target)
 
     def _check_switching_function(self):
         """
