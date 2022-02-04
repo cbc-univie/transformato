@@ -738,20 +738,34 @@ class FreeEnergyCalculator(object):
         return self.free_energy_overlap(env="vacuum")
 
     def plot_free_energy_overlap(self, env: str):
-        plt.figure(figsize=[4, 4], dpi=300)
+        plt.figure(figsize=[8, 8], dpi=300)
         if env == "vacuum":
             ax = sns.heatmap(
-                self.vacuum_free_energy_difference_overlap, cmap="Blues", linewidth=0.5
+                self.vacuum_free_energy_difference_overlap,
+                cmap="Blues",
+                linewidth=0.5,
+                fmt="0.2f",
+                annot=True,
+                fmt="0.2f",
+                annot_kws={"size": "small"},
             )
         elif env == "waterbox":
             ax = sns.heatmap(
                 self.waterbox_free_energy_difference_overlap,
                 cmap="Blues",
                 linewidth=0.5,
+                annot=True,
+                fmt="0.2f",
+                annot_kws={"size": "small"},
             )
         elif env == "complex":
             ax = sns.heatmap(
-                self.complex_free_energy_difference_overlap, cmap="Blues", linewidth=0.5
+                self.complex_free_energy_difference_overlap,
+                cmap="Blues",
+                linewidth=0.5,
+                annot=True,
+                fmt="0.2f",
+                annot_kws={"size": "small"},
             )
         else:
             raise RuntimeError()
