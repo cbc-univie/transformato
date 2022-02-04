@@ -744,7 +744,6 @@ class FreeEnergyCalculator(object):
                 self.vacuum_free_energy_difference_overlap,
                 cmap="Blues",
                 linewidth=0.5,
-                fmt="0.2f",
                 annot=True,
                 fmt="0.2f",
                 annot_kws={"size": "small"},
