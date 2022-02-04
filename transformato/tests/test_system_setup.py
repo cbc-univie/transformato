@@ -235,6 +235,11 @@ def generate_openMM_system_using_cgui_scripts(base: str):
 
 
 @pytest.mark.rbfe
+@pytest.mark.requires_correct_parmed
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_lonepairs():
 
     from transformato import (
@@ -244,26 +249,14 @@ def test_lonepairs():
         ProposeMutationRoute,
     )
     from transformato.mutate import perform_mutations
-    from IPython.display import SVG
-    from transformato.utils import run_simulation, postprocessing
-    import glob
-    import subprocess
     import warnings
-    import os
-    import sys
 
     warnings.filterwarnings("ignore", module="parmed")
 
-    molecule = "17124_18631"
-
-    folder = "/site/raid3/johannes/run_1"
-
-    ### should be the same within each system ###
-    input_dir = "/site/raid3/student4/alex/rbfe-data/jnk1/"
-    config = "/site/raid3/johannes/rbfe-data/config/jnk1/{}.yaml".format(molecule)
-
     configuration = load_config_yaml(
-        config=config, input_dir=input_dir, output_dir=folder
+        config="transformato/tests/config/jnk1-17124-18631.yaml",
+        input_dir="data/",
+        output_dir=get_test_output_dir(),
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -283,26 +276,24 @@ def test_lonepairs():
         system=s1,
         configuration=configuration,
     )
-    # nr_of_mutation_steps_lj_of_hydrogens =3, nr_of_mutation_steps_lj_of_heavy_atoms = 2,
+
     perform_mutations(
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
-        nr_of_mutation_steps_charge=2,
+        nr_of_mutation_steps_charge=1,
         nr_of_mutation_steps_cc=2,
     )
-
-    # # Not necessary in this case!
-    # mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
-    # print(mutation_list.keys())
-    # i = IntermediateStateFactory(
-    #     system=s2,
-    #     configuration=configuration,
-    # )
-    # # nr_of_mutation_steps_lj_of_hydrogens =3,nr_of_mutation_steps_lj_of_heavy_atoms = 2,
-    # perform_mutations(
-    #     configuration=configuration,
-    #     i=i,
-    #     mutation_list=mutation_list,
-    #     nr_of_mutation_steps_charge=2,
-    # )
+    # generate mutation list for structure 2
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    print(mutation_list.keys())
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=1,
+    )
