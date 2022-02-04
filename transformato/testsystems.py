@@ -1,13 +1,8 @@
 import numpy as np
 
-import transformato
 from transformato.mutate import ProposeMutationRoute, perform_mutations
 from transformato.state import IntermediateStateFactory
 from transformato.system import SystemStructure
-from transformato.constants import (
-    change_platform_to_test_platform,
-    loeffler_testsystems_dir,
-)
 
 
 def mutate_methane_to_methane_cc(configuration: dict):
@@ -153,6 +148,35 @@ def mutate_7_CPI_to_2_CPI_cc(configuration: dict):  # will be tested later on
     return i.output_files
 
 
+def mutate_7_CPI_to_2_CPI_cc_high_precicion(
+    configuration: dict,
+):  # will be tested later on
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.completeRingsOnly = True
+    s1_to_s2.propose_common_core()
+    s1_to_s2.remove_idx_from_common_core_of_mol1([14])
+    s1_to_s2.remove_idx_from_common_core_of_mol2([6])
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        list_of_heavy_atoms_to_be_mutated=[13, 11, 8, 0, 2, 10, 4, 7],
+    )
+    return i.output_files
+
+
 def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
 
     s1 = SystemStructure(configuration, "structure1")
@@ -176,6 +200,36 @@ def mutate_2_CPI_to_7_CPI_cc(configuration: dict):  # will be tested later on
         i=i,
         mutation_list=mutation_list,
         list_of_heavy_atoms_to_be_mutated=[(2, 4), (0, 6), 11, 8, (12, 9)],
+    )
+
+    return i.output_files
+
+
+def mutate_2_CPI_to_7_CPI_cc_high_precicion(
+    configuration: dict,
+):  # will be tested later on
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.completeRingsOnly = True
+    s1_to_s2.propose_common_core()
+    s1_to_s2.remove_idx_from_common_core_of_mol1([14])
+    s1_to_s2.remove_idx_from_common_core_of_mol2([6])
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        list_of_heavy_atoms_to_be_mutated=[2, 4, 0, 6, 11, 8, 12, 9],
     )
 
     return i.output_files
@@ -258,7 +312,7 @@ def mutate_2_methylindole_to_methane_cc(configuration: dict):
 
 
 def mutate_acetylaceton_methyl_common_core(configuration: dict):
-    
+
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
