@@ -1020,7 +1020,7 @@ class ProposeMutationRoute(object):
         logger.info(f"Terminal dummy atoms: {list_termin_dummy_atoms}")
 
         tlc = self.s1_tlc
-        if mol_name == "mol2":
+        if mol_name == "m2":
             tlc = self.s2_tlc
 
         # iterate through atoms and select atoms that need to be mutated
