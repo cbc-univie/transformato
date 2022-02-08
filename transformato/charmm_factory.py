@@ -1,5 +1,4 @@
 import datetime
-from os import stat
 from transformato.constants import temperature, charmm_gpu
 from simtk import unit
 
@@ -310,7 +309,7 @@ stop"""
             self.configuration["simulation"].get("GPU", False) == True
             and self.charmm_gpu == "domdec-gpu"
         ):
-            GPU_domdec = "domdec gpu only"
+            GPU_domdec = "domdec gpu on"
             GPU_openMM = ""
         elif (
             self.configuration["simulation"].get("GPU", False) == True
@@ -351,10 +350,8 @@ nbonds atom vatom {switch} bycb -
        ewald pmew fftx @fftx ffty @ffty fftz @fftz  kappa .34 spline order 6
 
 energy
-
-!
-!use a restraint to place center of mass of the molecules near the origin
-!
+{GPU_domdec}
+energy
 
 open read file unit 41 name ../traj.dcd
 traj query unit 41
@@ -391,10 +388,15 @@ stop"""
             self.configuration["simulation"].get("GPU", False) == True
             and self.charmm_gpu == "domdec-gpu"
         ):
-            GPU_domdec = "!domdec gpu only"
+            GPU_domdec = "domdec gpu on"
             GPU_openMM = ""
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
+            centering = """
+calc xcen = 0. 
+calc ycen = 0. 
+calc zcen = 0.        
+"""
         elif (
             self.configuration["simulation"].get("GPU", False) == True
             and self.charmm_gpu != "domdec-gpu"
@@ -409,6 +411,12 @@ stop"""
             GPU_domdec = ""
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
+        # always center
+        centering = """
+calc xcen = @A / 2 
+calc ycen = @B / 2 
+calc zcen = @C / 2        
+"""
 
         body = f"""
 !
@@ -426,9 +434,7 @@ CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
 !Image centering by residue
-calc xcen = @A / 2
-calc ycen = @B / 2
-calc zcen = @C / 2
+{centering}
 IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele resname TIP3 end
 IMAGE BYRESID XCEN @xcen YCEN @ycen ZCEN @zcen sele segid IONS end
 IMAGE BYSEGI XCEN @xcen YCEN @ycen ZCEN @zcen sele segid pro* end
