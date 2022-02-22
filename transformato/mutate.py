@@ -480,34 +480,47 @@ class ProposeMutationRoute(object):
 
     @staticmethod
     def _calculate_order_of_LJ_mutations(
-        connected_dummy_regions: list, match_terminal_atoms: dict, G: nx.Graph
+        connected_dummy_regions: list,
+        match_terminal_atoms: dict,
+        G: nx.Graph,
+        legacy: bool = False,
     ) -> list:
+        if legacy:
+            ordered_LJ_mutations = []
+            for real_atom in match_terminal_atoms:
+                for dummy_atom in match_terminal_atoms[real_atom]:
+                    for connected_dummy_region in connected_dummy_regions:
+                        # stop at connected dummy region with specific dummy_atom in it
+                        if dummy_atom not in connected_dummy_region:
+                            continue
 
-        ordered_LJ_mutations = []
-        for real_atom in match_terminal_atoms:
-            for dummy_atom in match_terminal_atoms[real_atom]:
-                for connected_dummy_region in connected_dummy_regions:
-                    # stop at connected dummy region with specific dummy_atom in it
-                    if dummy_atom not in connected_dummy_region:
-                        continue
+                        G_dummy = G.copy()
+                        # delete all nodes not in dummy region
+                        remove_nodes = [
+                            node
+                            for node in G.nodes()
+                            if node not in connected_dummy_region
+                        ]
+                        for remove_node in remove_nodes:
+                            G_dummy.remove_node(remove_node)
 
-                    G_dummy = G.copy()
-                    # delete all nodes not in dummy region
-                    remove_nodes = [
-                        node for node in G.nodes() if node not in connected_dummy_region
-                    ]
-                    for remove_node in remove_nodes:
-                        G_dummy.remove_node(remove_node)
+                        # root is the dummy atom that connects the real region with the dummy region
+                        root = dummy_atom
 
-                    # root is the dummy atom that connects the real region with the dummy region
-                    root = dummy_atom
+                        edges = list(nx.dfs_edges(G_dummy, source=root))
+                        nodes = [root] + [v for u, v in edges]
+                        nodes.reverse()  # NOTE: reverse the mutation
+                        ordered_LJ_mutations.append(nodes)
 
-                    edges = list(nx.dfs_edges(G_dummy, source=root))
-                    nodes = [root] + [v for u, v in edges]
-                    nodes.reverse()  # NOTE: reverse the mutation
-                    ordered_LJ_mutations.append(nodes)
+            return ordered_LJ_mutations
+        else:
+            from .tf_routes.tf_routes.routes import (
+                _calculate_order_of_LJ_mutations_new as _calculate_order_of_LJ_mutations_with_bfs,
+            )
 
-        return ordered_LJ_mutations
+            return _calculate_order_of_LJ_mutations_with_bfs(
+                connected_dummy_regions, match_terminal_atoms, G
+            )
 
     def propose_common_core(self):
         mcs = self._find_mcs("m1", "m2")

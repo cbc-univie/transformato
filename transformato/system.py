@@ -55,7 +55,7 @@ class SystemStructure(object):
             self.mol: Chem.Mol = self._generate_rdkit_mol(
                 "complex", self.psfs["complex"][f":{self.tlc}"]
             )
-            self.graph: nx.Graph = self._mol_to_nx(self.mol)
+            self.graph: nx.Graph = self.mol_to_nx(self.mol)
 
         elif configuration["simulation"]["free-energy-type"] == "rsfe":
             self.envs = set(["waterbox", "vacuum"])
@@ -76,7 +76,7 @@ class SystemStructure(object):
             self.mol: Chem.Mol = self._generate_rdkit_mol(
                 "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
             )
-            self.graph: nx.Graph = self._mol_to_nx(self.mol)
+            self.graph: nx.Graph = self.mol_to_nx(self.mol)
         else:
             raise NotImplementedError(
                 "only binding and solvation free energy implemented."
@@ -108,27 +108,32 @@ class SystemStructure(object):
                     atom2.mass = new_mass2
 
     @staticmethod
-    def _mol_to_nx(mol: Chem.Mol):
-        G = nx.Graph()
+    def mol_to_nx(mol: Chem.Mol, legacy: bool = False):
 
-        for atom in mol.GetAtoms():
-            G.add_node(
-                atom.GetIdx(),
-                atomic_num=atom.GetAtomicNum(),
-                formal_charge=atom.GetFormalCharge(),
-                chiral_tag=atom.GetChiralTag(),
-                hybridization=atom.GetHybridization(),
-                num_explicit_hs=atom.GetNumExplicitHs(),
-                is_aromatic=atom.GetIsAromatic(),
-            )
+        if legacy:
+            G = nx.Graph()
 
-        for bond in mol.GetBonds():
-            G.add_edge(
-                bond.GetBeginAtomIdx(),
-                bond.GetEndAtomIdx(),
-                bond_type=bond.GetBondType(),
-            )
-        return G
+            for atom in mol.GetAtoms():
+                G.add_node(
+                    atom.GetIdx(),
+                    atomic_num=atom.GetAtomicNum(),
+                    formal_charge=atom.GetFormalCharge(),
+                    chiral_tag=atom.GetChiralTag(),
+                    hybridization=atom.GetHybridization(),
+                    num_explicit_hs=atom.GetNumExplicitHs(),
+                    is_aromatic=atom.GetIsAromatic(),
+                )
+
+            for bond in mol.GetBonds():
+                G.add_edge(
+                    bond.GetBeginAtomIdx(),
+                    bond.GetEndAtomIdx(),
+                    bond_type=bond.GetBondType(),
+                )
+            return G
+        else:
+            from .tf_routes.tf_routes import preprocessing
+            return preprocessing._mol_to_nx_full_weight(mol)
 
     def _read_parameters(self, env: str) -> pm.charmm.CharmmParameterSet:
         """
