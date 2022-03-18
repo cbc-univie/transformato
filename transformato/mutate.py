@@ -1,5 +1,5 @@
 import logging
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import List, Tuple
@@ -297,6 +297,8 @@ class ProposeMutationRoute(object):
             mol1_name: s1.psfs["waterbox"][f":{s1.tlc}"],
             mol2_name: s2.psfs["waterbox"][f":{s2.tlc}"],
         }
+        self.psf1: pm.charmm.CharmmPsfFile = s1.psfs
+        self.psf2: pm.charmm.CharmmPsfFile = s2.psfs
         self._substructure_match: dict = {mol1_name: [], mol2_name: []}
         self.removed_indeces: dict = {mol1_name: [], mol2_name: []}
         self.added_indeces: dict = {mol1_name: [], mol2_name: []}
@@ -509,6 +511,50 @@ class ProposeMutationRoute(object):
 
         return ordered_LJ_mutations
 
+    def _check_for_lp(
+        self,
+        odered_connected_dummy_regions_cc_with_lp: list,
+        psf: pm.charmm.CharmmPsfFile,
+        tlc: str,
+        name: str,
+    ) -> list:
+
+        flat_ordered_connected_dummy_regions = [
+            item
+            for sublist in odered_connected_dummy_regions_cc_with_lp
+            for item in sublist
+        ]
+        lp_dict_dummy_region = defaultdict(list)
+        lp_dict_common_core = defaultdict(list)
+
+        for atom in psf.view[f":{tlc}"].atoms:
+            if atom.name.find("LP") == False:
+                if atom.frame.atom1.idx in flat_ordered_connected_dummy_regions:
+                    lp_dict_dummy_region[atom.frame.atom1.idx].append(atom.idx)
+
+                elif atom.frame.atom1.idx not in lp_dict_common_core and name == "m1":
+                    logger.info(f"Adding atom {atom.idx} to the common core of mol1")
+                    self.add_idx_to_common_core_of_mol1([atom.idx])
+
+                elif atom.frame.atom1.idx not in lp_dict_common_core and name == "m2":
+                    logger.info(f"Adding atom {atom.idx} to the common core of mol1")
+                    self.add_idx_to_common_core_of_mol2([atom.idx])
+
+        if lp_dict_dummy_region:
+            for i in odered_connected_dummy_regions_cc_with_lp:
+                lp_to_insert = []
+                for atom in i:
+                    if atom in lp_dict_dummy_region.keys():
+                        lp_to_insert.extend(lp_dict_dummy_region[atom])
+                for lp_num in reversed(lp_to_insert):
+                    i.insert(0, lp_num)
+
+        logger.debug(
+            f"Orderd connected dummy atoms containing the lp {odered_connected_dummy_regions_cc_with_lp}"
+        )
+
+        return odered_connected_dummy_regions_cc_with_lp
+
     def propose_common_core(self):
         mcs = self._find_mcs("m1", "m2")
         return mcs
@@ -558,6 +604,22 @@ class ProposeMutationRoute(object):
         logger.info(
             f"sorted connected dummy regions for mol2: {odered_connected_dummy_regions_cc2}"
         )
+
+        if odered_connected_dummy_regions_cc1:
+            odered_connected_dummy_regions_cc1 = self._check_for_lp(
+                odered_connected_dummy_regions_cc1,
+                self.psf1["waterbox"],
+                self.s1_tlc,
+                "m1",
+            )
+
+        if odered_connected_dummy_regions_cc2:
+            odered_connected_dummy_regions_cc2 = self._check_for_lp(
+                odered_connected_dummy_regions_cc2,
+                self.psf2["waterbox"],
+                self.s2_tlc,
+                "m2",
+            )
 
         # find the atoms from dummy_region in s1 that needs to become lj default
         (
@@ -764,6 +826,7 @@ class ProposeMutationRoute(object):
 
         self._substructure_match[mol1_name] = list(s1)
         self._substructure_match[mol2_name] = list(s2)
+
         return mcs
 
     def _return_atom_idx_from_bond_idx(self, mol: Chem.Mol, bond_idx: int):

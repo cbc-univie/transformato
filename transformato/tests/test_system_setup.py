@@ -235,12 +235,12 @@ def generate_openMM_system_using_cgui_scripts(base: str):
 
 
 @pytest.mark.rbfe
-@pytest.mark.requires_correct_parmed
+@pytest.mark.requires_parmed_supporting_lp
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
-def test_lonepairs():
+def test_lonepairs_in_dummy_region():
 
     from transformato import (
         load_config_yaml,
@@ -250,7 +250,6 @@ def test_lonepairs():
     )
     from transformato.mutate import perform_mutations
     import warnings
-
     warnings.filterwarnings("ignore", module="parmed")
 
     configuration = load_config_yaml(
@@ -261,39 +260,42 @@ def test_lonepairs():
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
+
     s1_to_s2 = ProposeMutationRoute(s1, s2)
-
     s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
 
-    odered_connected_dummy_regions_cc1 = [[46, 22], [45, 44, 43, 26, 25]]
-    s1_to_s2.finish_common_core(
-        odered_connected_dummy_regions_cc1=odered_connected_dummy_regions_cc1
+@pytest.mark.rbfe
+@pytest.mark.requires_parmed_supporting_lp
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_lonepairs_in_common_core():
+
+    from transformato import (
+        load_config_yaml,
+        SystemStructure,
+        IntermediateStateFactory,
+        ProposeMutationRoute,
     )
+    from transformato.mutate import perform_mutations
+    import warnings
+    warnings.filterwarnings("ignore", module="parmed")
+    
+    molecule = 'ejm_45_ejm_42'
+    folder = 'run_1'
+    input_dir = '/site/raid3/johannes/rbfe-data/tyk2/'
+    config = '/site/raid3/johannes/rbfe-data/config/tyk2/{}.yaml'.format(molecule)
 
-    # generate the mutation list for the original
+    configuration = load_config_yaml(config=config,
+                       input_dir=input_dir, output_dir=folder)
+    
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-    i = IntermediateStateFactory(
-        system=s1,
-        configuration=configuration,
-    )
 
-    perform_mutations(
-        configuration=configuration,
-        i=i,
-        mutation_list=mutation_list,
-        nr_of_mutation_steps_charge=1,
-        nr_of_mutation_steps_cc=2,
-    )
-    # generate mutation list for structure 2
-    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
-    print(mutation_list.keys())
-    i = IntermediateStateFactory(
-        system=s2,
-        configuration=configuration,
-    )
-    perform_mutations(
-        configuration=configuration,
-        i=i,
-        mutation_list=mutation_list,
-        nr_of_mutation_steps_charge=1,
-    )
