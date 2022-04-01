@@ -60,10 +60,10 @@ class CharmmFactory:
         if env == "vacuum":
             charmm_production_script += self._get_CHARMM_vacuum_production_body()
         elif env == "waterbox":
-            charmm_production_script += self._get_CHARMM_waterbox_production_body()
+            charmm_production_script += self._get_CHARMM_waterbox_production_body(env)
 
         elif env == "complex":  ###needs to be adaptet from waterbox to complex
-            charmm_production_script += self._get_CHARMM_waterbox_production_body()
+            charmm_production_script += self._get_CHARMM_waterbox_production_body(env)
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
 
@@ -162,6 +162,8 @@ stream ../../toppar/toppar_all36_lipid_yeast.str
 stream ../../toppar/toppar_all36_lipid_hmmm.str
 stream ../../toppar/toppar_all36_lipid_detergent.str
 stream ../../toppar/toppar_all36_lipid_ether.str
+stream ../../toppar/toppar_all36_prot_na_combined.str
+
 
 ! Additional topologies and parameters for carbohydrates
 stream ../../toppar/toppar_all36_carb_glycolipid.str
@@ -377,7 +379,7 @@ if @idx .lt. @nframes goto loop
 stop"""
         return body
 
-    def _get_CHARMM_waterbox_production_body(self):
+    def _get_CHARMM_waterbox_production_body(self, env):
         ##### waterbox ######
         switch = self.vdw_switching_keyword
 
@@ -423,13 +425,13 @@ calc zcen = @C / 2
 ! Setup PBC (Periodic Boundary Condition)
 !
 
-stream charmm_step3_pbcsetup.str
+stream charmm_{env}_step3_pbcsetup.str
 
 !
 ! Image Setup
 !
 
-open read unit 10 card name charmm_crystal_image.str
+open read unit 10 card name charmm_{env}_crystal_image.str
 CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
@@ -479,7 +481,7 @@ set nstep = {nstep}
 set temp = {temperature.value_in_unit(unit.kelvin)}
 
 scalar fbeta set 5. sele all end
-open write unit 13 file name lig_in_waterbox.dcd
+open write unit 13 file name lig_in_{env}.dcd
 
 DYNA CPT leap start time 0.001 nstep @nstep -
      nprint {nstout} iprfrq {nstout} -
