@@ -227,10 +227,11 @@ def psf_correction(str_object: StringIO):
             correction_on = True
             continue
 
-        if "!NBOND" in line:  # if !NBOND is found exit correction mode
+        elif "!NBOND" in line:  # if !NBOND is found exit correction mode
+            new_str += f"{line}\n"
             correction_on = False
 
-        if (
+        elif (
             correction_on == True
         ):  # if in correction mode take the string, split on whitespace and put the values in a newly formated string
             values = line.split()
@@ -242,23 +243,23 @@ def psf_correction(str_object: StringIO):
             elif len(values) == 9:
                 values.extend(["0.00000", "0.00000000000"])
                 new_str += f"{values[0]:>10} {values[1]:8} {values[2]:8} {values[3]:8} {values[4]:8} {values[5]:6} {values[6]:>10}{values[7]:>14}{values[8]:>12}{values[9]:>10}{values[10]:>18}\n"
-
             elif len(values) == 0:
                 new_str += f"{line}\n"
             else:
                 raise RuntimeError(f"Error with the psf file: {line}")
 
-        else:  # otherwise add line to new_str
+            # else:  # otherwise add line to new_str
+            #     new_str += f"{line}\n"
+
+        elif "!NGRP NST2" in line:
+            second_line = i + 1  # we want to remove the next line after !NGRP appears
+            new_str += f"{line.replace('1','0')}\n"
+        elif i == second_line:
+            new_str += " \n"
+        else:
             new_str += f"{line}\n"
 
     return new_str
-    # if "!NGRP NST2" in line:
-    #     second_line = i+1 # we want to remove the next line after !NGRP appears
-    #     new_str += f"{line.replace('1','0')}\n"
-    # elif i == second_line:
-    #     new_str += ' \n'
-    # else:
-    #     new_str += f"{line}\n"
 
 
 def isnotebook():
