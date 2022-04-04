@@ -260,18 +260,21 @@ with open(file_name + '_system.xml','w') as outfile:
 
         # copy diverse set of helper files for CHARMM
         for env in self.system.envs:
-            FILES = [
-                "crystal_image.str",
-                "step3_pbcsetup.str",
-            ]
-            for f in FILES:
-                try:
-                    charmm_source = f"{basedir}/{env}/{f}"
-                    charmm_target = f"{intermediate_state_file_path}/charmm_{env}_{f}"
-                    shutil.copyfile(charmm_source, charmm_target)
-                except FileNotFoundError:
-                    logger.critical(f"Could not find file: {f}")
-                    raise
+            if env != "vacuum":
+                FILES = [
+                    "crystal_image.str",
+                    "step3_pbcsetup.str",
+                ]
+                for f in FILES:
+                    try:
+                        charmm_source = f"{basedir}/{env}/{f}"
+                        charmm_target = (
+                            f"{intermediate_state_file_path}/charmm_{env}_{f}"
+                        )
+                        shutil.copyfile(charmm_source, charmm_target)
+                    except FileNotFoundError:
+                        logger.critical(f"Could not find file: {f}")
+                        raise
 
             # copy rst files
             rst_file_source = f"{basedir}/{env}/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
