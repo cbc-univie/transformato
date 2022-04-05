@@ -118,13 +118,13 @@ read  rtf card unit 10 append
 open read card unit 10 name ../../toppar/par_interface.prm
 read para card unit 10 append flex
 
-stream ../../toppar/toppar_all36_nano_lig.str
-stream ../../toppar/toppar_all36_nanolig_patch.str
+!stream ../../toppar/toppar_all36_nano_lig.str
+!stream ../../toppar/toppar_all36_nanolig_patch.str
 
 ! Additional topologies and parameters for synthetic polymer
-stream ../../toppar/toppar_all36_synthetic_polymer.str
-stream ../../toppar/toppar_all36_synthetic_polymer_patch.str
-stream ../../toppar/toppar_all36_polymer_solvent.str
+!stream ../../toppar/toppar_all36_synthetic_polymer.str
+!stream ../../toppar/toppar_all36_synthetic_polymer_patch.str
+!stream ../../toppar/toppar_all36_polymer_solvent.str
 
 ! Additional topologies and parameters for water and ions
 stream ../../toppar/toppar_water_ions.str
@@ -145,30 +145,30 @@ stream ../../toppar/toppar_all36_na_rna_modified.str
 
 ! Additional topologies and parameters for lipids
 !stream ../../toppar/toppar_all36_lipid_archaeal.str
-stream ../../toppar/toppar_all36_lipid_bacterial.str
-stream ../../toppar/toppar_all36_lipid_cardiolipin.str
-stream ../../toppar/toppar_all36_lipid_cholesterol.str
-stream ../../toppar/toppar_all36_lipid_dag.str
-stream ../../toppar/toppar_all36_lipid_inositol.str
+!stream ../../toppar/toppar_all36_lipid_bacterial.str
+!stream ../../toppar/toppar_all36_lipid_cardiolipin.str
+!stream ../../toppar/toppar_all36_lipid_cholesterol.str
+!stream ../../toppar/toppar_all36_lipid_dag.str
+!stream ../../toppar/toppar_all36_lipid_inositol.str
 !stream ../../toppar/toppar_all36_lipid_lnp.str
-stream ../../toppar/toppar_all36_lipid_lps.str
-!stream ../../toppar/toppar_all36_lipid_mycobacterial.str
-stream ../../toppar/toppar_all36_lipid_miscellaneous.str
-stream ../../toppar/toppar_all36_lipid_model.str
-stream ../../toppar/toppar_all36_lipid_prot.str
-stream ../../toppar/toppar_all36_lipid_sphingo.str
+!stream ../../toppar/toppar_all36_lipid_lps.str
+!!stream ../../toppar/toppar_all36_lipid_mycobacterial.str
+!stream ../../toppar/toppar_all36_lipid_miscellaneous.str
+!stream ../../toppar/toppar_all36_lipid_model.str
+!stream ../../toppar/toppar_all36_lipid_prot.str
+!stream ../../toppar/toppar_all36_lipid_sphingo.str
 !stream ../../toppar/toppar_all36_lipid_tag.str
-stream ../../toppar/toppar_all36_lipid_yeast.str
-stream ../../toppar/toppar_all36_lipid_hmmm.str
-stream ../../toppar/toppar_all36_lipid_detergent.str
-stream ../../toppar/toppar_all36_lipid_ether.str
-stream ../../toppar/toppar_all36_prot_na_combined.str
+!stream ../../toppar/toppar_all36_lipid_yeast.str
+!stream ../../toppar/toppar_all36_lipid_hmmm.str
+!stream ../../toppar/toppar_all36_lipid_detergent.str
+!stream ../../toppar/toppar_all36_lipid_ether.str
+!stream ../../toppar/toppar_all36_prot_na_combined.str
 
 
 ! Additional topologies and parameters for carbohydrates
-stream ../../toppar/toppar_all36_carb_glycolipid.str
-stream ../../toppar/toppar_all36_carb_glycopeptide.str
-stream ../../toppar/toppar_all36_carb_imlab.str
+!stream ../../toppar/toppar_all36_carb_glycolipid.str
+!stream ../../toppar/toppar_all36_carb_glycopeptide.str
+!stream ../../toppar/toppar_all36_carb_imlab.str
 
 ! Additional topologies and parameters for spin/fluorophore labels
 stream ../../toppar/toppar_all36_label_spin.str
