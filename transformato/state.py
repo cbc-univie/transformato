@@ -166,7 +166,7 @@ with open(file_name + '_system.xml','w') as outfile:
                         )
                     )
                     with open(
-                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp",
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_{env}.inp",
                         "w+",
                     ) as f:
                         f.write(charmm_input)
@@ -187,7 +187,7 @@ with open(file_name + '_system.xml','w') as outfile:
                         )
                     )
                     with open(
-                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp",
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_{env}.inp",
                         "w+",
                     ) as f:
                         f.write(charmm_input)
@@ -209,13 +209,13 @@ with open(file_name + '_system.xml','w') as outfile:
             )
 
             for env in self.system.envs:
-                if env == "waterbox":
+                if env == "waterbox" or env == "complex":
                     # write charmm production scripte
                     charmm_input = self.charmm_factory.generate_CHARMM_production_files(
                         env,
                     )
                     with open(
-                        f"{intermediate_state_file_path}/charmm_run_waterbox.inp", "w+"
+                        f"{intermediate_state_file_path}/charmm_run_{env}.inp", "w+"
                     ) as f:
                         f.write(charmm_input)
 
@@ -226,28 +226,7 @@ with open(file_name + '_system.xml','w') as outfile:
                         )
                     )
                     with open(
-                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_solv.inp",
-                        "w+",
-                    ) as f:
-                        f.write(charmm_input)
-
-                elif env == "complex":  # vacuum
-                    # write charmm production scripte
-                    charmm_input = self.charmm_factory.generate_CHARMM_production_files(
-                        env,
-                    )
-                    with open(
-                        f"{intermediate_state_file_path}/charmm_run_complex.inp", "w"
-                    ) as f:
-                        f.write(charmm_input)
-                    # write charmm postproduction script
-                    charmm_input = (
-                        self.charmm_factory.generate_CHARMM_postprocessing_files(
-                            env,
-                        )
-                    )
-                    with open(
-                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_vac.inp",
+                        f"{intermediate_state_file_path}/charmm_evaluate_energy_in_{env}.inp",
                         "w+",
                     ) as f:
                         f.write(charmm_input)

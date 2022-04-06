@@ -264,8 +264,8 @@ class FreeEnergyCalculator(object):
 
         pot_energies = []
         file_name = ""
-        if env == "waterbox":
-            file_name = f"{path}/ener_solv.log"
+        if env == "waterbox" or env == "complex":
+            file_name = f"{path}/ener_{env}.log"
         elif env == "vacuum":
             file_name = f"{path}/ener_vac.log"
 
@@ -310,7 +310,10 @@ class FreeEnergyCalculator(object):
 
         script_name = ""
         if env == "waterbox":
-            script_name = "charmm_evaluate_energy_in_solv.inp"
+            script_name = "charmm_evaluate_energy_in_waterbox.inp"
+            assert len(volumn_list) > 1
+        elif env == "complex":
+            script_name = "charmm_evaluate_energy_in_complex.inp"
             assert len(volumn_list) > 1
         elif env == "vacuum":
             script_name = "charmm_evaluate_energy_in_vac.inp"
@@ -363,7 +366,7 @@ class FreeEnergyCalculator(object):
     def _evaluate_e_on_all_snapshots_CHARMM(
         self, snapshots: mdtraj.Trajectory, lambda_state: int, env: str
     ):
-        if env == "waterbox":
+        if env == "waterbox" or env == "complex":
             unitcell_lengths = [
                 (
                     snapshots.unitcell_lengths[ts][0],
