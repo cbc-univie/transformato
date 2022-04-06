@@ -39,15 +39,10 @@ class CharmmFactory:
             charmm_postprocessing_script += (
                 self._get_CHARMM_vacuum_postprocessing_body()
             )
-        elif env == "waterbox":
+        elif env == "waterbox" or env == "complex":
             charmm_postprocessing_script += (
-                self._get_CHARMM_waterbox_postprocessing_body()
+                self._get_CHARMM_waterbox_postprocessing_body(env)
             )
-        elif env == "complex":
-            charmm_postprocessing_script += (
-                self._get_CHARMM_waterbox_postprocessing_body()
-            )  ### needs to be adapted from waterbox to complex
-
         else:
             raise NotImplementedError(f"Something went wrong with {env}.")
 
@@ -112,11 +107,11 @@ open read card unit 20 name ../../toppar/par_all36_cgenff.prm
 read para card unit 20 append flex
 
 ! Interface FF
-open read card unit 10 name ../../toppar/top_interface.rtf
-read  rtf card unit 10 append
+!open read card unit 10 name ../../toppar/top_interface.rtf
+!read  rtf card unit 10 append
 
-open read card unit 10 name ../../toppar/par_interface.prm
-read para card unit 10 append flex
+!open read card unit 10 name ../../toppar/par_interface.prm
+!read para card unit 10 append flex
 
 !stream ../../toppar/toppar_all36_nano_lig.str
 !stream ../../toppar/toppar_all36_nanolig_patch.str
@@ -129,40 +124,40 @@ read para card unit 10 append flex
 ! Additional topologies and parameters for water and ions
 stream ../../toppar/toppar_water_ions.str
 stream ../../toppar/toppar_dum_noble_gases.str
-stream ../../toppar/toppar_ions_won.str
+!stream ../../toppar/toppar_ions_won.str
 
 ! Additional topologies and parameters for protein
-stream ../../toppar/toppar_all36_prot_arg0.str
+!stream ../../toppar/toppar_all36_prot_arg0.str
 stream ../../toppar/toppar_all36_prot_c36m_d_aminoacids.str
 stream ../../toppar/toppar_all36_prot_fluoro_alkanes.str
 stream ../../toppar/toppar_all36_prot_heme.str
 stream ../../toppar/toppar_all36_prot_retinol.str
-stream ../../toppar/toppar_all36_prot_modify_res.str
+!stream ../../toppar/toppar_all36_prot_modify_res.str
 
 ! Additional topologies and parameters for nucleic acids
 stream ../../toppar/toppar_all36_na_nad_ppi.str
-stream ../../toppar/toppar_all36_na_rna_modified.str
+!stream ../../toppar/toppar_all36_na_rna_modified.str
 
 ! Additional topologies and parameters for lipids
 !stream ../../toppar/toppar_all36_lipid_archaeal.str
-!stream ../../toppar/toppar_all36_lipid_bacterial.str
-!stream ../../toppar/toppar_all36_lipid_cardiolipin.str
-!stream ../../toppar/toppar_all36_lipid_cholesterol.str
+stream ../../toppar/toppar_all36_lipid_bacterial.str
+stream ../../toppar/toppar_all36_lipid_cardiolipin.str
+stream ../../toppar/toppar_all36_lipid_cholesterol.str
 !stream ../../toppar/toppar_all36_lipid_dag.str
-!stream ../../toppar/toppar_all36_lipid_inositol.str
+stream ../../toppar/toppar_all36_lipid_inositol.str
 !stream ../../toppar/toppar_all36_lipid_lnp.str
-!stream ../../toppar/toppar_all36_lipid_lps.str
+stream ../../toppar/toppar_all36_lipid_lps.str
 !!stream ../../toppar/toppar_all36_lipid_mycobacterial.str
-!stream ../../toppar/toppar_all36_lipid_miscellaneous.str
-!stream ../../toppar/toppar_all36_lipid_model.str
-!stream ../../toppar/toppar_all36_lipid_prot.str
-!stream ../../toppar/toppar_all36_lipid_sphingo.str
+stream ../../toppar/toppar_all36_lipid_miscellaneous.str
+stream ../../toppar/toppar_all36_lipid_model.str
+stream ../../toppar/toppar_all36_lipid_prot.str
+stream ../../toppar/toppar_all36_lipid_sphingo.str
 !stream ../../toppar/toppar_all36_lipid_tag.str
 !stream ../../toppar/toppar_all36_lipid_yeast.str
 !stream ../../toppar/toppar_all36_lipid_hmmm.str
 !stream ../../toppar/toppar_all36_lipid_detergent.str
 !stream ../../toppar/toppar_all36_lipid_ether.str
-!stream ../../toppar/toppar_all36_prot_na_combined.str
+stream ../../toppar/toppar_all36_prot_na_combined.str
 
 
 ! Additional topologies and parameters for carbohydrates
@@ -304,7 +299,7 @@ DYNA lang leap start time 0.001 nstep @nstep -
 stop"""
         return body
 
-    def _get_CHARMM_waterbox_postprocessing_body(self):
+    def _get_CHARMM_waterbox_postprocessing_body(self, env: str):
         ##### solv phase ######
         switch = self.vdw_switching_keyword
         if (
@@ -324,13 +319,13 @@ stop"""
             GPU_domdec = ""
 
         body = f"""
-stream charmm_step3_pbcsetup.str
+stream charmm_{env}_step3_pbcsetup.str
 
 !
 ! Image Setup
 !
 
-open read unit 10 card name charmm_crystal_image.str
+open read unit 10 card name charmm_{env}_crystal_image.str
 CRYSTAL DEFINE @XTLtype @A @B @C @alpha @beta @gamma
 CRYSTAL READ UNIT 10 CARD
 
@@ -365,7 +360,7 @@ set skip ?skip
 set nframes @nframes !?nfile
 traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
 
-open form writ unit 51 name ener_solv.log
+open form writ unit 51 name ener_{env}.log
 echu 51
 set idx 0
 label loop
