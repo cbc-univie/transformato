@@ -281,7 +281,7 @@ nbonds ctonnb @ctonnb ctofnb @ctofnb cutnb @cutnb -
 energy   inbfrq 1
 energy   inbfrq 0
 
-mini sd nstep 200
+mini sd nstep 100
 
 set nstep = {nstep}
 set temp = {temperature.value_in_unit(unit.kelvin)}
@@ -452,8 +452,8 @@ energy
 
 shak bonh para fast sele segi SOLV end
 
-mini SD nstep 500
-mini ABNR nstep 500
+mini SD nstep 100
+mini ABNR nstep 100
 
 !
 ! NPT dynamics:
