@@ -10,8 +10,8 @@ cd ${path}
 
 
 input=charmm_run_complex
-charmm_openmm_domdec -i ${input}.inp > log_complex.out
+charmm_c47_omm_domdecgpu -i ${input}.inp > log_complex.out
 
 input=charmm_run_waterbox
-charmm_openmm_domdec -i ${input}.inp > log_solv.out
+charmm_c47_omm_domdecgpu -i ${input}.inp > log_solv.out
 

@@ -15,4 +15,4 @@ echo 'Path: ' ${path}
 echo 'top: ' ${top}
 echo 'script: ' ${script}
 
-charmm_openmm_domdec top:${top} path:${path} -i ${script}
+charmm_c47_omm_domdecgpu top:${top} path:${path} -i ${script}
