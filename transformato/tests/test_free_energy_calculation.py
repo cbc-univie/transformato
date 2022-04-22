@@ -22,10 +22,10 @@ warnings.filterwarnings("ignore", module="parmed")
 
 @pytest.mark.rsfe
 @pytest.mark.full_workflow
-# @pytest.mark.skipif(
-#     os.getenv("CI") == "true",
-#     reason="Skipping tests that cannot pass in github actions",
-# )
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
 
     # Test that TF can handel multiple dummy regions
@@ -50,13 +50,30 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
     perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
     run_simulation(i.output_files, engine="openMM")
 
-    ddG_openMM, dddG, f_openMM = postprocessing(
+    # Analysis with mda
+    ddG_openMM_mda, dddG_mda, f_openMM_mda = postprocessing(
         configuration,
         name="1a0q",
         engine="openMM",
-        max_snapshots=10_000,
+        analyze_traj_with="mda",
+        num_proc=4,
+        max_snapshots=50,
     )
-    print(ddG_openMM, dddG)
+    print(f"Free energy difference using mda: {ddG_openMM_mda} +- {dddG_mda} [kT")
+
+    # Analysis with mdtraj
+    ddG_openMM_mtraj, dddG_mtraj, f_openMM_mtraj = postprocessing(
+        configuration,
+        name="1a0q",
+        engine="openMM",
+        max_snapshots=50,
+    )
+    print(
+        f"Free energy difference using mdtraj: {ddG_openMM_mtraj} +- {dddG_mtraj} [kT"
+    )
+
+    assert np.isclose(ddG_openMM_mda, ddG_openMM_mda, rtol=0.2)
+    assert np.isclose(dddG_mda, dddG_mda, rtol=0.2)
 
 
 @pytest.mark.rsfe

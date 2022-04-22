@@ -1,24 +1,17 @@
 """
 Unit and regression test for the transformato package.
 """
-
-from transformato.utils import load_config_yaml
-from transformato.analysis import return_reduced_potential
+from transformato.constants import temperature as T
 from simtk import unit
 import numpy as np
-
-# read in specific topology with parameters
-from transformato import (
-    load_config_yaml,
-)
-from .test_mutation import (
-    _set_output_files_2oj9_tautomer_pair,
-)
+import mdtraj as md
+from transformato.utils import load_config_yaml
+from transformato.analysis import return_reduced_potential
+from .test_mutation import _set_output_files_2oj9_tautomer_pair
 from transformato.tests.paths import get_test_output_dir
 
 
 def test_reduced_energy():
-    from transformato.constants import temperature as T
 
     # with openMM generated traj evaluated with openMM
     e = -41264.39524669979 * unit.kilojoule_per_mole
@@ -41,7 +34,6 @@ def test_reduced_energy():
 
 
 def test_convert_to_kT():
-    from transformato.constants import temperature as T
 
     kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
     beta = 1.0 / (kB * T)
@@ -57,7 +49,6 @@ def test_change_platform():
         test_platform_openMM,
         test_platform_CHARMM,
     )
-    from ..utils import load_config_yaml
 
     configuration = load_config_yaml(
         config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
@@ -83,7 +74,6 @@ def test_change_platform():
 
 
 def test_scaling():
-    import numpy as np
 
     for i in np.linspace(1, 0, 11):
         f = max((1 - ((1 - i) * 2)), 0.0)
@@ -98,7 +88,6 @@ def test_scaling():
 
 
 def test_old_scaling():
-    import numpy as np
 
     for i in np.linspace(1, 0, 11):
         f = 1 - (1 - i) * 2
@@ -111,8 +100,6 @@ def test_old_scaling():
 
 
 def test_reading_of_coords():
-
-    import mdtraj as md
 
     env = "vacuum"
     base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/"
