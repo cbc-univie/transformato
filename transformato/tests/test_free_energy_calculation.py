@@ -1,32 +1,35 @@
 import logging
 import os
-
+import warnings
 import numpy as np
 import pytest
-from transformato import load_config_yaml
+
+
+from transformato import (
+    IntermediateStateFactory,
+    ProposeMutationRoute,
+    SystemStructure,
+    load_config_yaml,
+)
 from transformato.constants import change_platform_to_test_platform
 from transformato.tests.paths import get_test_output_dir
 from transformato.utils import postprocessing, run_simulation
+from transformato.mutate import perform_mutations
+from transformato.analysis import FreeEnergyCalculator
+
+warnings.filterwarnings("ignore", module="parmed")
 
 
 @pytest.mark.rsfe
 @pytest.mark.full_workflow
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
+# @pytest.mark.skipif(
+#     os.getenv("CI") == "true",
+#     reason="Skipping tests that cannot pass in github actions",
+# )
 def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
 
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.DEBUG)
-    import warnings
-
-    from transformato import (IntermediateStateFactory, ProposeMutationRoute,
-                              SystemStructure, load_config_yaml)
-    from transformato.mutate import perform_mutations
-
-    warnings.filterwarnings("ignore", module="parmed")
-
     workdir = get_test_output_dir()
     conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
@@ -64,7 +67,6 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
 )
 def test_run_2oj9_rsfe_with_different_switches(caplog):
     caplog.set_level(logging.WARNING)
-    from ..analysis import FreeEnergyCalculator
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
     from .test_run_production import run_simulation
 
@@ -168,16 +170,13 @@ def test_run_2oj9_rsfe_with_different_switches(caplog):
 
 
 @pytest.mark.rbfe
+@pytest.mark.full_workflow
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_28_1h1q_rbfe_with_openMM():
     # Generating output for a run of the CDK2 Ligand System
-    from transformato import (IntermediateStateFactory, ProposeMutationRoute,
-                              SystemStructure, load_config_yaml)
-    from transformato.mutate import perform_mutations
-    from transformato.utils import postprocessing, run_simulation
 
     configuration = load_config_yaml(
         config="transformato/tests/config/test-28_1h1q_rbfe.yaml",

@@ -3,18 +3,23 @@ Unit and regression test for the transformato package.
 """
 
 import sys, os
-
 # Import package, test suite, and other packages as needed
 import logging
 import pytest
+import warnings
 
 # read in specific topology with parameters
 from transformato import (
     load_config_yaml,
+    SystemStructure,
+    IntermediateStateFactory,
+    ProposeMutationRoute,
 )
+
+from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
 from transformato.constants import loeffler_testsystems_dir
-import warnings
+
 
 warnings.filterwarnings("ignore", module="parmed")
 
@@ -267,21 +272,9 @@ def test_generate_alchemical_path_for_7_CPI_to_common_core():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_1a0q_1a07(caplog):
-    import logging
 
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.INFO)
-    import warnings
-    from transformato import (
-        load_config_yaml,
-        SystemStructure,
-        IntermediateStateFactory,
-        ProposeMutationRoute,
-    )
-    from transformato.mutate import perform_mutations
-
-    warnings.filterwarnings("ignore", module="parmed")
-
     workdir = get_test_output_dir()
     conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
