@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu
 
 
-source ~/miniconda3/etc/profile.d/conda.sh
+source ~/anaconda3/etc/profile.d/conda.sh
 conda activate fep
 
 path=$1
