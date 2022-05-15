@@ -80,8 +80,14 @@ You **must ** change the following entries for each mutation:
 The command `run_simulation(i.output_files, engine='openMM')` in the *submit.ipynb* file runs the simulation for each intermediate state one after another on your local machine. For most of the systems it might be good to use some computing cluster. If the *submit.ipynb* file is executed at the place where one wants to create the folder one can use something like the following line: 
     
 ```
+import os
+import glob
+import subprocess
+
 wd = os.getcwd()
-output_files = glob.glob(wd + f"/{folder}/*/*/intst*", recursive = True)
+output_files = glob.glob(wd + f"/{folder}/*/*/intst*", recursive = True) 
+	#Whether {folder} is necessary depends on your folder setup relative to your working directory -
+	# in general, this should point to your intst** folders
 
 for path in sorted(output_files):
 	# because path is object not string
@@ -109,7 +115,7 @@ The trajectories can be analyzed the following way:
 ```
 for name in (
     configuration["system"]["structure1"]["name"],
-    configuration["system"]["structure2"][following],
+    configuration["system"]["structure2"]["name"]
 ):
 
     ddG_openMM, dddG, f_openMM = postprocessing(
