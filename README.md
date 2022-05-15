@@ -90,6 +90,18 @@ for path in sorted(output_files):
 	output = exe.stdout.read()
 	print(output)
 ```
+Alternatively, as this way is quite temperamental and prone to sudden and unexplained failure, you may simply use a shell script:
+
+```
+for {i} in ./**/**/intst**/; #This assumes you start from the directory above the initial structure directory - you may change as necessary.
+do cd ${i}; # to prevent issues, it is preferred to switch to the script directory
+sbash simulation.sh;
+cd ../../..; # switch working directory back to original
+done;
+
+```
+
+
 #### Analyzing the trajectories
 
 The trajectories can be analyzed the following way:
