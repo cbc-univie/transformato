@@ -2,6 +2,7 @@
 import numpy as np
 
 import MDAnalysis
+import yaml
 
 # Load necessary openmm facilities
 from simtk.unit import *
@@ -72,13 +73,18 @@ class Restraint():
         elif self.shape=="flatbottom":
             raise NotImplementedError("Cant create flatbottom potential, as it has not yet been implemented")
 
-        print(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}) created:
+        print(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}) created for {self.structure}:
         Group 1 (COM: {self.g1pos}): {self.g1_in_cc}
         Group 2 (COM: {self.g2pos}): {self.g2_in_cc}""")
-    
+
+        del self.topology # delete the enormous no longer needed universe asap
+        return self.force
     def get_force(self):
         return self.force
     
+    def applyForce(self,system):
+        """Applies the force to the openMM system"""
+        system.addForce(self.force)
     
 def CreateRestraintsFromConfig(configuration,pdbpath):
     """Takes the .yaml config and returns the specified restraints
@@ -86,19 +92,32 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     Keywords:
     config: the loaded yaml config (as returned by yaml.SafeLoader() or similar"""
 
-    tlc=configuration["system"]["structure1"]["tlc"]
+    tlc1=configuration["system"]["structure"]["tlc"]
+    
     restraints=[]
     if configuration["simulation"]["restraints"]=="auto":
         
-        restraints.append(Restraint(f"resname {tlc} and name C**" , f"(sphlayer 5 15 resname {tlc}) and name CA" , pdbpath,"structure1"))
-    
+        restraints.append(Restraint(f"resname {tlc1} and name C**" , f"(sphlayer 5 15 resname {tlc1}) and name CA" , pdbpath,"structure1"))
+        
     else:
         raise AttributeError(f"Error: demanded restraint type not supported :{configuration['simulation']['restraints']}")
 
     return restraints
 
 
+def write_restraints_yaml(path,config):
+    """Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml
+    
+    path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
+    config: the config dict loaded in by utils.py"""
+    restraints_dict={"system":{},"simulation":{}}
 
+
+    output=yaml.dump(restraints_dict)
+    with open(path,"w") as resyaml:
+        resyaml.write(output)
+        resyaml.close()
+    
 # Testing when running as main script
 if __name__=="__main__":
     print("Initialised as main program - runing unit tests on data/2OJ9")
@@ -111,4 +130,4 @@ if __name__=="__main__":
     configuration["system"]["structure2"]["tlc"]="UNK"
     restraintlist=CreateRestraintsFromConfig(configuration,"../data/2OJ9-original/complex/openmm/step3_input.pdb")
     for restraint in restraintlist:
-        restraint.createForce([4824,4825,4826])
+        restraint.createForce(common_core_idxs=[4824,4825,4826])
