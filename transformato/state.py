@@ -10,6 +10,7 @@ from .utils import get_toppar_dir, psf_correction
 from .mutate import Mutation
 from transformato.charmm_factory import CharmmFactory
 from typing import List
+from .restraints import write_restraints_yaml
 
 logger = logging.getLogger(__name__)
 
