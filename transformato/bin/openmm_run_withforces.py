@@ -149,7 +149,8 @@ pdbpath=args.inpfile.replace(".inp",".pdb")
 if not os.path.exists(pdbpath):
     raise FileNotFoundError(f"Couldnt find {pdbpath} necessary for Restraint Analysis")
 
-restraintList=tfrs.CreateRestraintsFromConfig(configuration,pdbpath)
+if "complex" in pdbpath: # Only apply forces to complex-ligand systems
+    restraintList=tfrs.CreateRestraintsFromConfig(configuration,pdbpath)
 
 for restraint in restraintList:
     restraint.createForce(cc_idxs)
