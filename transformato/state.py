@@ -101,6 +101,10 @@ class IntermediateStateFactory(object):
         self._write_toppar_str(output_file_base)
         self._copy_files(output_file_base)
         self.output_files.append(output_file_base)
+
+        # Used for restraints:
+        if self.configuration["simulation"]["restraints"]!=None:
+            write_restraints_yaml(f"{output_file_base}/restraints.yaml",self.system,self.configuration)
         self.current_step += 1
 
     def _add_serializer(self, file):
