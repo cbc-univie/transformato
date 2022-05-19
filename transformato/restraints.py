@@ -105,13 +105,14 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     return restraints
 
 
-def write_restraints_yaml(path,config):
+def write_restraints_yaml(path,system,config):
     """Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml
     
     path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
-    config: the config dict loaded in by utils.py"""
-    restraints_dict={"system":{},"simulation":{}}
-
+    system: the system object from state.py"""
+    restraints_dict={"system":{"structure":{"tlc":f"{system.tlc}"}},"simulation":{"restraints":f"{config['simulation']['restraints']}"}}
+    ## TODO: write ccs in restraints_yaml
+    ## TODO: copy correct openmm_run.py
 
     output=yaml.dump(restraints_dict)
     with open(path,"w") as resyaml:
