@@ -103,7 +103,7 @@ class IntermediateStateFactory(object):
         self.output_files.append(output_file_base)
 
         # Used for restraints:
-        if self.configuration["simulation"]["restraints"]!=None:
+        if "restraints"  in self.configuration["simulation"].keys():
             write_restraints_yaml(f"{output_file_base}/restraints.yaml",self.system,self.configuration)
         self.current_step += 1
 

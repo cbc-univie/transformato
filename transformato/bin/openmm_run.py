@@ -136,6 +136,8 @@ prop = dict()
 
 if os.path.exists("./restraints.yaml"):
     import transformato.restraints as tfrs
+    import yaml
+
     print("Found restraints.yaml - applying restraints")
     # Load tiny restraints config
     with open("./restraints.yaml","r") as stream:
@@ -144,11 +146,7 @@ if os.path.exists("./restraints.yaml"):
         except yaml.YAMLError as exc:
                 print(exc)
 
-    cc_idxs=configuration["simulation"]["ccs"]
-
-    print(configuration["system"]["structure"]["tlc"])
-
-
+    cc_names=configuration["system"]["structure"]["ccs"]
 
     # Add forces via transformato.restraints
     pdbpath=args.inpfile.replace(".inp",".pdb")
@@ -159,7 +157,7 @@ if os.path.exists("./restraints.yaml"):
         restraintList=tfrs.CreateRestraintsFromConfig(configuration,pdbpath)
 
     for restraint in restraintList:
-        restraint.createForce(cc_idxs)
+        restraint.createForce(cc_names)
         restraint.applyForce(system)
         
 
@@ -253,3 +251,4 @@ if args.ochk:
 if args.opdb:
     crd = simulation.context.getState(getPositions=True).getPositions()
     PDBFile.writeFile(psf.topology, crd, open(args.opdb, "w"))
+
