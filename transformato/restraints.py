@@ -1,4 +1,5 @@
 
+from tabnanny import check
 import numpy as np
 
 import MDAnalysis
@@ -10,7 +11,15 @@ from simtk.openmm import *
 from simtk.openmm.app import *
 
 class Restraint():
-    def __init__(self,selligand,selprotein,pdbpath,structure,k=3,shape="harmonic"):
+    def __init__(
+        self,
+        selligand,
+        selprotein,
+        pdbpath,
+        structure,
+        k=3,
+        shape="harmonic"
+        ):
         """Class representing a restraint to apply to the system
 
         Keywords:
@@ -30,35 +39,41 @@ class Restraint():
         self.g1=self.topology.select_atoms(selligand)
         self.g2=self.topology.select_atoms(selprotein)
 
-        self.g1pos=self.g1.center_of_mass()
-        self.g2pos=self.g2.center_of_mass()
-
-        self.initial_distance=np.linalg.norm(self.g1pos-self.g2pos)
-    
-
-        # convert MDAnalysis syntax into openMM usable idxs
-        self.g1_openmm=[int(id)-1 for id in self.g1.ids]
-        self.g2_openmm=[int(id)-1 for id in self.g2.ids]
-
         self.force_constant=k
         self.shape=shape
         
-        
-    def createForce(self,common_core_idxs):
+    def createForce(self,common_core_names):
         """Actually creates the force, after dismissing all idxs not in the common core from the molecule
         
         Keywords:
         common_core_idxs: Array - of the common core idxs"""
 
+        
         # Only done for g1, as it is the ligand group - theres no common core for the protein
-        self.g1_in_cc=[]
-        for id in self.g1_openmm:
-            if id in common_core_idxs:
-                self.g1_in_cc.append(id)
-            else:
-                print(f"Dismissing Atom IDX {id} as it is not in common core")
-        self.g2_in_cc=self.g2_openmm
+        print(f"Before CC check: {self.g1.names}")
+        
+        self.g1_in_cc=MDAnalysis.AtomGroup([],self.topology)
+        for atom in self.g1:
+            if atom.name in common_core_names:
+                self.g1_in_cc+=atom
+        print(f"After CC check: {self.g1_in_cc.names}")
+        self.common_core_idxs=[atom.id for atom in self.g1_in_cc]
+        
+        # convert MDAnalysis syntax into openMM usable idxs
+        self.g1_openmm=[int(id)-1 for id in self.g1_in_cc.ids]
+        self.g2_openmm=[int(id)-1 for id in self.g2.ids]
 
+        
+
+        self.g1pos=self.g1_in_cc.center_of_mass()
+        self.g2pos=self.g2.center_of_mass()
+
+        self.initial_distance=np.linalg.norm(self.g1pos-self.g2pos)
+    
+
+        
+        
+        
         if self.shape=="harmonic":
             # create force with harmonic potential
             self.force=CustomCentroidBondForce(2,"0.5*k*(distance(g1,g2)-r0)^2")
@@ -75,7 +90,7 @@ class Restraint():
 
         print(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}) created for {self.structure}:
         Group 1 (COM: {self.g1pos}): {self.g1_in_cc}
-        Group 2 (COM: {self.g2pos}): {self.g2_in_cc}""")
+        Group 2 (COM: {self.g2pos}): {self.g2}""")
 
         del self.topology # delete the enormous no longer needed universe asap
         return self.force
@@ -110,9 +125,15 @@ def write_restraints_yaml(path,system,config):
     
     path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
     system: the system object from state.py"""
+    from transformato.mutate import cc_names_struc1, cc_names_struc2
+    print(cc_names_struc1)
     restraints_dict={"system":{"structure":{"tlc":f"{system.tlc}"}},"simulation":{"restraints":f"{config['simulation']['restraints']}"}}
+    if system.structure=="structure1":
+        restraints_dict["system"]["structure"]["ccs"]=cc_names_struc1
+    elif system.structure=="structure2":
+        restraints_dict["system"]["structure"]["ccs"]=cc_names_struc2
     ## TODO: write ccs in restraints_yaml
-    ## TODO: copy correct openmm_run.py
+    
 
     output=yaml.dump(restraints_dict)
     with open(path,"w") as resyaml:

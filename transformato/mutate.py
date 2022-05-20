@@ -1175,6 +1175,12 @@ class CommonCoreTransformation(object):
         [dict]
             matched common core atom names
         """
+        # Prepare Variables to use for restraint cc checks
+        global cc_names_struc1, cc_names_struc2
+        cc_names_struc1=[]
+        cc_names_struc2=[]
+
+
         # match atomes in common cores
         match_atom_names_cc1_to_cc2 = {}
         for cc1_idx, cc2_idx in zip(self.cc1_indicies, self.cc2_indicies):
@@ -1182,8 +1188,15 @@ class CommonCoreTransformation(object):
             ligand2_atom = self.ligand2_psf[cc2_idx]
             match_atom_names_cc1_to_cc2[ligand1_atom.name] = ligand2_atom.name
 
+            cc_names_struc1.append(ligand1_atom.name)
+            cc_names_struc2.append(ligand2_atom.name)
+
+
+        print(f"CC Struc1: {cc_names_struc1}")
+        print(f"CC Struc2: {cc_names_struc2}")
         return match_atom_names_cc1_to_cc2
 
+        
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
 
         # common core of psf 1 is transformed to psf 2
