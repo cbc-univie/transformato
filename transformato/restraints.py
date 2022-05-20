@@ -17,7 +17,7 @@ class Restraint():
         selprotein,
         pdbpath,
         structure,
-        k=3,
+        k,
         shape="harmonic"
         ):
         """Class representing a restraint to apply to the system
@@ -110,12 +110,22 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     tlc1=configuration["system"]["structure"]["tlc"]
     
     restraints=[]
-    if configuration["simulation"]["restraints"]=="auto":
+    # parse config arguments:
+    restraint_command_string=configuration["simulation"]["restraints"].split()
+    kval=3 #default k - value
+    for arg in restraint_command_string:
+        if "k=" in arg:
+            kval=int(arg.split("=")[1])
+
+
+    if "auto" in restraint_command_string:
         
-        restraints.append(Restraint(f"resname {tlc1} and name C**" , f"(sphlayer 5 15 resname {tlc1}) and name CA" , pdbpath,"structure1"))
-        
+        restraints.append(Restraint(f"resname {tlc1} and name C**" , f"(sphlayer 5 15 resname {tlc1}) and name CA" , pdbpath,"structure1"),k=kval)
+
+    elif "manual" in restraint_command_string:
+        raise NotImplementedError("Manual definition of restraints not yet implemented")
     else:
-        raise AttributeError(f"Error: demanded restraint type not supported :{configuration['simulation']['restraints']}")
+        raise AttributeError(f"Error: demanded restraint type not recognized :{configuration['simulation']['restraints']}")
 
     return restraints
 
