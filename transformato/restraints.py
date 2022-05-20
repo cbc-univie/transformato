@@ -1,4 +1,5 @@
 
+from calendar import c
 from tabnanny import check
 import numpy as np
 
@@ -16,7 +17,6 @@ class Restraint():
         selligand,
         selprotein,
         pdbpath,
-        structure,
         k,
         shape="harmonic"
         ):
@@ -30,7 +30,7 @@ class Restraint():
         shape: 'harmonic' or 'flat-bottom' (not yet implemented): Which potential to use for the energy function"""
 
         self.shape=shape
-        self.structure=structure
+        
 
         if self.shape not in ["harmonic","flatbottom"]:
             raise AttributeError(f"Invalid potential shape specified for restraint: {self.shape}")
@@ -88,7 +88,7 @@ class Restraint():
         elif self.shape=="flatbottom":
             raise NotImplementedError("Cant create flatbottom potential, as it has not yet been implemented")
 
-        print(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}) created for {self.structure}:
+        print(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}):
         Group 1 (COM: {self.g1pos}): {self.g1_in_cc}
         Group 2 (COM: {self.g2pos}): {self.g2}""")
 
@@ -100,28 +100,81 @@ class Restraint():
     def applyForce(self,system):
         """Applies the force to the openMM system"""
         system.addForce(self.force)
+
+def get3DDistance(pos1,pos2):
+    """Takes two 3d positions as array and calculates the distance between them
     
+    Parameters:
+    
+    pos1,pos2: 3d-Array: Positions"""
+    vec=pos1-pos2
+    dis=np.linalg.norm(vec)
+    return dis
+def GenerateExtremities(configuration,pdbpath,n_extremities):
+    ligand_topology=MDAnalysis.Universe(pdbpath)
+    tlc=configuration["system"]["structure"]["tlc"]
+
+    ligand_group=ligand_topology.select_atoms(f"resname {tlc} and type C")
+    ligand_com=ligand_group.center_of_mass()
+    carbon_distances={}
+
+    if n_extremities not in [2,"2"]:
+        raise NotImplementedError("Can currently only work with 2 extremities")
+    for carbon in ligand_group:
+        distance_from_com=get3DDistance(ligand_com,carbon.position)
+        carbon_distances[carbon.name]=distance_from_com
+    # Remove furthes C from group
+    
+    
+    cs=sorted(carbon_distances,key=carbon_distances.get,reverse=True)
+    furthest_carbon=ligand_group.select_atoms(f"name {cs[0]}")[0]
+    print (f"Extremity 1: {furthest_carbon.name}")
+    for i in cs:
+        print  (f"Furthest: {i} : {carbon_distances[i]}")
+    
+    lg2=ligand_group.select_atoms(f"not name {furthest_carbon.name}")
+    
+    for carbon in lg2:
+        distance_from_com=get3DDistance(furthest_carbon.position,carbon.position)
+        carbon_distances[carbon.name]=distance_from_com
+
+    cs=sorted(carbon_distances,key=carbon_distances.get,reverse=True)
+    second_furthest_carbon=ligand_group.select_atoms(f"name {cs[0]}")[0]
+    print (f"Extremity 2: {second_furthest_carbon.name}")
+    for i in cs:
+        print  (f"Furthest: {i} : {carbon_distances[i]}")
+
+    sels=[f"(around 5 name {furthest_carbon.name}) and resname {tlc} and type C",f"(around 5 name {second_furthest_carbon.name}) and resname {tlc} and type C"]
+    print (sels)
+    return sels
 def CreateRestraintsFromConfig(configuration,pdbpath):
     """Takes the .yaml config and returns the specified restraints
     
     Keywords:
     config: the loaded yaml config (as returned by yaml.SafeLoader() or similar"""
 
-    tlc1=configuration["system"]["structure"]["tlc"]
+    tlc=configuration["system"]["structure"]["tlc"]
     
     restraints=[]
     # parse config arguments:
     restraint_command_string=configuration["simulation"]["restraints"].split()
     kval=3 #default k - value
+    mode="simple"
     for arg in restraint_command_string:
         if "k=" in arg:
             kval=int(arg.split("=")[1])
+        elif "extremities=" in arg:
+            mode="extremities"
+            n_extremities=int(arg.split("=")[1])
 
-
-    if "auto" in restraint_command_string:
+    if "auto" in restraint_command_string and mode=="simple":
         
-        restraints.append(Restraint(f"resname {tlc1} and name C**" , f"(sphlayer 5 15 resname {tlc1}) and name CA" , pdbpath,"structure1"),k=kval)
-
+        restraints.append(Restraint(f"resname {tlc} and name type C" , f"(sphlayer 5 15 resname {tlc}) and name CA" , pdbpath,k=kval))
+    
+    elif "auto" in restraint_command_string and mode=="extremities":
+        sels=GenerateExtremities(configuration,pdbpath,n_extremities)
+        for selection in sels:
+            restraints.append(Restraint(selection , f"(sphlayer 3 10 resname {tlc}) and name CA" , pdbpath,k=kval))
     elif "manual" in restraint_command_string:
         raise NotImplementedError("Manual definition of restraints not yet implemented")
     else:
@@ -142,7 +195,7 @@ def write_restraints_yaml(path,system,config):
         restraints_dict["system"]["structure"]["ccs"]=cc_names_struc1
     elif system.structure=="structure2":
         restraints_dict["system"]["structure"]["ccs"]=cc_names_struc2
-    ## TODO: write ccs in restraints_yaml
+    
     
 
     output=yaml.dump(restraints_dict)
