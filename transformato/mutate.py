@@ -678,7 +678,7 @@ class ProposeMutationRoute(object):
 
     def add_idx_to_common_core_of_mol2(self, idx_list: list):
         for idx in idx_list:
-            self.manually_added_m2_idx.append(idx)
+            self.manually_added_m_idx.append(idx)
             
         print("Staged IDX for addition to common core m2: %s"%self.manually_added_m2_idx)
 
