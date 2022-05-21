@@ -134,7 +134,9 @@ prop = dict()
 
 # Check if restraints.yaml exists - if it does, system uses restraints
 
-if os.path.exists("./restraints.yaml"):
+pdbpath=args.inpfile.replace(".inp",".pdb")
+
+if os.path.exists("./restraints.yaml") and "complex" in pdbpath:
     import transformato.restraints as tfrs
     import yaml
 
@@ -149,12 +151,12 @@ if os.path.exists("./restraints.yaml"):
     cc_names=configuration["system"]["structure"]["ccs"]
 
     # Add forces via transformato.restraints
-    pdbpath=args.inpfile.replace(".inp",".pdb")
+    
     if not os.path.exists(pdbpath):
         raise FileNotFoundError(f"Couldnt find {pdbpath} necessary for Restraint Analysis")
 
-    if "complex" in pdbpath: # Only apply forces to complex-ligand systems
-        restraintList=tfrs.CreateRestraintsFromConfig(configuration,pdbpath)
+    
+    restraintList=tfrs.CreateRestraintsFromConfig(configuration,pdbpath)
 
     for restraint in restraintList:
         restraint.createForce(cc_names)
