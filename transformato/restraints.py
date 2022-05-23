@@ -194,7 +194,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
 
     if "auto" in restraint_command_string and mode=="simple":
         
-        restraints.append(Restraint(f"resname {tlc} and type C" , f"(sphlayer 5 15 resname {tlc}) and name CA" , pdbpath,k=kval))
+        restraints.append(Restraint(f"resname {tlc} and type C" , f"(sphlayer 5 15 resname {tlc}) and name CA and protein" , pdbpath,k=kval))
     
     elif "auto" in restraint_command_string and mode=="extremities":
         sels=GenerateExtremities(configuration,pdbpath,n_extremities)
