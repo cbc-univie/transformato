@@ -133,7 +133,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
     ligand_group=ligand_topology.select_atoms(f"resname {tlc} and type C")
     # limit ligand group to common core
     for cc_atom in ccs:
-        templg=ligand_group.select_atoms(f"not name {cc_atom}")
+        templg=ligand_group.select_atoms(f"not name {str(cc_atom)}")
         ligand_group=templg
     ligand_com=ligand_group.center_of_mass()
     carbon_distances={}
