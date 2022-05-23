@@ -130,11 +130,15 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
     ligand_topology=MDAnalysis.Universe(pdbpath)
     tlc=configuration["system"]["structure"]["tlc"]
     ccs=configuration["system"]["structure"]["ccs"]
-    ligand_group=ligand_topology.select_atoms(f"resname {tlc} and type C")
-    # limit ligand group to common core
-    for cc_atom in ccs:
-        templg=ligand_group.select_atoms(f"not name {str(cc_atom)}")
-        ligand_group=templg
+    cc_names_selection=""
+    # limit ligand group to common core by way of selection string
+    for ccname in ccs:
+        cc_names_selection+=f"name {ccname} or "
+    cc_names_selection=cc_names_selection[0:-4]
+    print (cc_names_selection)
+    ligand_group=ligand_topology.select_atoms(f"resname {tlc} and type C and ({cc_names_selection})")
+    
+    
     ligand_com=ligand_group.center_of_mass()
     carbon_distances={}
 
