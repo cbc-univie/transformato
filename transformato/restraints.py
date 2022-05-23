@@ -200,8 +200,11 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
         sels=GenerateExtremities(configuration,pdbpath,n_extremities)
         for selection in sels:
             restraints.append(Restraint(selection , f"(sphlayer 3 10 resname {tlc}) and name CA" , pdbpath,k=kval))
-    elif "manual" in restraint_command_string:
-        raise NotImplementedError("Manual definition of restraints not yet implemented")
+    if "manual" in restraint_command_string:
+        manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
+        for key in manual_restraint_list:
+            restraint=configuration["simulation"]["manualrestraints"][key]
+            restraints.append(Restraint(restraint["group1"],restraint["group2"],pdbpath,k=restraint["k"]))
     else:
         raise AttributeError(f"Error: demanded restraint type not recognized :{configuration['simulation']['restraints']}")
 
@@ -216,6 +219,8 @@ def write_restraints_yaml(path,system,config):
     from transformato.mutate import cc_names_struc1, cc_names_struc2
     print(cc_names_struc1)
     restraints_dict={"system":{"structure":{"tlc":f"{system.tlc}"}},"simulation":{"restraints":f"{config['simulation']['restraints']}"}}
+    if "manual" in config["simulation"]["restraints"]:
+        restraints_dict["simulation"]["manualrestraints"]=config["simulation"]["manualrestraints"]
     if system.structure=="structure1":
         restraints_dict["system"]["structure"]["ccs"]=cc_names_struc1
     elif system.structure=="structure2":
