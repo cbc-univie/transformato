@@ -110,11 +110,31 @@ def get3DDistance(pos1,pos2):
     vec=pos1-pos2
     dis=np.linalg.norm(vec)
     return dis
-def GenerateExtremities(configuration,pdbpath,n_extremities):
+
+def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
+    """Takes the common core and generates n extremities at the furthest point
+    
+    Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter
+    
+    Keywords:
+    
+    configuration: the read-in restraints.yaml
+
+    pdbpath: path to local pdb
+
+    n_extremities: how many extremities to generate
+
+    sphinner: Distance to start of the sphlayer, default 0
+
+    sphouter: Distance to end of the sphlayer, default 5"""
     ligand_topology=MDAnalysis.Universe(pdbpath)
     tlc=configuration["system"]["structure"]["tlc"]
-
+    ccs=configuration["system"]["structure"]["ccs"]
     ligand_group=ligand_topology.select_atoms(f"resname {tlc} and type C")
+    # limit ligand group to common core
+    for cc_atom in ccs:
+        ligand_group=ligand_group.select_atoms(f"not name {cc_atom}")
+    
     ligand_com=ligand_group.center_of_mass()
     carbon_distances={}
 
@@ -144,7 +164,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities):
     for i in cs:
         print  (f"Furthest: {i} : {carbon_distances[i]}")
 
-    sels=[f"(around 5 name {furthest_carbon.name}) and resname {tlc} and type C",f"(around 5 name {second_furthest_carbon.name}) and resname {tlc} and type C"]
+    sels=[f"name {furthest_carbon.name} or (sphlayer {sphinner} {sphouter} name {furthest_carbon.name} and resname {tlc} and type C)",f"(name {second_furthest_carbon.name}) or (sphlayer {sphinner} {sphouter} 5 name {second_furthest_carbon.name} and resname {tlc} and type C)"]
     print (sels)
     return sels
 def CreateRestraintsFromConfig(configuration,pdbpath):
