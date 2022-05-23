@@ -132,6 +132,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
     ccs=configuration["system"]["structure"]["ccs"]
     cc_names_selection=""
     # limit ligand group to common core by way of selection string
+    
     for ccname in ccs:
         cc_names_selection+=f"name {ccname} or "
     cc_names_selection=cc_names_selection[0:-4]
@@ -168,7 +169,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
     for i in cs:
         print  (f"Furthest: {i} : {carbon_distances[i]}")
 
-    sels=[f"name {furthest_carbon.name} or (sphlayer {sphinner} {sphouter} name {furthest_carbon.name} and resname {tlc} and type C)",f"(name {second_furthest_carbon.name}) or (sphlayer {sphinner} {sphouter} 5 name {second_furthest_carbon.name} and resname {tlc} and type C)"]
+    sels=[f"name {furthest_carbon.name} or ((sphlayer {sphinner} {sphouter} name {furthest_carbon.name} and resname {tlc}) and type C)",f"(name {second_furthest_carbon.name}) or ((sphlayer {sphinner} {sphouter} name {second_furthest_carbon.name}) and resname {tlc} and type C)"]
     print (sels)
     return sels
 def CreateRestraintsFromConfig(configuration,pdbpath):
