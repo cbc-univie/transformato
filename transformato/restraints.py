@@ -14,6 +14,7 @@ from simtk.openmm import *
 from simtk.openmm.app import *
 
 logger=logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class Restraint():
     def __init__(
@@ -54,13 +55,13 @@ class Restraint():
 
         
         # Only done for g1, as it is the ligand group - theres no common core for the protein
-        print(f"Before CC check: {self.g1.names}")
+        logger.debug(f"Before CC check: {self.g1.names}")
         
         self.g1_in_cc=MDAnalysis.AtomGroup([],self.topology)
         for atom in self.g1:
             if atom.name in common_core_names:
                 self.g1_in_cc+=atom
-        print(f"After CC check: {self.g1_in_cc.names}")
+        logger.debug(f"After CC check: {self.g1_in_cc.names}")
         self.common_core_idxs=[atom.id for atom in self.g1_in_cc]
         
         # convert MDAnalysis syntax into openMM usable idxs
@@ -92,9 +93,10 @@ class Restraint():
         elif self.shape=="flatbottom":
             raise NotImplementedError("Cant create flatbottom potential, as it has not yet been implemented")
 
-        print(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}):
-        Group 1 (COM: {self.g1pos}): {self.g1_in_cc}
-        Group 2 (COM: {self.g2pos}): {self.g2}""")
+        logger.info(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}""")
+        logger.debug(f"""
+        Group 1 (COM: {self.g1pos}): {[self.g1_in_cc.names]}
+        Group 2 (COM: {self.g2pos}): {[self.g2.names]}""")
 
         del self.topology # delete the enormous no longer needed universe asap
         return self.force
@@ -141,7 +143,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
     for ccname in ccs:
         cc_names_selection+=f"name {ccname} or "
     cc_names_selection=cc_names_selection[0:-4]
-    print (cc_names_selection)
+    logger.debug (f"Common core selection string: {cc_names_selection}")
     ligand_group=ligand_topology.select_atoms(f"resname {tlc} and type C and ({cc_names_selection})")
     
     
@@ -194,7 +196,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
         ligand_group=ligand_group.select_atoms(f"not name {resulting_carbon.name}")
         extremity_cores.append(resulting_carbon)
     
-    print(f"Cores found for extremity_cores: {[carbon.name for carbon in extremity_cores]}")
+    logger.info(f"Cores found for extremity_cores: {[carbon.name for carbon in extremity_cores]}")
 
 
 
@@ -222,6 +224,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     for arg in restraint_command_string:
         if "k=" in arg:
             kval=int(arg.split("=")[1])
+            kval=kval*configuration["intst"]["scaling"]
         elif "extremities=" in arg:
             mode="extremities"
             n_extremities=int(arg.split("=")[1])
@@ -244,14 +247,31 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     return restraints
 
 
-def write_restraints_yaml(path,system,config):
+def write_restraints_yaml(path,system,config,current_step):
     """Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml
     
     path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
     system: the system object from state.py"""
     from transformato.mutate import cc_names_struc1, cc_names_struc2
-    print(cc_names_struc1)
-    restraints_dict={"system":{"structure":{"tlc":f"{system.tlc}"}},"simulation":{"restraints":f"{config['simulation']['restraints']}"}}
+    logger.debug(cc_names_struc1)
+    restraints_dict={"intst":{},"system":{"structure":{"tlc":f"{system.tlc}"}},"simulation":{"restraints":f"{config['simulation']['restraints']}"}}
+
+    if "scaling"  in config["simulation"]["restraints"]:
+        
+        if current_step==1:
+            lve=0
+        elif current_step==2:
+            lve=0.25
+        elif current_step==3:
+            lve=0.5
+        elif current_step==4:
+            lve=0.75
+        else:
+            lve=1
+    else:
+        lve=1
+
+    restraints_dict["intst"]["scaling"]=lve
     if "manual" in config["simulation"]["restraints"]:
         restraints_dict["simulation"]["manualrestraints"]=config["simulation"]["manualrestraints"]
     if system.structure=="structure1":

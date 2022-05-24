@@ -104,7 +104,8 @@ class IntermediateStateFactory(object):
 
         # Used for restraints:
         if "restraints"  in self.configuration["simulation"].keys():
-            write_restraints_yaml(f"{output_file_base}/restraints.yaml",self.system,self.configuration)
+            
+            write_restraints_yaml(f"{output_file_base}/restraints.yaml",self.system,self.configuration,self.current_step)
         self.current_step += 1
 
     def _add_serializer(self, file):
