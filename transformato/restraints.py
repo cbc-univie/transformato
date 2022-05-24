@@ -205,8 +205,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
         for key in manual_restraint_list:
             restraint=configuration["simulation"]["manualrestraints"][key]
             restraints.append(Restraint(restraint["group1"],restraint["group2"],pdbpath,k=restraint["k"]))
-    else:
-        raise AttributeError(f"Error: demanded restraint type not recognized :{configuration['simulation']['restraints']}")
+    
 
     return restraints
 
