@@ -1,15 +1,19 @@
 
 from calendar import c
+from multiprocessing.sharedctypes import Value
 from tabnanny import check
 import numpy as np
 
 import MDAnalysis
 import yaml
+import logging
 
 # Load necessary openmm facilities
 from simtk.unit import *
 from simtk.openmm import *
 from simtk.openmm.app import *
+
+logger=logging.getLogger(__name__)
 
 class Restraint():
     def __init__(
@@ -120,7 +124,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
     
     configuration: the read-in restraints.yaml
 
-    pdbpath: path to local pdb
+    pdbpath: path to local pdb used as base for the restraints
 
     n_extremities: how many extremities to generate
 
@@ -131,6 +135,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
     tlc=configuration["system"]["structure"]["tlc"]
     ccs=configuration["system"]["structure"]["ccs"]
     cc_names_selection=""
+
     # limit ligand group to common core by way of selection string
     
     for ccname in ccs:
@@ -143,34 +148,63 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
     ligand_com=ligand_group.center_of_mass()
     carbon_distances={}
 
-    if n_extremities not in [2,"2"]:
-        raise NotImplementedError("Can currently only work with 2 extremities")
+    if int(n_extremities)<2:
+        raise ValueError(f"Impossible value for generation of extremities: {n_extremities}")
+    if int(n_extremities)>len(ligand_group):
+        raise ValueError(f"Impossible to generate extremity restraints: too many restraints demanded ({n_extremities}) vs. carbons in common core {len(ligand_group)}")
+
+    # Algorithm to find extremities:
+    # Takes center of mass of common core. Finds furthest C from that
+    # For n=2: finds furthest C from the previous C
+    # For n=3: finds C, where the sum of distances to the previous furthest C is highest
+    # For n=n: finds C, where the sum of distances of all previously found C is highest
+
+    extremity_cores=[] # array containing the centers of extremity
+    # Find the furthest C in the common core as starting point
     for carbon in ligand_group:
         distance_from_com=get3DDistance(ligand_com,carbon.position)
         carbon_distances[carbon.name]=distance_from_com
-    # Remove furthes C from group
+
+    # Remove furthest C from group and add it to the extremity core
     
     
     cs=sorted(carbon_distances,key=carbon_distances.get,reverse=True)
     furthest_carbon=ligand_group.select_atoms(f"name {cs[0]}")[0]
-    print (f"Extremity 1: {furthest_carbon.name}")
-    for i in cs:
-        print  (f"Furthest: {i} : {carbon_distances[i]}")
-    
-    lg2=ligand_group.select_atoms(f"not name {furthest_carbon.name}")
-    
-    for carbon in lg2:
-        distance_from_com=get3DDistance(furthest_carbon.position,carbon.position)
-        carbon_distances[carbon.name]=distance_from_com
+    ligand_group=ligand_group.select_atoms(f"not name {furthest_carbon.name}")
+    extremity_cores.append(furthest_carbon)
 
-    cs=sorted(carbon_distances,key=carbon_distances.get,reverse=True)
-    second_furthest_carbon=ligand_group.select_atoms(f"name {cs[0]}")[0]
-    print (f"Extremity 2: {second_furthest_carbon.name}")
-    for i in cs:
-        print  (f"Furthest: {i} : {carbon_distances[i]}")
+    # For all other extremities - iterate over core distances, repeat process
+    
+    for i in range(2,int(n_extremities)+1):
+        logger.debug(f"Doing Extremity number {i}")
 
-    sels=[f"name {furthest_carbon.name} or ((sphlayer {sphinner} {sphouter} name {furthest_carbon.name} and resname {tlc}) and type C)",f"(name {second_furthest_carbon.name}) or ((sphlayer {sphinner} {sphouter} name {second_furthest_carbon.name}) and resname {tlc} and type C)"]
-    print (sels)
+        total_distances={}
+
+        for carbon in ligand_group:
+            total_distances[carbon.name]=0
+
+            for core in extremity_cores:
+                # Calculates the sum distance to all established cores
+                total_distances[carbon.name]+=get3DDistance(core.position,carbon.position)
+
+        # sort carbons by distances, get one with furthest distance, add to extremity_cores, remove it from ligand_group
+
+        cs=sorted(total_distances,key=total_distances.get,reverse=True)
+        resulting_carbon=ligand_group.select_atoms(f"name {cs[0]}")[0]
+        ligand_group=ligand_group.select_atoms(f"not name {resulting_carbon.name}")
+        extremity_cores.append(resulting_carbon)
+    
+    print(f"Cores found for extremity_cores: {[carbon.name for carbon in extremity_cores]}")
+
+
+
+
+    # Create selection strings to return
+    sels=[]
+    for core in extremity_cores:
+        sels.append(f"name {core.name} or ((sphlayer {sphinner} {sphouter} name {core.name} and resname {tlc}) and type C)")
+
+    logger.debug(f"Created extremities with selectiobns: {sels}")
     return sels
 def CreateRestraintsFromConfig(configuration,pdbpath):
     """Takes the .yaml config and returns the specified restraints
@@ -199,7 +233,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     elif "auto" in restraint_command_string and mode=="extremities":
         sels=GenerateExtremities(configuration,pdbpath,n_extremities)
         for selection in sels:
-            restraints.append(Restraint(selection , f"(sphlayer 3 10 resname {tlc}) and name CA" , pdbpath,k=kval))
+            restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,k=kval))
     if "manual" in restraint_command_string:
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
         for key in manual_restraint_list:
