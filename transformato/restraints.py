@@ -87,7 +87,7 @@ class Restraint():
             self.force.addGroup(self.g1_openmm)
             self.force.addGroup(self.g2_openmm)
                 
-            self.force.addBond([0,1],[self.force_constant,self.initial_distance])
+            self.force.addBond([0,1],[self.force_constant,self.initial_distance/10])
 
             
         elif self.shape=="flatbottom":
