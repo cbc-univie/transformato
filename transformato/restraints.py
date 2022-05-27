@@ -51,7 +51,7 @@ class Restraint():
         """Actually creates the force, after dismissing all idxs not in the common core from the molecule
         
         Keywords:
-        common_core_idxs: Array - of the common core idxs"""
+        common_core_names: Array - of the common core names"""
 
         
         # Only done for g1, as it is the ligand group - theres no common core for the protein
@@ -65,10 +65,10 @@ class Restraint():
         self.common_core_idxs=[atom.id for atom in self.g1_in_cc]
         
         # convert MDAnalysis syntax into openMM usable idxs
-        self.g1_openmm=[int(id)-1 for id in self.g1_in_cc.ids]
-        self.g2_openmm=[int(id)-1 for id in self.g2.ids]
+        self.g1_openmm=[int(id) for id in self.g1_in_cc.ix]
+        self.g2_openmm=[int(id) for id in self.g2.ix]
 
-        
+        logger.debug(f"G1 openMM ix: {self.g1_openmm}\nG2 openMM ix: {self.g2_openmm}")
 
         self.g1pos=self.g1_in_cc.center_of_mass()
         self.g2pos=self.g2.center_of_mass()
