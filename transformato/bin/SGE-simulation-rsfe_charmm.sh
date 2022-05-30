@@ -1,6 +1,10 @@
-#!/bin/bash
-#SBATCH -p lgpu
-#SBATCH --gres=gpu
+#$ -S /bin/bash
+#$ -M marcus.wieder@univie.ac.at
+#$ -m e
+#$ -j y
+#$ -p -500
+#$ -o /data/shared/projects/SGE_LOG/
+#$ -l gpu=1
 
 
 path=$1
