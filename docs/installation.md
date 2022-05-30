@@ -1,4 +1,5 @@
-{: .note .info} This information applies to versions in development. For a stable experience, use the original version at wiederm/transformato
+{: .note .info}
+This information applies to versions in development. For a stable experience, use the original version at wiederm/transformato
 
 # Installation
 ## Prerequisites
