@@ -1,14 +1,3 @@
-
-# Transformato
---------------
-** An engine-agnostic framework for RBFE/RSFE calculations **
-
-{% note %}
-
-This is a developmental version of transformato, forked off from wiederm/transformato. The version maintained there is certainly more stable than this one.
-
-{ % endnote %}
-
 # Installation
 ## Prerequisites
 - A working version of [conda/miniconda](https://docs.conda.io/en/latest/)
