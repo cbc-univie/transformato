@@ -3,11 +3,11 @@
 --------------
 ** An engine-agnostic framework for RBFE/RSFE calculations **
 
-{% NOTE %}
+{% note %}
 
 This is a developmental version of transformato, forked off from wiederm/transformato. The version maintained there is certainly more stable than this one.
 
-{ % NOTE %}
+{ % endnote %}
 
 # Installation
 ## Prerequisites
