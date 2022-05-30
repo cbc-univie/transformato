@@ -1,5 +1,5 @@
 layout:page
-title:Transformato
+title: "Transformato: A RBFE/RSFE calculator"
 permalink:/index/
 
 # Transformato
