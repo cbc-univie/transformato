@@ -1,6 +1,6 @@
 layout:page
 title:Transformato
-permalink:/
+permalink:/index/
 
 # Transformato
 --------------
