@@ -1,3 +1,5 @@
+{: .note .info} This information applies to versions in development. For a stable experience, use the original version at wiederm/transformato
+
 # Installation
 ## Prerequisites
 - A working version of [conda/miniconda](https://docs.conda.io/en/latest/)
