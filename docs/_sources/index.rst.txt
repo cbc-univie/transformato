@@ -6,7 +6,7 @@
 Welcome to transformato's documentation!
 =========================================================
 
-:code:`transformato`` is a lightweight implementation of the Boresch/Braunsfeld Serial-Atom-Insertion Common-Core Approach to relative binding/solvation free energy calculations.
+:code:`transformato` is a lightweight implementation of the Boresch/Braunsfeld Serial-Atom-Insertion Common-Core Approach to relative binding/solvation free energy calculations.
 
 .. toctree::
    :maxdepth: 2
