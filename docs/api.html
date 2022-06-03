@@ -121,17 +121,24 @@
 <dt class="sig sig-object py" id="transformato.utils.postprocessing">
 <span class="sig-prename descclassname"><span class="pre">transformato.utils.</span></span><span class="sig-name descname"><span class="pre">postprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'methane'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'openMM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_snapshots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_summary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">different_path_for_dcd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_single_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyze_traj_with</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mdtraj'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/utils.html#postprocessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.utils.postprocessing" title="Permalink to this definition"></a></dt>
 <dd><p>Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>configuration (dict): Configuration file.
-name (str, optional): The name of the system as deposited in the configuration file. Defaults to “methane”.
-engine (str, optional): The MD engine, either openMM or CHARMM. Defaults to “openMM”.
-max_snapshots (int, optional): Maximum number of snapshots per lambda window. Defaults to 300.
-show_summary (bool, optional): Plot the accumulated free energy estimate and overlap plot. Defaults to False.
-different_path_for_dcd (str, optional): For debugging purpose only. Defaults to “”.
-only_single_state (str, optional): For debugging purpose only. Defaults to “”.
-analyze_traj_with (str,optional): Select package for loading trajectories (either mdanalysis or mdtraj). Defaults to mdtraj.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> (<em>dict</em>) – Configuration file.</p></li>
+<li><p><strong>name</strong> (<em>str, optional</em>) – The name of the system as deposited in the configuration file. Defaults to “methane”.</p></li>
+<li><p><strong>engine</strong> (<em>str, optional</em>) – The MD engine, either openMM or CHARMM. Defaults to “openMM”.</p></li>
+<li><p><strong>max_snapshots</strong> (<em>int, optional</em>) – Maximum number of snapshots per lambda window. Defaults to 300.</p></li>
+<li><p><strong>show_summary</strong> (<em>bool, optional</em>) – Plot the accumulated free energy estimate and overlap plot. Defaults to False.</p></li>
+<li><p><strong>different_path_for_dcd</strong> (<em>str, optional</em>) – For debugging purpose only. Defaults to “”.</p></li>
+<li><p><strong>only_single_state</strong> (<em>str, optional</em>) – For debugging purpose only. Defaults to “”.</p></li>
+<li><p><strong>analyze_traj_with</strong> (<em>str,optional</em>) – Select package for loading trajectories (either mdanalysis or mdtraj). Defaults to mdtraj.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>[type]: [description]</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[type]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -146,10 +153,13 @@ analyze_traj_with (str,optional): Select package for loading trajectories (eithe
 <dt class="sig sig-object py" id="transformato.utils.run_simulation">
 <span class="sig-prename descclassname"><span class="pre">transformato.utils.</span></span><span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'openMM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_vacuum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/utils.html#run_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.utils.run_simulation" title="Permalink to this definition"></a></dt>
 <dd><p>Performs sampling given a list of directories with topology and parameter definitions</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>output_files (list): List of directories with topology and parameter files in CHARMM format
-engine (str, optional): The MD engines used to perform the sampling. Defaults to “openMM”.
-only_vacuum (bool, optional): For debugging only. Defaults to False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_files</strong> (<em>list</em>) – List of directories with topology and parameter files in CHARMM format</p></li>
+<li><p><strong>engine</strong> (<em>str, optional</em>) – The MD engines used to perform the sampling. Defaults to “openMM”.</p></li>
+<li><p><strong>only_vacuum</strong> (<em>bool, optional</em>) – For debugging only. Defaults to False.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -171,17 +181,24 @@ only_vacuum (bool, optional): For debugging only. Defaults to False.</p>
 <dt class="sig sig-object py" id="transformato.mutate.perform_mutations">
 <span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">perform_mutations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_of_heavy_atoms_to_be_mutated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_charge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_lj_of_hydrogens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_lj_of_heavy_atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_cc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/mutate.html#perform_mutations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.perform_mutations" title="Permalink to this definition"></a></dt>
 <dd><p>Performs the mutations necessary to mutate the physical endstate to the defined common core.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>configuration (dict): A configuration dictionary.
-i ([type]): IntermediateState instance
-mutation_list (list): list of mutation objects
-list_of_heavy_atoms_to_be_mutated (list, optional): A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].
-nr_of_mutation_steps_charge (int, optional): Nr of steps to turne of the charges. Defaults to 5.
-nr_of_mutation_steps_lj_of_hydrogens (int, optional): Nr of steps to turne of lj of hydrogens. Only needed for systems with many hydrogens in dummy region
-nr_of_mutation_steps_lj_of_heavy_atoms (int, optional): Nr of steps to turne of the lj of heavy atoms
-nr_of_mutation_steps_cc (int, optional): Nr of steps to interpolate between the common core parameters. Defaults to 5.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> (<em>dict</em>) – A configuration dictionary.</p></li>
+<li><p><strong>i</strong> (<em>[type]</em>) – IntermediateState instance</p></li>
+<li><p><strong>mutation_list</strong> (<em>list</em>) – list of mutation objects</p></li>
+<li><p><strong>list_of_heavy_atoms_to_be_mutated</strong> (<em>list, optional</em>) – A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].</p></li>
+<li><p><strong>nr_of_mutation_steps_charge</strong> (<em>int, optional</em>) – Nr of steps to turne of the charges. Defaults to 5.</p></li>
+<li><p><strong>nr_of_mutation_steps_lj_of_hydrogens</strong> (<em>int, optional</em>) – Nr of steps to turne of lj of hydrogens. Only needed for systems with many hydrogens in dummy region</p></li>
+<li><p><strong>nr_of_mutation_steps_lj_of_heavy_atoms</strong> (<em>int, optional</em>) – Nr of steps to turne of the lj of heavy atoms</p></li>
+<li><p><strong>nr_of_mutation_steps_cc</strong> (<em>int, optional</em>) – Nr of steps to interpolate between the common core parameters. Defaults to 5.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>list: list of directories with the parameter and topology files</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of directories with the parameter and topology files</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
@@ -336,10 +353,15 @@ equilibrium states. J Chem Phys 129:124105, 2008.</p>
 <dt class="sig sig-object py" id="transformato.restraints.CreateRestraintsFromConfig">
 <span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">CreateRestraintsFromConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#CreateRestraintsFromConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.CreateRestraintsFromConfig" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the .yaml config and returns the specified restraints</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>config (dict): the loaded yaml config (as returned by yaml.safe_load() or similar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – the loaded yaml config (as returned by yaml.safe_load() or similar</p>
 </dd>
-<dt>Returns:</dt><dd><p>restraints (array): An array of Restraint instances</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of Restraint instances</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>restraints (array)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -357,14 +379,21 @@ The algorithm works as follows:</p>
 3. Until len(extremity_cores)==n_extremities: Pick the C where the sum distance from all previous cores is greatest.
 4. Generate selection strings for all extremity cores and return</p>
 </div></blockquote>
-<dl class="simple">
-<dt>Args:</dt><dd><p>configuration (dict): the read-in restraints.yaml
-pdbpath (str): path to local pdb used as base for the restraints
-n_extremities (int): how many extremities to generate. Cannot exceed number of carbons in the ligand
-sphinner (float): Distance to start of the sphlayer, default 0
-sphouter (float): Distance to end of the sphlayer, default 5</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> (<em>dict</em>) – the read-in restraints.yaml</p></li>
+<li><p><strong>pdbpath</strong> (<em>str</em>) – path to local pdb used as base for the restraints</p></li>
+<li><p><strong>n_extremities</strong> (<em>int</em>) – how many extremities to generate. Cannot exceed number of carbons in the ligand</p></li>
+<li><p><strong>sphinner</strong> (<em>float</em>) – Distance to start of the sphlayer, default 0</p></li>
+<li><p><strong>sphouter</strong> (<em>float</em>) – Distance to end of the sphlayer, default 5</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>selection_strings (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>selection_strings (array[str])</p>
 </dd>
 </dl>
 </dd></dl>
@@ -373,10 +402,15 @@ sphouter (float): Distance to end of the sphlayer, default 5</p>
 <dt class="sig sig-object py" id="transformato.restraints.get3DDistance">
 <span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">get3DDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#get3DDistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.get3DDistance" title="Permalink to this definition"></a></dt>
 <dd><p>Takes two 3d positions as array and calculates the distance between them</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>pos1,pos2 (3D-Array): The positions of which to calculate the distances</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pos1,pos2</strong> (<em>3D-Array</em>) – The positions of which to calculate the distances</p>
 </dd>
-<dt>Returns:</dt><dd><p>distance (float): The distance between the two positions</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distance between the two positions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>distance (float)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -385,9 +419,12 @@ sphouter (float): Distance to end of the sphlayer, default 5</p>
 <dt class="sig sig-object py" id="transformato.restraints.write_restraints_yaml">
 <span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">write_restraints_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#write_restraints_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.write_restraints_yaml" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
-system: the system object from state.py</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml</p></li>
+<li><p><strong>system</strong> – the system object from state.py</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
