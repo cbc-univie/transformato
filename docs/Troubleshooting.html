@@ -47,6 +47,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#getting-debug-information">Getting debug information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#error-messages-and-common-causes">Error messages and common causes:</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#errors-during-system-setup">Errors during system setup:</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#errors-during-simulation">Errors during simulation:</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#errors-during-analysis">Errors during analysis:</a></li>
 </ul>
@@ -96,6 +97,32 @@
 </section>
 <section id="error-messages-and-common-causes">
 <h2>Error messages and common causes:<a class="headerlink" href="#error-messages-and-common-causes" title="Permalink to this heading"></a></h2>
+<section id="errors-during-system-setup">
+<h3>Errors during system setup:<a class="headerlink" href="#errors-during-system-setup" title="Permalink to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">load_config_yaml</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+     <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+         <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+<span class="k">if</span> <span class="p">(</span>     <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nstep&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">None</span>
+     <span class="ow">or</span> <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nstdcd&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">None</span>
+ <span class="p">):</span>
+     <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;nsteps or nstdcd is not defined in config file&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+
+<span class="ne">UnboundLocalError</span><span class="p">:</span> <span class="n">local</span> <span class="n">variable</span> <span class="s1">&#39;settingsMap&#39;</span> <span class="n">referenced</span> <span class="n">before</span> <span class="n">assignment</span>
+</pre></div>
+</div>
+<p>This usually means that there is a typo in your yaml file. Remember that yaml requires a space between colon and data!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ne">RuntimeError</span><span class="p">:</span> <span class="n">Charge</span> <span class="n">compensation</span> <span class="n">failed</span><span class="o">.</span> <span class="n">Introducing</span> <span class="n">non</span> <span class="n">integer</span> <span class="n">total</span> <span class="n">charge</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.584000000000001</span><span class="o">.</span>
+<span class="n">Target</span> <span class="n">total</span> <span class="n">charge</span><span class="p">:</span> <span class="mf">0.</span>
+</pre></div>
+</div>
+<p>This can have a number of root causes. Ensure that:</p>
+<ol class="arabic simple">
+<li><p>your dummy regions are sensible</p></li>
+<li><p>your terminal X is where it should be</p></li>
+<li><p>your structures do not require transformato to create new dummy atoms. Put the structure with more atoms first.</p></li>
+</ol>
+</section>
 <section id="errors-during-simulation">
 <h3>Errors during simulation:<a class="headerlink" href="#errors-during-simulation" title="Permalink to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ne">FileNotFoundError</span><span class="p">:</span> <span class="p">[</span><span class="n">Errno</span> <span class="mi">2</span><span class="p">]</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">directory</span><span class="p">:</span> <span class="s1">&#39;/site/raid4/student4/production_transformato/tablit_24to25/run1/2oj9_tablit_struc24-2oj9_tablit_struc25-rbfe/2oj9_tablit_struc24//intst1/lig_in_complex.rst&#39;</span>
