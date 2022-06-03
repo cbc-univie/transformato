@@ -518,6 +518,11 @@ class ProposeMutationRoute(object):
         tlc: str,
         name: str,
     ) -> list:
+        """
+        With the help of parmed this function will look in the ordered_connected_dummy_regions list if
+        there is a atom which has lonepairs. It will check wheather the lp belongs to the common core or
+        to the dummy region and assign it into the sorted list accordingly.
+        """
 
         flat_ordered_connected_dummy_regions = [
             item
