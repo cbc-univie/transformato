@@ -349,7 +349,13 @@ equilibrium states. J Chem Phys 129:124105, 2008.</p>
 <span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">GenerateExtremities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_extremities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphinner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphouter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#GenerateExtremities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.GenerateExtremities" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the common core and generates n extremities at the furthest point</p>
 <blockquote>
-<div><p>Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter</p>
+<div><p>Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter.
+The algorithm works as follows:</p>
+<p>(All of these operations only operate on carbons in the common core)
+1. Take the furthest C from the center of Mass
+2. Take the furthest C from that C
+3. Until len(extremity_cores)==n_extremities: Pick the C where the sum distance from all previous cores is greatest.
+4. Generate selection strings for all extremity cores and return</p>
 </div></blockquote>
 <dl class="simple">
 <dt>Args:</dt><dd><p>configuration (dict): the read-in restraints.yaml
@@ -358,7 +364,7 @@ n_extremities (int): how many extremities to generate. Cannot exceed number of c
 sphinner (float): Distance to start of the sphlayer, default 0
 sphouter (float): Distance to end of the sphlayer, default 5</p>
 </dd>
-<dt>Returns:</dt><dd><p>sels (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</p>
+<dt>Returns:</dt><dd><p>selection_strings (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</p>
 </dd>
 </dl>
 </dd></dl>
