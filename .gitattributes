@@ -1,0 +1,2 @@
+# Apply override to all files in the directory (source: https://github.com/github/linguist/blob/master/docs/overrides.md)
+data/** linguist-vendored

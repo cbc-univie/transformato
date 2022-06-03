@@ -1,0 +1,58 @@
+---
+################
+system:
+  ################
+  structure1:
+    name: "cdk2-28"
+    tlc: "UNK"
+    waterbox:
+      dirname: "waterbox"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_waterbox"
+    complex:
+      dirname: "complex"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_complex"
+
+  structure2:
+    name: "cdk2-1h1q"
+    tlc: "UNK"
+    waterbox:
+      dirname: "waterbox"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_waterbox"
+    complex:
+      dirname: "complex"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_complex"
+
+################
+simulation:
+  ################
+  parameters:
+    nstep: 1000
+    nstdcd: 10
+    nstout: 1_000
+    cons: None
+    dt: 0.001
+    switch: "vfswitch"
+    mini_nstep: 1000
+  GPU: True
+
+  free-energy-type: "rbfe"
+################
+solvation:
+  ################
+  steps_for_equilibration: 1000
