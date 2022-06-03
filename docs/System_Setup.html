@@ -26,6 +26,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -38,7 +39,7 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Documentation" href="api.html" />
+    <link rel="next" title="Running Simulations" href="Running_Simulation.html" />
     <link rel="prev" title="Installation" href="Installation.html" /> 
 </head>
 
@@ -88,11 +89,17 @@
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">System Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#file-structure-and-supplying-your-protein-ligand">File structure and supplying your protein/ligand</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#restraints">Restraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-config-yaml">The config.yaml</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#restraints">Restraints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-restraints">Automatic Restraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manual-restraints">Manual Restraints</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#automatic-restraints">Automatic Restraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#manual-restraints">Manual Restraints</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
 
@@ -161,54 +168,78 @@
   <section id="system-setup">
 <h1>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this headline">¶</a></h1>
 <p>After successfully installing transformato, you can now setup your first system. For this, you require three items:</p>
-<ul class="simple">
-<li><p>The output of [CHARMM-GUI](<a class="reference external" href="http://www.charmm-gui.org/)'s">http://www.charmm-gui.org/)’s</a> solution builder for your ligand - solvated once at its position within the protein-ligand complex and once in a pure waterbox.</p></li>
-<li><p>A <cite>config.yaml</cite> which describes your general simulation parameters</p></li>
-<li><p>A <cite>submit.ipynb</cite> (or just standard .py) that generates your intermediate states</p></li>
-</ul>
+<ol class="arabic simple">
+<li><p>The output of <a class="reference external" href="http://www.charmm-gui.org/">CHARMM-GUI</a> ‘s solution builder for your ligand - solvated once at its position within the protein-ligand complex and once in a pure waterbox.</p></li>
+<li><p>A <cite>config.yaml</cite> which describes your general simulation parameters.</p></li>
+<li><p>A <cite>submit.ipynb</cite> (or just standard .py) that generates your intermediate states.</p></li>
+</ol>
 <p>Finally, to actually analyze your simulations and calculate the resulting free energies, you’ll need an <cite>analysis.py</cite> script - this is covered on the <em>Analysis</em> page.</p>
 <section id="file-structure-and-supplying-your-protein-ligand">
 <h2>File structure and supplying your protein/ligand<a class="headerlink" href="#file-structure-and-supplying-your-protein-ligand" title="Permalink to this headline">¶</a></h2>
-<p>Please refer to this convenient and practical flowchart to understand transformato’s folder structure:
-.. image:: <a class="reference external" href="https://user-images.githubusercontent.com/79014444/169664208-56cc9d73-bd93-49ed-8f06-14cc15c04f34.svg">https://user-images.githubusercontent.com/79014444/169664208-56cc9d73-bd93-49ed-8f06-14cc15c04f34.svg</a></p>
-<p>While this may look complicated, all you need to do is to:
-1. Create a folder called <cite>your-structure-1</cite> for your first structure
-2. Take the CHARMM-GUI output folder (called something like charmm-gui-4842148) for your solvated ligand-protein complex, move it to this folder and rename it into <cite>complex</cite>
-3. Take the CHARMM-GUI output folder for your solvated ligand in the waterbox, move it to this folder and rename it inti <cite>waterbox</cite>
-4. Do the same with your second, third, fourth… etc. structure
-5. <strong>Run the equillibration</strong> part of the provided simulation input. An equillibrated system (and the generated .rst file) are necesary for transformato.</p>
+<p>Please refer to this convenient and practical flowchart to understand transformato’s folder structure:</p>
+<img alt="transformato-tree" src="_images/transformato-tree.svg" /><p>While this may look complicated, all you need to do is to:</p>
+<ol class="arabic simple">
+<li><p>Create a folder called <cite>your-structure-1</cite> for your first structure</p></li>
+<li><p>Take the CHARMM-GUI output folder (called something like charmm-gui-4842148) for your solvated ligand-protein complex, move it to this folder and rename it into <cite>complex</cite></p></li>
+<li><p>Take the CHARMM-GUI output folder for your solvated ligand in the waterbox, move it to this folder and rename it inti <cite>waterbox</cite></p></li>
+<li><p>Do the same with your second, third, fourth… etc. structure</p></li>
+<li><p><strong>Run the equillibration</strong> part of the provided simulation input. An equillibrated system (and the generated .rst file) are necesary for transformato.</p></li>
+</ol>
 <p>You`ll create the remaining files down below.</p>
-<p>## The config.yaml</p>
-<p>## The submit script</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The submit.ipynb file is covered in <a class="reference internal" href="Running_Simulation.html#rst-submitfiledesc"><span class="std std-ref">The submit.ipynb</span></a></p>
+</div>
+</section>
+<section id="the-config-yaml">
+<h2>The config.yaml<a class="headerlink" href="#the-config-yaml" title="Permalink to this headline">¶</a></h2>
+<p>The config.yaml is perhaps the most important file you’ll create. It contains:</p>
+<ol class="arabic simple">
+<li><p>Definitions of your structures and under which name to find them</p></li>
+<li><p>Simulation parameters, such as simulation step and length</p></li>
+<li><p>Eventual restraints, both automatic and manual</p></li>
+</ol>
 </section>
 <section id="restraints">
 <h2>Restraints<a class="headerlink" href="#restraints" title="Permalink to this headline">¶</a></h2>
-<p>WARNING: The documentation here is not yet implemented and more aspirational/for development branches</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The documentation here is not yet implemented and more aspirational/for development branches</p>
+</div>
 <p><strong>OpenMM only</strong></p>
 <p>Transformato supports two types of restraints: automatic and manual restraints.</p>
-</section>
-</section>
 <section id="automatic-restraints">
-<h1>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this headline">¶</a></h1>
+<h3>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this headline">¶</a></h3>
 <p>To activate automatic restraints for your ligand, add</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">restraints</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;auto&quot;</span><span class="w"></span>
 </pre></div>
 </div>
-<p>to your <cite>config.yaml</cite>. This wil restrain your ligand in its original position using a harmonic potential of the form <cite>E=0.5*k*(r-r0)²</cite> (where  r is the current distance, r0 the initial distance, and k the force constant), applied within the centers of mass of your ligand and the surrounding protein structure, keeping these two vaguely fixed.</p>
+<p>to your <cite>config.yaml</cite>. This wil restrain your ligand in its original position using a harmonic potential of the form <span class="math notranslate nohighlight">\(E=0.5k \cdot (r-r_0)²\)</span> (where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance, <span class="math notranslate nohighlight">\(r_0\)</span> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant), applied within the centers of mass of your ligand and the surrounding protein structure, keeping these two vaguely fixed.</p>
 <p>You may specify further keywords:</p>
-<p><em>Keywords for restraints:</em>
-<a href="#id5"><span class="problematic" id="id6">|Keyword|Values|Description|</span></a>
-<a href="#id7"><span class="problematic" id="id8">|-------|</span></a>——-<a href="#id9"><span class="problematic" id="id10">|----|</span></a>
-<a href="#id11"><span class="problematic" id="id12">|`k=`|`[int]`|*(optional)* Specifies the force constant. Default value is 3. Sensible values are between 0.1 - 500, depending on the system, but tougher restraints have larger impact on system sampling and accuracy of free energy calculations. Default is `k=3`
-|`extremities=` |`[int]`|*(optional)* Instead of restraining the entire common core by its center of mass, attaches `n` bonds to the calculated extremities of the ligand and nearby protein structures, thus cutting down on rotational freedom. If not specified, the entire ligand is restrained by its center of mass
-|`shape=`|`harmonic` `flatbottom`|*(optional)* Exchanges the harmonic potential underlying the restraints for a flat-bottomed one of the form `step(r-r_0) · (K/2)·(r-r_0)^2` Default is `harmonic`
-|`scaling`|Presence toggles|*(optional)* Linearly scales the k value through the first 4 states (0, 0.25, 0.5, 0.75). Default is `False`|</span></a></p>
+<dl class="simple">
+<dt>restraints:</dt><dd><dl class="simple">
+<dt><code class="code docutils literal notranslate"><span class="pre">auto</span></code></dt><dd><p>Required. Tells transformato to look for and apply automatic restraints</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">k=[int]</span></code></dt><dd><p><em>optional:</em> Defines the spring constant used for force calculations. Default is 3</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">extremities=[int]</span></code></dt><dd><p><em>optional:</em> If used, transformato will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">shape=&quot;harmonic&quot;</span> <span class="pre">[&quot;harmonic&quot;,&quot;flatbottom&quot;]</span></code></dt><dd><p><em>optional:</em> Defines the shape of the energy potential. Only “harmonic” is currently implemented.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">scaling</span></code></dt><dd><p><em>optional:</em> If present, the k - Value of the force is linearly scaled in the first four intermediate states (0,0.25,0.5,0.75)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p>A full command might thus look like this:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">restraints</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;auto</span><span class="nv"> </span><span class="s">k=10</span><span class="nv"> </span><span class="s">extremities=3</span><span class="nv"> </span><span class="s">shape=harmonic</span><span class="nv"> </span><span class="s">scaling&quot;</span><span class="w"></span>
 </pre></div>
 </div>
-<p>CAUTION: Be somewhat sure of what your structure looks like, and do a sanity check on the generated restraints before production. As all restraints only act on the common core, setting an arbitrarily high number of extermities can lead to strange results</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>Be somewhat sure of what your structure looks like, and do a sanity check on the generated restraints before production. As all restraints only act on the common core, setting an arbitrarily high number of extermities can lead to strange results</p>
+</div>
 <p>It should be noted that this means that a small file called <cite>restraints.yaml</cite> is created in your <cite>intst*</cite> - folders.
 These have the following structure:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">system</span><span class="p">:</span><span class="w"></span>
@@ -228,14 +259,14 @@ These have the following structure:</p>
 <p>It is not recommended to manually edit these files, as they are automatically created for each intermediate state.</p>
 </section>
 <section id="manual-restraints">
-<h1>Manual Restraints<a class="headerlink" href="#manual-restraints" title="Permalink to this headline">¶</a></h1>
+<h3>Manual Restraints<a class="headerlink" href="#manual-restraints" title="Permalink to this headline">¶</a></h3>
 <p>To activate manual restraints for your ligand, add</p>
 <p><em>config.yaml</em></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">restraints</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;manual&quot;</span><span class="w"></span>
 </pre></div>
 </div>
-<p>to your config.yaml. Below, you may now specify an arbitrary number of restraints using the [MDAnalysis selection syntax](<a class="reference external" href="https://docs.mdanalysis.org/stable/documentation_pages/selections.html#simple-selections">https://docs.mdanalysis.org/stable/documentation_pages/selections.html#simple-selections</a>):</p>
+<p>to your config.yaml. Below, you may now specify an arbitrary number of restraints using the <a class="reference external" href="https://docs.mdanalysis.org/stable/documentation_pages/selections.html#simple-selections">MDAnalysis selection syntax</a> :</p>
 <p><em>config.yaml</em></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">restraints</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;manual&quot;</span><span class="w"></span>
@@ -268,13 +299,20 @@ These have the following structure:</p>
 <span class="w">            </span><span class="nt">group2</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sphlayer</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">15</span><span class="nv"> </span><span class="s">name</span><span class="nv"> </span><span class="s">C14</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">protein</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">CA&quot;</span><span class="w"></span>
 </pre></div>
 </div>
-<p><a href="#id13"><span class="problematic" id="id14">|Keyword|Values|Description|</span></a>
-<a href="#id15"><span class="problematic" id="id16">|-------|</span></a>——-<a href="#id17"><span class="problematic" id="id18">|-------------|</span></a>
-<a href="#id19"><span class="problematic" id="id20">|`shape`|`&quot;harmonic&quot;` `&quot;flatbottom&quot;`|Shape of the energy potential. Default is &quot;harmonic&quot;|</span></a>
-<a href="#id21"><span class="problematic" id="id22">|`group1` `group2`|Any [MDAnalysis selection string](https://docs.mdanalysis.org/stable/documentation_pages/selections.html#simple-selections)|Defines which Common Core atoms are members of group1 or group2. Please note that group1 **must** be the ligand, and group2 the protein.|</span></a>
-<a href="#id23"><span class="problematic" id="id24">|`k`|`[float]`|*(optional)*: Defines the harmonic force constant. Default is 3.|</span></a>
-<a href="#id1"><span class="problematic" id="id2">|</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>r0`|`[float]`|*(optional)*: <strong>Harmonic Potential:</strong> By default, forces are 0 when the atom groups have their initial distance to each other. By setting this parameter, you may define a custom r0, allowing you to push or pull atom groups.  <strong>Flat-Bottom Potential:</strong> Represents the well size. Defaults to 1.5</p>
+<dl class="simple">
+<dt>manualrestraints</dt><dd><dl class="simple">
+<dt><code class="code docutils literal notranslate"><span class="pre">shape=&quot;harmonic&quot;</span> <span class="pre">[&quot;harmonic&quot;,&quot;flatbottom&quot;]'</span></code></dt><dd><p>Shape of the energy potential. Default is “harmonic”, “flatbottom” is not yet implemented</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">group1,group2=[MDAnalysis</span> <span class="pre">selection</span> <span class="pre">string]</span></code></dt><dd><p>Defines which Common Core atoms are members of group1 or group2. Please note that group1 <strong>must</strong> be the ligand, and group2 the protein.</p>
+</dd>
+<dt><code class="code docutils literal notranslate"><span class="pre">k=[int]</span></code></dt><dd><p><em>(optional):</em> Defines the harmonic force constant. Default is 3.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 <p>As with automatic restraints, even manually specified restraints will never act on atoms not in the common core, as this would lead to nonsensical energy calculations.</p>
+</section>
+</section>
 </section>
 
 
@@ -285,7 +323,7 @@ These have the following structure:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="Running_Simulation.html" class="btn btn-neutral float-right" title="Running Simulations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -297,7 +335,7 @@ These have the following structure:</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Marcus Wieder. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1
+        &copy; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1
 
     </p>
   </div>

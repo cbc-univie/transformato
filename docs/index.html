@@ -86,8 +86,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="System_Setup.html#automatic-restraints">Automatic Restraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="System_Setup.html#manual-restraints">Manual Restraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
 
@@ -155,6 +156,7 @@
             
   <section id="welcome-to-transformato-s-documentation">
 <h1>Welcome to transformato’s documentation!<a class="headerlink" href="#welcome-to-transformato-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>transformato is a lightweight implementation of the Boresch/Braunsfeld Serial-Atom-Insertion Common-Core Approach to relative binding/solvation free energy calculations.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -165,12 +167,32 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="System_Setup.html#file-structure-and-supplying-your-protein-ligand">File structure and supplying your protein/ligand</a></li>
+<li class="toctree-l2"><a class="reference internal" href="System_Setup.html#the-config-yaml">The config.yaml</a></li>
 <li class="toctree-l2"><a class="reference internal" href="System_Setup.html#restraints">Restraints</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="System_Setup.html#automatic-restraints">Automatic Restraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="System_Setup.html#manual-restraints">Manual Restraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Running_Simulation.html#the-submit-ipynb">The submit.ipynb</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Analysis.html#analysis-py">analysis.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Troubleshooting.html#getting-debug-information">Getting debug information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Troubleshooting.html#error-messages-and-common-causes">Error messages and common causes:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-transformato.utils">utils.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-transformato.mutate">mutate.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-transformato.state">state.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-transformato.analysis">analysis.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-transformato.system">system.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-transformato.restraints">restraints.py</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -201,7 +223,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Marcus Wieder. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1
+        &copy; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1
 
     </p>
   </div>

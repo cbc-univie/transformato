@@ -1,0 +1,484 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>transformato.utils &mdash; transformato  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> transformato
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../System_Setup.html">System Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">transformato</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>transformato.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for transformato.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="postprocessing"><a class="viewcode-back" href="../../api.html#transformato.utils.postprocessing">[docs]</a><span class="k">def</span> <span class="nf">postprocessing</span><span class="p">(</span>
+    <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;methane&quot;</span><span class="p">,</span>
+    <span class="n">engine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;openMM&quot;</span><span class="p">,</span>
+    <span class="n">max_snapshots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="n">num_proc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="n">show_summary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">different_path_for_dcd</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">only_single_state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">analyze_traj_with</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mdtraj&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        configuration (dict): Configuration file.</span>
+<span class="sd">        name (str, optional): The name of the system as deposited in the configuration file. Defaults to &quot;methane&quot;.</span>
+<span class="sd">        engine (str, optional): The MD engine, either openMM or CHARMM. Defaults to &quot;openMM&quot;.</span>
+<span class="sd">        max_snapshots (int, optional): Maximum number of snapshots per lambda window. Defaults to 300.</span>
+<span class="sd">        show_summary (bool, optional): Plot the accumulated free energy estimate and overlap plot. Defaults to False.</span>
+<span class="sd">        different_path_for_dcd (str, optional): For debugging purpose only. Defaults to &quot;&quot;.</span>
+<span class="sd">        only_single_state (str, optional): For debugging purpose only. Defaults to &quot;&quot;.</span>
+<span class="sd">        analyze_traj_with (str,optional): Select package for loading trajectories (either mdanalysis or mdtraj). Defaults to mdtraj.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        [type]: [description]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">transformato</span> <span class="kn">import</span> <span class="n">FreeEnergyCalculator</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">FreeEnergyCalculator</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">only_single_state</span> <span class="o">==</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vacuum&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">only_single_state</span> <span class="o">==</span> <span class="s2">&quot;waterbox&quot;</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">only_single_state</span> <span class="o">==</span> <span class="s2">&quot;complex&quot;</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;complex&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Both states are considered&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">different_path_for_dcd</span> <span class="ow">and</span> <span class="n">analyze_traj_with</span> <span class="o">==</span> <span class="s2">&quot;mdtraj&quot;</span><span class="p">:</span>
+        <span class="c1"># this is needed if the trajectories are stored at a different location than the</span>
+        <span class="c1"># potential definitions</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">base_path</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">base_path</span> <span class="o">=</span> <span class="n">different_path_for_dcd</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">load_trajs</span><span class="p">(</span><span class="n">nr_of_max_snapshots</span><span class="o">=</span><span class="n">max_snapshots</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">base_path</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">elif</span> <span class="n">analyze_traj_with</span> <span class="o">==</span> <span class="s2">&quot;mdtraj&quot;</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">load_trajs</span><span class="p">(</span><span class="n">nr_of_max_snapshots</span><span class="o">=</span><span class="n">max_snapshots</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;using </span><span class="si">{</span><span class="n">analyze_traj_with</span><span class="si">}</span><span class="s2"> for analysis&quot;</span><span class="p">)</span>
+
+    <span class="n">f</span><span class="o">.</span><span class="n">calculate_dG_to_common_core</span><span class="p">(</span>
+        <span class="n">engine</span><span class="o">=</span><span class="n">engine</span><span class="p">,</span>
+        <span class="n">analyze_traj_with</span><span class="o">=</span><span class="n">analyze_traj_with</span><span class="p">,</span>
+        <span class="n">num_proc</span><span class="o">=</span><span class="n">num_proc</span><span class="p">,</span>
+        <span class="n">nr_of_max_snapshots</span><span class="o">=</span><span class="n">max_snapshots</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">only_single_state</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">f</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ddG</span><span class="p">,</span> <span class="n">dddG</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">end_state_free_energy_difference</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;######################################&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Free energy to common core in kT&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;######################################&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Free energy difference: </span><span class="si">{</span><span class="n">ddG</span><span class="si">}</span><span class="s2"> [kT]&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Uncertanty: </span><span class="si">{</span><span class="n">dddG</span><span class="si">}</span><span class="s2"> [kT]&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;######################################&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;######################################&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">show_summary</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">show_summary</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ddG</span><span class="p">,</span> <span class="n">dddG</span><span class="p">,</span> <span class="n">f</span></div>
+
+
+<div class="viewcode-block" id="run_simulation"><a class="viewcode-back" href="../../api.html#transformato.utils.run_simulation">[docs]</a><span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="n">output_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;openMM&quot;</span><span class="p">,</span> <span class="n">only_vacuum</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Performs sampling given a list of directories with topology and parameter definitions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        output_files (list): List of directories with topology and parameter files in CHARMM format</span>
+<span class="sd">        engine (str, optional): The MD engines used to perform the sampling. Defaults to &quot;openMM&quot;.</span>
+<span class="sd">        only_vacuum (bool, optional): For debugging only. Defaults to False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">output_files</span><span class="p">:</span>
+        <span class="c1"># because path is object not string</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start sampling for: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">runfile</span> <span class="o">=</span> <span class="s2">&quot;simulation.sh&quot;</span>
+        <span class="n">calculate_solv_and_vac</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># 2 means yes, 1 only vacuum</span>
+        <span class="k">if</span> <span class="n">engine</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;CHARMM&quot;</span><span class="p">:</span>
+            <span class="n">runfile</span> <span class="o">=</span> <span class="s2">&quot;simulation_charmm.sh&quot;</span>
+        <span class="k">if</span> <span class="n">only_vacuum</span><span class="p">:</span>
+            <span class="n">calculate_solv_and_vac</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">exe</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;bash&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">runfile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">calculate_solv_and_vac</span><span class="p">)],</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">exe</span><span class="o">.</span><span class="n">check_returncode</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">exe</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Capture stderr&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">exe</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_bin_dir"><a class="viewcode-back" href="../../api.html#transformato.utils.get_bin_dir">[docs]</a><span class="k">def</span> <span class="nf">get_bin_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Returns the bin directory of this package&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;bin&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_toppar_dir"><a class="viewcode-back" href="../../api.html#transformato.utils.get_toppar_dir">[docs]</a><span class="k">def</span> <span class="nf">get_toppar_dir</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Returns the bin directory of this package&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;toppar&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="map_lj_mutations_to_atom_idx"><a class="viewcode-back" href="../../api.html#transformato.utils.map_lj_mutations_to_atom_idx">[docs]</a><span class="k">def</span> <span class="nf">map_lj_mutations_to_atom_idx</span><span class="p">(</span><span class="n">lj_mutations</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    map_lj_mutations_to_atom_idx</span>
+<span class="sd">    returns a mapping between the mutations and the atom idx</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lj_mutations : list of lj mutation objects</span>
+<span class="sd">        [description]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">lj</span> <span class="ow">in</span> <span class="n">lj_mutations</span><span class="p">:</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">lj</span><span class="o">.</span><span class="n">vdw_atom_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># this only works if a single atom is mutated</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">lj</span>
+
+    <span class="k">return</span> <span class="n">d</span></div>
+
+
+<span class="k">def</span> <span class="nf">print_mutations</span><span class="p">(</span><span class="n">mutation</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="c1"># TODO: this needs to be finished!</span>
+    <span class="k">if</span> <span class="s2">&quot;charge&quot;</span> <span class="ow">in</span> <span class="n">mutation</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">charge_mutation</span> <span class="ow">in</span> <span class="n">mutation</span><span class="p">[</span><span class="s2">&quot;charge&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Charge mutation&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Atoms to be mutated: </span><span class="si">{</span><span class="n">charge_mutation</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;hydrogen-lj&quot;</span> <span class="ow">in</span> <span class="n">mutation</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hydrogen LJ mutation&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Atoms to be mutated: </span><span class="si">{</span><span class="n">charge_mutation</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LJ mutation to default:&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;transform&quot;</span> <span class="ow">in</span> <span class="n">mutation</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">load_config_yaml</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">settingsMap</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nstep&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">None</span>
+        <span class="ow">or</span> <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nstdcd&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;nsteps or nstdcd is not defined in config file&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="s2">&quot;nstep&quot;</span><span class="p">]</span>
+            <span class="o">/</span> <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="s2">&quot;nstdcd&quot;</span><span class="p">]</span>
+            <span class="o">&lt;</span> <span class="mi">20</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;nsteps size and nstdcd size in config file does not match&quot;</span>
+            <span class="p">)</span>
+    <span class="c1"># making tlc caps always uppercase</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure1&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure1&quot;</span><span class="p">][</span>
+        <span class="s2">&quot;tlc&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure2&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure2&quot;</span><span class="p">][</span>
+        <span class="s2">&quot;tlc&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+    <span class="c1"># read workload manager from yaml</span>
+    <span class="k">if</span> <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;workload-manager&quot;</span><span class="p">)</span><span class="o">==</span><span class="kc">None</span><span class="p">:</span>
+        <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;workload-manager&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;SGE&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No workload-manager found in yaml config. Defaulting to SGE&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;workload-manager&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;SGE&quot;</span>
+        <span class="ow">or</span> <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;workload-manager&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;slurm&quot;</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Workload-Manager for output files set to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;workload-manager&quot;</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Unsupported workload manager specified in yaml: </span><span class="si">%s</span><span class="s2">. Valid options are SGE or slurm.&quot;</span><span class="o">%</span><span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;workload-manager&quot;</span><span class="p">])</span>
+
+    <span class="c1"># set the bin, data and analysis dir</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;bin_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_bin_dir</span><span class="p">()</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;analysis_dir_base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;data_dir_base&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">input_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">system_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">settingsMap</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">][</span><span class="s1">&#39;structure1&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">settingsMap</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">][</span><span class="s1">&#39;structure2&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">settingsMap</span><span class="p">[</span><span class="s1">&#39;simulation&#39;</span><span class="p">][</span><span class="s1">&#39;free-energy-type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;system_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">settingsMap</span><span class="p">[</span><span class="s1">&#39;analysis_dir_base&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">system_name</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;cluster_dir&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/data/local/</span><span class="si">{</span><span class="n">system_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure1&quot;</span><span class="p">][</span>
+        <span class="s2">&quot;charmm_gui_dir&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">settingsMap</span><span class="p">[</span><span class="s1">&#39;data_dir_base&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">settingsMap</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">][</span><span class="s1">&#39;structure1&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/&quot;</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure2&quot;</span><span class="p">][</span>
+        <span class="s2">&quot;charmm_gui_dir&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">settingsMap</span><span class="p">[</span><span class="s1">&#39;data_dir_base&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">settingsMap</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">][</span><span class="s1">&#39;structure2&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/&quot;</span>
+    <span class="n">settingsMap</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">system_name</span>
+    <span class="k">return</span> <span class="n">settingsMap</span>
+
+
+<span class="k">def</span> <span class="nf">get_structure_name</span><span class="p">(</span><span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">structure_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure1&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">structure_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;structure1&quot;</span>
+    <span class="k">elif</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure2&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">structure_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;structure2&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not finde structure entry for : </span><span class="si">{</span><span class="n">structure_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="psf_correction"><a class="viewcode-back" href="../../api.html#transformato.utils.psf_correction">[docs]</a><span class="k">def</span> <span class="nf">psf_correction</span><span class="p">(</span><span class="n">str_object</span><span class="p">:</span> <span class="n">StringIO</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Correcting the issue with 2 missing spaces in the waterbox psf files and replacing the !NGRP statement so its possible that CHARMM, CHARMM_OpenMM and OpenMM can handle the correspoing psf file&quot;&quot;&quot;</span>
+    <span class="n">str_object</span> <span class="o">=</span> <span class="n">str_object</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>  <span class="c1"># get the values as a long string</span>
+    <span class="n">new_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">correction_on</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">correction_groups</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">str_object</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>  <span class="c1"># split on newline charactar</span>
+        <span class="k">if</span> <span class="s2">&quot;!NATOM&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>  <span class="c1"># if !NATOM is found start correction mode</span>
+            <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">correction_on</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">continue</span>
+
+        <span class="k">elif</span> <span class="s2">&quot;!NBOND&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>  <span class="c1"># if !NBOND is found exit correction mode</span>
+            <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">correction_on</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">correction_on</span> <span class="o">==</span> <span class="kc">True</span>
+        <span class="p">):</span>  <span class="c1"># if in correction mode take the string, split on whitespace and put the values in a newly formated string</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span>  <span class="c1"># skip empty lines</span>
+                <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">:</span><span class="s2">6</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;14</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;0.00000&quot;</span><span class="p">,</span> <span class="s2">&quot;0.00000000000&quot;</span><span class="p">])</span>
+                <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">:</span><span class="s2">6</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;14</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">&quot;0.00000&quot;</span><span class="p">,</span> <span class="s2">&quot;0.00000000000&quot;</span><span class="p">])</span>
+                <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">:</span><span class="s2">8</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">:</span><span class="s2">6</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;14</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}{</span><span class="n">values</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="si">:</span><span class="s2">&gt;18</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error with the psf file: </span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="s2">&quot;!NGRP NST2&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>  <span class="c1"># if !NGRP is found start 2nd correction mode</span>
+            <span class="n">ngrp_sec</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">correction_groups</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">elif</span> <span class="s2">&quot;!MOLNT&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>  <span class="c1"># if !MOLNT is found exit 2nd correction mode</span>
+            <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">correction_groups</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">correction_groups</span> <span class="o">==</span> <span class="kc">True</span>
+        <span class="p">):</span>  <span class="c1"># if in correction mode remove the whole groups section</span>
+            <span class="k">if</span> <span class="n">ngrp_sec</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;         0         0 !NGRP NST2</span><span class="se">\n</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">ngrp_sec</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">new_str</span></div>
+
+
+<span class="k">def</span> <span class="nf">isnotebook</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">shell</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">if</span> <span class="n">shell</span> <span class="o">==</span> <span class="s2">&quot;ZMQInteractiveShell&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Jupyter notebook or qtconsole</span>
+        <span class="k">elif</span> <span class="n">shell</span> <span class="o">==</span> <span class="s2">&quot;TerminalInteractiveShell&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Terminal running IPython</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Other type (?)</span>
+    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Probably standard Python interpreter</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, Marcus Wieder. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
