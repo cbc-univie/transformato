@@ -27,12 +27,11 @@ class Restraint():
         ):
         """Class representing a restraint to apply to the system
 
-        Keywords:
-        selligand,selprotein: MDAnalysis selection strings
-        k: the force (=spring) constant
-        pdbpath: the path to the pdbfile underlying the topology analysis
-        structure: structure1 or structure2 from the yaml
-        shape: 'harmonic' or 'flat-bottom' (not yet implemented): Which potential to use for the energy function"""
+        Args:
+            selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings
+            k (int): the force (=spring) constant
+            pdbpath (str): the path to the pdbfile underlying the topology analysis
+            shape (str): 'harmonic' or 'flat-bottom' (not yet implemented): Which potential to use for the energy function"""
 
         self.shape=shape
         
@@ -50,8 +49,8 @@ class Restraint():
     def createForce(self,common_core_names):
         """Actually creates the force, after dismissing all idxs not in the common core from the molecule
         
-        Keywords:
-        common_core_names: Array - of the common core names"""
+        Args:
+            common_core_names (array[str]):  - Array with strings of the common core names. Usually provided by the restraint.yaml file."""
 
         
         # Only done for g1, as it is the ligand group - theres no common core for the protein
@@ -104,15 +103,21 @@ class Restraint():
         return self.force
     
     def applyForce(self,system):
-        """Applies the force to the openMM system"""
+        """Applies the force to the openMM system
+        
+        Args:
+            system (openMM.system): The openMM system to which to apply the Force
+        """
         system.addForce(self.force)
 
 def get3DDistance(pos1,pos2):
     """Takes two 3d positions as array and calculates the distance between them
     
-    Parameters:
-    
-    pos1,pos2: 3d-Array: Positions"""
+    Args:
+        pos1,pos2 (3D-Array): The positions of which to calculate the distances
+        
+    Returns:
+        distance (float): The distance between the two positions"""
     vec=pos1-pos2
     dis=np.linalg.norm(vec)
     return dis
@@ -120,19 +125,20 @@ def get3DDistance(pos1,pos2):
 def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
     """Takes the common core and generates n extremities at the furthest point
     
-    Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter
+        Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter
     
-    Keywords:
+    Args:
+        configuration (dict): the read-in restraints.yaml
+        pdbpath (str): path to local pdb used as base for the restraints
+        n_extremities (int): how many extremities to generate. Cannot exceed number of carbons in the ligand
+        sphinner (float): Distance to start of the sphlayer, default 0
+        sphouter (float): Distance to end of the sphlayer, default 5
+        
+    Returns:
+        sels (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer
+        """
+
     
-    configuration: the read-in restraints.yaml
-
-    pdbpath: path to local pdb used as base for the restraints
-
-    n_extremities: how many extremities to generate
-
-    sphinner: Distance to start of the sphlayer, default 0
-
-    sphouter: Distance to end of the sphlayer, default 5"""
     ligand_topology=MDAnalysis.Universe(pdbpath)
     tlc=configuration["system"]["structure"]["tlc"]
     ccs=configuration["system"]["structure"]["ccs"]
@@ -211,8 +217,12 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
 def CreateRestraintsFromConfig(configuration,pdbpath):
     """Takes the .yaml config and returns the specified restraints
     
-    Keywords:
-    config: the loaded yaml config (as returned by yaml.SafeLoader() or similar"""
+    Args:
+        config (dict): the loaded yaml config (as returned by yaml.safe_load() or similar
+        
+    Returns:
+        restraints (array): An array of Restraint instances
+    """
 
     tlc=configuration["system"]["structure"]["tlc"]
     
@@ -250,8 +260,11 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
 def write_restraints_yaml(path,system,config,current_step):
     """Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml
     
-    path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
-    system: the system object from state.py"""
+    Args:
+        path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
+        system: the system object from state.py
+        
+        """
     from transformato.mutate import cc_names_struc1, cc_names_struc2
     logger.debug(cc_names_struc1)
     restraints_dict={"intst":{},"system":{"structure":{"tlc":f"{system.tlc}"}},"simulation":{"restraints":f"{config['simulation']['restraints']}"}}
