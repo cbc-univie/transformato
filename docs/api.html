@@ -336,37 +336,54 @@ equilibrium states. J Chem Phys 129:124105, 2008.</p>
 <dt class="sig sig-object py" id="transformato.restraints.CreateRestraintsFromConfig">
 <span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">CreateRestraintsFromConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#CreateRestraintsFromConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.CreateRestraintsFromConfig" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the .yaml config and returns the specified restraints</p>
-<p>Keywords:
-config: the loaded yaml config (as returned by yaml.SafeLoader() or similar</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>config (dict): the loaded yaml config (as returned by yaml.safe_load() or similar</p>
+</dd>
+<dt>Returns:</dt><dd><p>restraints (array): An array of Restraint instances</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="transformato.restraints.GenerateExtremities">
 <span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">GenerateExtremities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_extremities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphinner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphouter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#GenerateExtremities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.GenerateExtremities" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the common core and generates n extremities at the furthest point</p>
-<p>Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter</p>
-<p>Keywords:</p>
-<p>configuration: the read-in restraints.yaml</p>
-<p>pdbpath: path to local pdb used as base for the restraints</p>
-<p>n_extremities: how many extremities to generate</p>
-<p>sphinner: Distance to start of the sphlayer, default 0</p>
-<p>sphouter: Distance to end of the sphlayer, default 5</p>
+<blockquote>
+<div><p>Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Args:</dt><dd><p>configuration (dict): the read-in restraints.yaml
+pdbpath (str): path to local pdb used as base for the restraints
+n_extremities (int): how many extremities to generate. Cannot exceed number of carbons in the ligand
+sphinner (float): Distance to start of the sphlayer, default 0
+sphouter (float): Distance to end of the sphlayer, default 5</p>
+</dd>
+<dt>Returns:</dt><dd><p>sels (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="transformato.restraints.get3DDistance">
 <span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">get3DDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#get3DDistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.get3DDistance" title="Permalink to this definition"></a></dt>
 <dd><p>Takes two 3d positions as array and calculates the distance between them</p>
-<p>Parameters:</p>
-<p>pos1,pos2: 3d-Array: Positions</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pos1,pos2 (3D-Array): The positions of which to calculate the distances</p>
+</dd>
+<dt>Returns:</dt><dd><p>distance (float): The distance between the two positions</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="transformato.restraints.write_restraints_yaml">
 <span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">write_restraints_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#write_restraints_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.write_restraints_yaml" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml</p>
-<p>path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
+<dl class="simple">
+<dt>Args:</dt><dd><p>path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
 system: the system object from state.py</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
