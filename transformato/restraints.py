@@ -127,7 +127,7 @@ def get3DDistance(pos1,pos2):
 def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
     """Takes the common core and generates n extremities at the furthest point
     
-        Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter.
+        Returns a selection string of the extremities with a sphlayer selecting type C from sphinner to sphouter.
         The algorithm works as follows:
 
         (All of these operations only operate on carbons in the common core)
