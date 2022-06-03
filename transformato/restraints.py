@@ -27,6 +27,8 @@ class Restraint():
         ):
         """Class representing a restraint to apply to the system
 
+        Intermediary step - openMM force objects are generated directly from this class and applied to the system.
+
         Args:
             selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings
             k (int): the force (=spring) constant
@@ -119,13 +121,20 @@ def get3DDistance(pos1,pos2):
     Returns:
         distance (float): The distance between the two positions"""
     vec=pos1-pos2
-    dis=np.linalg.norm(vec)
-    return dis
+    distance=np.linalg.norm(vec)
+    return distance
 
 def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
     """Takes the common core and generates n extremities at the furthest point
     
-        Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter
+        Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter.
+        The algorithm works as follows:
+
+        (All of these operations only operate on carbons in the common core)
+        1. Take the furthest C from the center of Mass
+        2. Take the furthest C from that C
+        3. Until len(extremity_cores)==n_extremities: Pick the C where the sum distance from all previous cores is greatest.
+        4. Generate selection strings for all extremity cores and return
     
     Args:
         configuration (dict): the read-in restraints.yaml
@@ -135,7 +144,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
         sphouter (float): Distance to end of the sphlayer, default 5
         
     Returns:
-        sels (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer
+        selection_strings (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer
         """
 
     
@@ -208,12 +217,12 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
 
 
     # Create selection strings to return
-    sels=[]
+    selection_strings=[]
     for core in extremity_cores:
-        sels.append(f"name {core.name} or ((sphlayer {sphinner} {sphouter} name {core.name} and resname {tlc}) and type C)")
+        selection_strings.append(f"name {core.name} or ((sphlayer {sphinner} {sphouter} name {core.name} and resname {tlc}) and type C)")
 
-    logger.debug(f"Created extremities with selectiobns: {sels}")
-    return sels
+    logger.debug(f"Created extremities with selectiobns: {selection_strings}")
+    return selection_strings
 def CreateRestraintsFromConfig(configuration,pdbpath):
     """Takes the .yaml config and returns the specified restraints
     
@@ -244,8 +253,8 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
         restraints.append(Restraint(f"resname {tlc} and type C" , f"(sphlayer 5 15 resname {tlc}) and name CA and protein" , pdbpath,k=kval))
     
     elif "auto" in restraint_command_string and mode=="extremities":
-        sels=GenerateExtremities(configuration,pdbpath,n_extremities)
-        for selection in sels:
+        selection_strings=GenerateExtremities(configuration,pdbpath,n_extremities)
+        for selection in selection_strings:
             restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,k=kval))
     if "manual" in restraint_command_string:
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
@@ -272,19 +281,19 @@ def write_restraints_yaml(path,system,config,current_step):
     if "scaling"  in config["simulation"]["restraints"]:
         
         if current_step==1:
-            lve=0
+            lambda_value_scaling=0
         elif current_step==2:
-            lve=0.25
+            lambda_value_scaling=0.25
         elif current_step==3:
-            lve=0.5
+            lambda_value_scaling=0.5
         elif current_step==4:
-            lve=0.75
+            lambda_value_scaling=0.75
         else:
-            lve=1
+            lambda_value_scaling=1
     else:
-        lve=1
+        lambda_value_scaling=1
 
-    restraints_dict["intst"]["scaling"]=lve
+    restraints_dict["intst"]["scaling"]=lambda_value_scaling
     if "manual" in config["simulation"]["restraints"]:
         restraints_dict["simulation"]["manualrestraints"]=config["simulation"]["manualrestraints"]
     if system.structure=="structure1":
@@ -299,16 +308,3 @@ def write_restraints_yaml(path,system,config,current_step):
         resyaml.write(output)
         resyaml.close()
     
-# Testing when running as main script
-if __name__=="__main__":
-    print("Initialised as main program - runing unit tests on data/2OJ9")
-    
-
-    # generate a limited config for testing purposes
-    configuration={"simulation":{},"system":{"structure1":{},"structure2":{}}}
-    configuration["simulation"]["restraints"]="auto"
-    configuration["system"]["structure1"]["tlc"]="BMI"
-    configuration["system"]["structure2"]["tlc"]="UNK"
-    restraintlist=CreateRestraintsFromConfig(configuration,"../data/2OJ9-original/complex/openmm/step3_input.pdb")
-    for restraint in restraintlist:
-        restraint.createForce(common_core_idxs=[4824,4825,4826])
