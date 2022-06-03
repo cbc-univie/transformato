@@ -10,9 +10,10 @@ Welcome to transformato's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   getting_started
+   Installation
+   System_Setup
    api
-   test
+   
 
 
 
