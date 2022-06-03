@@ -1,3 +1,4 @@
+from ast import Raise
 import logging
 import os
 import re
@@ -233,24 +234,14 @@ class SystemStructure(object):
             psf = pm.charmm.CharmmPsfFile(psf_file_path)
             coord = pm.charmm.CharmmCrdFile(crd_file_path)
             psf.coordinates = coord.coordinates
-            # extract only ligand to generate vacuum system
 
-            # g = psf.groups
-            # frame_idx = []
-            # frame_frame = []
-            # for atom in psf.atoms:
-            #     if hasattr(atom, "frame"):
-            #         frame_idx.append(atom.idx)
-            #         frame_frame.append(atom.frame)
+            for atom in psf.atoms:
+                if hasattr(atom, "frame"):
+                    raise NotImplementedError(
+                        "Currently lonepairs are not supported for rsfe calculations"
+                    )
 
-            psf = psf[
-                f":{self.tlc}"
-            ]  # most important part, the rest is only because parmed is loosing the immportant groups information
-
-            # psf.groups = g
-            # for atom in psf.atoms:
-            #     if atom.idx in frame_idx:
-            #         atom.frame = frame_frame[frame_idx.index(atom.idx)]
+            psf = psf[f":{self.tlc}"]
 
         else:
             psf_file_name = configuration["system"][self.structure][env][
