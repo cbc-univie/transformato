@@ -54,8 +54,11 @@ extensions = [
 
 autosummary_generate = True
 napoleon_google_docstring = True
-napoleon_use_param = False
+napoleon_use_param = True
 napoleon_use_ivar = True
+napoleon_use_keyword = True
+napoleon_use_rtype = True
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
