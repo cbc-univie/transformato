@@ -8,15 +8,46 @@ Getting debug information
 
 For the simulation:
 
-- in the output file of your worload manager (e.g. `slurm-812311.out`)
-- for the simulation: in `/intstate*/complex_out.log` or `/intstate*/waterbox_out.log` respectively
++ in the output file of your worload manager (e.g. `slurm-812311.out`)
+
++ for the simulation: in `/intstate*/complex_out.log` or `/intstate*/waterbox_out.log` respectively
 
 For the analysis:
 
-- in the output file you specify when running `analysis.py`, typically some form of `analysis_*.out` 
++ in the output file you specify when running `analysis.py`, typically some form of `analysis_*.out` 
 
 Error messages and common causes:
 ####################################
+
+
+Errors during system setup:
+******************************
+
+.. code-block:: python
+
+    load_config_yaml(config, input_dir, output_dir)
+         except yaml.YAMLError as exc:
+             print(exc)
+    if (     settingsMap["simulation"]["parameters"].get("nstep") == None
+         or settingsMap["simulation"]["parameters"].get("nstdcd") == None
+     ):
+         raise KeyError("nsteps or nstdcd is not defined in config file")
+    else:
+
+    UnboundLocalError: local variable 'settingsMap' referenced before assignment
+
+This usually means that there is a typo in your yaml file. Remember that yaml requires a space between colon and data!
+
+.. code-block:: python
+
+    RuntimeError: Charge compensation failed. Introducing non integer total charge: -0.584000000000001. 
+    Target total charge: 0.
+
+This can have a number of root causes. Ensure that:
+
+#. your dummy regions are sensible
+#. your terminal X is where it should be
+#. your structures do not require transformato to create new dummy atoms. Put the structure with more atoms first.
 
 
 Errors during simulation:
