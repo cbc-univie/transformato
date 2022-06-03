@@ -1099,7 +1099,7 @@ class ProposeMutationRoute(object):
             # idx = atom.idx - self.offset
             idx = atom.idx
             if idx not in cc_idx:
-                if atom.name.find("H") == False and idx not in list_termin_dummy_atoms:
+                if atom.type == "H" and idx not in list_termin_dummy_atoms:
                     hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
                 logger.info(
