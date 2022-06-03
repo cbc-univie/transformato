@@ -125,13 +125,13 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>configuration</strong> (<em>dict</em>) – Configuration file.</p></li>
-<li><p><strong>name</strong> (<em>str, optional</em>) – The name of the system as deposited in the configuration file. Defaults to “methane”.</p></li>
-<li><p><strong>engine</strong> (<em>str, optional</em>) – The MD engine, either openMM or CHARMM. Defaults to “openMM”.</p></li>
-<li><p><strong>max_snapshots</strong> (<em>int, optional</em>) – Maximum number of snapshots per lambda window. Defaults to 300.</p></li>
-<li><p><strong>show_summary</strong> (<em>bool, optional</em>) – Plot the accumulated free energy estimate and overlap plot. Defaults to False.</p></li>
-<li><p><strong>different_path_for_dcd</strong> (<em>str, optional</em>) – For debugging purpose only. Defaults to “”.</p></li>
-<li><p><strong>only_single_state</strong> (<em>str, optional</em>) – For debugging purpose only. Defaults to “”.</p></li>
-<li><p><strong>analyze_traj_with</strong> (<em>str,optional</em>) – Select package for loading trajectories (either mdanalysis or mdtraj). Defaults to mdtraj.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the system as deposited in the configuration file. Defaults to “methane”.</p></li>
+<li><p><strong>engine</strong> (<em>str</em><em>, </em><em>optional</em>) – The MD engine, either openMM or CHARMM. Defaults to “openMM”.</p></li>
+<li><p><strong>max_snapshots</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of snapshots per lambda window. Defaults to 300.</p></li>
+<li><p><strong>show_summary</strong> (<em>bool</em><em>, </em><em>optional</em>) – Plot the accumulated free energy estimate and overlap plot. Defaults to False.</p></li>
+<li><p><strong>different_path_for_dcd</strong> (<em>str</em><em>, </em><em>optional</em>) – For debugging purpose only. Defaults to “”.</p></li>
+<li><p><strong>only_single_state</strong> (<em>str</em><em>, </em><em>optional</em>) – For debugging purpose only. Defaults to “”.</p></li>
+<li><p><strong>analyze_traj_with</strong> (<em>str</em><em>,</em><em>optional</em>) – Select package for loading trajectories (either mdanalysis or mdtraj). Defaults to mdtraj.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -157,8 +157,8 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>output_files</strong> (<em>list</em>) – List of directories with topology and parameter files in CHARMM format</p></li>
-<li><p><strong>engine</strong> (<em>str, optional</em>) – The MD engines used to perform the sampling. Defaults to “openMM”.</p></li>
-<li><p><strong>only_vacuum</strong> (<em>bool, optional</em>) – For debugging only. Defaults to False.</p></li>
+<li><p><strong>engine</strong> (<em>str</em><em>, </em><em>optional</em>) – The MD engines used to perform the sampling. Defaults to “openMM”.</p></li>
+<li><p><strong>only_vacuum</strong> (<em>bool</em><em>, </em><em>optional</em>) – For debugging only. Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -185,13 +185,13 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>configuration</strong> (<em>dict</em>) – A configuration dictionary.</p></li>
-<li><p><strong>i</strong> (<em>[type]</em>) – IntermediateState instance</p></li>
+<li><p><strong>i</strong> (<em>[</em><em>type</em><em>]</em>) – IntermediateState instance</p></li>
 <li><p><strong>mutation_list</strong> (<em>list</em>) – list of mutation objects</p></li>
-<li><p><strong>list_of_heavy_atoms_to_be_mutated</strong> (<em>list, optional</em>) – A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].</p></li>
-<li><p><strong>nr_of_mutation_steps_charge</strong> (<em>int, optional</em>) – Nr of steps to turne of the charges. Defaults to 5.</p></li>
-<li><p><strong>nr_of_mutation_steps_lj_of_hydrogens</strong> (<em>int, optional</em>) – Nr of steps to turne of lj of hydrogens. Only needed for systems with many hydrogens in dummy region</p></li>
-<li><p><strong>nr_of_mutation_steps_lj_of_heavy_atoms</strong> (<em>int, optional</em>) – Nr of steps to turne of the lj of heavy atoms</p></li>
-<li><p><strong>nr_of_mutation_steps_cc</strong> (<em>int, optional</em>) – Nr of steps to interpolate between the common core parameters. Defaults to 5.</p></li>
+<li><p><strong>list_of_heavy_atoms_to_be_mutated</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].</p></li>
+<li><p><strong>nr_of_mutation_steps_charge</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of the charges. Defaults to 5.</p></li>
+<li><p><strong>nr_of_mutation_steps_lj_of_hydrogens</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of lj of hydrogens. Only needed for systems with many hydrogens in dummy region</p></li>
+<li><p><strong>nr_of_mutation_steps_lj_of_heavy_atoms</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of the lj of heavy atoms</p></li>
+<li><p><strong>nr_of_mutation_steps_cc</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to interpolate between the common core parameters. Defaults to 5.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -215,7 +215,7 @@
 <dd><p>FreeEnergyCalculator [summary]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>object</strong> (<em>[type]</em>) – [description]</p>
+<dd class="field-odd"><p><strong>object</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -335,9 +335,9 @@ equilibrium states. J Chem Phys 129:124105, 2008.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>potential_energy</strong> (<em>simtk.unit of float</em>)</p></li>
-<li><p><strong>context</strong></p></li>
-<li><p><strong>ensamble</strong> (<em>NVT or NPT</em>)</p></li>
+<li><p><strong>potential_energy</strong> (<em>simtk.unit of float</em>) – </p></li>
+<li><p><strong>context</strong> – </p></li>
+<li><p><strong>ensamble</strong> (<em>NVT</em><em> or </em><em>NPT</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -404,7 +404,10 @@ The algorithm works as follows:</p>
 <dd><p>Takes two 3d positions as array and calculates the distance between them</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pos1,pos2</strong> (<em>3D-Array</em>) – The positions of which to calculate the distances</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos1</strong> (<em>3D-Array</em>) – The positions of which to calculate the distances</p></li>
+<li><p><strong>pos2</strong> (<em>3D-Array</em>) – The positions of which to calculate the distances</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The distance between the two positions</p>
