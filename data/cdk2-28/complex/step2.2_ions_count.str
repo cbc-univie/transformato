@@ -1,0 +1,24 @@
+* Number of each ion structure, as chosen by user;
+* Usage: stream step2_ions_count.str index
+*
+
+if @?IN1 .eq. 0 stop ! ABNORMAL TERMINATION: missing index
+
+set isusercation = 0
+set isuseranion  = 0
+if @IN1 .eq. 1 set pos = POT
+if @IN1 .eq. 1 set neg = CLA
+if @IN1 .eq. 1 set poscharge = 1
+if @IN1 .eq. 1 set negcharge = 1
+if @IN1 .eq. 1 set posval = 1
+if @IN1 .eq. 1 set negval = 1
+if @IN1 .eq. 1 set conc = 0.15
+if @IN1 .eq. 1 set natompos = 1
+if @IN1 .eq. 1 set natomneg = 1
+if @IN1 .eq. 1 set isusercation = 0
+if @IN1 .eq. 1 set isuseranion  = 0
+
+
+set neutral_index = 1
+set niontypes = 1
+

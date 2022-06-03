@@ -1,0 +1,301 @@
+
+from calendar import c
+from multiprocessing.sharedctypes import Value
+from tabnanny import check
+import numpy as np
+
+import MDAnalysis
+import yaml
+import logging
+
+# Load necessary openmm facilities
+from simtk.unit import *
+from simtk.openmm import *
+from simtk.openmm.app import *
+
+logger=logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+class Restraint():
+    def __init__(
+        self,
+        selligand,
+        selprotein,
+        pdbpath,
+        k,
+        shape="harmonic"
+        ):
+        """Class representing a restraint to apply to the system
+
+        Keywords:
+        selligand,selprotein: MDAnalysis selection strings
+        k: the force (=spring) constant
+        pdbpath: the path to the pdbfile underlying the topology analysis
+        structure: structure1 or structure2 from the yaml
+        shape: 'harmonic' or 'flat-bottom' (not yet implemented): Which potential to use for the energy function"""
+
+        self.shape=shape
+        
+
+        if self.shape not in ["harmonic","flatbottom"]:
+            raise AttributeError(f"Invalid potential shape specified for restraint: {self.shape}")
+
+        self.topology=MDAnalysis.Universe(pdbpath)
+        self.g1=self.topology.select_atoms(selligand)
+        self.g2=self.topology.select_atoms(selprotein)
+
+        self.force_constant=k
+        self.shape=shape
+        
+    def createForce(self,common_core_names):
+        """Actually creates the force, after dismissing all idxs not in the common core from the molecule
+        
+        Keywords:
+        common_core_names: Array - of the common core names"""
+
+        
+        # Only done for g1, as it is the ligand group - theres no common core for the protein
+        logger.debug(f"Before CC check: {self.g1.names}")
+        
+        self.g1_in_cc=MDAnalysis.AtomGroup([],self.topology)
+        for atom in self.g1:
+            if atom.name in common_core_names:
+                self.g1_in_cc+=atom
+        logger.debug(f"After CC check: {self.g1_in_cc.names}")
+        self.common_core_idxs=[atom.id for atom in self.g1_in_cc]
+        
+        # convert MDAnalysis syntax into openMM usable idxs
+        self.g1_openmm=[int(id) for id in self.g1_in_cc.ix]
+        self.g2_openmm=[int(id) for id in self.g2.ix]
+
+        logger.debug(f"G1 openMM ix: {self.g1_openmm}\nG2 openMM ix: {self.g2_openmm}")
+
+        self.g1pos=self.g1_in_cc.center_of_mass()
+        self.g2pos=self.g2.center_of_mass()
+
+        self.initial_distance=np.linalg.norm(self.g1pos-self.g2pos)
+    
+
+        
+        
+        
+        if self.shape=="harmonic":
+            # create force with harmonic potential
+            self.force=CustomCentroidBondForce(2,"0.5*k*(distance(g1,g2)-r0)^2")
+            self.force.addPerBondParameter("k")
+            self.force.addPerBondParameter("r0")
+            self.force.addGroup(self.g1_openmm)
+            self.force.addGroup(self.g2_openmm)
+                
+            self.force.addBond([0,1],[self.force_constant,self.initial_distance/10])
+
+            
+        elif self.shape=="flatbottom":
+            raise NotImplementedError("Cant create flatbottom potential, as it has not yet been implemented")
+
+        logger.info(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}""")
+        logger.debug(f"""
+        Group 1 (COM: {self.g1pos}): {[self.g1_in_cc.names]}
+        Group 2 (COM: {self.g2pos}): {[self.g2.names]}""")
+
+        del self.topology # delete the enormous no longer needed universe asap
+        return self.force
+    def get_force(self):
+        return self.force
+    
+    def applyForce(self,system):
+        """Applies the force to the openMM system"""
+        system.addForce(self.force)
+
+def get3DDistance(pos1,pos2):
+    """Takes two 3d positions as array and calculates the distance between them
+    
+    Parameters:
+    
+    pos1,pos2: 3d-Array: Positions"""
+    vec=pos1-pos2
+    dis=np.linalg.norm(vec)
+    return dis
+
+def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
+    """Takes the common core and generates n extremities at the furthest point
+    
+    Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter
+    
+    Keywords:
+    
+    configuration: the read-in restraints.yaml
+
+    pdbpath: path to local pdb used as base for the restraints
+
+    n_extremities: how many extremities to generate
+
+    sphinner: Distance to start of the sphlayer, default 0
+
+    sphouter: Distance to end of the sphlayer, default 5"""
+    ligand_topology=MDAnalysis.Universe(pdbpath)
+    tlc=configuration["system"]["structure"]["tlc"]
+    ccs=configuration["system"]["structure"]["ccs"]
+    cc_names_selection=""
+
+    # limit ligand group to common core by way of selection string
+    
+    for ccname in ccs:
+        cc_names_selection+=f"name {ccname} or "
+    cc_names_selection=cc_names_selection[0:-4]
+    logger.debug (f"Common core selection string: {cc_names_selection}")
+    ligand_group=ligand_topology.select_atoms(f"resname {tlc} and type C and ({cc_names_selection})")
+    
+    
+    ligand_com=ligand_group.center_of_mass()
+    carbon_distances={}
+
+    if int(n_extremities)<2:
+        raise ValueError(f"Impossible value for generation of extremities: {n_extremities}")
+    if int(n_extremities)>len(ligand_group):
+        raise ValueError(f"Impossible to generate extremity restraints: too many restraints demanded ({n_extremities}) vs. carbons in common core {len(ligand_group)}")
+
+    # Algorithm to find extremities:
+    # Takes center of mass of common core. Finds furthest C from that
+    # For n=2: finds furthest C from the previous C
+    # For n=3: finds C, where the sum of distances to the previous furthest C is highest
+    # For n=n: finds C, where the sum of distances of all previously found C is highest
+
+    extremity_cores=[] # array containing the centers of extremity
+    # Find the furthest C in the common core as starting point
+    for carbon in ligand_group:
+        distance_from_com=get3DDistance(ligand_com,carbon.position)
+        carbon_distances[carbon.name]=distance_from_com
+
+    # Remove furthest C from group and add it to the extremity core
+    
+    
+    cs=sorted(carbon_distances,key=carbon_distances.get,reverse=True)
+    furthest_carbon=ligand_group.select_atoms(f"name {cs[0]}")[0]
+    ligand_group=ligand_group.select_atoms(f"not name {furthest_carbon.name}")
+    extremity_cores.append(furthest_carbon)
+
+    # For all other extremities - iterate over core distances, repeat process
+    
+    for i in range(2,int(n_extremities)+1):
+        logger.debug(f"Doing Extremity number {i}")
+
+        total_distances={}
+
+        for carbon in ligand_group:
+            total_distances[carbon.name]=0
+
+            for core in extremity_cores:
+                # Calculates the sum distance to all established cores
+                total_distances[carbon.name]+=get3DDistance(core.position,carbon.position)
+
+        # sort carbons by distances, get one with furthest distance, add to extremity_cores, remove it from ligand_group
+
+        cs=sorted(total_distances,key=total_distances.get,reverse=True)
+        resulting_carbon=ligand_group.select_atoms(f"name {cs[0]}")[0]
+        ligand_group=ligand_group.select_atoms(f"not name {resulting_carbon.name}")
+        extremity_cores.append(resulting_carbon)
+    
+    logger.info(f"Cores found for extremity_cores: {[carbon.name for carbon in extremity_cores]}")
+
+
+
+
+    # Create selection strings to return
+    sels=[]
+    for core in extremity_cores:
+        sels.append(f"name {core.name} or ((sphlayer {sphinner} {sphouter} name {core.name} and resname {tlc}) and type C)")
+
+    logger.debug(f"Created extremities with selectiobns: {sels}")
+    return sels
+def CreateRestraintsFromConfig(configuration,pdbpath):
+    """Takes the .yaml config and returns the specified restraints
+    
+    Keywords:
+    config: the loaded yaml config (as returned by yaml.SafeLoader() or similar"""
+
+    tlc=configuration["system"]["structure"]["tlc"]
+    
+    restraints=[]
+    # parse config arguments:
+    restraint_command_string=configuration["simulation"]["restraints"].split()
+    kval=3 #default k - value
+    mode="simple"
+    for arg in restraint_command_string:
+        if "k=" in arg:
+            kval=int(arg.split("=")[1])
+            kval=kval*configuration["intst"]["scaling"]
+        elif "extremities=" in arg:
+            mode="extremities"
+            n_extremities=int(arg.split("=")[1])
+
+    if "auto" in restraint_command_string and mode=="simple":
+        
+        restraints.append(Restraint(f"resname {tlc} and type C" , f"(sphlayer 5 15 resname {tlc}) and name CA and protein" , pdbpath,k=kval))
+    
+    elif "auto" in restraint_command_string and mode=="extremities":
+        sels=GenerateExtremities(configuration,pdbpath,n_extremities)
+        for selection in sels:
+            restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,k=kval))
+    if "manual" in restraint_command_string:
+        manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
+        for key in manual_restraint_list:
+            restraint=configuration["simulation"]["manualrestraints"][key]
+            restraints.append(Restraint(restraint["group1"],restraint["group2"],pdbpath,k=restraint["k"]))
+    
+
+    return restraints
+
+
+def write_restraints_yaml(path,system,config,current_step):
+    """Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml
+    
+    path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
+    system: the system object from state.py"""
+    from transformato.mutate import cc_names_struc1, cc_names_struc2
+    logger.debug(cc_names_struc1)
+    restraints_dict={"intst":{},"system":{"structure":{"tlc":f"{system.tlc}"}},"simulation":{"restraints":f"{config['simulation']['restraints']}"}}
+
+    if "scaling"  in config["simulation"]["restraints"]:
+        
+        if current_step==1:
+            lve=0
+        elif current_step==2:
+            lve=0.25
+        elif current_step==3:
+            lve=0.5
+        elif current_step==4:
+            lve=0.75
+        else:
+            lve=1
+    else:
+        lve=1
+
+    restraints_dict["intst"]["scaling"]=lve
+    if "manual" in config["simulation"]["restraints"]:
+        restraints_dict["simulation"]["manualrestraints"]=config["simulation"]["manualrestraints"]
+    if system.structure=="structure1":
+        restraints_dict["system"]["structure"]["ccs"]=cc_names_struc1
+    elif system.structure=="structure2":
+        restraints_dict["system"]["structure"]["ccs"]=cc_names_struc2
+    
+    
+
+    output=yaml.dump(restraints_dict)
+    with open(path,"w") as resyaml:
+        resyaml.write(output)
+        resyaml.close()
+    
+# Testing when running as main script
+if __name__=="__main__":
+    print("Initialised as main program - runing unit tests on data/2OJ9")
+    
+
+    # generate a limited config for testing purposes
+    configuration={"simulation":{},"system":{"structure1":{},"structure2":{}}}
+    configuration["simulation"]["restraints"]="auto"
+    configuration["system"]["structure1"]["tlc"]="BMI"
+    configuration["system"]["structure2"]["tlc"]="UNK"
+    restraintlist=CreateRestraintsFromConfig(configuration,"../data/2OJ9-original/complex/openmm/step3_input.pdb")
+    for restraint in restraintlist:
+        restraint.createForce(common_core_idxs=[4824,4825,4826])
