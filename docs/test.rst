@@ -1,4 +1,0 @@
-Test
-===============
-
-Visual Sphinx Test 

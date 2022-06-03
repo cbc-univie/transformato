@@ -5,10 +5,11 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Search &mdash; transformato  documentation</title>
+  <title>Installation &mdash; transformato  documentation</title>
   
 
   
@@ -25,7 +26,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/searchtools.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="#" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -64,7 +64,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="#" method="get">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -83,10 +83,6 @@
             
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
-<li class="toctree-l1"><a class="reference internal" href="System_Setup.html#automatic-restraints">Automatic Restraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="System_Setup.html#manual-restraints">Manual Restraints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
 
@@ -133,12 +129,14 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Search</li>
+      <li>Installation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
+            <a href="_sources/Installation.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
@@ -150,19 +148,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <noscript>
-  <div id="fallback" class="admonition warning">
-    <p class="last">
-      Please activate JavaScript to enable the search
-      functionality.
-    </p>
-  </div>
-  </noscript>
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>A working version of [conda/miniconda](<a class="reference external" href="https://docs.conda.io/en/latest/">https://docs.conda.io/en/latest/</a>)</p></li>
+<li><p>A working version of git</p></li>
+<li><p>A somewhat recent version of python</p></li>
+<li><p>A CUDA - capable device (locally or node). A CUDA device is not required to generate the intermediate states, but one is required to do simulations or analysises.</p></li>
+</ul>
+</section>
+<section id="getting-transformato">
+<h2>Getting transformato<a class="headerlink" href="#getting-transformato" title="Permalink to this headline">¶</a></h2>
+<p>The following assumes the use of a bash shell:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /directory/you/want/transformato/in
+git clone https://github.com/JohannesKarwou/transformato.git <span class="c1"># if you don&#39;t depend on features in development here - use the main repo</span>
+</pre></div>
+</div>
+<p>This should download transformato. Afterwards, do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> transformato
+python setup.py install
+</pre></div>
+</div>
+<p>which will register transformato with conda, create an environment called <cite>fep</cite>, and install dependencies.
+Now go to the environment <cite>fep</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate fep
+</pre></div>
+</div>
+<p>Now, run a python script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">transformato</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">transformato</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you output the current transformato version, then congratulations! You are now ready to use transformato.</p>
+</section>
+</section>
 
-  
-  <div id="search-results">
-  
-  </div>
 
            </div>
            
@@ -200,14 +222,7 @@
   
   
     
-  
-  <script type="text/javascript">
-    jQuery(function() { Search.loadIndex("searchindex.js"); });
-  </script>
-  
-  <script type="text/javascript" id="searchindexloader"></script>
    
-
 
 </body>
 </html>

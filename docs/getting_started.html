@@ -85,7 +85,14 @@
             
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-transformato">Getting transformato</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="test.html">Test</a></li>
 </ul>
@@ -154,7 +161,42 @@
             
   <section id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>This page details how to get started with transformato.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>A working version of [conda/miniconda](<a class="reference external" href="https://docs.conda.io/en/latest/">https://docs.conda.io/en/latest/</a>)</p></li>
+<li><p>A working version of git</p></li>
+<li><p>A somewhat recent version of python</p></li>
+<li><p>A CUDA - capable device (locally or node). A CUDA device is not required to generate the intermediate states, but one is required to do simulations or analysises.</p></li>
+</ul>
+</section>
+<section id="getting-transformato">
+<h3>Getting transformato<a class="headerlink" href="#getting-transformato" title="Permalink to this headline">¶</a></h3>
+<p>The following assumes the use of a bash shell:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /directory/you/want/transformato/in
+git clone https://github.com/JohannesKarwou/transformato.git <span class="c1"># if you don&#39;t depend on features in development here - use the main repo</span>
+</pre></div>
+</div>
+<p>This should download transformato. Afterwards, do:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> transformato
+python setup.py install
+</pre></div>
+</div>
+<p>which will register transformato with conda, create an environment called <cite>fep</cite>, and install dependencies.
+Now go to the environment <cite>fep</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate fep
+</pre></div>
+</div>
+<p>Now, run a python script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">transformato</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">transformato</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you output the current transformato version, then congratulations! You are now ready to use transformato.</p>
+</section>
+</section>
 </section>
 
 
