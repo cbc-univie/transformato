@@ -23,9 +23,9 @@ import transformato
 # -- Project information -----------------------------------------------------
 
 project = 'transformato'
-copyright = ("2019, Marcus Wieder. Project structure based on the "
+copyright = ("2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the "
              "Computational Molecular Science Python Cookiecutter version 1.1")
-author = 'Marcus Wieder'
+author = 'Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch'
 
 # The short X.Y version
 version = ''

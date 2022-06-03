@@ -1,15 +1,16 @@
 Installation
-#############
+==============
 
 Prerequisites
-****************
-- A working version of [conda/miniconda](https://docs.conda.io/en/latest/)
-- A working version of git
-- A somewhat recent version of python
-- A CUDA - capable device (locally or node). A CUDA device is not required to generate the intermediate states, but one is required to do simulations or analysises.
+##############
+
+#. A working version of `conda/miniconda <https://docs.conda.io/en/latest/>`_ 
+#. A working version of git
+#. A somewhat recent version of python
+#. A CUDA - capable device (locally or node). A CUDA device is not required to generate the intermediate states, but one is required to do simulations or analysises.
 
 Getting transformato
-***********************
+#########################
 
 The following assumes the use of a bash shell:
 
