@@ -1,71 +1,36 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>System Setup &mdash; transformato  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Running Simulations" href="Running_Simulation.html" />
     <link rel="prev" title="Installation" href="Installation.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> transformato
-          
-
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -73,17 +38,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
@@ -103,79 +58,41 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">transformato</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
       <li>System Setup</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/System_Setup.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="system-setup">
-<h1>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this headline">¶</a></h1>
+<h1>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this heading"></a></h1>
 <p>After successfully installing transformato, you can now setup your first system. For this, you require three items:</p>
-<ol class="arabic simple">
+<ul class="simple">
 <li><p>The output of <a class="reference external" href="http://www.charmm-gui.org/">CHARMM-GUI</a> ‘s solution builder for your ligand - solvated once at its position within the protein-ligand complex and once in a pure waterbox.</p></li>
 <li><p>A <cite>config.yaml</cite> which describes your general simulation parameters.</p></li>
 <li><p>A <cite>submit.ipynb</cite> (or just standard .py) that generates your intermediate states.</p></li>
-</ol>
+</ul>
 <p>Finally, to actually analyze your simulations and calculate the resulting free energies, you’ll need an <cite>analysis.py</cite> script - this is covered on the <em>Analysis</em> page.</p>
 <section id="file-structure-and-supplying-your-protein-ligand">
-<h2>File structure and supplying your protein/ligand<a class="headerlink" href="#file-structure-and-supplying-your-protein-ligand" title="Permalink to this headline">¶</a></h2>
+<h2>File structure and supplying your protein/ligand<a class="headerlink" href="#file-structure-and-supplying-your-protein-ligand" title="Permalink to this heading"></a></h2>
 <p>Please refer to this convenient and practical flowchart to understand transformato’s folder structure:</p>
 <img alt="transformato-tree" src="_images/transformato-tree.svg" /><p>While this may look complicated, all you need to do is to:</p>
 <ol class="arabic simple">
@@ -188,11 +105,11 @@
 <p>You`ll create the remaining files down below.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The submit.ipynb file is covered in <a class="reference internal" href="Running_Simulation.html#rst-submitfiledesc"><span class="std std-ref">The submit.ipynb</span></a></p>
+<p>The submit.ipynb file is covered in <a class="reference internal" href="Running_Simulation.html"><span class="doc">Running Simulations</span></a></p>
 </div>
 </section>
 <section id="the-config-yaml">
-<h2>The config.yaml<a class="headerlink" href="#the-config-yaml" title="Permalink to this headline">¶</a></h2>
+<h2>The config.yaml<a class="headerlink" href="#the-config-yaml" title="Permalink to this heading"></a></h2>
 <p>The config.yaml is perhaps the most important file you’ll create. It contains:</p>
 <ol class="arabic simple">
 <li><p>Definitions of your structures and under which name to find them</p></li>
@@ -201,7 +118,7 @@
 </ol>
 </section>
 <section id="restraints">
-<h2>Restraints<a class="headerlink" href="#restraints" title="Permalink to this headline">¶</a></h2>
+<h2>Restraints<a class="headerlink" href="#restraints" title="Permalink to this heading"></a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The documentation here is not yet implemented and more aspirational/for development branches</p>
@@ -209,7 +126,7 @@
 <p><strong>OpenMM only</strong></p>
 <p>Transformato supports two types of restraints: automatic and manual restraints.</p>
 <section id="automatic-restraints">
-<h3>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this headline">¶</a></h3>
+<h3>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this heading"></a></h3>
 <p>To activate automatic restraints for your ligand, add</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">restraints</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;auto&quot;</span><span class="w"></span>
@@ -259,7 +176,7 @@ These have the following structure:</p>
 <p>It is not recommended to manually edit these files, as they are automatically created for each intermediate state.</p>
 </section>
 <section id="manual-restraints">
-<h3>Manual Restraints<a class="headerlink" href="#manual-restraints" title="Permalink to this headline">¶</a></h3>
+<h3>Manual Restraints<a class="headerlink" href="#manual-restraints" title="Permalink to this heading"></a></h3>
 <p>To activate manual restraints for your ligand, add</p>
 <p><em>config.yaml</em></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span><span class="w"></span>
@@ -317,51 +234,33 @@ These have the following structure:</p>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="Running_Simulation.html" class="btn btn-neutral float-right" title="Running Simulations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Running_Simulation.html" class="btn btn-neutral float-right" title="Running Simulations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1
-
-    </p>
+    <p>&#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

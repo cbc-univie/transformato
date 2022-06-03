@@ -5,9 +5,9 @@ System Setup
 After successfully installing transformato, you can now setup your first system. For this, you require three items:
 
 
-#. The output of `CHARMM-GUI <http://www.charmm-gui.org/>`_ 's solution builder for your ligand - solvated once at its position within the protein-ligand complex and once in a pure waterbox.
-#. A `config.yaml` which describes your general simulation parameters.
-#. A `submit.ipynb` (or just standard .py) that generates your intermediate states.
++ The output of `CHARMM-GUI <http://www.charmm-gui.org/>`_ 's solution builder for your ligand - solvated once at its position within the protein-ligand complex and once in a pure waterbox.
++ A `config.yaml` which describes your general simulation parameters.
++ A `submit.ipynb` (or just standard .py) that generates your intermediate states.
 
 
 
@@ -32,7 +32,7 @@ While this may look complicated, all you need to do is to:
 You`ll create the remaining files down below.
 
 .. note:: 
-    The submit.ipynb file is covered in :ref:`rst_submitfiledesc`
+    The submit.ipynb file is covered in :doc:`Running_Simulation`
 
 The config.yaml
 #################
