@@ -265,6 +265,14 @@ def test_lonepairs_in_dummy_region():
     s1_to_s2.propose_common_core()
     s1_to_s2.finish_common_core()
 
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    print(mutation_list.keys())
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
+
 @pytest.mark.rbfe
 @pytest.mark.requires_parmed_supporting_lp
 @pytest.mark.skipif(
@@ -298,4 +306,9 @@ def test_lonepairs_in_common_core():
     s1_to_s2.finish_common_core()
 
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-
+    print(mutation_list.keys())
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
