@@ -6,7 +6,7 @@
 Welcome to transformato's documentation!
 =========================================================
 
-:code:`transformato` is a lightweight implementation of the Boresch/Braunsfeld Serial-Atom-Insertion Common-Core Approach to relative binding/solvation free energy calculations.
+:code:`transformato` is a lightweight implementation of the Boresch/Braunsfeld Serial-Atom-Insertion [#f1]_ Common-Core Approach to relative binding/solvation free energy calculations [#f2]_.
 
 .. toctree::
    :maxdepth: 2
@@ -28,8 +28,8 @@ Welcome to transformato's documentation!
 
 .. rubric:: References
 
-#. Wieder, M., Fleck, M., Braunsfeld, B., and Boresch, S. (2022). *Alchemical free energy simulations without speed limits. A generic framework to calculate free energy differences independent of the underlying molecular dynamics program.* J. Comput. Chem. 43, 1151–1160
-#. Karwounopoulos, J., Wieder, M., and Boresch, S. (2022). *Relative binding free energy calculations with Transformato: a molecular dynamics engine-independent tool.* frontiers, *submitted*.
+.. [#f1] Wieder, M., Fleck, M., Braunsfeld, B., and Boresch, S. (2022). *Alchemical free energy simulations without speed limits. A generic framework to calculate free energy differences independent of the underlying molecular dynamics program.* J. Comput. Chem. 43, 1151–1160
+.. [#f2] Karwounopoulos, J., Wieder, M., and Boresch, S. (2022). *Relative binding free energy calculations with Transformato: a molecular dynamics engine-independent tool.* frontiers, *submitted*.
 
 
 
