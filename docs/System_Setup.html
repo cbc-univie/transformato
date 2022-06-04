@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>System Setup &mdash; transformato  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -83,7 +82,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="system-setup">
+  <div class="section" id="system-setup">
 <h1>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this heading"></a></h1>
 <p>After successfully installing transformato, you can now setup your first system. For this, you require three items:</p>
 <ul class="simple">
@@ -92,7 +91,7 @@
 <li><p>A <cite>submit.ipynb</cite> (or just standard .py) that generates your intermediate states.</p></li>
 </ul>
 <p>Finally, to actually analyze your simulations and calculate the resulting free energies, you’ll need an <cite>analysis.py</cite> script - this is covered on the <em>Analysis</em> page.</p>
-<section id="file-structure-and-supplying-your-protein-ligand">
+<div class="section" id="file-structure-and-supplying-your-protein-ligand">
 <h2>File structure and supplying your protein/ligand<a class="headerlink" href="#file-structure-and-supplying-your-protein-ligand" title="Permalink to this heading"></a></h2>
 <p>Please refer to this convenient and practical flowchart to understand transformato’s folder structure:</p>
 <img alt="transformato-tree" src="_images/transformato-tree.svg" /><p>While this may look complicated, all you need to do is to:</p>
@@ -108,8 +107,8 @@
 <p class="admonition-title">Note</p>
 <p>The submit.ipynb file is covered in <a class="reference internal" href="Running_Simulation.html"><span class="doc">Running Simulations</span></a></p>
 </div>
-</section>
-<section id="the-config-yaml">
+</div>
+<div class="section" id="the-config-yaml">
 <h2>The config.yaml<a class="headerlink" href="#the-config-yaml" title="Permalink to this heading"></a></h2>
 <p>The config.yaml is perhaps the most important file you’ll create. It contains:</p>
 <ol class="arabic simple">
@@ -117,8 +116,8 @@
 <li><p>Simulation parameters, such as simulation step and length</p></li>
 <li><p>Eventual restraints, both automatic and manual</p></li>
 </ol>
-</section>
-<section id="restraints">
+</div>
+<div class="section" id="restraints">
 <h2>Restraints<a class="headerlink" href="#restraints" title="Permalink to this heading"></a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -126,7 +125,7 @@
 </div>
 <p><strong>OpenMM only</strong></p>
 <p>Transformato supports two types of restraints: automatic and manual restraints.</p>
-<section id="automatic-restraints">
+<div class="section" id="automatic-restraints">
 <h3>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this heading"></a></h3>
 <p>To activate automatic restraints for your ligand, add</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span><span class="w"></span>
@@ -175,8 +174,8 @@ These have the following structure:</p>
 </pre></div>
 </div>
 <p>It is not recommended to manually edit these files, as they are automatically created for each intermediate state.</p>
-</section>
-<section id="manual-restraints">
+</div>
+<div class="section" id="manual-restraints">
 <h3>Manual Restraints<a class="headerlink" href="#manual-restraints" title="Permalink to this heading"></a></h3>
 <p>To activate manual restraints for your ligand, add</p>
 <p><em>config.yaml</em></p>
@@ -229,9 +228,9 @@ These have the following structure:</p>
 </dd>
 </dl>
 <p>As with automatic restraints, even manually specified restraints will never act on atoms not in the common core, as this would lead to nonsensical energy calculations.</p>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
            </div>
