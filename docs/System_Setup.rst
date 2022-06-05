@@ -10,6 +10,8 @@ After successfully installing transformato, you can now setup your first system.
 + A `submit.ipynb` (or just standard .py) that generates your intermediate states.
 
 
+.. hint:: 
+    It is not strictly necessary to use CHARMM - GUI to solvate your system. You may build and solvate your system yourself. In this case however, you will also need to supply proper parameter files along with input scripts.
 
 Finally, to actually analyze your simulations and calculate the resulting free energies, you'll need an `analysis.py` script - this is covered on the *Analysis* page.
 
@@ -50,9 +52,11 @@ The config.yaml is perhaps the most important file you'll create. It contains:
 Restraints
 ###########
 
-.. warning:: The documentation here is not yet implemented and more aspirational/for development branches
+.. warning:: The documentation here is not yet implemented in the main branch yet and more aspirational/for development branches
 
-**OpenMM only**
+.. danger:: This section only applies if you are running your simulations with openMM. Should you run your simulations using CHARMM, it will not apply the restraints **and give no warning about it**.
+
+
 
 Transformato supports two types of restraints: automatic and manual restraints.
 
@@ -70,6 +74,8 @@ to your `config.yaml`. This wil restrain your ligand in its original position us
 
 You may specify further keywords:
 
+.. rubric:: Options for automatic restraints
+    
 restraints:
     :code:`auto`
         Required. Tells transformato to look for and apply automatic restraints
@@ -146,7 +152,7 @@ to your config.yaml. Below, you may now specify an arbitrary number of restraint
 
 You may define as many restraints as you like:
 
-Code example with many restraints:
+Code example with multiple restraints:
 
 *config.yaml*
 
@@ -167,7 +173,11 @@ Code example with many restraints:
                 shape: "harmonic"
                 group1: "resname LIG and name C14"
                 group2: "sphlayer 5 15 name C14 and protein and type CA"
-                    
+
+Note that the individual restraints all need to have distinct names (restraint1, restraint2 etc.). It is common that they are numbered, but not required - they simply need to adhere to the yaml syntax.
+
+.. rubric:: Options for manual restraints
+
 manualrestraints
     :code:`shape="harmonic" ["harmonic","flatbottom"]'`
         Shape of the energy potential. Default is "harmonic", "flatbottom" is not yet implemented
@@ -175,5 +185,6 @@ manualrestraints
         Defines which Common Core atoms are members of group1 or group2. Please note that group1 **must** be the ligand, and group2 the protein.
     :code:`k=[int]`
         *(optional):* Defines the harmonic force constant. Default is 3.
+
 
 As with automatic restraints, even manually specified restraints will never act on atoms not in the common core, as this would lead to nonsensical energy calculations.
