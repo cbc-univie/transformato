@@ -41,6 +41,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatistransformato.html">What is transformato?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">System Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#file-structure-and-supplying-your-protein-ligand">File structure and supplying your protein/ligand</a></li>
@@ -53,7 +54,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
@@ -90,6 +91,10 @@
 <li><p>A <cite>config.yaml</cite> which describes your general simulation parameters.</p></li>
 <li><p>A <cite>submit.ipynb</cite> (or just standard .py) that generates your intermediate states.</p></li>
 </ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>It is not strictly necessary to use CHARMM - GUI to solvate your system. You may build and solvate your system yourself. In this case however, you will also need to supply proper parameter files along with input scripts.</p>
+</div>
 <p>Finally, to actually analyze your simulations and calculate the resulting free energies, you’ll need an <cite>analysis.py</cite> script - this is covered on the <em>Analysis</em> page.</p>
 <div class="section" id="file-structure-and-supplying-your-protein-ligand">
 <h2>File structure and supplying your protein/ligand<a class="headerlink" href="#file-structure-and-supplying-your-protein-ligand" title="Permalink to this heading"></a></h2>
@@ -121,9 +126,12 @@
 <h2>Restraints<a class="headerlink" href="#restraints" title="Permalink to this heading"></a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The documentation here is not yet implemented and more aspirational/for development branches</p>
+<p>The documentation here is not yet implemented in the main branch yet and more aspirational/for development branches</p>
 </div>
-<p><strong>OpenMM only</strong></p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>This section only applies if you are running your simulations with openMM. Should you run your simulations using CHARMM, it will not apply the restraints <strong>and give no warning about it</strong>.</p>
+</div>
 <p>Transformato supports two types of restraints: automatic and manual restraints.</p>
 <div class="section" id="automatic-restraints">
 <h3>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this heading"></a></h3>
@@ -134,6 +142,7 @@
 </div>
 <p>to your <cite>config.yaml</cite>. This wil restrain your ligand in its original position using a harmonic potential of the form <span class="math notranslate nohighlight">\(E=0.5k \cdot (r-r_0)²\)</span> (where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance, <span class="math notranslate nohighlight">\(r_0\)</span> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant), applied within the centers of mass of your ligand and the surrounding protein structure, keeping these two vaguely fixed.</p>
 <p>You may specify further keywords:</p>
+<p class="rubric">Options for automatic restraints</p>
 <dl class="simple">
 <dt>restraints:</dt><dd><dl class="simple">
 <dt><code class="code docutils literal notranslate"><span class="pre">auto</span></code></dt><dd><p>Required. Tells transformato to look for and apply automatic restraints</p>
@@ -197,7 +206,7 @@ These have the following structure:</p>
 </pre></div>
 </div>
 <p>You may define as many restraints as you like:</p>
-<p>Code example with many restraints:</p>
+<p>Code example with multiple restraints:</p>
 <p><em>config.yaml</em></p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">restraints</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;manual&quot;</span><span class="w"></span>
@@ -216,6 +225,8 @@ These have the following structure:</p>
 <span class="w">            </span><span class="nt">group2</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sphlayer</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">15</span><span class="nv"> </span><span class="s">name</span><span class="nv"> </span><span class="s">C14</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">protein</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">CA&quot;</span><span class="w"></span>
 </pre></div>
 </div>
+<p>Note that the individual restraints all need to have distinct names (restraint1, restraint2 etc.). It is common that they are numbered, but not required - they simply need to adhere to the yaml syntax.</p>
+<p class="rubric">Options for manual restraints</p>
 <dl class="simple">
 <dt>manualrestraints</dt><dd><dl class="simple">
 <dt><code class="code docutils literal notranslate"><span class="pre">shape=&quot;harmonic&quot;</span> <span class="pre">[&quot;harmonic&quot;,&quot;flatbottom&quot;]'</span></code></dt><dd><p>Shape of the energy potential. Default is “harmonic”, “flatbottom” is not yet implemented</p>

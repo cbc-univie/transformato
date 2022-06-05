@@ -1,8 +1,8 @@
-Analysis
-=========
+Trajectory Analysis
+=====================
 
-In theory, you could run your analysis directly in :code:`submit.ipynb`, after the code is run. However, we instead recommend putting it into
-a separate file (usually called :code:`analysis.py``) that can be aliased and ran by shell/script commands.
+In theory, you could run your analysis directly in your :code:`submit.ipynb`, after the simulations are done. However, we instead recommend putting it into
+a separate file (usually called :code:`analysis.py``) that can be aliased and run by shell/script commands.
 
 .. note::
     Analysis, just like simulation, takes a decent amount of time and computational resources, depending on the number of intermediate states.
@@ -57,14 +57,12 @@ To further simplify matters, create an executable :code:`analysis.sh` file conta
     #SBATCH -d afterany:179572  
     #SBATCH --exclude="n00[01-10]" 
     
-    # source ~/miniconda3/etc/profile.d/conda.sh 
-    # conda activate fep 
     
     folder=$1 
-    
+    config=$2
 
     
-    time python analysis.py ./${folder}/ ./../  ./YOUR-CONFIG.yaml > ./analysis_${folder}.out 
+    time python analysis.py ./${folder}/ ./../  ${config} > ./analysis_${folder}.out 
 
 The :code:`SBATCH` - lines are cluster instructions and will differ depending on your needs and workload - manager.
 
@@ -72,6 +70,6 @@ If you have aliased this script as e.g. :code:`transformato-analyse` , you may n
 
 .. code-block:: bash
 
-    transformato-analyse ./replicate-folder/
+    transformato-analyse ./replicate-folder/ ./your-config.yaml
 
 You will get your results in a file called :code:`analysis_replicate-folder.out`

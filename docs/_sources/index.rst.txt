@@ -6,13 +6,22 @@
 Welcome to transformato's documentation!
 =========================================================
 
-:code:`transformato` is a lightweight implementation of the Boresch-Braunsfeld Serial-Atom-Insertion [1]_ Common-Core (SAI-CC) approach [2]_ to relative binding/solvation free energy calculations [3]_. 
-It does so by connecting the physical endstates of two molecules via two separate alchemical paths. The common core is defined as the maximum topology mapping between the two molecular graphs.
+:code:`transformato` is a lightweight implementation of the Boresch-Bruckner Serial-Atom-Insertion\ [1]_ Common-Core (SAI-CC) approach\ [2]_ to relative binding/solvation free energy calculations\ [3]_. 
+It does so by connecting the physical endstates of two molecules via two separate alchemical paths. 
+
+
+It requires very little set-up time and is designed to work directly with output from `CHARMM - GUI <http://www.charmm-gui.org>`_\ , 
+making it a quick and simple way to run accurate RBFE/RSFE calculations in either CHARMM or openMM.
+
+
+If you'd like to take a look at the code, head over to our `github repository <https://github.com/wiederm/transformato>`_\ . 
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   whatistransformato
    Installation
    System_Setup
    Running_Simulation

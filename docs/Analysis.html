@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Analysis &mdash; transformato  documentation</title>
+  <title>Trajectory Analysis &mdash; transformato  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -40,10 +40,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatistransformato.html">What is transformato?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Analysis</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
@@ -62,7 +63,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Analysis</li>
+      <li>Trajectory Analysis</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/Analysis.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -72,10 +73,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="analysis">
-<h1>Analysis<a class="headerlink" href="#analysis" title="Permalink to this heading"></a></h1>
-<p>In theory, you could run your analysis directly in <code class="code docutils literal notranslate"><span class="pre">submit.ipynb</span></code>, after the code is run. However, we instead recommend putting it into
-a separate file (usually called <code class="code docutils literal notranslate"><span class="pre">analysis.py`</span></code>) that can be aliased and ran by shell/script commands.</p>
+  <div class="section" id="trajectory-analysis">
+<h1>Trajectory Analysis<a class="headerlink" href="#trajectory-analysis" title="Permalink to this heading"></a></h1>
+<p>In theory, you could run your analysis directly in your <code class="code docutils literal notranslate"><span class="pre">submit.ipynb</span></code>, after the simulations are done. However, we instead recommend putting it into
+a separate file (usually called <code class="code docutils literal notranslate"><span class="pre">analysis.py`</span></code>) that can be aliased and run by shell/script commands.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Analysis, just like simulation, takes a decent amount of time and computational resources, depending on the number of intermediate states.</p>
@@ -123,19 +124,17 @@ a separate file (usually called <code class="code docutils literal notranslate">
 <span class="c1">#SBATCH -d afterany:179572</span>
 <span class="c1">#SBATCH --exclude=&quot;n00[01-10]&quot;</span>
 
-<span class="c1"># source ~/miniconda3/etc/profile.d/conda.sh</span>
-<span class="c1"># conda activate fep</span>
 
 <span class="nv">folder</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">config</span><span class="o">=</span><span class="nv">$2</span>
 
 
-
-<span class="nb">time</span> python analysis.py ./<span class="si">${</span><span class="nv">folder</span><span class="si">}</span>/ ./../  ./YOUR-CONFIG.yaml &gt; ./analysis_<span class="si">${</span><span class="nv">folder</span><span class="si">}</span>.out
+<span class="nb">time</span> python analysis.py ./<span class="si">${</span><span class="nv">folder</span><span class="si">}</span>/ ./../  <span class="si">${</span><span class="nv">config</span><span class="si">}</span> &gt; ./analysis_<span class="si">${</span><span class="nv">folder</span><span class="si">}</span>.out
 </pre></div>
 </div>
 <p>The <code class="code docutils literal notranslate"><span class="pre">SBATCH</span></code> - lines are cluster instructions and will differ depending on your needs and workload - manager.</p>
 <p>If you have aliased this script as e.g. <code class="code docutils literal notranslate"><span class="pre">transformato-analyse</span></code> , you may now simply go to the folder containing your replicates and run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>transformato-analyse ./replicate-folder/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>transformato-analyse ./replicate-folder/ ./your-config.yaml
 </pre></div>
 </div>
 <p>You will get your results in a file called <code class="code docutils literal notranslate"><span class="pre">analysis_replicate-folder.out</span></code></p>
