@@ -7,7 +7,12 @@ on:
 
 
 jobs:
+  
+    
   test-ubuntu-latest:
+    defaults:
+      run:
+        shell: bash -l {0}
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
@@ -18,19 +23,23 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: 3.8
-    - name: Add conda to system path
+    
+    - name: Setup conda
+      
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        activate-environment: fep
+        environment-file: devtools/conda-envs/test_env.yaml
+        python-version: 3.8
+        
+        auto-activate-base: false
+    - name: Check conda
       run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
-      run: |
-        conda env update --file devtools/conda-envs/test_env.yaml --name test
-
+        conda info
+        conda list
         
         
     - name: Test with pytest
       run: |
-        conda init bash
-        conda activate test
-        conda install pytest
+        
         pytest -v -m restraints --cov=transformato.restraints
