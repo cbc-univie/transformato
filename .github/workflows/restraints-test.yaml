@@ -7,7 +7,7 @@ on:
 
 
 jobs:
-  build-linux:
+  test-ubuntu-latest:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
@@ -26,12 +26,10 @@ jobs:
       run: |
         conda env update --file devtools/conda-envs/test_env.yaml --name test
 
-        activate-environment: test
-        auto-update-conda: false
-        auto-activate-base: false
-        show-channel-urls: true
+        
         
     - name: Test with pytest
       run: |
+        conda activate test
         conda install pytest
         pytest -v -m restraints --cov=transformato.restraints
