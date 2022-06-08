@@ -29,7 +29,7 @@ The main advantage of this (and transformato as a whole) is that it generally cu
 Citations, License and Contact
 ##################################
 
-Transformato is release under the MIT License. For further information, visit the `repository license page <https://github.com/wiederm/transformato/blob/master/LICENSE>`_\ .
+Transformato is released under the MIT License. For further information, visit the `repository license page <https://github.com/wiederm/transformato/blob/master/LICENSE>`_\ .
 
 .. admonition:: todo
 
