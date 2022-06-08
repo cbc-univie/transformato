@@ -90,12 +90,12 @@ meaning transformato relies on standard, comparatively fast MD Analysis, able to
 <p>With transformato however, the structures are not transformed into each other directly. Instead, each structure is transformed into a ‘common core’, a common topology to both systems (ideally - and usually - the <em>maximum</em> common topology between systems), with the free energy being the sum of free energies necessary to reach the common core:</p>
 <div class="math notranslate nohighlight">
 \[\Delta\Delta G^{bind}_{L1\rightarrow L2} = \Delta\Delta G^{bind}_{L1\rightarrow |DL_1| - R_{CC}} - \Delta\Delta G^{bind}_{L2\rightarrow\ |DL_2| - R_{CC}}\]</div>
-<p><span class="math notranslate nohighlight">\(|DL_1|\)</span> and <span class="math notranslate nohighlight">\(|DL_2|\)</span> refer to the dummy regions of Ligand 1 and 2 respectively. <span class="math notranslate nohighlight">\(R_CC\)</span> refers to the common core.</p>
+<p><span class="math notranslate nohighlight">\(|DL_1|\)</span> and <span class="math notranslate nohighlight">\(|DL_2|\)</span> refer to the dummy regions of Endstate 1 and 2 respectively. <span class="math notranslate nohighlight">\(R_{CC}\)</span> refers to the common core.</p>
 <p>The main advantage of this (and transformato as a whole) is that it generally cuts down enormously on the number of simulations required - while a typical alchemical FES will require 20 to 30 intermediate states, transformato may require as little as 14<a class="footnote-reference brackets" href="#fjohannes" id="id4">4</a>, further reducing simulation time in conjunction with SAI.</p>
 </div>
 <div class="section" id="citations-license-and-contact">
 <h2>Citations, License and Contact<a class="headerlink" href="#citations-license-and-contact" title="Permalink to this heading"></a></h2>
-<p>Transformato is release under the MIT License. For further information, visit the <a class="reference external" href="https://github.com/wiederm/transformato/blob/master/LICENSE">repository license page</a></p>
+<p>Transformato is released under the MIT License. For further information, visit the <a class="reference external" href="https://github.com/wiederm/transformato/blob/master/LICENSE">repository license page</a>.</p>
 <div class="admonition-todo admonition">
 <p class="admonition-title">todo</p>
 <p>Have Johannes give contact information and list desired citations</p>

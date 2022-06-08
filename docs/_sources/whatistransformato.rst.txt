@@ -20,7 +20,7 @@ With transformato however, the structures are not transformed into each other di
     
     \Delta\Delta G^{bind}_{L1\rightarrow L2} = \Delta\Delta G^{bind}_{L1\rightarrow |DL_1| - R_{CC}} - \Delta\Delta G^{bind}_{L2\rightarrow\ |DL_2| - R_{CC}}
 
-:math:`|DL_1|` and :math:`|DL_2|` refer to the dummy regions of Ligand 1 and 2 respectively. :math:`R_CC` refers to the common core.
+:math:`|DL_1|` and :math:`|DL_2|` refer to the dummy regions of Endstate 1 and 2 respectively. :math:`R_{CC}` refers to the common core.
 
 
 The main advantage of this (and transformato as a whole) is that it generally cuts down enormously on the number of simulations required - while a typical alchemical FES will require 20 to 30 intermediate states, transformato may require as little as 14\ [#fjohannes]_\ , further reducing simulation time in conjunction with SAI.
@@ -29,7 +29,7 @@ The main advantage of this (and transformato as a whole) is that it generally cu
 Citations, License and Contact
 ##################################
 
-Transformato is release under the MIT License. For further information, visit the `repository license page <https://github.com/wiederm/transformato/blob/master/LICENSE>`_
+Transformato is released under the MIT License. For further information, visit the `repository license page <https://github.com/wiederm/transformato/blob/master/LICENSE>`_\ .
 
 .. admonition:: todo
 

@@ -18,7 +18,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Trajcetory Analysis" href="Analysis.html" />
+    <link rel="next" title="Trajectory Analysis" href="Analysis.html" />
     <link rel="prev" title="System Setup" href="System_Setup.html" /> 
 </head>
 
@@ -50,10 +50,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#create-mutations-and-write-intermediate-states">Create mutations and write intermediate states</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#running-the-simulation">Running the simulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-simulation">Running the simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#openmm">openMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#charmm">CHARMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#automation-and-offloading-to-a-cluster">Automation and offloading to a cluster</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Trajcetory Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
@@ -164,6 +169,138 @@
 <p class="admonition-title">Note</p>
 <p>It is <em>technically</em> possible to run all simulations locally, as long as you have a CUDA - capable device. However, even with top-end hardware, expect simulation and analysis to take <em>at least</em> 15 hours per replicate, depending on timestep, system size, simulation length and especially the number of intermediary states required.</p>
 </div>
+<p>If you take  a look at the intst*/ directories now created (located at <code class="code docutils literal notranslate"><span class="pre">project-folder/replicate-folder/combinedstructure/singlestructure/intst*</span></code>) you’ll find two scripts: <code class="code docutils literal notranslate"><span class="pre">simulation.sh</span></code> and <code class="code docutils literal notranslate"><span class="pre">simulation_charmm.sh</span></code></p>
+<p>Somewhat unsuprisingly, these are responsible for running the simulation as either openMM or charmm, containing the required information and arguments.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>You only need to run <em>one</em> of the options below. Please note, however, that CHARMM does not have the same features as openMM. If you need to modify these scripts for all future use in some way, you may find their sources in <code class="code docutils literal notranslate"><span class="pre">transformato/bin</span></code></p>
+</div>
+<div class="section" id="openmm">
+<h3>openMM<a class="headerlink" href="#openmm" title="Permalink to this heading"></a></h3>
+<p>For openMM, use <code class="code docutils literal notranslate"><span class="pre">simulate.sh</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#SBATCH -p lgpu</span>
+<span class="c1">#SBATCH --gres=gpu</span>
+
+
+<span class="nb">source</span> ~/anaconda3/etc/profile.d/conda.sh
+conda activate fep
+
+<span class="nv">path</span><span class="o">=</span><span class="nv">$1</span>
+
+<span class="nb">cd</span> <span class="si">${</span><span class="nv">path</span><span class="si">}</span>
+<span class="nb">pwd</span>
+hostname
+
+<span class="nv">input</span><span class="o">=</span>lig_in_complex
+<span class="nv">init</span><span class="o">=</span>lig_in_complex
+<span class="nv">pstep</span><span class="o">=</span>lig_in_complex
+<span class="nv">istep</span><span class="o">=</span>lig_in_complex
+<span class="nv">irst</span><span class="o">=</span>lig_in_complex
+<span class="nv">orst</span><span class="o">=</span>lig_in_complex_rst
+python -u openmm_run.py -i <span class="si">${</span><span class="nv">input</span><span class="si">}</span>.inp -t toppar.str -p <span class="si">${</span><span class="nv">init</span><span class="si">}</span>.psf -c <span class="si">${</span><span class="nv">init</span><span class="si">}</span>.crd -irst <span class="si">${</span><span class="nv">irst</span><span class="si">}</span>.rst -orst <span class="si">${</span><span class="nv">irst</span><span class="si">}</span> -odcd <span class="si">${</span><span class="nv">istep</span><span class="si">}</span>.dcd <span class="p">&amp;</span>&gt; complex_out.log
+
+<span class="nv">input</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">init</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">pstep</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">istep</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">irst</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">orst</span><span class="o">=</span>lig_in_waterbox_rst
+python -u openmm_run.py -i <span class="si">${</span><span class="nv">input</span><span class="si">}</span>.inp -t toppar.str -p <span class="si">${</span><span class="nv">init</span><span class="si">}</span>.psf -c <span class="si">${</span><span class="nv">init</span><span class="si">}</span>.crd -irst <span class="si">${</span><span class="nv">irst</span><span class="si">}</span>.rst -orst <span class="si">${</span><span class="nv">irst</span><span class="si">}</span> -odcd <span class="si">${</span><span class="nv">istep</span><span class="si">}</span>.dcd  <span class="p">&amp;</span>&gt; waterbox_out.log
+</pre></div>
+</div>
+<p>Essentially, this file just tells openMM what to run and then runs it, providing a bit of debug information along the way. Importantly, it takes <strong>the working directory as argument</strong>.</p>
+<p>So, if you want to simulate this intermediate state, you would run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./simulation.sh /absolute/or/relative/path/to/that/intstate
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Assuming your current working directory is that intstate, you can just supply <code class="code docutils literal notranslate"><span class="pre">./</span></code> as argument.</p>
+</div>
+</div>
+<div class="section" id="charmm">
+<h3>CHARMM<a class="headerlink" href="#charmm" title="Permalink to this heading"></a></h3>
+<p>For CHARMM, use <code class="code docutils literal notranslate"><span class="pre">simulate_charmm.sh</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#SBATCH -p lgpu</span>
+<span class="c1">#SBATCH --gres=gpu</span>
+<span class="nv">path</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">SWITCH</span><span class="o">=</span><span class="nv">$2</span>
+
+<span class="nb">cd</span> <span class="si">${</span><span class="nv">path</span><span class="si">}</span>
+<span class="nb">pwd</span>
+hostname
+
+
+run_complex <span class="o">()</span> <span class="o">{</span>
+<span class="nv">input</span><span class="o">=</span>charmm_run_complex
+<span class="nv">OMP_NUM_THREADS</span><span class="o">=</span><span class="m">8</span> <span class="si">${</span><span class="nv">CHARMM</span><span class="si">}</span> -i <span class="si">${</span><span class="nv">input</span><span class="si">}</span>.inp &gt; log_complex.out
+<span class="o">}</span>
+
+run_waterbox <span class="o">()</span> <span class="o">{</span>
+<span class="nv">input</span><span class="o">=</span>charmm_run_waterbox
+<span class="nv">OMP_NUM_THREADS</span><span class="o">=</span><span class="m">8</span> <span class="si">${</span><span class="nv">CHARMM</span><span class="si">}</span> -i <span class="si">${</span><span class="nv">input</span><span class="si">}</span>.inp &gt; log_solv.out
+<span class="o">}</span>
+
+
+<span class="k">case</span> <span class="si">${</span><span class="nv">SWITCH</span><span class="si">}</span> <span class="k">in</span>
+<span class="m">1</span><span class="o">)</span>
+run_complex
+<span class="p">;;</span>
+<span class="m">2</span><span class="o">)</span>
+run_complex
+run_waterbox
+<span class="p">;;</span>
+<span class="k">esac</span>
+</pre></div>
+</div>
+<p>Importantly, unlike openMM this takes <strong>two arguments</strong>: The path, same as before, and a CASE statement. You need to run both, so that will always be 2 for you. You also need to have the ${CHARMM} system variable defined.</p>
+<p>So, to run the simulation using CHARMM:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./simulate_charmm.sh /absolute/or/relative/path/to/your/intstate <span class="m">2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="automation-and-offloading-to-a-cluster">
+<h3>Automation and offloading to a cluster<a class="headerlink" href="#automation-and-offloading-to-a-cluster" title="Permalink to this heading"></a></h3>
+<p>There are two methods to automate running simulations:</p>
+<ul>
+<li><p>Running it from the submit.ipynb</p>
+<p>Has the advantage of no extra step being necessary, but pythons multiprocessing facilities can be capricious. This variant also does not allow inspection of the intermediate states before submission.</p>
+<p>If you’d like this option, add this code to the bottom of your submit.ipynb:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="n">wd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">output_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">wd</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">folder</span><span class="si">}</span><span class="s2">/*/*/intst*&quot;</span><span class="p">,</span> <span class="n">recursive</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="c1">#Whether {folder} is necessary depends on your folder setup relative to your working directory -</span>
+    <span class="c1"># in general, this should point to your intst** folders</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">output_files</span><span class="p">):</span>
+    <span class="c1"># because path is object not string</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start sampling for: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">exe</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">&quot;ssh&quot;</span><span class="p">,</span> <span class="s2">&quot;your clustername&quot;</span><span class="p">,</span> <span class="s2">&quot;sbatch&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2">/simulation.sh&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)],</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span> <span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">exe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You will have to replace ‘your-clustername’ and modify the paths according to your setup.</p>
+</li>
+<li><p>Running it via script</p>
+<p>Has the advantage of allowing inspection beforehand and being more reliable, as well as allowing the modification of cluster instructions during submit.</p>
+<p>To use, create a script similar to this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="o">{</span>i<span class="o">}</span> <span class="k">in</span> ./**/**/intst**/<span class="p">;</span> <span class="c1">#This assumes you start from the directory above the initial structure directory - you may change as necessary.</span>
+<span class="k">do</span> <span class="nb">cd</span> <span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="c1"># to prevent issues, it is preferred to switch to the script directory</span>
+sbash simulation.sh<span class="p">;</span> <span class="c1"># sbash being the command for the workload manager slurm - you may need to replace as necessary.</span>
+<span class="nb">cd</span> ../../..<span class="p">;</span> <span class="c1"># switch working directory back to original so next loop starts properly</span>
+<span class="k">done</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If you run this from the folder containing the replicate directories, any correctly built transformato replicate should be submitted to run. You can modify the loop glob to restrict the script to certain directories.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -172,7 +309,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="System_Setup.html" class="btn btn-neutral float-left" title="System Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="Analysis.html" class="btn btn-neutral float-right" title="Trajcetory Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Analysis.html" class="btn btn-neutral float-right" title="Trajectory Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

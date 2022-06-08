@@ -121,6 +121,112 @@
 <li><p>Simulation parameters, such as simulation step and length</p></li>
 <li><p>Eventual restraints, both automatic and manual</p></li>
 </ol>
+<p>Let’s take a look at a complete config.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">################</span><span class="w"></span>
+<span class="nt">system</span><span class="p">:</span><span class="w"></span>
+<span class="c1">################</span><span class="w"></span>
+<span class="w">    </span><span class="nt">structure2</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;vim2_zn148&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">tlc</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LIG&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">waterbox</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">dirname</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;waterbox&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">psf_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step3_input&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">crd_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step3_input&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">rst_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step4_equilibration&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">simulation_parameter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step5_production.inp&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">intermediate-filename</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lig_in_waterbox&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">complex</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">dirname</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;complex&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">psf_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step3.1_omm&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">crd_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step3.1_omm&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">rst_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step4_equilibration&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">simulation_parameter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step5_production.inp&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">intermediate-filename</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lig_in_complex&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="nt">structure1</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;vim2_zn222&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">tlc</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;LIG&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">waterbox</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">dirname</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;waterbox&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">psf_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step3_input&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">crd_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step3_input&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">rst_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step4_equilibration&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">simulation_parameter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step5_production.inp&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">intermediate-filename</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lig_in_waterbox&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">complex</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">dirname</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;complex&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">psf_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step3_input&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">crd_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step3_input&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">rst_file_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step4_equilibration&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">simulation_parameter</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;step5_production.inp&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">intermediate-filename</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;lig_in_complex&quot;</span><span class="w"></span>
+
+<span class="c1">################</span><span class="w"></span>
+<span class="nt">simulation</span><span class="p">:</span><span class="w"></span>
+<span class="c1">################</span><span class="w"></span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w"></span>
+<span class="w">        </span><span class="nt">nstep</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1250000</span><span class="w"></span>
+<span class="w">        </span><span class="nt">nstdcd</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span><span class="w"></span>
+<span class="w">        </span><span class="nt">nstout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span><span class="w"></span>
+<span class="w">        </span><span class="nt">cons</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HBond</span><span class="w"></span>
+<span class="w">        </span><span class="nt">dt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.004</span><span class="w"></span>
+<span class="w">        </span><span class="nt">switch</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;vfswitch&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">mini_nstep</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span><span class="w"></span>
+<span class="w">    </span><span class="nt">GPU</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<span class="w">    </span><span class="nt">workload-manager</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;slurm&quot;</span><span class="w"></span>
+
+<span class="w">    </span><span class="nt">free-energy-type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;rbfe&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">################</span><span class="w"></span>
+<span class="w">    </span><span class="nt">solvation</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="c1">################</span><span class="w"></span>
+<span class="w">    </span><span class="nt">steps_for_equilibration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span><span class="w"></span>
+</pre></div>
+</div>
+<p>The <em>system</em> container contains the setup information from your structure directories. Most importantly, the <em>name</em> parameter must be the folder name of that structure (the one containing the waterbox/ligand directories.)</p>
+<p>You may actually define any number of structures. The structure you want is referenced when setting up the system.</p>
+<dl class="simple">
+<dt>system</dt><dd><dl class="simple">
+<dt>[structurename] # can be whatever you want</dt><dd><dl class="simple">
+<dt>name</dt><dd><p>The folder name of the folder containing the complex/ligand folders for that structure</p>
+</dd>
+<dt>tlc</dt><dd><p>The residue name (resname) of the structure</p>
+</dd>
+<dt>other parameters</dt><dd><p>These refer to the various files in the /openmm/ subfolder.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>The <em>simulation</em> container contains the simulation parameters you want to use.</p>
+<div class="topic">
+<p class="topic-title">simulation</p>
+<dl class="simple">
+<dt>parameters</dt><dd><dl class="simple">
+<dt>nstep: [int]</dt><dd><p>How many calculation steps you want to simulate</p>
+</dd>
+<dt>nstdcd: [int]</dt><dd><p>How many steps you want in your trajectory file overall</p>
+</dd>
+<dt>nstout: [int]</dt><dd><p>How many steps you want written out in the .log.out files</p>
+</dd>
+<dt>cons: [“Hbond”,None]</dt><dd><p>What constraints (not <em>restraints</em>) you want in your system</p>
+</dd>
+<dt>dt: [float]</dt><dd><p>The timestep in nanoseconds. With hydrogen mass repartitioning, up to 0.004 ns should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.</p>
+</dd>
+<dt>switch: [“vfswitch”,”vfoff”]</dt><dd><p>How the van-der-Waals forces are switched.</p>
+</dd>
+<dt>mini_nstep: [int]</dt><dd><p>Steps for minimisation</p>
+</dd>
+<dt>GPU: [True/False]</dt><dd><p>Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.</p>
+</dd>
+<dt>workload-manager: [“slurm”,”CGE”]</dt><dd><p>For which workload-manager the script files should be output.</p>
+</dd>
+<dt>free-energy-type: [“rbfe”,”rsfe”]</dt><dd><p>Calculate relative binding free energy or relative solvation free energy</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div>
 </div>
 <div class="section" id="restraints">
 <h2>Restraints<a class="headerlink" href="#restraints" title="Permalink to this heading"></a></h2>
