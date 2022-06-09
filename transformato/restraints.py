@@ -1,4 +1,6 @@
-
+"""
+Manages restraints and the forces created from them
+"""
 from calendar import c
 from multiprocessing.sharedctypes import Value
 from tabnanny import check
@@ -17,6 +19,17 @@ logger=logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 class Restraint():
+    """Class representing a restraint to apply to the system
+
+        Intermediary step - openMM force objects are generated directly from this class and applied to the system.
+
+        Args:
+            selligand,selprotein (MDAnalysis selection string): The atoms on whose center of mass the restraint will bei applied
+            k: the force (=spring) constant
+            pdbpath: the path to the pdbfile underlying the topology analysis
+            shape: 'harmonic' or 'flatbottom' 
+            wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.
+            """
     def __init__(
         self,
         selligand:str,
