@@ -39,20 +39,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatistransformato.html">What is transformato?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-transformato.utils">utils.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-transformato.mutate">mutate.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-transformato.state">state.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-transformato.analysis">analysis.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-transformato.system">system.py</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-transformato.restraints">restraints.py</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a></li>
 </ul>
 
         </div>
@@ -81,358 +74,30 @@
              
   <div class="section" id="api-documentation">
 <h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this heading"></a></h1>
+<p>Transformato consists of the following modules:</p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="autosummary/transformato.utils.html#module-0" title="transformato.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transformato.utils</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="autosummary/transformato.state.html#module-0" title="transformato.state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transformato.state</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="autosummary/transformato.mutate.html#module-0" title="transformato.mutate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transformato.mutate</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="autosummary/transformato.system.html#module-0" title="transformato.system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transformato.system</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="autosummary/transformato.restraints.html#module-0" title="transformato.restraints"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transformato.restraints</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
-<div class="section" id="module-transformato.utils">
-<span id="utils-py"></span><h2>utils.py<a class="headerlink" href="#module-transformato.utils" title="Permalink to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.utils.get_bin_dir">
-<span class="sig-prename descclassname"><span class="pre">transformato.utils.</span></span><span class="sig-name descname"><span class="pre">get_bin_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/utils.html#get_bin_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.utils.get_bin_dir" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the bin directory of this package</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.utils.get_toppar_dir">
-<span class="sig-prename descclassname"><span class="pre">transformato.utils.</span></span><span class="sig-name descname"><span class="pre">get_toppar_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/utils.html#get_toppar_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.utils.get_toppar_dir" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the bin directory of this package</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.utils.map_lj_mutations_to_atom_idx">
-<span class="sig-prename descclassname"><span class="pre">transformato.utils.</span></span><span class="sig-name descname"><span class="pre">map_lj_mutations_to_atom_idx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lj_mutations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/transformato/utils.html#map_lj_mutations_to_atom_idx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.utils.map_lj_mutations_to_atom_idx" title="Permalink to this definition"></a></dt>
-<dd><p>returns a mapping between the mutations and the atom idx</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>lj_mutations</strong> (<em>list of lj mutation objects</em>) – [description]</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.utils.postprocessing">
-<span class="sig-prename descclassname"><span class="pre">transformato.utils.</span></span><span class="sig-name descname"><span class="pre">postprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'methane'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'openMM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_snapshots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_summary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">different_path_for_dcd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_single_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyze_traj_with</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mdtraj'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/utils.html#postprocessing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.utils.postprocessing" title="Permalink to this definition"></a></dt>
-<dd><p>Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>configuration</strong> (<em>dict</em>) – Configuration file.</p></li>
-<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the system as deposited in the configuration file. Defaults to “methane”.</p></li>
-<li><p><strong>engine</strong> (<em>str</em><em>, </em><em>optional</em>) – The MD engine, either openMM or CHARMM. Defaults to “openMM”.</p></li>
-<li><p><strong>max_snapshots</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of snapshots per lambda window. Defaults to 300.</p></li>
-<li><p><strong>show_summary</strong> (<em>bool</em><em>, </em><em>optional</em>) – Plot the accumulated free energy estimate and overlap plot. Defaults to False.</p></li>
-<li><p><strong>different_path_for_dcd</strong> (<em>str</em><em>, </em><em>optional</em>) – For debugging purpose only. Defaults to “”.</p></li>
-<li><p><strong>only_single_state</strong> (<em>str</em><em>, </em><em>optional</em>) – For debugging purpose only. Defaults to “”.</p></li>
-<li><p><strong>analyze_traj_with</strong> (<em>str</em><em>,</em><em>optional</em>) – Select package for loading trajectories (either mdanalysis or mdtraj). Defaults to mdtraj.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[description]</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[type]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.utils.psf_correction">
-<span class="sig-prename descclassname"><span class="pre">transformato.utils.</span></span><span class="sig-name descname"><span class="pre">psf_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StringIO</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/utils.html#psf_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.utils.psf_correction" title="Permalink to this definition"></a></dt>
-<dd><p>Correcting the issue with 2 missing spaces in the waterbox psf files and replacing the !NGRP statement so its possible that CHARMM, CHARMM_OpenMM and OpenMM can handle the correspoing psf file</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.utils.run_simulation">
-<span class="sig-prename descclassname"><span class="pre">transformato.utils.</span></span><span class="sig-name descname"><span class="pre">run_simulation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'openMM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_vacuum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/utils.html#run_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.utils.run_simulation" title="Permalink to this definition"></a></dt>
-<dd><p>Performs sampling given a list of directories with topology and parameter definitions</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>output_files</strong> (<em>list</em>) – List of directories with topology and parameter files in CHARMM format</p></li>
-<li><p><strong>engine</strong> (<em>str</em><em>, </em><em>optional</em>) – The MD engines used to perform the sampling. Defaults to “openMM”.</p></li>
-<li><p><strong>only_vacuum</strong> (<em>bool</em><em>, </em><em>optional</em>) – For debugging only. Defaults to False.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-transformato.mutate">
-<span id="mutate-py"></span><h2>mutate.py<a class="headerlink" href="#module-transformato.mutate" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="transformato.mutate.DummyRegion">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">DummyRegion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_termin_real_and_dummy_atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connected_dummy_regions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lj_default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/mutate.html#DummyRegion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.DummyRegion" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="transformato.mutate.MutationDefinition">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">MutationDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">atoms_to_be_mutated:</span> <span class="pre">List[int],</span> <span class="pre">common_core:</span> <span class="pre">List[int],</span> <span class="pre">dummy_region:</span> <span class="pre">transformato.mutate.DummyRegion,</span> <span class="pre">vdw_atom_idx:</span> <span class="pre">List[int]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">steric_mutation_to_default:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/mutate.html#MutationDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.MutationDefinition" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.mutate.perform_mutations">
-<span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">perform_mutations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_of_heavy_atoms_to_be_mutated</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_charge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_lj_of_hydrogens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_lj_of_heavy_atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_cc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/mutate.html#perform_mutations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.perform_mutations" title="Permalink to this definition"></a></dt>
-<dd><p>Performs the mutations necessary to mutate the physical endstate to the defined common core.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>configuration</strong> (<em>dict</em>) – A configuration dictionary.</p></li>
-<li><p><strong>i</strong> (<em>[</em><em>type</em><em>]</em>) – IntermediateState instance</p></li>
-<li><p><strong>mutation_list</strong> (<em>list</em>) – list of mutation objects</p></li>
-<li><p><strong>list_of_heavy_atoms_to_be_mutated</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].</p></li>
-<li><p><strong>nr_of_mutation_steps_charge</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of the charges. Defaults to 5.</p></li>
-<li><p><strong>nr_of_mutation_steps_lj_of_hydrogens</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of lj of hydrogens. Only needed for systems with many hydrogens in dummy region</p></li>
-<li><p><strong>nr_of_mutation_steps_lj_of_heavy_atoms</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of the lj of heavy atoms</p></li>
-<li><p><strong>nr_of_mutation_steps_cc</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to interpolate between the common core parameters. Defaults to 5.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of directories with the parameter and topology files</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-transformato.state">
-<span id="state-py"></span><h2>state.py<a class="headerlink" href="#module-transformato.state" title="Permalink to this heading"></a></h2>
-</div>
-<div class="section" id="module-transformato.analysis">
-<span id="analysis-py"></span><h2>analysis.py<a class="headerlink" href="#module-transformato.analysis" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.analysis.</span></span><span class="sig-name descname"><span class="pre">FreeEnergyCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/analysis.html#FreeEnergyCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator" title="Permalink to this definition"></a></dt>
-<dd><p>FreeEnergyCalculator [summary]</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>object</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.calculate_dG_to_common_core">
-<span class="sig-name descname"><span class="pre">calculate_dG_to_common_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'openMM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyze_traj_with</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mdtraj'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_proc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_memory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_max_snapshots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/analysis.html#FreeEnergyCalculator.calculate_dG_to_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.calculate_dG_to_common_core" title="Permalink to this definition"></a></dt>
-<dd><p>Calculate mbar results using either the python package mdtraj
-or MDAnalysis or load save results from a serialized mbar results.
-MDTraj creates one big trajectory which is analysed with different psf.
-Can lead to high overload of memory but is very fast!
-In defult setup only ~3GB of RAM are allocated. Trjaectories can also
-be loaded into memory by setting in_memory = True that can be useful when
-analysing many snapshots per trajectory.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.complex_free_energy_difference_overlap">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">complex_free_energy_difference_overlap</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.complex_free_energy_difference_overlap" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.complex_free_energy_difference_uncertanties">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">complex_free_energy_difference_uncertanties</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.complex_free_energy_difference_uncertanties" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.complex_free_energy_differences">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">complex_free_energy_differences</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.complex_free_energy_differences" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.end_state_free_energy_difference">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end_state_free_energy_difference</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.end_state_free_energy_difference" title="Permalink to this definition"></a></dt>
-<dd><p>DeltaF[lambda=1 –&gt; lambda=0]</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.free_energy_difference_uncertainties">
-<span class="sig-name descname"><span class="pre">free_energy_difference_uncertainties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vacuum'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/analysis.html#FreeEnergyCalculator.free_energy_difference_uncertainties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.free_energy_difference_uncertainties" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of asymptotic uncertainty-estimates accompanying free energy differences</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.free_energy_differences">
-<span class="sig-name descname"><span class="pre">free_energy_differences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vacuum'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/analysis.html#FreeEnergyCalculator.free_energy_differences"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.free_energy_differences" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.free_energy_overlap">
-<span class="sig-name descname"><span class="pre">free_energy_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'vacuum'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/analysis.html#FreeEnergyCalculator.free_energy_overlap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.free_energy_overlap" title="Permalink to this definition"></a></dt>
-<dd><p>overlap of lambda states</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.load_trajs">
-<span class="sig-name descname"><span class="pre">load_trajs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nr_of_max_snapshots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/analysis.html#FreeEnergyCalculator.load_trajs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.load_trajs" title="Permalink to this definition"></a></dt>
-<dd><p>load trajectories, thin trajs and merge themn.
-Also calculate N_k for mbar.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.vacuum_free_energy_difference_overlap">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vacuum_free_energy_difference_overlap</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.vacuum_free_energy_difference_overlap" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.vacuum_free_energy_difference_uncertanties">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vacuum_free_energy_difference_uncertanties</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.vacuum_free_energy_difference_uncertanties" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.vacuum_free_energy_differences">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vacuum_free_energy_differences</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.vacuum_free_energy_differences" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.waterbox_free_energy_difference_overlap">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waterbox_free_energy_difference_overlap</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.waterbox_free_energy_difference_overlap" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.waterbox_free_energy_difference_uncertanties">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waterbox_free_energy_difference_uncertanties</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.waterbox_free_energy_difference_uncertanties" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="transformato.analysis.FreeEnergyCalculator.waterbox_free_energy_differences">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waterbox_free_energy_differences</span></span><a class="headerlink" href="#transformato.analysis.FreeEnergyCalculator.waterbox_free_energy_differences" title="Permalink to this definition"></a></dt>
-<dd><p>matrix of free energy differences</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.analysis.return_reduced_potential">
-<span class="sig-prename descclassname"><span class="pre">transformato.analysis.</span></span><span class="sig-name descname"><span class="pre">return_reduced_potential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">potential_energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Quantity</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Quantity(value=303.15,</span> <span class="pre">unit=kelvin)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/transformato/analysis.html#return_reduced_potential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.analysis.return_reduced_potential" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieve the reduced potential for a given context.
-The reduced potential is defined as in Ref. [1]
-u = eta [U(x) + p V(x)]
-where the thermodynamic parameters are
-eta = 1/(kB T) is the inverse temperature
-p is the pressure
-x the atomic positions
-U(x) is the potential energy
-V(x) is the instantaneous box volume
-.. rubric:: References</p>
-<p>[1] Shirts MR and Chodera JD. Statistically optimal analysis of
-equilibrium states. J Chem Phys 129:124105, 2008.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>potential_energy</strong> (<em>simtk.unit of float</em>) – </p></li>
-<li><p><strong>context</strong> – </p></li>
-<li><p><strong>ensamble</strong> (<em>NVT</em><em> or </em><em>NPT</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-transformato.system">
-<span id="system-py"></span><h2>system.py<a class="headerlink" href="#module-transformato.system" title="Permalink to this heading"></a></h2>
-</div>
-<div class="section" id="module-transformato.restraints">
-<span id="restraints-py"></span><h2>restraints.py<a class="headerlink" href="#module-transformato.restraints" title="Permalink to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.restraints.CreateRestraintsFromConfig">
-<span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">CreateRestraintsFromConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#CreateRestraintsFromConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.CreateRestraintsFromConfig" title="Permalink to this definition"></a></dt>
-<dd><p>Takes the .yaml config and returns the specified restraints</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – the loaded yaml config (as returned by yaml.safe_load() or similar</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An array of Restraint instances</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>restraints (array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.restraints.GenerateExtremities">
-<span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">GenerateExtremities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_extremities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphinner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphouter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#GenerateExtremities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.GenerateExtremities" title="Permalink to this definition"></a></dt>
-<dd><p>Takes the common core and generates n extremities at the furthest point</p>
-<blockquote>
-<div><p>Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter.
-The algorithm works as follows:</p>
-<p>(All of these operations only operate on carbons in the common core)
-1. Take the furthest C from the center of Mass
-2. Take the furthest C from that C
-3. Until len(extremity_cores)==n_extremities: Pick the C where the sum distance from all previous cores is greatest.
-4. Generate selection strings for all extremity cores and return</p>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>configuration</strong> (<em>dict</em>) – the read-in restraints.yaml</p></li>
-<li><p><strong>pdbpath</strong> (<em>str</em>) – path to local pdb used as base for the restraints</p></li>
-<li><p><strong>n_extremities</strong> (<em>int</em>) – how many extremities to generate. Cannot exceed number of carbons in the ligand</p></li>
-<li><p><strong>sphinner</strong> (<em>float</em>) – Distance to start of the sphlayer, default 0</p></li>
-<li><p><strong>sphouter</strong> (<em>float</em>) – Distance to end of the sphlayer, default 5</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>selection_strings (array[str])</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.restraints.get3DDistance">
-<span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">get3DDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#get3DDistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.get3DDistance" title="Permalink to this definition"></a></dt>
-<dd><p>Takes two 3d positions as array and calculates the distance between them</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pos1</strong> (<em>3D-Array</em>) – The positions of which to calculate the distances</p></li>
-<li><p><strong>pos2</strong> (<em>3D-Array</em>) – The positions of which to calculate the distances</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The distance between the two positions</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>distance (float)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="transformato.restraints.write_restraints_yaml">
-<span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">write_restraints_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/transformato/restraints.html#write_restraints_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.write_restraints_yaml" title="Permalink to this definition"></a></dt>
-<dd><p>Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml</p></li>
-<li><p><strong>system</strong> – the system object from state.py</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
 </div>
 
 

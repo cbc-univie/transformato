@@ -20,6 +20,7 @@ If you'd like to take a look at the code, head over to our `github repository <h
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   
 
    whatistransformato
    Installation

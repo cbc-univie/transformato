@@ -199,34 +199,34 @@
 </dd>
 </dl>
 <p>The <em>simulation</em> container contains the simulation parameters you want to use.</p>
-<div class="topic">
-<p class="topic-title">simulation</p>
 <dl class="simple">
+<dt>simulation</dt><dd><dl class="simple">
 <dt>parameters</dt><dd><dl class="simple">
-<dt>nstep: [int]</dt><dd><p>How many calculation steps you want to simulate</p>
+<dt>nstep: (int)</dt><dd><p>How many calculation steps you want to simulate</p>
 </dd>
-<dt>nstdcd: [int]</dt><dd><p>How many steps you want in your trajectory file overall</p>
+<dt>nstdcd: (int)</dt><dd><p>How many steps you want in your trajectory file overall</p>
 </dd>
-<dt>nstout: [int]</dt><dd><p>How many steps you want written out in the .log.out files</p>
+<dt>nstout: (int)</dt><dd><p>How many steps you want written out in the .log.out files</p>
 </dd>
-<dt>cons: [“Hbond”,None]</dt><dd><p>What constraints (not <em>restraints</em>) you want in your system</p>
+<dt>cons: (int)</dt><dd><p>What constraints (not <em>restraints</em>) you want in your system</p>
 </dd>
-<dt>dt: [float]</dt><dd><p>The timestep in nanoseconds. With hydrogen mass repartitioning, up to 0.004 ns should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.</p>
+<dt>dt: (int)</dt><dd><p>The timestep in nanoseconds. With hydrogen mass repartitioning, up to 0.004 ns should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.</p>
 </dd>
-<dt>switch: [“vfswitch”,”vfoff”]</dt><dd><p>How the van-der-Waals forces are switched.</p>
+<dt>switch: ([“vfswitch”,”vfoff”])</dt><dd><p>How the van-der-Waals forces are switched.</p>
 </dd>
-<dt>mini_nstep: [int]</dt><dd><p>Steps for minimisation</p>
+<dt>mini_nstep: (int)</dt><dd><p>Steps for minimisation</p>
 </dd>
-<dt>GPU: [True/False]</dt><dd><p>Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.</p>
+<dt>GPU: ([True/False])</dt><dd><p>Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.</p>
 </dd>
-<dt>workload-manager: [“slurm”,”CGE”]</dt><dd><p>For which workload-manager the script files should be output.</p>
+<dt>workload-manager: ([“slurm”,”CGE”])</dt><dd><p>For which workload-manager the script files should be output.</p>
 </dd>
-<dt>free-energy-type: [“rbfe”,”rsfe”]</dt><dd><p>Calculate relative binding free energy or relative solvation free energy</p>
+<dt>free-energy-type: ([“rbfe”,”rsfe”])</dt><dd><p>Calculate relative binding free energy or relative solvation free energy</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd>
 </dl>
-</div>
 </div>
 <div class="section" id="restraints">
 <h2>Restraints<a class="headerlink" href="#restraints" title="Permalink to this heading"></a></h2>
