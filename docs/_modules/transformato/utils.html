@@ -38,10 +38,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whatistransformato.html">What is transformato?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../System_Setup.html">System Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Running_Simulation.html">Running Simulations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../Analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Analysis.html">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
 </ul>
@@ -80,7 +81,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="postprocessing"><a class="viewcode-back" href="../../api.html#transformato.utils.postprocessing">[docs]</a><span class="k">def</span> <span class="nf">postprocessing</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">postprocessing</span><span class="p">(</span>
     <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;methane&quot;</span><span class="p">,</span>
     <span class="n">engine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;openMM&quot;</span><span class="p">,</span>
@@ -150,10 +151,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;######################################&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">show_summary</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">show_summary</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">ddG</span><span class="p">,</span> <span class="n">dddG</span><span class="p">,</span> <span class="n">f</span></div>
+        <span class="k">return</span> <span class="n">ddG</span><span class="p">,</span> <span class="n">dddG</span><span class="p">,</span> <span class="n">f</span>
 
 
-<div class="viewcode-block" id="run_simulation"><a class="viewcode-back" href="../../api.html#transformato.utils.run_simulation">[docs]</a><span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="n">output_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;openMM&quot;</span><span class="p">,</span> <span class="n">only_vacuum</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="n">output_files</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;openMM&quot;</span><span class="p">,</span> <span class="n">only_vacuum</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Performs sampling given a list of directories with topology and parameter definitions</span>
 
 <span class="sd">    Args:</span>
@@ -180,20 +181,20 @@
         <span class="n">exe</span><span class="o">.</span><span class="n">check_returncode</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">exe</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Capture stderr&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">exe</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span></div>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">exe</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_bin_dir"><a class="viewcode-back" href="../../api.html#transformato.utils.get_bin_dir">[docs]</a><span class="k">def</span> <span class="nf">get_bin_dir</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">get_bin_dir</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Returns the bin directory of this package&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;bin&quot;</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;bin&quot;</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="get_toppar_dir"><a class="viewcode-back" href="../../api.html#transformato.utils.get_toppar_dir">[docs]</a><span class="k">def</span> <span class="nf">get_toppar_dir</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">get_toppar_dir</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Returns the bin directory of this package&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;toppar&quot;</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;toppar&quot;</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="map_lj_mutations_to_atom_idx"><a class="viewcode-back" href="../../api.html#transformato.utils.map_lj_mutations_to_atom_idx">[docs]</a><span class="k">def</span> <span class="nf">map_lj_mutations_to_atom_idx</span><span class="p">(</span><span class="n">lj_mutations</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">map_lj_mutations_to_atom_idx</span><span class="p">(</span><span class="n">lj_mutations</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    map_lj_mutations_to_atom_idx</span>
 <span class="sd">    returns a mapping between the mutations and the atom idx</span>
@@ -212,7 +213,7 @@
         <span class="n">key</span> <span class="o">=</span> <span class="n">lj</span><span class="o">.</span><span class="n">vdw_atom_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># this only works if a single atom is mutated</span>
         <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">lj</span>
 
-    <span class="k">return</span> <span class="n">d</span></div>
+    <span class="k">return</span> <span class="n">d</span>
 
 
 <span class="k">def</span> <span class="nf">print_mutations</span><span class="p">(</span><span class="n">mutation</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
@@ -297,7 +298,7 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not finde structure entry for : </span><span class="si">{</span><span class="n">structure_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="psf_correction"><a class="viewcode-back" href="../../api.html#transformato.utils.psf_correction">[docs]</a><span class="k">def</span> <span class="nf">psf_correction</span><span class="p">(</span><span class="n">str_object</span><span class="p">:</span> <span class="n">StringIO</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">psf_correction</span><span class="p">(</span><span class="n">str_object</span><span class="p">:</span> <span class="n">StringIO</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Correcting the issue with 2 missing spaces in the waterbox psf files and replacing the !NGRP statement so its possible that CHARMM, CHARMM_OpenMM and OpenMM can handle the correspoing psf file&quot;&quot;&quot;</span>
     <span class="n">str_object</span> <span class="o">=</span> <span class="n">str_object</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>  <span class="c1"># get the values as a long string</span>
     <span class="n">new_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -349,7 +350,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
 
-    <span class="k">return</span> <span class="n">new_str</span></div>
+    <span class="k">return</span> <span class="n">new_str</span>
 
 
 <span class="k">def</span> <span class="nf">isnotebook</span><span class="p">():</span>

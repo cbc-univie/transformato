@@ -38,10 +38,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../whatistransformato.html">What is transformato?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../System_Setup.html">System Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Running_Simulation.html">Running Simulations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../Analysis.html">Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Analysis.html">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../Troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
 </ul>
@@ -135,7 +136,7 @@
         <span class="p">)</span>
 
 
-<div class="viewcode-block" id="perform_mutations"><a class="viewcode-back" href="../../api.html#transformato.mutate.perform_mutations">[docs]</a><span class="k">def</span> <span class="nf">perform_mutations</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">perform_mutations</span><span class="p">(</span>
     <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="n">i</span><span class="p">,</span>
     <span class="n">mutation_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -305,10 +306,10 @@
             <span class="n">nr_of_steps</span><span class="o">=</span><span class="n">nr_of_mutation_steps_cc</span><span class="p">,</span>
             <span class="n">intermediate_factory</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
             <span class="n">mutation</span><span class="o">=</span><span class="n">mutation_list</span><span class="p">[</span><span class="s2">&quot;transform&quot;</span><span class="p">],</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
 
-<div class="viewcode-block" id="DummyRegion"><a class="viewcode-back" href="../../api.html#transformato.mutate.DummyRegion">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="DummyRegion"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.DummyRegion">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">DummyRegion</span><span class="p">:</span>
     <span class="n">mol_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">match_termin_real_and_dummy_atoms</span><span class="p">:</span> <span class="nb">dict</span>
@@ -328,7 +329,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="MutationDefinition"><a class="viewcode-back" href="../../api.html#transformato.mutate.MutationDefinition">[docs]</a><span class="nd">@dataclass</span>
+<div class="viewcode-block" id="MutationDefinition"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.MutationDefinition">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">MutationDefinition</span><span class="p">:</span>
     <span class="n">atoms_to_be_mutated</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
     <span class="n">common_core</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
@@ -345,8 +346,8 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VDW atoms to be decoupled: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vdw_atom_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-<span class="k">class</span> <span class="nc">ProposeMutationRoute</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ProposeMutationRoute"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute">[docs]</a><span class="k">class</span> <span class="nc">ProposeMutationRoute</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ProposeMutationRoute.__init__"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">s1</span><span class="p">:</span> <span class="n">SystemStructure</span><span class="p">,</span>
         <span class="n">s2</span><span class="p">:</span> <span class="n">SystemStructure</span><span class="p">,</span>
@@ -395,7 +396,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">manually_added_m1_idx</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span><span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">manually_added_m2_idx</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span><span class="p">[]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_cgenff_versions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_cgenff_versions</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_check_cgenff_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -408,25 +409,25 @@
                 <span class="sa">f</span><span class="s2">&quot;CGenFF compatibility error. CGenFF: </span><span class="si">{</span><span class="n">cgenff_sys1</span><span class="si">}</span><span class="s2"> and CGenFF: </span><span class="si">{</span><span class="n">cgenff_sys2</span><span class="si">}</span><span class="s2"> are combined.&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_match_terminal_real_and_dummy_atoms_for_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol1"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol1">[docs]</a>    <span class="k">def</span> <span class="nf">_match_terminal_real_and_dummy_atoms_for_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Matches the terminal real and dummy atoms and returns a dict with real atom idx as key and a set of dummy atoms that connect</span>
 <span class="sd">        to this real atom as a set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_terminal_real_and_dummy_atoms</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminal_real_atom_cc1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminal_dummy_atom_cc1</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_match_terminal_real_and_dummy_atoms_for_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol2"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol2">[docs]</a>    <span class="k">def</span> <span class="nf">_match_terminal_real_and_dummy_atoms_for_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Matches the terminal real and dummy atoms and returns a dict with real atom idx as key and a set of dummy atoms that connect</span>
 <span class="sd">        to this real atom as a set</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_terminal_real_and_dummy_atoms</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminal_real_atom_cc2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">terminal_dummy_atom_cc2</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
-    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ProposeMutationRoute._match_terminal_real_and_dummy_atoms"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_match_terminal_real_and_dummy_atoms</span><span class="p">(</span>
         <span class="n">mol</span><span class="p">,</span> <span class="n">real_atoms_cc</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">dummy_atoms_cc</span><span class="p">:</span> <span class="nb">list</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -459,7 +460,7 @@
                 <span class="k">if</span> <span class="n">dummy_atoms_idx</span> <span class="ow">in</span> <span class="n">real_neighbors</span><span class="p">:</span>
                     <span class="n">real_atom_match_dummy_atom</span><span class="p">[</span><span class="n">real_atom_idx</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dummy_atoms_idx</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">real_atom_match_dummy_atom</span>
+        <span class="k">return</span> <span class="n">real_atom_match_dummy_atom</span></div>
 
     <span class="k">def</span> <span class="nf">_set_common_core_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># find terminal atoms</span>
@@ -776,19 +777,19 @@
         <span class="p">]</span>
         <span class="k">return</span> <span class="n">dummy_list_mol</span>
 
-    <span class="k">def</span> <span class="nf">get_common_core_idx_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute.get_common_core_idx_mol1"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.get_common_core_idx_mol1">[docs]</a>    <span class="k">def</span> <span class="nf">get_common_core_idx_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the common core of mol1.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_common_core</span><span class="p">(</span><span class="s2">&quot;m1&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_common_core</span><span class="p">(</span><span class="s2">&quot;m1&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_common_core_idx_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute.get_common_core_idx_mol2"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.get_common_core_idx_mol2">[docs]</a>    <span class="k">def</span> <span class="nf">get_common_core_idx_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the common core of mol2.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_common_core</span><span class="p">(</span><span class="s2">&quot;m2&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_common_core</span><span class="p">(</span><span class="s2">&quot;m2&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute._get_common_core"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._get_common_core">[docs]</a>    <span class="k">def</span> <span class="nf">_get_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper Function - should not be called directly.</span>
 <span class="sd">        Returns the common core.</span>
@@ -798,9 +799,9 @@
         <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">added_indeces</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">removed_indeces</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
                 <span class="n">keep_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">keep_idx</span>
+        <span class="k">return</span> <span class="n">keep_idx</span></div>
 
-    <span class="k">def</span> <span class="nf">_find_mcs</span><span class="p">(</span>
+<div class="viewcode-block" id="ProposeMutationRoute._find_mcs"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._find_mcs">[docs]</a>    <span class="k">def</span> <span class="nf">_find_mcs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mol1_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">mol2_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -855,7 +856,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol1_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol2_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">mcs</span>
+        <span class="k">return</span> <span class="n">mcs</span></div>
 
     <span class="k">def</span> <span class="nf">_return_atom_idx_from_bond_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">,</span> <span class="n">bond_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -892,7 +893,7 @@
 
         <span class="k">return</span> <span class="n">unique_subgraphs</span>
 
-    <span class="k">def</span> <span class="nf">_display_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">):</span>
+<div class="viewcode-block" id="ProposeMutationRoute._display_mol"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._display_mol">[docs]</a>    <span class="k">def</span> <span class="nf">_display_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets mol as input and displays its 2D Structure using IPythonConsole.</span>
 <span class="sd">        Parameters</span>
@@ -911,21 +912,21 @@
 
         <span class="n">mol</span> <span class="o">=</span> <span class="n">mol_with_atom_index</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
         <span class="n">AllChem</span><span class="o">.</span><span class="n">Compute2DCoords</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">show_common_core_on_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProposeMutationRoute.show_common_core_on_mol1"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.show_common_core_on_mol1">[docs]</a>    <span class="k">def</span> <span class="nf">show_common_core_on_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shows common core on mol1</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">())</span></div>
 
-    <span class="k">def</span> <span class="nf">show_common_core_on_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProposeMutationRoute.show_common_core_on_mol2"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.show_common_core_on_mol2">[docs]</a>    <span class="k">def</span> <span class="nf">show_common_core_on_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shows common core on mol2</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">())</span></div>
 
-    <span class="k">def</span> <span class="nf">_show_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">highlight</span><span class="p">):</span>
+<div class="viewcode-block" id="ProposeMutationRoute._show_common_core"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._show_common_core">[docs]</a>    <span class="k">def</span> <span class="nf">_show_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">highlight</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function - do not call directly.</span>
 <span class="sd">        Show common core.</span>
@@ -949,9 +950,9 @@
         <span class="n">Draw</span><span class="o">.</span><span class="n">DrawingOptions</span><span class="o">.</span><span class="n">includeAtomNumbers</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">drawer</span><span class="o">.</span><span class="n">FinishDrawing</span><span class="p">()</span>
         <span class="n">svg</span> <span class="o">=</span> <span class="n">drawer</span><span class="o">.</span><span class="n">GetDrawingText</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;svg:&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">svg</span>
+        <span class="k">return</span> <span class="n">svg</span></div>
 
-    <span class="k">def</span> <span class="nf">generate_mutations_to_common_core_for_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute.generate_mutations_to_common_core_for_mol1"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol1">[docs]</a>    <span class="k">def</span> <span class="nf">generate_mutations_to_common_core_for_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the mutation route to the common fore for mol1.</span>
 <span class="sd">        ----------</span>
@@ -966,9 +967,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">()</span>
         <span class="p">)</span>
         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;transform&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_common_core</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">m</span>
+        <span class="k">return</span> <span class="n">m</span></div>
 
-    <span class="k">def</span> <span class="nf">generate_mutations_to_common_core_for_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute.generate_mutations_to_common_core_for_mol2"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol2">[docs]</a>    <span class="k">def</span> <span class="nf">generate_mutations_to_common_core_for_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the mutation route to the common fore for mol2.</span>
 <span class="sd">        Returns</span>
@@ -982,9 +983,9 @@
         <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_to_common_core</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">()</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">m</span>
+        <span class="k">return</span> <span class="n">m</span></div>
 
-    <span class="k">def</span> <span class="nf">_transform_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute._transform_common_core"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._transform_common_core">[docs]</a>    <span class="k">def</span> <span class="nf">_transform_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Common Core 1 is transformed to Common core 2. Bonded parameters and charges are adjusted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1055,9 +1056,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!&quot;</span><span class="p">)</span>
             <span class="n">transformations</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">return</span> <span class="n">transformations</span>
+        <span class="k">return</span> <span class="n">transformations</span></div>
 
-    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ProposeMutationRoute._find_terminal_atom"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._find_terminal_atom">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_find_terminal_atom</span><span class="p">(</span><span class="n">cc_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find atoms that connect the molecule to the common core.</span>
@@ -1083,9 +1084,9 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Terminal dummy atoms: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terminal_dummy_atoms</span><span class="p">)))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Terminal real atoms: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terminal_real_atoms</span><span class="p">)))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terminal_dummy_atoms</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terminal_real_atoms</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terminal_dummy_atoms</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terminal_real_atoms</span><span class="p">)))</span></div>
 
-    <span class="k">def</span> <span class="nf">_mutate_to_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dummy_region</span><span class="p">:</span> <span class="n">DummyRegion</span><span class="p">,</span> <span class="n">cc_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute._mutate_to_common_core"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._mutate_to_common_core">[docs]</a>    <span class="k">def</span> <span class="nf">_mutate_to_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dummy_region</span><span class="p">:</span> <span class="n">DummyRegion</span><span class="p">,</span> <span class="n">cc_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function - do not call directly.</span>
 <span class="sd">        Generates the mutation route to the common fore for mol.</span>
@@ -1191,11 +1192,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;No atoms will be decoupled.&quot;</span><span class="p">)</span>
             <span class="n">mutations</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">mutations</span>
+        <span class="k">return</span> <span class="n">mutations</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">CommonCoreTransformation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="CommonCoreTransformation"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation">[docs]</a><span class="k">class</span> <span class="nc">CommonCoreTransformation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonCoreTransformation.__init__"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cc1_indicies</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">cc2_indicies</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -1237,9 +1238,9 @@
         <span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bonded terms mutation: </span><span class="si">{</span><span class="n">bonded_terms_mutation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Charge mutation: </span><span class="si">{</span><span class="n">charge_mutation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Charge mutation: </span><span class="si">{</span><span class="n">charge_mutation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_atom_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="CommonCoreTransformation._get_atom_mapping"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation._get_atom_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">_get_atom_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _get_atom_mapping -- match the atom names of the common cores</span>
 
@@ -1267,7 +1268,7 @@
 
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc1: </span><span class="si">{</span><span class="n">cc_names_struc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc2: </span><span class="si">{</span><span class="n">cc_names_struc2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">match_atom_names_cc1_to_cc2</span>
+        <span class="k">return</span> <span class="n">match_atom_names_cc1_to_cc2</span></div>
 
         
     <span class="k">def</span> <span class="nf">_mutate_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
@@ -1298,7 +1299,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding atom in cc2 found&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_mutate_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonCoreTransformation._mutate_atoms"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation._mutate_atoms">[docs]</a>    <span class="k">def</span> <span class="nf">_mutate_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        mutate atom types.</span>
 
@@ -1357,7 +1358,7 @@
                             <span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding atom in cc2 found&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding atom in cc2 found&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_mutate_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 
@@ -1616,7 +1617,7 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">original_torsion</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding torsion in cc2 found&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonCoreTransformation.mutate"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation.mutate">[docs]</a>    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mutates the bonded parameters of cc1 to cc2.</span>
 <span class="sd">        Parameters</span>
@@ -1645,7 +1646,7 @@
             <span class="c1"># scale angles</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_angles</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">)</span>
             <span class="c1"># scale torsions</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_torsions</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_torsions</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_modify_type_in_cc</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">Atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">):</span>
@@ -1657,16 +1658,16 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting RRR atomtype for atom: </span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="n">atom</span><span class="o">.</span><span class="n">initial_type</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span>
             <span class="n">psf</span><span class="o">.</span><span class="n">number_of_dummys</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;RRR</span><span class="si">{</span><span class="n">psf</span><span class="o">.</span><span class="n">number_of_dummys</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;RRR</span><span class="si">{</span><span class="n">psf</span><span class="o">.</span><span class="n">number_of_dummys</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
-<span class="k">class</span> <span class="nc">Mutation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms_to_be_mutated</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">dummy_region</span><span class="p">:</span> <span class="n">DummyRegion</span><span class="p">):</span>
+<div class="viewcode-block" id="Mutation"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation">[docs]</a><span class="k">class</span> <span class="nc">Mutation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Mutation.__init__"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms_to_be_mutated</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">dummy_region</span><span class="p">:</span> <span class="n">DummyRegion</span><span class="p">):</span>
 
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">atoms_to_be_mutated</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span> <span class="o">=</span> <span class="n">atoms_to_be_mutated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region</span> <span class="o">=</span> <span class="n">dummy_region</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span> <span class="o">=</span> <span class="n">dummy_region</span><span class="o">.</span><span class="n">tlc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span> <span class="o">=</span> <span class="n">dummy_region</span><span class="o">.</span><span class="n">tlc</span></div>
 
     <span class="k">def</span> <span class="nf">_mutate_charge</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
@@ -1722,7 +1723,7 @@
             <span class="c1"># NOTEthere is always a type change</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_modify_type</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">atom_type_suffix</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span>
+<div class="viewcode-block" id="Mutation.mutate"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation.mutate">[docs]</a>    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
         <span class="n">lambda_value_electrostatic</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -1749,9 +1750,9 @@
         <span class="k">if</span> <span class="n">lambda_value_vdw</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_vdw</span><span class="p">(</span>
                 <span class="n">psf</span><span class="p">,</span> <span class="n">lambda_value_vdw</span><span class="p">,</span> <span class="n">vdw_atom_idx</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">steric_mutation_to_default</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_compensate_charge</span><span class="p">(</span>
+<div class="viewcode-block" id="Mutation._compensate_charge"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation._compensate_charge">[docs]</a>    <span class="k">def</span> <span class="nf">_compensate_charge</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">total_charge</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1829,7 +1830,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">new_charge</span><span class="p">,</span> <span class="n">total_charge</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Charge compensation failed. Introducing non integer total charge: </span><span class="si">{</span><span class="n">new_charge</span><span class="si">}</span><span class="s2">. Target total charge: </span><span class="si">{</span><span class="n">total_charge</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_scale_epsilon</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
@@ -1858,7 +1859,7 @@
                 <span class="n">psf</span><span class="o">.</span><span class="n">mutations_to_default</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">new_type</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_type_suffix</span><span class="si">}{</span><span class="n">psf</span><span class="o">.</span><span class="n">mutations_to_default</span><span class="si">}</span><span class="s2">&quot;</span>
 
-            <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">new_type</span>
+            <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">new_type</span></div>
 
 
 <span class="k">def</span> <span class="nf">mutate_pure_tautomers</span><span class="p">(</span>

@@ -127,27 +127,26 @@ system
 The *simulation* container contains the simulation parameters you want to use.
 
 simulation
-
     parameters
-        nstep: [int]
+        nstep: (int)
             How many calculation steps you want to simulate
-        nstdcd: [int]
+        nstdcd: (int)
             How many steps you want in your trajectory file overall
-        nstout: [int]
+        nstout: (int)
             How many steps you want written out in the .log.out files
-        cons: ["Hbond",None]
+        cons: (int)
             What constraints (not *restraints*) you want in your system
-        dt: [float]
+        dt: (int)
             The timestep in nanoseconds. With hydrogen mass repartitioning, up to 0.004 ns should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.
-        switch: ["vfswitch","vfoff"]
+        switch: (["vfswitch","vfoff"])
             How the van-der-Waals forces are switched.
-        mini_nstep: [int]
+        mini_nstep: (int)
             Steps for minimisation
-        GPU: [True/False]
+        GPU: ([True/False])
             Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.
-        workload-manager: ["slurm","CGE"]
+        workload-manager: (["slurm","CGE"])
             For which workload-manager the script files should be output.
-        free-energy-type: ["rbfe","rsfe"]
+        free-energy-type: (["rbfe","rsfe"])
             Calculate relative binding free energy or relative solvation free energy
 
 Restraints
