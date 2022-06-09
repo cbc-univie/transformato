@@ -19,13 +19,14 @@ import numpy as np
 import os
 import sys
 
-PATH_2OJ9="../data/2OJ9-original/complex/openmm/step3_input.pdb"
+TRAFO_DIR="./transformato/"
+PATH_2OJ9=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/step3_input.pdb"
 
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
 def test_createRestraintsFromConfig():
     
-    with open("../transformato/tests/config/test-2oj9-restraints.yaml","r") as stream:
+    with open(f"{TRAFO_DIR}/tests/config/test-2oj9-restraints.yaml","r") as stream:
         config=yaml.safe_load(stream)
     
     assert type(config)==dict # checks if config yaml is properly loaded
@@ -71,7 +72,7 @@ def test_write_yaml(tmp_path):
     sys.modules["transformato.mutate"].cc_names_struc1=["C1","C2"]
     sys.modules["transformato.mutate"].cc_names_struc2=["C1","C2"]
     path=tmp_path/"test-config.yaml"
-    config=tfut.load_config_yaml("./tests/config/test-2oj9-rsfe-restraints.yaml",".","./tmp/")
+    config=tfut.load_config_yaml(f"{TRAFO_DIR}/tests/config/test-2oj9-rsfe-restraints.yaml",".","./tmp/")
     system=MockSystem()
     current_step=4
     tfrs.write_restraints_yaml(path,system,config,current_step)
