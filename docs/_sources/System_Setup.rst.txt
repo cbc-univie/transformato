@@ -126,8 +126,8 @@ system
 
 The *simulation* container contains the simulation parameters you want to use.
 
-.. topic:: simulation
-    
+simulation
+
     parameters
         nstep: [int]
             How many calculation steps you want to simulate
