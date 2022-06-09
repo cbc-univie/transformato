@@ -283,7 +283,9 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     restraints=[]
     # parse config arguments:
     restraint_command_string=configuration["simulation"]["restraints"].split()
-    kval=3 #default k - value
+
+    # Define default values
+    kval=3
     mode="simple"
     shape="harmonic"
     for arg in restraint_command_string:
