@@ -121,7 +121,7 @@ class Restraint():
 
         del self.topology # delete the enormous no longer needed universe asap
         return self.force
-        
+
     def GenerateContinuous1DStepFunction(self,permitted_distance:float):
         """Creates and returns a openMM continous1DStepFunction
         
@@ -285,6 +285,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     restraint_command_string=configuration["simulation"]["restraints"].split()
     kval=3 #default k - value
     mode="simple"
+    shape="harmonic"
     for arg in restraint_command_string:
         if "k=" in arg:
             kval=int(arg.split("=")[1])
@@ -292,6 +293,9 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
         elif "extremities=" in arg:
             mode="extremities"
             n_extremities=int(arg.split("=")[1])
+        elif "shape=" in arg:
+            
+            shape=str(arg.split("=")[1])
 
     if "auto" in restraint_command_string and mode=="simple":
         
@@ -300,7 +304,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     elif "auto" in restraint_command_string and mode=="extremities":
         selection_strings=GenerateExtremities(configuration,pdbpath,n_extremities)
         for selection in selection_strings:
-            restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,k=kval))
+            restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,k=kval,shape=shape))
     if "manual" in restraint_command_string:
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
         for key in manual_restraint_list:

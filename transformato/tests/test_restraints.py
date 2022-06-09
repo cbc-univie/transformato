@@ -77,3 +77,4 @@ def test_write_yaml(tmp_path):
     tfrs.write_restraints_yaml(path,system,config,current_step)
 
     assert os.path.exists(path)
+
