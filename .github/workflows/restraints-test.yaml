@@ -1,0 +1,45 @@
+name: Pytest restraints
+
+on:
+  push:
+    branches:
+      - "restraints"
+
+
+jobs:
+  
+    
+  test-ubuntu-latest:
+    defaults:
+      run:
+        shell: bash -l {0}
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.8
+    
+    - name: Setup conda
+      
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        activate-environment: fep
+        environment-file: devtools/conda-envs/test_env.yaml
+        python-version: 3.8
+        
+        auto-activate-base: false
+    - name: Check conda
+      run: |
+        conda info
+        conda list
+        
+        
+    - name: Test with pytest
+      run: |
+        
+        pytest -v -m restraints --cov=transformato.restraints

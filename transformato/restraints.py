@@ -19,11 +19,12 @@ logger.setLevel(logging.DEBUG)
 class Restraint():
     def __init__(
         self,
-        selligand,
-        selprotein,
-        pdbpath,
-        k,
-        shape="harmonic"
+        selligand:str,
+        selprotein:str,
+        pdbpath:str,
+        k:float,
+        shape:str="harmonic",
+        wellsize:float=0.1
         ):
         """Class representing a restraint to apply to the system
 
@@ -31,9 +32,11 @@ class Restraint():
 
         Args:
             selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings
-            k (int): the force (=spring) constant
-            pdbpath (str): the path to the pdbfile underlying the topology analysis
-            shape (str): 'harmonic' or 'flat-bottom' (not yet implemented): Which potential to use for the energy function"""
+            k: the force (=spring) constant
+            pdbpath: the path to the pdbfile underlying the topology analysis
+            shape: 'harmonic' or 'flatbottom' 
+            wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.
+            """
 
         self.shape=shape
         
@@ -47,9 +50,10 @@ class Restraint():
 
         self.force_constant=k
         self.shape=shape
+        self.wellsize=wellsize
         
     def createForce(self,common_core_names):
-        """Actually creates the force, after dismissing all idxs not in the common core from the molecule
+        """Actually creates the force, after dismissing all idxs not in the common core from the molecule.
         
         Args:
             common_core_names (array[str]):  - Array with strings of the common core names. Usually provided by the restraint.yaml file."""
@@ -90,17 +94,58 @@ class Restraint():
                 
             self.force.addBond([0,1],[self.force_constant,self.initial_distance/10])
 
-            
+            logger.info(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}""")
         elif self.shape=="flatbottom":
-            raise NotImplementedError("Cant create flatbottom potential, as it has not yet been implemented")
+            # create force with flat-bottom potential
 
-        logger.info(f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}""")
+            self.stepfunction=self.GenerateContinuous1DStepFunction(self.wellsize)
+
+            self.force=CustomCentroidBondForce(2,"stepfunction((distance(g1,g2)-r0))*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
+
+            self.force.addTabulatedFunction(name="stepfunction",function=self.stepfunction)
+            self.force.addPerBondParameter("k")
+            self.force.addPerBondParameter("r0")
+            self.force.addGroup(self.g1_openmm)
+            self.force.addGroup(self.g2_openmm)
+                
+            self.force.addBond([0,1],[self.force_constant,self.initial_distance/10])
+
+            logger.info(f"Force created: Flat-bottom potential. Initial distance: {self.initial_distance}. k: {self.force_constant}. Well-size: {self.wellsize}")
+
+        else:
+            raise NotImplementedError(f"Cannot create potential of shape {self.shape}")
+        
         logger.debug(f"""
         Group 1 (COM: {self.g1pos}): {[self.g1_in_cc.names]}
         Group 2 (COM: {self.g2pos}): {[self.g2.names]}""")
 
         del self.topology # delete the enormous no longer needed universe asap
         return self.force
+
+    def GenerateContinuous1DStepFunction(self,permitted_distance:float):
+        """Creates and returns a openMM continous1DStepFunction
+        
+        Very simply, this creates a TabulatedFunction that takes the distance of the atom group COM to its origin, and if greater, returns 1. Otherwise, it returns 0. This function does not need to be called directly.
+        It is called by the restraint generator if a flat-bottom restraint is requested.
+
+        Args:
+            
+
+            permitted_distance: How large the well size is (meaning the 3D radius). Give in nanometers.
+
+        Returns:
+            An openMM Continuous1DFunction object representing the StepForce
+        """
+
+        # OpenMM docs: Function is assumed to be zero for x < min. Values inside range are interpolated using spline.
+
+        
+        value_table=[1,1]
+
+        return openmm.Continuous1DFunction(value_table,min=permitted_distance,max=1500) # If there is a system larger than 1500 nm, I'm scared
+
+        
+    
     def get_force(self):
         return self.force
     
@@ -127,7 +172,7 @@ def get3DDistance(pos1,pos2):
 def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
     """Takes the common core and generates n extremities at the furthest point
     
-        Returns a selection string of the extremeties with a sphlayer selecting type C from sphinner to sphouter.
+        Returns a selection string of the extremities with a sphlayer selecting type C from sphinner to sphouter.
         The algorithm works as follows:
 
         (All of these operations only operate on carbons in the common core)
@@ -238,8 +283,11 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     restraints=[]
     # parse config arguments:
     restraint_command_string=configuration["simulation"]["restraints"].split()
-    kval=3 #default k - value
+
+    # Define default values
+    kval=3
     mode="simple"
+    shape="harmonic"
     for arg in restraint_command_string:
         if "k=" in arg:
             kval=int(arg.split("=")[1])
@@ -247,6 +295,9 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
         elif "extremities=" in arg:
             mode="extremities"
             n_extremities=int(arg.split("=")[1])
+        elif "shape=" in arg:
+            
+            shape=str(arg.split("=")[1])
 
     if "auto" in restraint_command_string and mode=="simple":
         
@@ -255,7 +306,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     elif "auto" in restraint_command_string and mode=="extremities":
         selection_strings=GenerateExtremities(configuration,pdbpath,n_extremities)
         for selection in selection_strings:
-            restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,k=kval))
+            restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,k=kval,shape=shape))
     if "manual" in restraint_command_string:
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
         for key in manual_restraint_list:
@@ -308,3 +359,4 @@ def write_restraints_yaml(path,system,config,current_step):
         resyaml.write(output)
         resyaml.close()
     
+
