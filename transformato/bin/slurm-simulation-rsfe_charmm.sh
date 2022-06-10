@@ -17,3 +17,13 @@ charmm_openmm_domdec -i ${input}.inp > log_vac.out
 input=charmm_run_waterbox
 charmm_openmm_domdec -i ${input}.inp > log_solv.out
 
+
+case ${SWITCH} in
+1)
+run_vacuum
+;;
+2)
+run_vacuum
+run_waterbox
+;;
+esac

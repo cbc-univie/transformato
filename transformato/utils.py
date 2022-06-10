@@ -186,6 +186,17 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
     settingsMap["system"]["structure2"]["tlc"] = settingsMap["system"]["structure2"][
         "tlc"
     ].upper()
+
+    # read workload manager from yaml
+    if settingsMap["simulation"].get("workload-manager")==None:
+        settingsMap["simulation"]["workload-manager"]="SGE"
+        print("No workload-manager found in yaml config. Defaulting to SGE")
+    elif (settingsMap["simulation"]["workload-manager"]=="SGE"
+        or settingsMap["simulation"]["workload-manager"]=="slurm"):
+        print("Workload-Manager for output files set to %s"%settingsMap["simulation"]["workload-manager"])
+    else:
+        raise KeyError("Unsupported workload manager specified in yaml: %s. Valid options are SGE or slurm."%settingsMap["simulation"]["workload-manager"])
+
     # set the bin, data and analysis dir
     settingsMap["bin_dir"] = get_bin_dir()
     settingsMap["analysis_dir_base"] = os.path.abspath(f"{output_dir}")
