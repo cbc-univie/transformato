@@ -31,9 +31,9 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.DEBUG)
     workdir = get_test_output_dir()
-    conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
+    conf = "data/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+        config=conf, input_dir="data/", output_dir=workdir
     )
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -88,7 +88,7 @@ def test_run_2oj9_rsfe_with_different_switches(caplog):
     from .test_run_production import run_simulation
 
     # vfswitch
-    conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe_vfswitch.yaml"
+    conf_path = "data/config/test-2oj9-tautomer-pair-rsfe_vfswitch.yaml"
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir=get_test_output_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -196,9 +196,9 @@ def test_run_28_1h1q_rbfe_with_openMM():
     # Generating output for a run of the CDK2 Ligand System
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-28_1h1q_rbfe.yaml",
+        config="data/config/test-28_1h1q_rbfe.yaml",
         input_dir="data/",
-        output_dir='/site/raid4/johannes/test',
+        output_dir=get_test_output_dir,
     )
 
     s1 = SystemStructure(configuration, "structure1")

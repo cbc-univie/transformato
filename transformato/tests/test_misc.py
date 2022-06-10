@@ -51,7 +51,7 @@ def test_change_platform():
     )
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        config="data/config/test-toluene-methane-rsfe.yaml",
         input_dir=".",
         output_dir=get_test_output_dir(),
     )
@@ -105,7 +105,7 @@ def test_reading_of_coords():
     base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/"
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
