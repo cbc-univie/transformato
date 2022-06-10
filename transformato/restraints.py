@@ -40,7 +40,8 @@ class Restraint():
         pdbpath:str,
         k:float=3,
         shape:str="harmonic",
-        wellsize:float=0.05
+        wellsize:float=0.05,
+        mode:str
         ):
         """Class representing a restraint to apply to the system
 
