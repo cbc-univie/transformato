@@ -41,7 +41,7 @@ class Restraint():
         k:float=3,
         shape:str="harmonic",
         wellsize:float=0.05,
-        mode:str
+        mode:str=None
         ):
         """Class representing a restraint to apply to the system
 
