@@ -72,7 +72,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for transformato.restraints</h1><div class="highlight"><pre>
-<span></span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Manages restraints and the forces created from them</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">calendar</span> <span class="kn">import</span> <span class="n">c</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.sharedctypes</span> <span class="kn">import</span> <span class="n">Value</span>
 <span class="kn">from</span> <span class="nn">tabnanny</span> <span class="kn">import</span> <span class="n">check</span>
@@ -91,6 +93,17 @@
 <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Restraint"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint">[docs]</a><span class="k">class</span> <span class="nc">Restraint</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Class representing a restraint to apply to the system</span>
+
+<span class="sd">        Intermediary step - openMM force objects are generated directly from this class and applied to the system.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            selligand,selprotein (MDAnalysis selection string): The atoms on whose center of mass the restraint will bei applied</span>
+<span class="sd">            k: the force (=spring) constant</span>
+<span class="sd">            pdbpath: the path to the pdbfile underlying the topology analysis</span>
+<span class="sd">            shape: &#39;harmonic&#39; or &#39;flatbottom&#39; </span>
+<span class="sd">            wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="Restraint.__init__"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">selligand</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
