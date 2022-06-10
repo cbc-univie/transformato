@@ -2,7 +2,6 @@ import logging
 from collections import namedtuple, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
-from mmap import MADV_UNMERGEABLE
 from typing import List, Tuple
 
 import numpy as np
