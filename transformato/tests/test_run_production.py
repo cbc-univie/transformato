@@ -13,11 +13,11 @@ from transformato.utils import run_simulation
 from transformato.constants import change_platform_to_test_platform
 
 
-# @pytest.mark.rsfe
-# @pytest.mark.skipif(
-#     os.getenv("CI") == "true",
-#     reason="Skipping tests that cannot pass in github actions",
-# )
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
     import logging
 
