@@ -130,7 +130,7 @@ def test_generate_alchemical_path_for_toluene_commmon_core_with_CUDA():
     from transformato.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe-CUDA.yaml",
+        config="data/config/test-toluene-methane-rsfe-CUDA.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -166,7 +166,7 @@ def test_generate_alchemical_path_for_2MIN_common_core():
     from transformato.testsystems import mutate_2_methylindole_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-2MIN-methane-rsfe.yaml",
+        config="data/config/test-2MIN-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -185,7 +185,7 @@ def test_generate_alchemical_path_for_2MFN_common_core():
     from transformato.testsystems import mutate_2_methylfuran_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-2MFN-methane-rsfe.yaml",
+        config="data/config/test-2MFN-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -204,7 +204,7 @@ def test_generate_alchemical_path_for_neopentane_common_core():
     from transformato.testsystems import mutate_neopentane_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-neopentane-methane-rsfe.yaml",
+        config="data/config/test-neopentane-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -223,7 +223,7 @@ def test_generate_alchemical_path_for_methanol_common_core():
     from transformato.testsystems import mutate_methanol_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-methanol-methane-rsfe.yaml",
+        config="data/config/test-methanol-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -242,7 +242,7 @@ def test_generate_alchemical_path_for_2_CPI_to_common_core():
     from transformato.testsystems import mutate_2_CPI_to_7_CPI_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
+        config="data/config/test-7-CPI-2-CPI-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -261,7 +261,7 @@ def test_generate_alchemical_path_for_7_CPI_to_common_core():
     from transformato.testsystems import mutate_7_CPI_to_2_CPI_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
+        config="data/config/test-7-CPI-2-CPI-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )

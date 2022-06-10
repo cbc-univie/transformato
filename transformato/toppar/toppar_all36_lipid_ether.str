@@ -2506,16 +2506,16 @@ ATOM H2R  HAL2    0.09 !        H2R---C22---H2S         |
 ATOM H2S  HAL2    0.09 !               |                |
 GROUP                  !               |    beta4       |
 ATOM C3   CTL2    0.08 !               |                |
-ATOM HX   HAL2    0.08 !               |           HX---C3---HY
-ATOM HY   HAL2    0.08 !               |                |   gamma1
-ATOM O31  OG301  -0.36 !               |                O31
-ATOM C31  CEL1    0.00 !               |               /    gamma2
-ATOM H1X  HEL1    0.08 !               |         H1X--C31
-ATOM C32  CEL1   -0.20 !               |              ||    gamma3 (cis?)
-ATOM H2X  HEL1    0.08 !               |        H2X---C32
-ATOM C23  CTL2    0.00 !               |              |
-ATOM H3R  HAL2    0.08 !        H3R ---C23---H3S      |
-ATOM H3S  HAL2    0.08 !               |              |
+ATOM HX   HAL2    0.02 !               |           HX---C3---HY
+ATOM HY   HAL2    0.02 !               |                |   gamma1
+ATOM O31  OG301  -0.56 !               |                O31
+ATOM C31  CEL1    0.42 !               |               /    gamma2
+ATOM H1X  HEL1    0.02 !               |         H1X--C31
+ATOM C32  CEL1   -0.15 !               |              ||    gamma3 (cis?)
+ATOM H2X  HEL1    0.15 !               |        H2X---C32
+ATOM C23  CTL2   -0.18 !               |              |
+ATOM H3R  HAL2    0.09 !        H3R ---C23---H3S      |
+ATOM H3S  HAL2    0.09 !               |              |
 GROUP                  !               |              |
 ATOM C24  CTL2   -0.18 !               |              |
 ATOM H4R  HAL2    0.09 !        H4R ---C24---H4S      |
@@ -2866,18 +2866,18 @@ ATOM O22  OBL    -0.63 !               C21              |
 ATOM C22  CTL2   -0.22 !               |   beta3        |
 ATOM H2R  HAL2    0.09 !        H2R---C22---H2S         |
 ATOM H2S  HAL2    0.09 !               |                |
-GROUP                  !               |    beta4       |
+GROUP                  !               |                |
 ATOM C3   CTL2    0.08 !               |                |
-ATOM HX   HAL2    0.08 !               |           HX---C3---HY
-ATOM HY   HAL2    0.08 !               |                |   gamma1
-ATOM O31  OG301  -0.36 !               |                O31
-ATOM C31  CEL1    0.00 !               |               /    gamma2
-ATOM H1X  HEL1    0.08 !               |         H1X--C31
-ATOM C32  CEL1   -0.20 !               |              ||    gamma3 (cis?)
-ATOM H2X  HEL1    0.08 !               |        H2X---C32
-ATOM C23  CTL2    0.00 !               |              |
-ATOM H3R  HAL2    0.08 !        H3R ---C23---H3S      |
-ATOM H3S  HAL2    0.08 !               |              |
+ATOM HX   HAL2    0.02 !               |           HX---C3---HY
+ATOM HY   HAL2    0.02 !               |                |   gamma1
+ATOM O31  OG301  -0.56 !               |                O31
+ATOM C31  CEL1    0.42 !               |               /    gamma2
+ATOM H1X  HEL1    0.02 !               |         H1X--C31
+ATOM C32  CEL1   -0.15 !               |              ||    gamma3 (cis?)
+ATOM H2X  HEL1    0.15 !               |        H2X---C32
+ATOM C23  CTL2   -0.18 !               |              |
+ATOM H3R  HAL2    0.09 !        H3R ---C23---H3S      |
+ATOM H3S  HAL2    0.09 !               |              |
 GROUP                  !               |              |
 ATOM C24  CTL2   -0.18 !               |              |
 ATOM H4R  HAL2    0.09 !        H4R ---C24---H4S      |
@@ -3225,18 +3225,18 @@ ATOM O22  OBL    -0.63 !               C21              |
 ATOM C22  CTL2   -0.22 !               |   beta3        |
 ATOM H2R  HAL2    0.09 !        H2R---C22---H2S         |
 ATOM H2S  HAL2    0.09 !               |                |
-GROUP                  !               |    beta4       |
+GROUP                  !               |                |
 ATOM C3   CTL2    0.08 !               |                |
-ATOM HX   HAL2    0.08 !               |           HX---C3---HY
-ATOM HY   HAL2    0.08 !               |                |   gamma1
-ATOM O31  OG301  -0.36 !               |                O31
-ATOM C31  CEL1    0.00 !               |               /    gamma2
-ATOM H1X  HEL1    0.08 !               |         H1X--C31
-ATOM C32  CEL1   -0.20 !               |              ||    gamma3 (cis?)
-ATOM H2X  HEL1    0.08 !               |        H2X---C32
-ATOM C23  CTL2    0.00 !               |              |
-ATOM H3R  HAL2    0.08 !        H3R ---C23---H3S      |
-ATOM H3S  HAL2    0.08 !               |              |
+ATOM HX   HAL2    0.02 !               |           HX---C3---HY
+ATOM HY   HAL2    0.02 !               |                |   gamma1
+ATOM O31  OG301  -0.56 !               |                O31
+ATOM C31  CEL1    0.42 !               |               /    gamma2
+ATOM H1X  HEL1    0.02 !               |         H1X--C31
+ATOM C32  CEL1   -0.15 !               |              ||    gamma3 (cis?)
+ATOM H2X  HEL1    0.15 !               |        H2X---C32
+ATOM C23  CTL2   -0.18 !               |              |
+ATOM H3R  HAL2    0.09 !        H3R ---C23---H3S      |
+ATOM H3S  HAL2    0.09 !               |              |
 GROUP                  !               |              |
 ATOM C24  CEL1   -0.15 !               |              |
 ATOM H4R  HEL1    0.15 !        H4R ---C24---H4S      |
@@ -3613,18 +3613,18 @@ ATOM O22  OBL    -0.63 !               C21              |
 ATOM C22  CTL2   -0.22 !               |   beta3        |
 ATOM H2R  HAL2    0.09 !        H2R---C22---H2S         |
 ATOM H2S  HAL2    0.09 !               |                |
-GROUP                  !               |    beta4       |
+GROUP                  !               |                |
 ATOM C3   CTL2    0.08 !               |                |
-ATOM HX   HAL2    0.08 !               |           HX---C3---HY
-ATOM HY   HAL2    0.08 !               |                |   gamma1
-ATOM O31  OG301  -0.36 !               |                O31
-ATOM C31  CEL1    0.00 !               |               /    gamma2
-ATOM H1X  HEL1    0.08 !               |         H1X--C31
-ATOM C32  CEL1   -0.20 !               |              ||    gamma3 (cis?)
-ATOM H2X  HEL1    0.08 !               |        H2X---C32
-ATOM C23  CTL2    0.00 !               |              |
-ATOM H3R  HAL2    0.08 !        H3R ---C23---H3S      |
-ATOM H3S  HAL2    0.08 !               |              |
+ATOM HX   HAL2    0.02 !               |           HX---C3---HY
+ATOM HY   HAL2    0.02 !               |                |   gamma1
+ATOM O31  OG301  -0.56 !               |                O31
+ATOM C31  CEL1    0.42 !               |               /    gamma2
+ATOM H1X  HEL1    0.02 !               |         H1X--C31
+ATOM C32  CEL1   -0.15 !               |              ||    gamma3 (cis?)
+ATOM H2X  HEL1    0.15 !               |        H2X---C32
+ATOM C23  CTL2   -0.18 !               |              |
+ATOM H3R  HAL2    0.09 !        H3R ---C23---H3S      |
+ATOM H3S  HAL2    0.09 !               |              |
 GROUP                  !               |              |
 ATOM C24  CTL2   -0.18 !               |              |
 ATOM H4R  HAL2    0.09 !        H4R ---C24---H4S      |
@@ -3993,18 +3993,18 @@ ATOM O22  OBL    -0.63 !               C21              |
 ATOM C22  CTL2   -0.22 !               |   beta3        |
 ATOM H2R  HAL2    0.09 !        H2R---C22---H2S         |
 ATOM H2S  HAL2    0.09 !               |                |
-GROUP                  !               |    beta4       |
+GROUP                 !                |                |
 ATOM C3   CTL2    0.08 !               |                |
-ATOM HX   HAL2    0.08 !               |           HX---C3---HY
-ATOM HY   HAL2    0.08 !               |                |   gamma1
-ATOM O31  OG301  -0.36 !               |                O31
-ATOM C31  CEL1    0.00 !               |               /    gamma2
-ATOM H1X  HEL1    0.08 !               |         H1X--C31
-ATOM C32  CEL1   -0.20 !               |              ||    gamma3 (cis?)
-ATOM H2X  HEL1    0.08 !               |        H2X---C32
-ATOM C23  CTL2    0.00 !               |              |
-ATOM H3R  HAL2    0.08 !        H3R ---C23---H3S      |
-ATOM H3S  HAL2    0.08 !               |              |
+ATOM HX   HAL2    0.02 !               |           HX---C3---HY
+ATOM HY   HAL2    0.02 !               |                |   gamma1
+ATOM O31  OG301  -0.56 !               |                O31
+ATOM C31  CEL1    0.42 !               |               /    gamma2
+ATOM H1X  HEL1    0.02 !               |         H1X--C31
+ATOM C32  CEL1   -0.15 !               |              ||    gamma3 (cis?)
+ATOM H2X  HEL1    0.15 !               |        H2X---C32
+ATOM C23  CTL2   -0.18 !               |              |
+ATOM H3R  HAL2    0.09 !        H3R ---C23---H3S      |
+ATOM H3S  HAL2    0.09 !               |              |
 GROUP                  !               |              |
 ATOM C24  CTL2   -0.18 !               |              |
 ATOM H4R  HAL2    0.09 !        H4R ---C24---H4S      |
@@ -4702,7 +4702,6 @@ OG301 CEL1  HEL1  30.00    115.50 ! MOET, Methoxyethene, xxwy
 CG321  OG301  CG311    95.00    109.70 ! diethylether, alex
 OG301  CG2D1  CG2D1    48.00    123.50  !FROM CG2D1  CG2D1  CG301    48.00    123.50 ! CHOLEST cholesterol
 CG321  OG301  CG2D1    95.0    109.70 ! FROM CG321  OG301  CG321    95.00    109.70 ! diethylether, alex
-CG311  CG2D1  HGA4     40.00    116.00 ! LIPID 1-butene; propene, yin,adm jr., 12/95
 CG311  CG2D1  CG331    48.00    123.50 ! RETINOL TMCH
 OG301  CG2D1  HGA4     49.00    119.50 ! From NG2D1  CG2D1  HGA4     49.00    119.50 ! RETINOL SCH1, Schiff's base, deprotonated, adjusted for improper, xxwy, similar to CG321  CG2D1  HGA4     40.00    116.00 ! LIPID 1-butene; propene, yin,adm jr., 12/95
 

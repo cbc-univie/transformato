@@ -1705,6 +1705,8 @@ CP1  C    N    CPD1     2.7500  2   180.00
 CP1  C    N    CPD1     0.3000  4     0.00 
 CPD1 C    N    CPD1     2.7500  2   180.00 
 CPD1 C    N    CPD1     0.3000  4     0.00 
+CPD1 C    N    CP1      2.7500  2   180.00 
+CPD1 C    N    CP1      0.3000  4     0.00 
 CP2  CPD1 N    C        0.8000  3     0.00 
 CP2  CP3  N    CPD1     0.1000  3     0.00 
 CP2  CP3  NP   CPD1     0.0800  3     0.00 

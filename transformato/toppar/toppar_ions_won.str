@@ -60,7 +60,7 @@ MASS  -1  Hg2p     200.59000 Hg ! Mercury
 MASS  -1  Pb2p     207.20000 Pb ! Lead
 MASS  -1  Sm2p     150.36000 Sm ! Samarium
 MASS  -1  Eu2p     151.96000 Eu ! Europium
-MASS  -1  Yb2p     173.05000 Yb ! Ytterbium
+MASS  -1  Yb2p     173.04500 Yb ! Ytterbium
 MASS  -1  Al3p      26.98200 Al ! Aluminum
 MASS  -1  Sc3p      44.95600 Sc ! Scandium
 MASS  -1  Y3p       88.90600 Y ! Yttrium
@@ -77,7 +77,7 @@ MASS  -1  Dy3p     162.50000 Dy ! Dysprosium
 MASS  -1  Ho3p     164.93000 Ho ! Holmium
 MASS  -1  Er3p     167.28000 Er ! Erbium
 MASS  -1  Tu3p     168.93000 Tm ! Thulium
-MASS  -1  Yb3p     173.05000 Yb ! Ytterbium
+MASS  -1  Yb3p     173.04500 Yb ! Ytterbium
 MASS  -1  Lu3p     174.97000 Lu ! Lutetium
 MASS  -1  U3p      238.03000 U ! Uranium
 MASS  -1  Pu3p     244.06000 Pu ! Plutonium
@@ -460,7 +460,7 @@ MASS  -1  Hg2p     200.59000 ! Mercury
 MASS  -1  Pb2p     207.20000 ! Lead
 MASS  -1  Sm2p     150.36000 ! Samarium
 MASS  -1  Eu2p     151.96000 ! Europium
-MASS  -1  Yb2p     173.05000 ! Ytterbium
+MASS  -1  Yb2p     173.04500 ! Ytterbium
 MASS  -1  Al3p      26.98200 ! Aluminum
 MASS  -1  Sc3p      44.95600 ! Scandium
 MASS  -1  Y3p       88.90600 ! Yttrium
@@ -477,7 +477,7 @@ MASS  -1  Dy3p     162.50000 ! Dysprosium
 MASS  -1  Ho3p     164.93000 ! Holmium
 MASS  -1  Er3p     167.28000 ! Erbium
 MASS  -1  Tu3p     168.93000 ! Thulium
-MASS  -1  Yb3p     173.05000 ! Ytterbium
+MASS  -1  Yb3p     173.04500 ! Ytterbium
 MASS  -1  Lu3p     174.97000 ! Lutetium
 MASS  -1  U3p      238.03000 ! Uranium
 MASS  -1  Pu3p     244.06000 ! Plutonium

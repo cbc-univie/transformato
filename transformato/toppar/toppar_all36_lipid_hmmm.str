@@ -65,25 +65,15 @@ read para card flex @app
 * new parameters
 *
 
-BONDS
-!
-CEL3  CTL3  365.000     1.502              ! CEL3  CTL2  365.000     1.502  ! lip36; butene; from propene, yin,adm jr., 12/95; CEL1-CTL2
-
-
 ANGLES
 !
-CEL3   CEL3   CTL3    48.000   123.50      ! CEL3   CEL3   CTL2    48.000   123.50   ! lip36; 2-butene,from 2-butene, yin,adm jr., 12/95; CEL1-CEL1-CTL2
 HEL1   CEL3   CTL3    40.00    116.00      ! HEL1   CEL3   CTL2    40.00    116.00   ! lip36; 1-butene; from propene, yin,adm jr., 12/95; HEL1-CEL1-CTL2
-CEL3   CTL3   HAL3    45.00    111.50      ! CEL3   CTL2   HAL2    45.00    111.50   ! lip36; 1-butene; from propene, yin,adm jr., 12/95; HAL2-CTL2-CEL1
 
 
 DIHEDRALS
 !
 CTO1 CEL3 CEL3 CTL3     0.1500  1     0.00 ! CTO1 CEL3 CEL3 CTL2     0.1500  1     0.00 ! prot27; 2-butene, adm jr., 2/00 update; X CEL1 CEL1 X
 CTO1 CEL3 CEL3 CTL3     8.5000  2   180.00 ! CTO1 CEL3 CEL3 CTL2     8.5000  2   180.00 ! prot27; 2-butene, adm jr., 2/00 update; X CEL1 CEL1 X
-CEL3 CEL3 CTL3 HAL3     0.3000  3   180.00 ! CEL3 CEL3 CTL2 HAL2     0.3000  3   180.00 ! lip36; 2-butene, adm jr., 4/04; CEL1 CEL1 CTL2 HAL2
-HEL1 CEL3 CEL3 CTL3     0.1500  1   180.00 ! HEL1 CEL3 CEL3 CTL2     0.1500  1   180.00 ! lip36; 2-butene, adm jr., 2/00 update; X CEL1 CEL1 X
-HEL1 CEL3 CEL3 CTL3     8.5000  2   180.00 ! HEL1 CEL3 CEL3 CTL2     8.5000  2   180.00 ! lip36; 2-butene, adm jr., 2/00 update; X CEL1 CEL1 X
 HEL1 CEL3 CTL3 HAL3     0.000   3     0.00 ! HEL1 CEL3 CTL2 HAL2     0.000   3     0.00 ! lip36; butene, adm jr., 2/00 update; HEL1 CEL1 CTL2 HAL2
 
 END
