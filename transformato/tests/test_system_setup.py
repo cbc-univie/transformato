@@ -23,7 +23,7 @@ warnings.filterwarnings("ignore", module="parmed")
 def test_read_yaml():
     """Sample test, will check ability to read yaml files"""
     settingsMap = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        config="data/config/test-toluene-methane-rsfe.yaml",
         input_dir=".",
         output_dir="data/",
     )
@@ -39,7 +39,7 @@ def test_io_psf_files():
     from .test_run_production import run_simulation
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        config="data/config/test-toluene-methane-rsfe.yaml",
         input_dir="data/",
         output_dir=get_test_output_dir(),
     )
@@ -52,7 +52,7 @@ def test_io_psf_files():
 
 
 def test_psf_files():
-    test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
+    test_psf = pm.charmm.psf.CharmmPsfFile("data/config/test_input.psf")
     output = StringIO()
     test_psf.write_psf(output)
     corrected_psf = psf_correction(output)
@@ -80,7 +80,7 @@ def test_initialize_systems(caplog):
     caplog.set_level(logging.DEBUG)
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        config="data/config/test-toluene-methane-rsfe.yaml",
         input_dir="data/",
         output_dir=get_test_output_dir(),
     )
@@ -97,7 +97,7 @@ def test_initialize_systems(caplog):
     assert "waterbox" in s1.envs and "waterbox" in s2.envs
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml",
+        config="data/config/test-2oj9-tautomer-pair-rsfe.yaml",
         input_dir="data/",
         output_dir=get_test_output_dir(),
     )
@@ -121,7 +121,7 @@ def test_setup_system_for_methane_common_core():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        config="data/config/test-toluene-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -140,7 +140,7 @@ def test_setup_system_for_toluene_common_core_with_HMR():
     from transformato.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe-HMR.yaml",
+        config="data/config/test-toluene-methane-rsfe-HMR.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -175,7 +175,7 @@ def test_setup_system_for_methane_common_core_with_HMR():
     from transformato.testsystems import mutate_methane_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe-HMR.yaml",
+        config="data/config/test-toluene-methane-rsfe-HMR.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -253,7 +253,7 @@ def test_lonepairs_in_dummy_region():
     warnings.filterwarnings("ignore", module="parmed")
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/jnk1-17124-18631.yaml",
+        config="data/config/jnk1-17124-18631.yaml",
         input_dir="data/",
         output_dir=get_test_output_dir(),
     )

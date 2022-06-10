@@ -198,7 +198,7 @@ def test_run_28_1h1q_rbfe_with_openMM():
     configuration = load_config_yaml(
         config="data/config/test-28_1h1q_rbfe.yaml",
         input_dir="data/",
-        output_dir=get_test_output_dir,
+        output_dir=get_test_output_dir(),
     )
 
     s1 = SystemStructure(configuration, "structure1")

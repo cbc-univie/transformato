@@ -116,7 +116,6 @@ def get_bin_dir():
 
 
 def get_toppar_dir():
-    """Returns the bin directory of this package"""
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "toppar"))
 
 
