@@ -122,7 +122,7 @@ class Restraint():
 
             self.stepfunction=self.GenerateContinuous1DStepFunction(self.wellsize)
 
-            self.force=CustomCentroidBondForce(2,"stepfunction((abs(distance(g1,g2)-r0)))*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
+            self.force=CustomCentroidBondForce(2,"stepfunction((abs(distance(g1,g2)-r0)))*k*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
 
             self.force.addTabulatedFunction(name="stepfunction",function=self.stepfunction)
             self.force.addPerBondParameter("k")
