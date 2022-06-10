@@ -33,7 +33,7 @@ def test_transformato_imported():
 def test_generate_alchemical_path_acetylaceton_methyl_common_core():
     from ..testsystems import mutate_acetylaceton_methyl_common_core
 
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir=get_test_output_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -50,7 +50,7 @@ def test_rbfe_mutate_2oj9():
         load_config_yaml,
     )
 
-    conf_path = "transformato/tests/config/test-2oj9-tautomer-pair-rbfe.yaml"
+    conf_path = "data/config/test-2oj9-tautomer-pair-rbfe.yaml"
 
     configuration = load_config_yaml(
         config=conf_path, input_dir="data/", output_dir=get_test_output_dir()
@@ -78,7 +78,7 @@ def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
     caplog.set_level(logging.WARNING)
     from .test_mutation import setup_acetylacetone_tautomer_pair
 
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir=get_test_output_dir()
     )
@@ -98,7 +98,7 @@ def test_generate_alchemical_path_for_toluene_commmon_core():
     from transformato.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        config="data/config/test-toluene-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -276,9 +276,9 @@ def test_generate_alchemical_path_for_1a0q_1a07(caplog):
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.INFO)
     workdir = get_test_output_dir()
-    conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
+    conf = "data/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+        config=conf, input_dir="data/", output_dir=workdir
     )
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")

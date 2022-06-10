@@ -164,7 +164,7 @@ def test_proposed_mutation_mcs():
 
     workdir = get_test_output_dir()
     for conf in [
-        "transformato/tests/config/test-2oj9-rsfe.yaml",
+        "data/config/test-2oj9-rsfe.yaml",
     ]:
         configuration = load_config_yaml(
             config=conf, input_dir="data/", output_dir=workdir
@@ -336,7 +336,7 @@ def test_proposed_mutation_mcs():
         assert set(a.get_common_core_idx_mol2()) == cc2
         assert set(a.get_common_core_idx_mol1()) == cc1
 
-    for conf in ["transformato/tests/config/test-toluene-methane-rsfe.yaml"]:
+    for conf in ["data/config/test-toluene-methane-rsfe.yaml"]:
         configuration = load_config_yaml(
             config=conf, input_dir="data/", output_dir=workdir
         )
@@ -375,9 +375,9 @@ def test_mutation_with_multiple_dummy_regions(caplog):
     warnings.filterwarnings("ignore", module="parmed")
 
     workdir = get_test_output_dir()
-    conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
+    conf = "data/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+        config=conf, input_dir="data/", output_dir=workdir
     )
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -391,7 +391,7 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
 
     workdir = get_test_output_dir()
     for conf in [
-        "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
+        "data/config/test-7-CPI-2-CPI-rsfe.yaml",
     ]:
         configuration = load_config_yaml(
             config=conf, input_dir="data/", output_dir=workdir
@@ -434,7 +434,7 @@ def test_find_connected_dummy_regions1():
     workdir = get_test_output_dir()
     from rdkit.Chem import rdFMCS
 
-    conf = "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml"
+    conf = "data/config/test-7-CPI-2-CPI-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -480,7 +480,7 @@ def test_find_connected_dummy_regions2():
 
     workdir = get_test_output_dir()
     ##################################################
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    conf = "data/config/test-2oj9-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -565,9 +565,9 @@ def test_find_connected_dummy_regions2():
 def test_common_core_for_multiple_systems():
     workdir = get_test_output_dir()
     for conf in [
-        "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-        "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
-        "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
+        "data/config/test-toluene-methane-rsfe.yaml",
+        "data/config/test-neopentane-methane-rsfe.yaml",
+        "data/config/test-ethane-methanol-rsfe.yaml",
     ]:
         configuration = load_config_yaml(
             config=conf, input_dir="data/", output_dir=workdir
@@ -576,7 +576,7 @@ def test_common_core_for_multiple_systems():
         s2 = SystemStructure(configuration, "structure2")
 
         a = ProposeMutationRoute(s1, s2)
-        if conf == "transformato/tests/config/test-neopentane-methane-rsfe.yaml":
+        if conf == "data/config/test-neopentane-methane-rsfe.yaml":
             a.propose_common_core()
             a.finish_common_core(
                 connected_dummy_regions_cc1=[
@@ -615,9 +615,9 @@ def test_generate_mutation_list_for_multiple_systems():
 
     for conf, system_name in zip(
         [
-            "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-            "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
-            "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
+            "data/config/test-toluene-methane-rsfe.yaml",
+            "data/config/test-neopentane-methane-rsfe.yaml",
+            "data/config/test-ethane-methanol-rsfe.yaml",
         ],
         ["toluene-methane", "neopentane-methane", "ethane-ethanol"],
     ):
@@ -668,8 +668,8 @@ def test_generate_mutation_list_for_multiple_systems():
 def test_write_endpoint_state():
     # test physical endpoint systems
     for conf in [
-        "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-        "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
+        "data/config/test-toluene-methane-rsfe.yaml",
+        "data/config/test-ethane-methanol-rsfe.yaml",
     ]:
         (
             _,
@@ -698,8 +698,8 @@ def test_charges_at_endstate():
 
     for conf, system_name in zip(
         [
-            "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-            "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
+            "data/config/test-toluene-methane-rsfe.yaml",
+            "data/config/test-ethane-methanol-rsfe.yaml",
         ],
         ["toluene-methane" "ethane-ethanol"],
     ):
@@ -740,7 +740,7 @@ def test_charges_at_endstate():
 
 def test_setup_dual_junction_system():
 
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    conf = "data/config/test-2oj9-rsfe.yaml"
     configuration, mutation_list_mol1, mutation_list_mol2, i_s1, i_s2 = setup_systems(
         conf
     )
@@ -770,9 +770,9 @@ def test_charge_mutation_for_multiple_systems():
     workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
-            "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-            "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
-            "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
+            "data/config/test-toluene-methane-rsfe.yaml",
+            "data/config/test-neopentane-methane-rsfe.yaml",
+            "data/config/test-ethane-methanol-rsfe.yaml",
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
@@ -834,9 +834,9 @@ def test_vdw_mutation_for_hydrogens_system1():
     workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
-            "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-            "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
-            "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
+            "data/config/test-toluene-methane-rsfe.yaml",
+            "data/config/test-neopentane-methane-rsfe.yaml",
+            "data/config/test-ethane-methanol-rsfe.yaml",
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
@@ -915,7 +915,7 @@ def test_vdw_mutation_for_hydrogens_system2():
     workdir = get_test_output_dir()
     for conf, system_name in zip(
         [
-            "transformato/tests/config/test-7-CPI-2-CPI-rsfe.yaml",
+            "data/config/test-7-CPI-2-CPI-rsfe.yaml",
         ],
         ["7-CPI-2-CPI"],
     ):
@@ -992,7 +992,7 @@ def test_bonded_mutation():
     workdir = get_test_output_dir()
 
     for conf in [
-        "transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        "data/config/test-toluene-methane-rsfe.yaml",
     ]:
 
         configuration = load_config_yaml(
@@ -1395,7 +1395,7 @@ def test_bonded_mutation_atoms(caplog):
 
     workdir = get_test_output_dir()
 
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    conf = "data/config/test-2oj9-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
@@ -1443,7 +1443,7 @@ def test_bonded_mutation_bonds(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    conf = "data/config/test-2oj9-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
@@ -1498,7 +1498,7 @@ def test_bonded_mutation_angles(caplog):
 
     workdir = get_test_output_dir()
 
-    conf = "transformato/tests/config/test-2oj9-rsfe.yaml"
+    conf = "data/config/test-2oj9-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
@@ -1573,7 +1573,7 @@ def test_bonded_mutation_dihedrals(caplog):
 
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     (output_files_t1, output_files_t2), _, p = setup_2OJ9_tautomer_pair_rsfe(
@@ -1692,9 +1692,9 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 
     for conf, system_name in zip(
         [
-            "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-            "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
-            "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
+            "data/config/test-toluene-methane-rsfe.yaml",
+            "data/config/test-neopentane-methane-rsfe.yaml",
+            "data/config/test-ethane-methanol-rsfe.yaml",
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
@@ -1898,7 +1898,7 @@ def setup_acetylacetone_tautomer_pair(
 def test_acetylacetone_tautomer_pair(caplog):
     workdir = get_test_output_dir()
     caplog.set_level(logging.DEBUG)
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     setup_acetylacetone_tautomer_pair(configuration=configuration)
@@ -1908,7 +1908,7 @@ def test_acetylacetone_tautomer_pair(caplog):
 def test_2OJ9_tautomer_pair(caplog):
     workdir = get_test_output_dir()
     caplog.set_level(logging.DEBUG)
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     setup_2OJ9_tautomer_pair_rsfe(configuration=configuration)
@@ -1921,9 +1921,9 @@ def test_full_mutation_system1(caplog):
 
     for conf, system_name in zip(
         [
-            "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-            "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
-            "transformato/tests/config/test-ethane-methanol-rsfe.yaml",
+            "data/config/test-toluene-methane-rsfe.yaml",
+            "data/config/test-neopentane-methane-rsfe.yaml",
+            "data/config/test-ethane-methanol-rsfe.yaml",
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
@@ -1984,8 +1984,8 @@ def test_full_mutation_system2():
 
     for conf, system_name in zip(
         [
-            "transformato/tests/config/test-toluene-methane-rsfe.yaml",
-            "transformato/tests/config/test-neopentane-methane-rsfe.yaml",
+            "data/config/test-toluene-methane-rsfe.yaml",
+            "data/config/test-neopentane-methane-rsfe.yaml",
         ],
         ["toluene-methane", "neopentane-methane"],
     ):
@@ -2097,7 +2097,7 @@ def test_generate_list_of_heavy_atoms_to_mutate():
     # neopentane to methane
     # with user defined connected dummy region
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-neopentane-methane-rsfe.yaml",
+        config="data/config/test-neopentane-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -2133,7 +2133,7 @@ def test_generate_list_of_heavy_atoms_to_mutate():
     # neopentane to methane
     # without user defined connected dummy region
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-neopentane-methane-rsfe.yaml",
+        config="data/config/test-neopentane-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
@@ -2166,7 +2166,7 @@ def test_generate_list_of_heavy_atoms_to_mutate():
     #########################################
     # toluene to methane
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        config="data/config/test-toluene-methane-rsfe.yaml",
         input_dir=loeffler_testsystems_dir,
         output_dir=get_test_output_dir(),
     )
