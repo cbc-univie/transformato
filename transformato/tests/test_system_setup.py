@@ -250,6 +250,7 @@ def test_lonepairs_in_dummy_region():
     )
     from transformato.mutate import perform_mutations
     import warnings
+
     warnings.filterwarnings("ignore", module="parmed")
 
     configuration = load_config_yaml(
@@ -271,7 +272,12 @@ def test_lonepairs_in_dummy_region():
         system=s1,
         configuration=configuration,
     )
+    
+    assert s1_to_s2.dummy_region_cc1.connected_dummy_regions == [[46, 22], [45, 44, 43, 26, 25]]
     perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    assert s1_to_s2.dummy_region_cc2.connected_dummy_regions == [[39], [40]]
+
 
 @pytest.mark.rbfe
 @pytest.mark.requires_parmed_supporting_lp
@@ -289,16 +295,19 @@ def test_lonepairs_in_common_core():
     )
     from transformato.mutate import perform_mutations
     import warnings
-    warnings.filterwarnings("ignore", module="parmed")
-    
-    molecule = 'ejm_45_ejm_42'
-    folder = 'run_1'
-    input_dir = '/site/raid3/johannes/rbfe-data/tyk2/'
-    config = '/site/raid3/johannes/rbfe-data/config/tyk2/{}.yaml'.format(molecule)
 
-    configuration = load_config_yaml(config=config,
-                       input_dir=input_dir, output_dir=folder)
-    
+    warnings.filterwarnings("ignore", module="parmed")
+
+    molecule = "ejm_45_ejm_42"
+    input_dir = "/site/raid3/johannes/rbfe-data/tyk2/"
+    config = "/site/raid3/johannes/rbfe-data/config/tyk2/{}.yaml".format(molecule)
+
+    configuration = load_config_yaml(
+        config=config,
+        input_dir=input_dir,
+        output_dir=get_test_output_dir(),
+    )
+
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
@@ -307,8 +316,9 @@ def test_lonepairs_in_common_core():
 
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
     print(mutation_list.keys())
+    print(mutation_list["charge"])
     i = IntermediateStateFactory(
         system=s1,
         configuration=configuration,
     )
-    perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
+    # perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
