@@ -38,9 +38,9 @@ class Restraint():
         selligand:str,
         selprotein:str,
         pdbpath:str,
-        k:float,
+        k:float=3,
         shape:str="harmonic",
-        wellsize:float=0.1
+        wellsize:float=0.05
         ):
         """Class representing a restraint to apply to the system
 
@@ -306,12 +306,12 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
 
     # Define default values
 
-    restraint_args={"kval":3,"mode":"simle","shape":"harmonic","wellsize":0.1}
+    restraint_args={}
     
     for arg in restraint_command_string:
         if "k=" in arg:
             kval=int(arg.split("=")[1])
-            restraint_args["kval"]=kval*configuration["intst"]["scaling"]
+            restraint_args["k"]=kval*configuration["intst"]["scaling"]
         elif "extremities=" in arg:
             restraint_args["mode"]="extremities"
             restraint_args["n_extremities"]=int(arg.split("=")[1])
