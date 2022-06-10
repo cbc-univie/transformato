@@ -1,14 +1,12 @@
-#$ -S /bin/bash
-#$ -M marcus.wieder@univie.ac.at
-#$ -m e
-#$ -j y
-#$ -p -500
-#$ -o /data/shared/projects/SGE_LOG/
-#$ -l gpu=1
+#!/bin/bash
+#SBATCH -p lgpu
+#SBATCH --gres=gpu
+
 
 path=$1     # path in which the simulation will start
 top=$2      # top file to use
 script=$3   # which script is called
+charmm=$4   # name of the charmm executable
 
 cd ${path}
 pwd
@@ -18,4 +16,4 @@ echo 'Path: ' ${path}
 echo 'top: ' ${top}
 echo 'script: ' ${script}
 
-OMP_NUM_THREADS=8 ${CHARMM} top:${top} path:${path} -i ${script}
+${charmm} top:${top} path:${path} -i ${script}
