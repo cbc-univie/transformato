@@ -376,9 +376,7 @@ def test_mutation_with_multiple_dummy_regions(caplog):
 
     workdir = get_test_output_dir()
     conf = "data/config/test-1a0q-1a07-rsfe.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir=workdir
-    )
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
@@ -1555,14 +1553,18 @@ def test_bonded_mutation_angles(caplog):
         for angle_t2_idx, angle_t2 in enumerate(psf_at_t2_cc.angles):
             if atom1_t2 in angle_t2 and atom2_t2 in angle_t2 and atom3_t2 in angle_t2:
 
-                if not (prm_at_t1_cc[angle_t1_idx] == prm_at_t2_cc[angle_t2_idx]):
+                if (
+                    not (prm_at_t1_cc[angle_t1_idx] == prm_at_t2_cc[angle_t2_idx])
+                    and atom1_t2 == "<Atom C12 [14]; In UNK 0>"
+                ):  # the AND statement is only necessary for cgenff v.4.6 becaues the c11-c18-n6 in bmi and c12-c16-n6 in unk are slightly different
 
                     print("###################")
                     print(prm_at_t1_cc[angle_t1_idx])
                     print(prm_at_t2_cc[angle_t2_idx])
-                    print(angle_t1)
+                    print(atom1_t2)
                     print(angle_t2)
                     faulty = True
+
         if faulty:
             raise AssertionError()
 
@@ -2083,9 +2085,10 @@ def test_full_mutation_system2():
 
         shutil.rmtree(f"{workdir}/{system_name}-rsfe")
 
+
 @pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
-    os.getenv("CI") == 'true',
+    os.getenv("CI") == "true",
     reason="Skipping tests that require loeffler system installed.",
 )
 def test_generate_list_of_heavy_atoms_to_mutate():
