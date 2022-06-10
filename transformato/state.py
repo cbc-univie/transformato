@@ -138,7 +138,7 @@ with open(file_name + '_system.xml','w') as outfile:
         if self.configuration["simulation"]["free-energy-type"] == "rsfe":
             # copy simulation bash script
             charmm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/simulation-rsfe_charmm.sh"
+                f"{self.configuration['bin_dir']}/{self.configuration['simulation']['workload-manager']}-simulation-rsfe_charmm.sh"
             )
             charmm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation_charmm.sh"
@@ -198,7 +198,7 @@ with open(file_name + '_system.xml','w') as outfile:
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # copy simulation bash script
             charmm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/simulation-rbfe_charmm.sh"
+                f"{self.configuration['bin_dir']}/{self.configuration['simulation']['workload-manager']}-simulation-rbfe_charmm.sh"
             )
             charmm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation_charmm.sh"
@@ -300,7 +300,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
             # copy simulation bash script
             omm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/simulation-rsfe.sh"
+                f"{self.configuration['bin_dir']}/{self.configuration['simulation']['workload-manager']}-simulation-rsfe.sh"
             )
             omm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation.sh"
@@ -319,7 +319,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
             # copy simulation bash script
             omm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/simulation-rbfe.sh"
+                f"{self.configuration['bin_dir']}/{self.configuration['simulation']['workload-manager']}-simulation-rbfe.sh"
             )
             omm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation.sh"
