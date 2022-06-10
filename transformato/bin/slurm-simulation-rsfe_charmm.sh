@@ -11,15 +11,11 @@ pwd
 hostname
 
 
-run_vacuum () {
 input=charmm_run_vacuum
-${CHARMM} -i ${input}.inp > log_vac.out
-}
+charmm_openmm_domdec -i ${input}.inp > log_vac.out
 
-run_waterbox () {
 input=charmm_run_waterbox
-OMP_NUM_THREADS=8 ${CHARMM} -i ${input}.inp > log_solv.out
-}
+charmm_openmm_domdec -i ${input}.inp > log_solv.out
 
 
 case ${SWITCH} in

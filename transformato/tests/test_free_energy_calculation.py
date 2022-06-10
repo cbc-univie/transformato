@@ -182,7 +182,7 @@ def test_run_28_1h1q_rbfe_with_openMM():
     configuration = load_config_yaml(
         config="transformato/tests/config/test-28_1h1q_rbfe.yaml",
         input_dir="data/",
-        output_dir=get_test_output_dir(),
+        output_dir='/site/raid4/johannes/test',
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -203,11 +203,11 @@ def test_run_28_1h1q_rbfe_with_openMM():
         configuration=configuration,
         i=i,
         mutation_list=mutation_list,
-        nr_of_mutation_steps_charge=5,
-        nr_of_mutation_steps_cc=5,
+        nr_of_mutation_steps_charge=2,
+        nr_of_mutation_steps_cc=2,
     )
 
-    run_simulation(i.output_files, engine="openMM")
+    run_simulation(i.output_files, engine="charmm")
     from transformato.utils import postprocessing
 
     ddG_openMM, dddG, f_openMM = postprocessing(
