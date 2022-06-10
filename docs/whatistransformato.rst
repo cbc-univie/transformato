@@ -1,12 +1,21 @@
-What is transformato?
+|trafo| in a nutshell
 ======================
 
-transformato\ [#fspeedlimits]_ is a python package designed to calculate relative binding free and solvation energies. It does so via a modified alchemical free energy simulation (FES) combined with mBAR analysis, using a single - topology approach. 
+:math:`\texttt{TRANSFORMATO}` [#fspeedlimits]_ is a python package designed to calculate 
+either **relative binding free energies** (RBFE) or **relative solvation free energies** (RSFE) between two similiar
+ligands. The two ligands are the two physical endstates which are mutated to a common core structure.
 
+For that reason, |trafo| first searches for the common core (Common Core approach). All atoms which are not part of this 
+CC and thus differ between the two ligands are then turned off step-wise. First, 
+electrostatic contributions of the non-CC atoms are turned off, followed by turning off the Lennard-Jones (LJ) interactions 
+of the non-CC atoms. For the non-hydrogen atoms this is done on an atom-by-atom basis (Serial-Atom-Insertion approach). 
+This is done in both environments, for RSFE; ligand in vacuum and ligand solvated in water. For RBFE; ligand solvated in
+water and ligand solvated in water and bound to the receptor (protein). 
 
-Mutation and switching of forcefields is accomplished using the Boresch-Bruckner serial atom insertion\ [#fboreschbruckner]_ method. This avoids the van-der-Waals endpoint problem without relying on soft-core potentials,
-meaning transformato relies on standard, comparatively fast MD Analysis, able to run independently of the underlying engine. Currently, outputs are provided for CHARMM and openMM.
-
+|trafo| will create intermediate state folders to connect each ligand with its common core structure.
+Each folder will contain a plain MD simulation, which can be run individually from all other simulations. Finally, for 
+each ligand the free energy accrding to the common core structure can be calculated. Since both common core structures 
+are the same, the resulting free energy difference :math:`\Delta\Delta G^{bind}_{L1\rightarrow L2}` can  be obtained.
 
 The common-core approach
 ###########################
@@ -72,3 +81,6 @@ Apart from the default python packages, transformato relies in large parts on th
 
 .. [#fparmed1]  Michael R. Shirts, Christoph Klein et al., *2016. Lessons learned from comparing molecular dynamics engines on the SAMPL5 dataset*. Journal of Computer-Aided Molecular Design
 
+
+
+.. |trafo| replace:: :math:`\texttt{TRANSFORMATO}`
