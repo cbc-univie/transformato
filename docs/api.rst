@@ -8,6 +8,7 @@ Transformato consists of the following modules:
 
 .. autosummary::
    :recursive:
+   :nosignatures:
   
    :toctree: autosummary
    
@@ -19,3 +20,8 @@ Transformato consists of the following modules:
    transformato.system
    transformato.restraints
 
+.. toctree::
+   :hidden:
+   :glob:
+   
+   autosummary/*

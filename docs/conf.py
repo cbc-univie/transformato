@@ -108,7 +108,8 @@ html_static_path = ['_static']
 
 html_logo="assets/images/logo_transformato.png"
 html_theme_options={
-	"logo_only":True
+	"logo_only":True,
+    "navigation_depth":4
 }
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
