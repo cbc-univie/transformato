@@ -22,7 +22,7 @@ head over to our `github repository <https://github.com/wiederm/transformato>`_\
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   
+   :glob:
 
    whatistransformato
    Installation
@@ -31,6 +31,7 @@ head over to our `github repository <https://github.com/wiederm/transformato>`_\
    Analysis
    Troubleshooting
    api
+
    
 
 
