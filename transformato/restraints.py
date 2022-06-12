@@ -14,9 +14,7 @@ Unless you directly want to modify functionality, you should not need to call he
 Define your restraints in the config.yaml.
 
 """
-from calendar import c
-from multiprocessing.sharedctypes import Value
-from tabnanny import check
+
 import numpy as np
 
 import MDAnalysis
