@@ -32,6 +32,13 @@ With transformato however, the structures are not transformed into each other di
 :math:`|DL_1|` and :math:`|DL_2|` refer to the dummy regions of Endstate 1 and 2 respectively. :math:`R_{CC}` refers to the common core.
 
 
+    .. figure:: assets/images/partA.jpg
+        :alt: alchemical pathway
+        
+        Figure: Alchemical pathway as implemented in the common core approach. Free energies are calculated relative to a common core structure in the two environments (for RBFE: ligand solvated in water and ligand bound to a protein and solvated in water). This common core structure of the two ligands differs only in the number of dummy atoms, thus the contribution cancels out when calculating relative free energies.
+
+
+
 The main advantage of this (and transformato as a whole) is that it generally cuts down enormously on the number of simulations required - while a typical alchemical FES will require 20 to 30 intermediate states, transformato may require as little as 14\ [#fjohannes]_\ , further reducing simulation time in conjunction with SAI.
 
 
