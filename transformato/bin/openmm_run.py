@@ -156,7 +156,7 @@ if os.path.exists("./restraints.yaml") and "complex" in pdbpath:
         raise FileNotFoundError(f"Couldnt find {pdbpath} necessary for Restraint Analysis")
 
     
-    restraintList=tfrs.CreateRestraintsFromConfig(configuration,pdbpath)
+    restraintList=tfrs.create_restraints_from_config(configuration,pdbpath)
 
     for restraint in restraintList:
         restraint.createForce(cc_names)

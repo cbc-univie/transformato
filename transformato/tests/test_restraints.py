@@ -31,7 +31,7 @@ def test_createRestraintsFromConfig():
     
     assert type(config)==dict # checks if config yaml is properly loaded
 
-    restraints=tfrs.CreateRestraintsFromConfig(config,PATH_2OJ9)
+    restraints=tfrs.create_restraints_from_config(config,PATH_2OJ9)
 
     assert type(restraints)==list
 
