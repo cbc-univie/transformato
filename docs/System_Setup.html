@@ -103,14 +103,14 @@
 <ol class="arabic simple">
 <li><p>Create a folder called <cite>your-structure-1</cite> for your first structure</p></li>
 <li><p>Take the CHARMM-GUI output folder (called something like charmm-gui-4842148) for your solvated ligand-protein complex, move it to this folder and rename it into <cite>complex</cite></p></li>
-<li><p>Take the CHARMM-GUI output folder for your solvated ligand in the waterbox, move it to this folder and rename it inti <cite>waterbox</cite></p></li>
+<li><p>Take the CHARMM-GUI output folder for your solvated ligand in the waterbox, move it to this folder and rename it into <cite>waterbox</cite></p></li>
 <li><p>Do the same with your second, third, fourth… etc. structure</p></li>
 <li><p><strong>Run the equillibration</strong> part of the provided simulation input. An equillibrated system (and the generated .rst file) are necesary for transformato.</p></li>
 </ol>
 <p>You`ll create the remaining files down below.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The submit.ipynb file is covered in <a class="reference internal" href="Running_Simulation.html"><span class="doc">Running Simulations</span></a></p>
+<p>The submit.ipynb file is covered in <a class="reference internal" href="Running_Simulation.html"><span class="doc">Running Simulations</span></a>.</p>
 </div>
 </div>
 <div class="section" id="the-config-yaml">
@@ -184,49 +184,106 @@
 </div>
 <p>The <em>system</em> container contains the setup information from your structure directories. Most importantly, the <em>name</em> parameter must be the folder name of that structure (the one containing the waterbox/ligand directories.)</p>
 <p>You may actually define any number of structures. The structure you want is referenced when setting up the system.</p>
-<dl class="simple">
-<dt>system</dt><dd><dl class="simple">
-<dt>[structurename] # can be whatever you want</dt><dd><dl class="simple">
-<dt>name</dt><dd><p>The folder name of the folder containing the complex/ligand folders for that structure</p>
-</dd>
-<dt>tlc</dt><dd><p>The residue name (resname) of the structure</p>
-</dd>
-<dt>other parameters</dt><dd><p>These refer to the various files in the /openmm/ subfolder.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">system</span></span></dt>
+<dd><dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">[structurename]</span></span></dt>
+<dd><p>Can be whatever you want - just be sure to point you <code class="docutils literal notranslate"><span class="pre">submit.ipynb</span></code> towards the correct structures. That being said, we recommend sticking with the boring-but-practical <code class="docutils literal notranslate"><span class="pre">structure1</span></code>, <code class="docutils literal notranslate"><span class="pre">structure2</span></code> you see in our notebooks.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-name" title="Permalink to this definition"></a></dt>
+<dd><p>The folder name of the folder containing the complex/ligand folders for that structure</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-tlc">
+<span class="sig-name descname"><span class="pre">tlc</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-tlc" title="Permalink to this definition"></a></dt>
+<dd><p>The residue name (resname) of the structure</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-other">
+<span class="sig-name descname"><span class="pre">other</span></span><span class="sig-prename descclassname"> <span class="pre">parameters</span></span><a class="headerlink" href="#cmdoption-arg-other" title="Permalink to this definition"></a></dt>
+<dd><p>These refer to the various files in the /openmm/ subfolder.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
 <p>The <em>simulation</em> container contains the simulation parameters you want to use.</p>
-<dl class="simple">
-<dt>simulation</dt><dd><dl class="simple">
-<dt>parameters</dt><dd><dl class="simple">
-<dt>nstep: (int)</dt><dd><p>How many calculation steps you want to simulate</p>
-</dd>
-<dt>nstdcd: (int)</dt><dd><p>How many steps you want in your trajectory file overall</p>
-</dd>
-<dt>nstout: (int)</dt><dd><p>How many steps you want written out in the .log.out files</p>
-</dd>
-<dt>cons: (int)</dt><dd><p>What constraints (not <em>restraints</em>) you want in your system</p>
-</dd>
-<dt>dt: (int)</dt><dd><p>The timestep in nanoseconds. With hydrogen mass repartitioning, up to 0.004 ns should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.</p>
-</dd>
-<dt>switch: ([“vfswitch”,”vfoff”])</dt><dd><p>How the van-der-Waals forces are switched.</p>
-</dd>
-<dt>mini_nstep: (int)</dt><dd><p>Steps for minimisation</p>
-</dd>
-<dt>GPU: ([True/False])</dt><dd><p>Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.</p>
-</dd>
-<dt>workload-manager: ([“slurm”,”CGE”])</dt><dd><p>For which workload-manager the script files should be output.</p>
-</dd>
-<dt>free-energy-type: ([“rbfe”,”rsfe”])</dt><dd><p>Calculate relative binding free energy or relative solvation free energy</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">simulation</span></span></dt>
+<dd><dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">parameters</span></span></dt>
+<dd><dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-nstep">
+<span class="sig-name descname"><span class="pre">nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstep" title="Permalink to this definition"></a></dt>
+<dd><p>How many calculation steps you want to simulate</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-nstdcd">
+<span class="sig-name descname"><span class="pre">nstdcd:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstdcd" title="Permalink to this definition"></a></dt>
+<dd><p>How many steps you want in your trajectory file overall</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-nstout">
+<span class="sig-name descname"><span class="pre">nstout:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstout" title="Permalink to this definition"></a></dt>
+<dd><p>How many steps you want written out in the .log.out files</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-cons">
+<span class="sig-name descname"><span class="pre">cons:</span></span><span class="sig-prename descclassname"> <span class="pre">[&quot;HBond&quot;,None]</span></span><a class="headerlink" href="#cmdoption-arg-cons" title="Permalink to this definition"></a></dt>
+<dd><p>What constraints (not <em>restraints</em>) you want in your system.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-dt">
+<span class="sig-name descname"><span class="pre">dt:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-dt" title="Permalink to this definition"></a></dt>
+<dd><p>The timestep in picoseconds. With hydrogen mass repartitioning, up to 0.004 ps should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-switch">
+<span class="sig-name descname"><span class="pre">switch:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;vfswitch&quot;,&quot;vfoff&quot;])</span></span><a class="headerlink" href="#cmdoption-arg-switch" title="Permalink to this definition"></a></dt>
+<dd><p>How the van-der-Waals forces are switched.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-mini_nstep">
+<span id="cmdoption-arg-mini-nstep"></span><span class="sig-name descname"><span class="pre">mini_nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-mini_nstep" title="Permalink to this definition"></a></dt>
+<dd><p>Steps for minimisation</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-GPU">
+<span id="cmdoption-arg-gpu"></span><span class="sig-name descname"><span class="pre">GPU:</span></span><span class="sig-prename descclassname"> <span class="pre">([True/False])</span></span><a class="headerlink" href="#cmdoption-arg-GPU" title="Permalink to this definition"></a></dt>
+<dd><p>Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-workload-manager">
+<span class="sig-name descname"><span class="pre">workload-manager:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;slurm&quot;,&quot;CGE&quot;])</span></span><a class="headerlink" href="#cmdoption-arg-workload-manager" title="Permalink to this definition"></a></dt>
+<dd><p>For which workload-manager the script files should be output.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-free-energy-type">
+<span class="sig-name descname"><span class="pre">free-energy-type:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;rbfe&quot;,&quot;rsfe&quot;])</span></span><a class="headerlink" href="#cmdoption-arg-free-energy-type" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate relative binding free energy or relative solvation free energy</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="restraints">
 <h2>Restraints<a class="headerlink" href="#restraints" title="Permalink to this heading"></a></h2>
@@ -238,7 +295,7 @@
 <p class="admonition-title">Danger</p>
 <p>This section only applies if you are running your simulations with openMM. Should you run your simulations using CHARMM, it will not apply the restraints <strong>and give no warning about it</strong>.</p>
 </div>
-<p>Transformato supports two types of restraints: automatic and manual restraints.</p>
+<p>transformato supports two types of restraints: automatic and manual restraints.</p>
 <div class="section" id="automatic-restraints">
 <h3>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this heading"></a></h3>
 <p>To activate automatic restraints for your ligand, add</p>
@@ -249,22 +306,54 @@
 <p>to your <cite>config.yaml</cite>. This wil restrain your ligand in its original position using a harmonic potential of the form <span class="math notranslate nohighlight">\(E=0.5k \cdot (r-r_0)²\)</span> (where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance, <span class="math notranslate nohighlight">\(r_0\)</span> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant), applied within the centers of mass of your ligand and the surrounding protein structure, keeping these two vaguely fixed.</p>
 <p>You may specify further keywords:</p>
 <p class="rubric">Options for automatic restraints</p>
-<dl class="simple">
-<dt>restraints:</dt><dd><dl class="simple">
-<dt><code class="code docutils literal notranslate"><span class="pre">auto</span></code></dt><dd><p>Required. Tells transformato to look for and apply automatic restraints</p>
-</dd>
-<dt><code class="code docutils literal notranslate"><span class="pre">k=[int]</span></code></dt><dd><p><em>optional:</em> Defines the spring constant used for force calculations. Default is 3</p>
-</dd>
-<dt><code class="code docutils literal notranslate"><span class="pre">extremities=[int]</span></code></dt><dd><p><em>optional:</em> If used, transformato will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.</p>
-</dd>
-<dt><code class="code docutils literal notranslate"><span class="pre">shape=&quot;harmonic&quot;</span> <span class="pre">[&quot;harmonic&quot;,&quot;flatbottom&quot;]</span></code></dt><dd><p><em>optional:</em> Defines the shape of the energy potential. Only “harmonic” is currently implemented.</p>
-</dd>
-<dt><code class="code docutils literal notranslate"><span class="pre">scaling</span></code></dt><dd><p><em>optional:</em> If present, the k - Value of the force is linearly scaled in the first four intermediate states (0,0.25,0.5,0.75)</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>A full command might thus look like this:</p>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">restraints:</span> <span class="pre">auto</span></span></dt>
+<dd><dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-k">
+<span class="sig-name descname"><span class="pre">k</span></span><span class="sig-prename descclassname"><span class="pre">=[int]</span></span><a class="headerlink" href="#cmdoption-arg-k" title="Permalink to this definition"></a></dt>
+<dd><p><em>optional:</em> Defines the spring constant used for force calculations. Default is 3</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-extremities">
+<span class="sig-name descname"><span class="pre">extremities</span></span><span class="sig-prename descclassname"><span class="pre">=[int]</span></span><a class="headerlink" href="#cmdoption-arg-extremities" title="Permalink to this definition"></a></dt>
+<dd><p><em>optional:</em> If used, transformato will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-shape">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-prename descclassname"><span class="pre">=[&quot;harmonic&quot;,&quot;flatbottom&quot;]`</span></span><a class="headerlink" href="#cmdoption-arg-shape" title="Permalink to this definition"></a></dt>
+<dd><p><em>optional:</em> Defines the shape of the energy potential.</p>
+<p>The potential energy term for the two forms is given as:</p>
+<ul class="simple">
+<li><p>harmonic: <span class="math notranslate nohighlight">\(E=0.5k \cdot (r-r_0)²\)</span></p></li>
+<li><p>flatbottom: <span class="math notranslate nohighlight">\(E=k \cdot step(|r-r_0|),thresh) \cdot (r-r_0)²,\)</span></p></li>
+</ul>
+<p>where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance, <span class="math notranslate nohighlight">\(r_0\)</span> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant. The step function returns 0 until the threshold <span class="math notranslate nohighlight">\(thresh\)</span> (defined as <code class="code docutils literal notranslate"><span class="pre">wellsize</span></code> by the config.yaml) has been surpassed, after which it returns 1. As such,
+the flat-bottom potential is essentially a harmonic potential where the energy within the &quot;well&quot; is zero. Note that the <code class="code docutils literal notranslate"><span class="pre">wellsize</span></code> acts like a <em>radius</em>, meaning it extends in all directions from its origin.</p>
+</dd></dl>
+
+<div class="figure align-default" id="id1">
+<img alt="harmonic and flatbottom potentials" src="_images/harm_vs_fb.png" />
+<p class="caption"><span class="caption-text">Figure: The difference between a harmonic (<em>A</em>) and flat-bottom (<em>B</em>) potential. While both allow more movement closer to the restraint origin, a flat-bottom potential effectively allows defining
+a fixed sampling area that the ligand can move in without hindrance, but cannot leave (assuming a strong enough value for <em>k</em>).</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</div>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-scaling">
+<span class="sig-name descname"><span class="pre">scaling</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-scaling" title="Permalink to this definition"></a></dt>
+<dd><p><em>optional:</em> If present, the k - Value of the force is linearly scaled in the first four intermediate states (<code class="docutils literal notranslate"><span class="pre">intst1:</span> <span class="pre">0;</span> <span class="pre">intst2:</span> <span class="pre">0.25;</span> <span class="pre">intst3:</span> <span class="pre">0.5;</span> <span class="pre">intst4:</span> <span class="pre">0.75;</span> <span class="pre">intst5:</span> <span class="pre">1.0</span></code>)</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-wellsize">
+<span class="sig-name descname"><span class="pre">wellsize</span></span><span class="sig-prename descclassname"> <span class="pre">[float]</span></span><a class="headerlink" href="#cmdoption-arg-wellsize" title="Permalink to this definition"></a></dt>
+<dd><p><em>optional</em>: Only takes effect in a flat-bottom potential. Defines the wellsize in nanometers. Default is 0.1 nm.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>A full entry in your config.yaml might thus look like this:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">restraints</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;auto</span><span class="nv"> </span><span class="s">k=10</span><span class="nv"> </span><span class="s">extremities=3</span><span class="nv"> </span><span class="s">shape=harmonic</span><span class="nv"> </span><span class="s">scaling&quot;</span><span class="w"></span>
 </pre></div>
 </div>
@@ -333,17 +422,41 @@ These have the following structure:</p>
 </div>
 <p>Note that the individual restraints all need to have distinct names (restraint1, restraint2 etc.). It is common that they are numbered, but not required - they simply need to adhere to the yaml syntax.</p>
 <p class="rubric">Options for manual restraints</p>
-<dl class="simple">
-<dt>manualrestraints</dt><dd><dl class="simple">
-<dt><code class="code docutils literal notranslate"><span class="pre">shape=&quot;harmonic&quot;</span> <span class="pre">[&quot;harmonic&quot;,&quot;flatbottom&quot;]'</span></code></dt><dd><p>Shape of the energy potential. Default is “harmonic”, “flatbottom” is not yet implemented</p>
-</dd>
-<dt><code class="code docutils literal notranslate"><span class="pre">group1,group2=[MDAnalysis</span> <span class="pre">selection</span> <span class="pre">string]</span></code></dt><dd><p>Defines which Common Core atoms are members of group1 or group2. Please note that group1 <strong>must</strong> be the ligand, and group2 the protein.</p>
-</dd>
-<dt><code class="code docutils literal notranslate"><span class="pre">k=[int]</span></code></dt><dd><p><em>(optional):</em> Defines the harmonic force constant. Default is 3.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">restraints:</span> <span class="pre">manual</span></span></dt>
+<dd><dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">manual-restraint</span></span></dt>
+<dd><p>You may freely choose the name of the restraint here. It may be useful to provide a ‘speaking’ name, as this will allow identification later.</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-0">
+<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-prename descclassname"><span class="pre">=[&quot;harmonic&quot;,&quot;flatbottom&quot;]'</span></span><a class="headerlink" href="#cmdoption-arg-0" title="Permalink to this definition"></a></dt>
+<dd><p>Shape of the energy potential. Default is “harmonic”. See automatic restraints for details.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-group1-group2">
+<span class="sig-name descname"><span class="pre">group1,group2</span></span><span class="sig-prename descclassname"><span class="pre">=[MDAnalysis</span> <span class="pre">selection</span> <span class="pre">string]</span></span><a class="headerlink" href="#cmdoption-arg-group1-group2" title="Permalink to this definition"></a></dt>
+<dd><p>Defines which Common Core atoms are members of group1 or group2. Please note that group1 <strong>must</strong> be the ligand, and group2 the protein.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-1">
+<span class="sig-name descname"><span class="pre">k</span></span><span class="sig-prename descclassname"><span class="pre">=[int]</span></span><a class="headerlink" href="#cmdoption-arg-1" title="Permalink to this definition"></a></dt>
+<dd><p><em>(optional):</em> Defines the harmonic force constant. Default is 3.</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-2">
+<span class="sig-name descname"><span class="pre">wellsize</span></span><span class="sig-prename descclassname"><span class="pre">=[float]</span></span><a class="headerlink" href="#cmdoption-arg-2" title="Permalink to this definition"></a></dt>
+<dd><p><em>(optional):</em> Defines the wellsize for flat-bottom restraints (unit is nanometers). Defaults to 0.1 nm.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
 <p>As with automatic restraints, even manually specified restraints will never act on atoms not in the common core, as this would lead to nonsensical energy calculations.</p>
 </div>
 </div>
