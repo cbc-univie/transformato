@@ -36,9 +36,9 @@ Functions
 
 
 
-.. automethod:: transformato.restraints.CreateRestraintsFromConfig
+.. automethod:: transformato.restraints.create_restraints_from_config
 
-.. automethod:: transformato.restraints.GenerateExtremities
+.. automethod:: transformato.restraints.generate_extremities
 
 .. automethod:: transformato.restraints.get3DDistance
 

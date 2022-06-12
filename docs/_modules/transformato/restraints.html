@@ -73,11 +73,28 @@
              
   <h1>Source code for transformato.restraints</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Manages restraints and the forces created from them</span>
+<span class="sd">Manages restraints and the forces created from them.</span>
+
+<span class="sd">Basic function:</span>
+<span class="sd">-------------------</span>
+
+<span class="sd">From the &#39;restraints&#39; section in the config.yaml, the intermediate state factory creates an appropriate restraints.yaml in the</span>
+<span class="sd">intermediate state directories.</span>
+
+<span class="sd">When the simulation is run, openMM_run.py checks for the existence of these restraints.yaml. If it finds one, a number of Restraint() instances commensurate</span>
+<span class="sd">to the number of desired restraints is created. These each create an appropriate openMM force as defined by their parameters. That force ist then applied to the openMM simulation.</span>
+
+<span class="sd">Usage:</span>
+<span class="sd">--------</span>
+
+<span class="sd">Unless you directly want to modify functionality, you should not need to call here directly.</span>
+<span class="sd">Define your restraints in the config.yaml.</span>
+
+<span class="sd">.. hint::</span>
+<span class="sd">    For further usage instructions, see the &#39;System Setup&#39; section of the main documentation.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">calendar</span> <span class="kn">import</span> <span class="n">c</span>
-<span class="kn">from</span> <span class="nn">multiprocessing.sharedctypes</span> <span class="kn">import</span> <span class="n">Value</span>
-<span class="kn">from</span> <span class="nn">tabnanny</span> <span class="kn">import</span> <span class="n">check</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">MDAnalysis</span>
@@ -90,39 +107,36 @@
 <span class="kn">from</span> <span class="nn">simtk.openmm.app</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">logger</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="c1">#logger.setLevel(logging.DEBUG)</span>
 
 <div class="viewcode-block" id="Restraint"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint">[docs]</a><span class="k">class</span> <span class="nc">Restraint</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Class representing a restraint to apply to the system</span>
-
-<span class="sd">        Intermediary step - openMM force objects are generated directly from this class and applied to the system.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            selligand,selprotein (MDAnalysis selection string): The atoms on whose center of mass the restraint will bei applied</span>
-<span class="sd">            k: the force (=spring) constant</span>
-<span class="sd">            pdbpath: the path to the pdbfile underlying the topology analysis</span>
-<span class="sd">            shape: &#39;harmonic&#39; or &#39;flatbottom&#39; </span>
-<span class="sd">            wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+    
 <div class="viewcode-block" id="Restraint.__init__"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">selligand</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">selprotein</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">pdbpath</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">k</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">k</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">shape</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;harmonic&quot;</span><span class="p">,</span>
-        <span class="n">wellsize</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.1</span>
+        <span class="n">wellsize</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_extremities</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Class representing a restraint to apply to the system</span>
+        <span class="sd">&quot;&quot;&quot;Class representing a restraint to apply to the system.</span>
 
 <span class="sd">        Intermediary step - openMM force objects are generated directly from this class and applied to the system.</span>
 
+<span class="sd">        Raises:</span>
+<span class="sd">            AttributeError: If the potential shape requested is not implemented.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings</span>
-<span class="sd">            k: the force (=spring) constant</span>
+<span class="sd">            k: the force (=spring) constant applied to the potential energy formula. See the &#39;System Setup&#39; section for details.</span>
 <span class="sd">            pdbpath: the path to the pdbfile underlying the topology analysis</span>
-<span class="sd">            shape: &#39;harmonic&#39; or &#39;flatbottom&#39; </span>
+<span class="sd">            shape: &#39;harmonic&#39; or &#39;flatbottom&#39;. Defines the shape of the harmonic energy potential.</span>
 <span class="sd">            wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.</span>
+<span class="sd">            mode: Catcher for unneeded restraint_args entry</span>
+<span class="sd">            n_extremities: Catcher for unneeded restraint_args entry</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span>
@@ -143,7 +157,11 @@
         <span class="sd">&quot;&quot;&quot;Actually creates the force, after dismissing all idxs not in the common core from the molecule.</span>
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
-<span class="sd">            common_core_names (array[str]):  - Array with strings of the common core names. Usually provided by the restraint.yaml file.&quot;&quot;&quot;</span>
+<span class="sd">            common_core_names (array[str]):  - Array with strings of the common core names. Usually provided by the restraint.yaml file.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            openMM.CustomCentroidBondForce: An openMM force object representing the restraint bond.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         
         <span class="c1"># Only done for g1, as it is the ligand group - theres no common core for the protein</span>
@@ -185,9 +203,9 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">==</span><span class="s2">&quot;flatbottom&quot;</span><span class="p">:</span>
             <span class="c1"># create force with flat-bottom potential</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">stepfunction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">GenerateContinuous1DStepFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wellsize</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stepfunction</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_generate_continuous_1D_step_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wellsize</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="o">=</span><span class="n">CustomCentroidBondForce</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;stepfunction((distance(g1,g2)-r0))*(distance(g1,g2)-r0)^2&quot;</span><span class="p">)</span> <span class="c1"># = 0 or 1 and the the harmonic potential if above the limits</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="o">=</span><span class="n">CustomCentroidBondForce</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;stepfunction((abs(distance(g1,g2)-r0)))*k*(distance(g1,g2)-r0)^2&quot;</span><span class="p">)</span> <span class="c1"># = 0 or 1 and the the harmonic potential if above the limits</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="o">.</span><span class="n">addTabulatedFunction</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;stepfunction&quot;</span><span class="p">,</span><span class="n">function</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stepfunction</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="o">.</span><span class="n">addPerBondParameter</span><span class="p">(</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
@@ -209,7 +227,7 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="c1"># delete the enormous no longer needed universe asap</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">force</span></div>
 
-<div class="viewcode-block" id="Restraint.GenerateContinuous1DStepFunction"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.GenerateContinuous1DStepFunction">[docs]</a>    <span class="k">def</span> <span class="nf">GenerateContinuous1DStepFunction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">permitted_distance</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+<div class="viewcode-block" id="Restraint._generate_continuous_1D_step_function"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint._generate_continuous_1D_step_function">[docs]</a>    <span class="k">def</span> <span class="nf">_generate_continuous_1D_step_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">permitted_distance</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Creates and returns a openMM continous1DStepFunction</span>
 <span class="sd">        </span>
 <span class="sd">        Very simply, this creates a TabulatedFunction that takes the distance of the atom group COM to its origin, and if greater, returns 1. Otherwise, it returns 0. This function does not need to be called directly.</span>
@@ -244,29 +262,39 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">system</span><span class="o">.</span><span class="n">addForce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="p">)</span></div></div>
 
-<span class="k">def</span> <span class="nf">get3DDistance</span><span class="p">(</span><span class="n">pos1</span><span class="p">,</span><span class="n">pos2</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get3DDistance</span><span class="p">(</span><span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Takes two 3d positions as array and calculates the distance between them</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        pos1,pos2 (3D-Array): The positions of which to calculate the distances</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        distance (float): The distance between the two positions&quot;&quot;&quot;</span>
+<span class="sd">        float: The distance between the two positions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
     <span class="n">vec</span><span class="o">=</span><span class="n">pos1</span><span class="o">-</span><span class="n">pos2</span>
     <span class="n">distance</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">distance</span>
 
-<span class="k">def</span> <span class="nf">GenerateExtremities</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span><span class="n">pdbpath</span><span class="p">,</span><span class="n">n_extremities</span><span class="p">,</span><span class="n">sphinner</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">sphouter</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">generate_extremities</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span><span class="n">pdbpath</span><span class="p">,</span><span class="n">n_extremities</span><span class="p">,</span><span class="n">sphinner</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">sphouter</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Takes the common core and generates n extremities at the furthest point</span>
 <span class="sd">    </span>
-<span class="sd">        Returns a selection string of the extremities with a sphlayer selecting type C from sphinner to sphouter.</span>
+<span class="sd">        Returns a selection string of the extremities with a sphlayer (see MDAnalysis docs) selecting type C from sphinner to sphouter.</span>
 <span class="sd">        The algorithm works as follows:</span>
 
-<span class="sd">        (All of these operations only operate on carbons in the common core)</span>
-<span class="sd">        1. Take the furthest C from the center of Mass</span>
-<span class="sd">        2. Take the furthest C from that C</span>
-<span class="sd">        3. Until len(extremity_cores)==n_extremities: Pick the C where the sum distance from all previous cores is greatest.</span>
-<span class="sd">        4. Generate selection strings for all extremity cores and return</span>
+<span class="sd">        (**All of these operations only operate on carbons in the common core**)</span>
+
+
+<span class="sd">        1. Take the furthest C from the center of Mass.</span>
+<span class="sd">        </span>
+<span class="sd">        2. Take the furthest C from that C.</span>
+
+<span class="sd">        3. Until len(extremity_cores)==n_extremities: </span>
+<span class="sd">            </span>
+<span class="sd">            Pick the C where the sum distance from all previous cores is greatest.</span>
+
+<span class="sd">            Add it to the extremity_cores.</span>
+
+<span class="sd">        4. Generate selection strings for all extremity cores and return.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        configuration (dict): the read-in restraints.yaml</span>
@@ -275,8 +303,11 @@
 <span class="sd">        sphinner (float): Distance to start of the sphlayer, default 0</span>
 <span class="sd">        sphouter (float): Distance to end of the sphlayer, default 5</span>
 <span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If an invalid amount of extremities is specified.</span>
+
 <span class="sd">    Returns:</span>
-<span class="sd">        selection_strings (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</span>
+<span class="sd">        array: An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     
@@ -355,45 +386,50 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created extremities with selectiobns: </span><span class="si">{</span><span class="n">selection_strings</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">selection_strings</span>
-<span class="k">def</span> <span class="nf">CreateRestraintsFromConfig</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span><span class="n">pdbpath</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Takes the .yaml config and returns the specified restraints</span>
+<span class="k">def</span> <span class="nf">create_restraints_from_config</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span><span class="n">pdbpath</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes the restraints.yaml config and returns the specified restraints.</span>
 <span class="sd">    </span>
+<span class="sd">    This is the function that should be invoked by openmm_run.py.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        config (dict): the loaded yaml config (as returned by yaml.safe_load() or similar</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        restraints (array): An array of Restraint instances</span>
+<span class="sd">        array: An array of Restraint instances</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">tlc</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span>
     
     <span class="n">restraints</span><span class="o">=</span><span class="p">[]</span>
-    <span class="c1"># parse config arguments:</span>
+    <span class="c1"># parse config arguments and pass to restraint generation:</span>
     <span class="n">restraint_command_string</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;restraints&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-
-    <span class="c1"># Define default values</span>
-    <span class="n">kval</span><span class="o">=</span><span class="mi">3</span>
-    <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;simple&quot;</span>
-    <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;harmonic&quot;</span>
+    <span class="n">restraint_args</span><span class="o">=</span><span class="p">{}</span>
+    
     <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">restraint_command_string</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;k=&quot;</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
             <span class="n">kval</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">kval</span><span class="o">=</span><span class="n">kval</span><span class="o">*</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;intst&quot;</span><span class="p">][</span><span class="s2">&quot;scaling&quot;</span><span class="p">]</span>
+            <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;k&quot;</span><span class="p">]</span><span class="o">=</span><span class="n">kval</span><span class="o">*</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;intst&quot;</span><span class="p">][</span><span class="s2">&quot;scaling&quot;</span><span class="p">]</span>
         <span class="k">elif</span> <span class="s2">&quot;extremities=&quot;</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
-            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;extremities&quot;</span>
-            <span class="n">n_extremities</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;extremities&quot;</span>
+            <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;n_extremities&quot;</span><span class="p">]</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">elif</span> <span class="s2">&quot;shape=&quot;</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
             
-            <span class="n">shape</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
-
-    <span class="k">if</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">in</span> <span class="n">restraint_command_string</span> <span class="ow">and</span> <span class="n">mode</span><span class="o">==</span><span class="s2">&quot;simple&quot;</span><span class="p">:</span>
+            <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
         
-        <span class="n">restraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Restraint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;resname </span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2"> and type C&quot;</span> <span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;(sphlayer 5 15 resname </span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">) and name CA and protein&quot;</span> <span class="p">,</span> <span class="n">pdbpath</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="n">kval</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="s2">&quot;wellsize=&quot;</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
+            
+            <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;wellsize&quot;</span><span class="p">]</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">in</span> <span class="n">restraint_command_string</span> <span class="ow">and</span> <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;simple&quot;</span><span class="p">:</span>
+        
+        <span class="n">restraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Restraint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;resname </span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2"> and type C&quot;</span> <span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;(sphlayer 5 15 resname </span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">) and name CA and protein&quot;</span> <span class="p">,</span> <span class="n">pdbpath</span><span class="p">,</span><span class="o">**</span><span class="n">restraint_args</span><span class="p">))</span>
     
-    <span class="k">elif</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">in</span> <span class="n">restraint_command_string</span> <span class="ow">and</span> <span class="n">mode</span><span class="o">==</span><span class="s2">&quot;extremities&quot;</span><span class="p">:</span>
-        <span class="n">selection_strings</span><span class="o">=</span><span class="n">GenerateExtremities</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span><span class="n">pdbpath</span><span class="p">,</span><span class="n">n_extremities</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">in</span> <span class="n">restraint_command_string</span> <span class="ow">and</span> <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;extremities&quot;</span><span class="p">:</span>
+        <span class="n">selection_strings</span><span class="o">=</span><span class="n">generate_extremities</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span><span class="n">pdbpath</span><span class="p">,</span><span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;n_extremities&quot;</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">selection</span> <span class="ow">in</span> <span class="n">selection_strings</span><span class="p">:</span>
-            <span class="n">restraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Restraint</span><span class="p">(</span><span class="n">selection</span> <span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;(sphlayer 3 10 (</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s2">)) and name CA&quot;</span> <span class="p">,</span> <span class="n">pdbpath</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="n">kval</span><span class="p">,</span><span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">))</span>
+            <span class="n">restraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Restraint</span><span class="p">(</span><span class="n">selection</span> <span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;(sphlayer 3 10 (</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s2">)) and name CA&quot;</span> <span class="p">,</span> <span class="n">pdbpath</span><span class="p">,</span><span class="o">**</span><span class="n">restraint_args</span><span class="p">))</span>
+            
+    
     <span class="k">if</span> <span class="s2">&quot;manual&quot;</span> <span class="ow">in</span> <span class="n">restraint_command_string</span><span class="p">:</span>
         <span class="n">manual_restraint_list</span><span class="o">=</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;manualrestraints&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">manual_restraint_list</span><span class="p">:</span>
@@ -405,7 +441,7 @@
 
 
 <span class="k">def</span> <span class="nf">write_restraints_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">system</span><span class="p">,</span><span class="n">config</span><span class="p">,</span><span class="n">current_step</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml</span>
+    <span class="sd">&quot;&quot;&quot;Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml</span>
