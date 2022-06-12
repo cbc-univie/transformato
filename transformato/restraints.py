@@ -1,8 +1,18 @@
 """
 Manages restraints and the forces created from them.
 
-Unless you directly want to modify functionality in here, you should not need to call here directly.
-Define your restraints in the config.yaml
+Basic function:
+-------------------
+
+From the 'restraints' section in the config.yaml, the intermediate state factory creates an appropriate restraints.yaml in the
+intermediate state directories.
+
+When the simulation is run, openMM_run.py checks for the existence of these restraints.yaml. If it finds one, a number of Restraint() instances commensurate
+to the number of desired restraints is created. These each create an appropriate openMM force as defined by their parameters. That force ist then applied to the openMM simulation.
+
+Unless you directly want to modify functionality, you should not need to call here directly.
+Define your restraints in the config.yaml.
+
 """
 from calendar import c
 from multiprocessing.sharedctypes import Value
@@ -120,7 +130,7 @@ class Restraint():
         elif self.shape=="flatbottom":
             # create force with flat-bottom potential
 
-            self.stepfunction=self.GenerateContinuous1DStepFunction(self.wellsize)
+            self.stepfunction=self._generate_continuous_1D_step_function(self.wellsize)
 
             self.force=CustomCentroidBondForce(2,"stepfunction((abs(distance(g1,g2)-r0)))*k*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
 
@@ -144,7 +154,7 @@ class Restraint():
         del self.topology # delete the enormous no longer needed universe asap
         return self.force
 
-    def GenerateContinuous1DStepFunction(self,permitted_distance:float):
+    def _generate_continuous_1D_step_function(self,permitted_distance:float):
         """Creates and returns a openMM continous1DStepFunction
         
         Very simply, this creates a TabulatedFunction that takes the distance of the atom group COM to its origin, and if greater, returns 1. Otherwise, it returns 0. This function does not need to be called directly.
@@ -191,7 +201,7 @@ def get3DDistance(pos1,pos2):
     distance=np.linalg.norm(vec)
     return distance
 
-def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
+def generate_extremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
     """Takes the common core and generates n extremities at the furthest point
     
         Returns a selection string of the extremities with a sphlayer selecting type C from sphinner to sphouter.
@@ -290,7 +300,7 @@ def GenerateExtremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=
 
     logger.debug(f"Created extremities with selectiobns: {selection_strings}")
     return selection_strings
-def CreateRestraintsFromConfig(configuration,pdbpath):
+def create_restraints_from_config(configuration,pdbpath):
     """Takes the .yaml config and returns the specified restraints
     
     Args:
@@ -327,7 +337,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
         restraints.append(Restraint(f"resname {tlc} and type C" , f"(sphlayer 5 15 resname {tlc}) and name CA and protein" , pdbpath,**restraint_args))
     
     elif "auto" in restraint_command_string and restraint_args["mode"]=="extremities":
-        selection_strings=GenerateExtremities(configuration,pdbpath,restraint_args["n_extremities"])
+        selection_strings=generate_extremities(configuration,pdbpath,restraint_args["n_extremities"])
         for selection in selection_strings:
             restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,**restraint_args))
             
