@@ -118,7 +118,7 @@ You may actually define any number of structures. The structure you want is refe
 
     .. object:: [structurename]
 
-        Can be whatever you want - just be sure to point you ``submit.ipynb`` towards the correct structures. That being said, we recommend sticking with the boring-but-practical ``structure1``, ``structure2`` you see in our notebooks.
+        Can be whatever you want - just be sure to point you ``submit.ipynb`` towards the correct structures. That being said, you can also stick with the boring-but-practical ``structure1``, ``structure2`` you see in our notebooks.
 
         
         .. option:: name
