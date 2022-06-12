@@ -30,17 +30,11 @@ logger=logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
 
 class Restraint():
-    """Class representing a restraint to apply to the system
+    """Class representing a restraint to apply to the system.
 
-        Intermediary step - openMM force objects are generated directly from this class and applied to the system.
+    Intermediary step - openMM force objects are generated directly from this class and applied to the system.
 
-        Args:
-            selligand,selprotein (MDAnalysis selection string): The atoms on whose center of mass the restraint will bei applied
-            k: the force (=spring) constant
-            pdbpath: the path to the pdbfile underlying the topology analysis
-            shape: 'harmonic' or 'flatbottom'. Defines the shape of the harmonic energy potential.
-            wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.
-            """
+        """
     def __init__(
         self,
         selligand:str,
@@ -52,9 +46,10 @@ class Restraint():
         mode:str=None,
         n_extremities:str=None,
         ):
-        """Class representing a restraint to apply to the system
+        """Restraint() constructor.
 
-        Intermediary step - openMM force objects are generated directly from this class and applied to the system.
+        Raises:
+            AttributeError: If the potential shape requested is not implemented.
 
         Args:
             selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings
@@ -85,7 +80,7 @@ class Restraint():
             common_core_names (array[str]):  - Array with strings of the common core names. Usually provided by the restraint.yaml file.
             
         Returns:
-            self.force: An openMM force object representing the restraint bond.
+            openMM.CustomCentroidBondForce: An openMM force object representing the restraint bond.
         """
 
         
@@ -194,7 +189,8 @@ def get3DDistance(pos1,pos2):
         pos1,pos2 (3D-Array): The positions of which to calculate the distances
         
     Returns:
-        distance (float): The distance between the two positions"""
+        float: The distance between the two positions
+        """
     vec=pos1-pos2
     distance=np.linalg.norm(vec)
     return distance
@@ -205,10 +201,15 @@ def generate_extremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter
         Returns a selection string of the extremities with a sphlayer selecting type C from sphinner to sphouter.
         The algorithm works as follows:
 
-        (All of these operations only operate on carbons in the common core)
+        (**All of these operations only operate on carbons in the common core**)
+
+
         1. Take the furthest C from the center of Mass
+        
         2. Take the furthest C from that C
+
         3. Until len(extremity_cores)==n_extremities: Pick the C where the sum distance from all previous cores is greatest.
+
         4. Generate selection strings for all extremity cores and return
     
     Args:
@@ -218,8 +219,11 @@ def generate_extremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter
         sphinner (float): Distance to start of the sphlayer, default 0
         sphouter (float): Distance to end of the sphlayer, default 5
         
+    Raises:
+        ValueError: If an invalid amount of extremities is specified.
+
     Returns:
-        selection_strings (array[str]): An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer
+        array: An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer
         """
 
     
@@ -305,7 +309,7 @@ def create_restraints_from_config(configuration,pdbpath):
         config (dict): the loaded yaml config (as returned by yaml.safe_load() or similar
         
     Returns:
-        restraints (array): An array of Restraint instances
+        array: An array of Restraint instances
     """
 
     tlc=configuration["system"]["structure"]["tlc"]
