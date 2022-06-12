@@ -10,8 +10,14 @@ intermediate state directories.
 When the simulation is run, openMM_run.py checks for the existence of these restraints.yaml. If it finds one, a number of Restraint() instances commensurate
 to the number of desired restraints is created. These each create an appropriate openMM force as defined by their parameters. That force ist then applied to the openMM simulation.
 
+Usage:
+--------
+
 Unless you directly want to modify functionality, you should not need to call here directly.
 Define your restraints in the config.yaml.
+
+.. hint::
+    For further usage instructions, see the 'System Setup' section of the main documentation.
 
 """
 
@@ -30,11 +36,7 @@ logger=logging.getLogger(__name__)
 #logger.setLevel(logging.DEBUG)
 
 class Restraint():
-    """Class representing a restraint to apply to the system.
-
-    Intermediary step - openMM force objects are generated directly from this class and applied to the system.
-
-        """
+    
     def __init__(
         self,
         selligand:str,
@@ -46,17 +48,21 @@ class Restraint():
         mode:str=None,
         n_extremities:str=None,
         ):
-        """Restraint() constructor.
+        """Class representing a restraint to apply to the system.
+
+        Intermediary step - openMM force objects are generated directly from this class and applied to the system.
 
         Raises:
             AttributeError: If the potential shape requested is not implemented.
 
         Args:
             selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings
-            k: the force (=spring) constant
+            k: the force (=spring) constant applied to the potential energy formula. See the 'System Setup' section for details.
             pdbpath: the path to the pdbfile underlying the topology analysis
             shape: 'harmonic' or 'flatbottom'. Defines the shape of the harmonic energy potential.
             wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.
+            mode: Catcher for unneeded restraint_args entry
+            n_extremities: Catcher for unneeded restraint_args entry
             """
 
         self.shape=shape
@@ -182,7 +188,7 @@ class Restraint():
         """
         system.addForce(self.force)
 
-def get3DDistance(pos1,pos2):
+def get3DDistance(pos1, pos2):
     """Takes two 3d positions as array and calculates the distance between them
     
     Args:
@@ -198,19 +204,23 @@ def get3DDistance(pos1,pos2):
 def generate_extremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
     """Takes the common core and generates n extremities at the furthest point
     
-        Returns a selection string of the extremities with a sphlayer selecting type C from sphinner to sphouter.
+        Returns a selection string of the extremities with a sphlayer (see MDAnalysis docs) selecting type C from sphinner to sphouter.
         The algorithm works as follows:
 
         (**All of these operations only operate on carbons in the common core**)
 
 
-        1. Take the furthest C from the center of Mass
+        1. Take the furthest C from the center of Mass.
         
-        2. Take the furthest C from that C
+        2. Take the furthest C from that C.
 
-        3. Until len(extremity_cores)==n_extremities: Pick the C where the sum distance from all previous cores is greatest.
+        3. Until len(extremity_cores)==n_extremities: 
+            
+            Pick the C where the sum distance from all previous cores is greatest.
 
-        4. Generate selection strings for all extremity cores and return
+            Add it to the extremity_cores.
+
+        4. Generate selection strings for all extremity cores and return.
     
     Args:
         configuration (dict): the read-in restraints.yaml
@@ -303,8 +313,10 @@ def generate_extremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter
     logger.debug(f"Created extremities with selectiobns: {selection_strings}")
     return selection_strings
 def create_restraints_from_config(configuration,pdbpath):
-    """Takes the .yaml config and returns the specified restraints
+    """Takes the restraints.yaml config and returns the specified restraints.
     
+    This is the function that should be invoked by openmm_run.py.
+
     Args:
         config (dict): the loaded yaml config (as returned by yaml.safe_load() or similar
         
@@ -355,7 +367,7 @@ def create_restraints_from_config(configuration,pdbpath):
 
 
 def write_restraints_yaml(path,system,config,current_step):
-    """Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml
+    """Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml.
     
     Args:
         path: the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml
