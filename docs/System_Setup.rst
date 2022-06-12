@@ -27,14 +27,14 @@ While this may look complicated, all you need to do is to:
 
 #. Create a folder called `your-structure-1` for your first structure
 #. Take the CHARMM-GUI output folder (called something like charmm-gui-4842148) for your solvated ligand-protein complex, move it to this folder and rename it into `complex`
-#. Take the CHARMM-GUI output folder for your solvated ligand in the waterbox, move it to this folder and rename it inti `waterbox`
+#. Take the CHARMM-GUI output folder for your solvated ligand in the waterbox, move it to this folder and rename it into `waterbox`
 #. Do the same with your second, third, fourth... etc. structure
 #. **Run the equillibration** part of the provided simulation input. An equillibrated system (and the generated .rst file) are necesary for transformato.
 
 You`ll create the remaining files down below.
 
 .. note:: 
-    The submit.ipynb file is covered in :doc:`Running_Simulation`
+    The submit.ipynb file is covered in :doc:`Running_Simulation`\ .
 
 The config.yaml
 #################
@@ -114,39 +114,70 @@ The *system* container contains the setup information from your structure direct
 
 You may actually define any number of structures. The structure you want is referenced when setting up the system.
 
-system
-    [structurename] # can be whatever you want
-        name
+.. object:: system
+
+    .. object:: [structurename]
+
+        Can be whatever you want - just be sure to point you ``submit.ipynb`` towards the correct structures. That being said, you can also stick with the boring-but-practical ``structure1``, ``structure2`` you see in our notebooks.
+
+        
+        .. option:: name
+
             The folder name of the folder containing the complex/ligand folders for that structure
-        tlc
+
+        .. option:: tlc
+
             The residue name (resname) of the structure
-        other parameters
+
+        .. option:: other parameters
+
             These refer to the various files in the /openmm/ subfolder.
 
 
 The *simulation* container contains the simulation parameters you want to use.
 
-simulation
-    parameters
-        nstep: (int)
+.. object:: simulation
+
+    .. object:: parameters
+
+        .. option:: nstep: (int)
+
             How many calculation steps you want to simulate
-        nstdcd: (int)
+
+        .. option:: nstdcd: (int)
+
             How many steps you want in your trajectory file overall
-        nstout: (int)
+
+        .. option:: nstout: (int)
+
             How many steps you want written out in the .log.out files
-        cons: (int)
-            What constraints (not *restraints*) you want in your system
-        dt: (int)
-            The timestep in nanoseconds. With hydrogen mass repartitioning, up to 0.004 ns should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.
-        switch: (["vfswitch","vfoff"])
+
+        .. option:: cons: ["HBond",None]
+
+            What constraints (not *restraints*) you want in your system.
+
+        .. option:: dt: (int)
+
+            The timestep in picoseconds. With hydrogen mass repartitioning, up to 0.004 ps should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.
+
+        .. option:: switch: (["vfswitch","vfoff"])
+
             How the van-der-Waals forces are switched.
-        mini_nstep: (int)
+
+        .. option:: mini_nstep: (int)
+
             Steps for minimisation
-        GPU: ([True/False])
+
+        .. option:: GPU: ([True/False])
+        
             Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.
-        workload-manager: (["slurm","CGE"])
+
+        .. option:: workload-manager: (["slurm","CGE"])
+
             For which workload-manager the script files should be output.
-        free-energy-type: (["rbfe","rsfe"])
+
+        .. option:: free-energy-type: (["rbfe","rsfe"])
+
             Calculate relative binding free energy or relative solvation free energy
 
 Restraints
@@ -158,7 +189,7 @@ Restraints
 
 
 
-Transformato supports two types of restraints: automatic and manual restraints.
+transformato supports two types of restraints: automatic and manual restraints.
 
 Automatic Restraints
 **************************
@@ -175,20 +206,45 @@ to your `config.yaml`. This wil restrain your ligand in its original position us
 You may specify further keywords:
 
 .. rubric:: Options for automatic restraints
-    
-restraints:
-    :code:`auto`
-        Required. Tells transformato to look for and apply automatic restraints
-    :code:`k=[int]`
-        *optional:* Defines the spring constant used for force calculations. Default is 3
-    :code:`extremities=[int]`
-        *optional:* If used, transformato will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.
-    :code:`shape="harmonic" ["harmonic","flatbottom"]`
-        *optional:* Defines the shape of the energy potential. Only "harmonic" is currently implemented.
-    :code:`scaling`
-        *optional:* If present, the k - Value of the force is linearly scaled in the first four intermediate states (0,0.25,0.5,0.75)
 
-A full command might thus look like this:
+.. object:: restraints: auto
+    
+
+    .. option:: k=[int]
+
+        *optional:* Defines the spring constant used for force calculations. Default is 3
+
+    .. option:: extremities=[int]
+
+        *optional:* If used, transformato will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.
+
+    .. option:: shape=["harmonic","flatbottom"]`
+
+        *optional:* Defines the shape of the energy potential.
+        
+        The potential energy term for the two forms is given as:
+
+        + harmonic: :math:`E=0.5k \cdot (r-r_0)²`
+        + flatbottom: :math:`E=k \cdot step(|r-r_0|),thresh) \cdot (r-r_0)²,`
+
+        where  :math:`r`` is the current distance, :math:`r_0`` the initial distance, and :math:`k`` the force constant. The step function returns 0 until the threshold :math:`thresh` (defined as :code:`wellsize` by the config.yaml) has been surpassed, after which it returns 1. As such,
+        the flat-bottom potential is essentially a harmonic potential where the energy within the \"well\" is zero. Note that the :code:`wellsize` acts like a *radius*, meaning it extends in all directions from its origin.
+
+    .. figure:: assets/images/harm_vs_fb.png
+        :alt: harmonic and flatbottom potentials
+        
+        Figure: The difference between a harmonic (*A*) and flat-bottom (*B*) potential. While both allow more movement closer to the restraint origin, a flat-bottom potential effectively allows defining
+        a fixed sampling area that the ligand can move in without hindrance, but cannot leave (assuming a strong enough value for *k*).
+
+    .. option:: scaling
+
+        *optional:* If present, the k - Value of the force is linearly scaled in the first four intermediate states (``intst1: 0; intst2: 0.25; intst3: 0.5; intst4: 0.75; intst5: 1.0``)
+
+    .. option:: wellsize [float]
+
+        *optional*: Only takes effect in a flat-bottom potential. Defines the wellsize in nanometers. Default is 0.1 nm.
+
+A full entry in your config.yaml might thus look like this:
 
 
 
@@ -278,13 +334,28 @@ Note that the individual restraints all need to have distinct names (restraint1,
 
 .. rubric:: Options for manual restraints
 
-manualrestraints
-    :code:`shape="harmonic" ["harmonic","flatbottom"]'`
-        Shape of the energy potential. Default is "harmonic", "flatbottom" is not yet implemented
-    :code:`group1,group2=[MDAnalysis selection string]`
-        Defines which Common Core atoms are members of group1 or group2. Please note that group1 **must** be the ligand, and group2 the protein.
-    :code:`k=[int]`
-        *(optional):* Defines the harmonic force constant. Default is 3.
+
+.. object:: restraints: manual
+
+    .. object:: manual-restraint
+
+        You may freely choose the name of the restraint here. It may be useful to provide a 'speaking' name, as this will allow identification later.
+
+        .. option:: shape=["harmonic","flatbottom"]'
+
+            Shape of the energy potential. Default is "harmonic". See automatic restraints for details.
+
+        .. option:: group1,group2=[MDAnalysis selection string]
+
+            Defines which Common Core atoms are members of group1 or group2. Please note that group1 **must** be the ligand, and group2 the protein.
+
+        .. option:: k=[int]
+
+            *(optional):* Defines the harmonic force constant. Default is 3.
+
+        .. option:: wellsize=[float]
+            
+            *(optional):* Defines the wellsize for flat-bottom restraints (unit is nanometers). Defaults to 0.1 nm.
 
 
 As with automatic restraints, even manually specified restraints will never act on atoms not in the common core, as this would lead to nonsensical energy calculations.
