@@ -1,5 +1,8 @@
 """
-Manages restraints and the forces created from them
+Manages restraints and the forces created from them.
+
+Unless you directly want to modify functionality in here, you should not need to call here directly.
+Define your restraints in the config.yaml
 """
 from calendar import c
 from multiprocessing.sharedctypes import Value
@@ -16,7 +19,7 @@ from simtk.openmm import *
 from simtk.openmm.app import *
 
 logger=logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+#logger.setLevel(logging.DEBUG)
 
 class Restraint():
     """Class representing a restraint to apply to the system
@@ -27,7 +30,7 @@ class Restraint():
             selligand,selprotein (MDAnalysis selection string): The atoms on whose center of mass the restraint will bei applied
             k: the force (=spring) constant
             pdbpath: the path to the pdbfile underlying the topology analysis
-            shape: 'harmonic' or 'flatbottom' 
+            shape: 'harmonic' or 'flatbottom'. Defines the shape of the harmonic energy potential.
             wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.
             """
     def __init__(
@@ -35,9 +38,11 @@ class Restraint():
         selligand:str,
         selprotein:str,
         pdbpath:str,
-        k:float,
+        k:float=3,
         shape:str="harmonic",
-        wellsize:float=0.1
+        wellsize:float=0.05,
+        mode:str=None,
+        n_extremities:str=None,
         ):
         """Class representing a restraint to apply to the system
 
@@ -47,7 +52,7 @@ class Restraint():
             selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings
             k: the force (=spring) constant
             pdbpath: the path to the pdbfile underlying the topology analysis
-            shape: 'harmonic' or 'flatbottom' 
+            shape: 'harmonic' or 'flatbottom'. Defines the shape of the harmonic energy potential.
             wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.
             """
 
@@ -69,7 +74,11 @@ class Restraint():
         """Actually creates the force, after dismissing all idxs not in the common core from the molecule.
         
         Args:
-            common_core_names (array[str]):  - Array with strings of the common core names. Usually provided by the restraint.yaml file."""
+            common_core_names (array[str]):  - Array with strings of the common core names. Usually provided by the restraint.yaml file.
+            
+        Returns:
+            self.force: An openMM force object representing the restraint bond.
+        """
 
         
         # Only done for g1, as it is the ligand group - theres no common core for the protein
@@ -113,7 +122,7 @@ class Restraint():
 
             self.stepfunction=self.GenerateContinuous1DStepFunction(self.wellsize)
 
-            self.force=CustomCentroidBondForce(2,"stepfunction((distance(g1,g2)-r0))*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
+            self.force=CustomCentroidBondForce(2,"stepfunction((abs(distance(g1,g2)-r0)))*k*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
 
             self.force.addTabulatedFunction(name="stepfunction",function=self.stepfunction)
             self.force.addPerBondParameter("k")
@@ -294,32 +303,35 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     tlc=configuration["system"]["structure"]["tlc"]
     
     restraints=[]
-    # parse config arguments:
+    # parse config arguments and pass to restraint generation:
     restraint_command_string=configuration["simulation"]["restraints"].split()
-
-    # Define default values
-    kval=3
-    mode="simple"
-    shape="harmonic"
+    restraint_args={}
+    
     for arg in restraint_command_string:
         if "k=" in arg:
             kval=int(arg.split("=")[1])
-            kval=kval*configuration["intst"]["scaling"]
+            restraint_args["k"]=kval*configuration["intst"]["scaling"]
         elif "extremities=" in arg:
-            mode="extremities"
-            n_extremities=int(arg.split("=")[1])
+            restraint_args["mode"]="extremities"
+            restraint_args["n_extremities"]=int(arg.split("=")[1])
         elif "shape=" in arg:
             
-            shape=str(arg.split("=")[1])
-
-    if "auto" in restraint_command_string and mode=="simple":
+            restraint_args["shape"]=str(arg.split("=")[1])
         
-        restraints.append(Restraint(f"resname {tlc} and type C" , f"(sphlayer 5 15 resname {tlc}) and name CA and protein" , pdbpath,k=kval))
+        elif "wellsize=" in arg:
+            
+            restraint_args["wellsize"]=float(arg.split("=")[1])
+
+    if "auto" in restraint_command_string and restraint_args["mode"]=="simple":
+        
+        restraints.append(Restraint(f"resname {tlc} and type C" , f"(sphlayer 5 15 resname {tlc}) and name CA and protein" , pdbpath,**restraint_args))
     
-    elif "auto" in restraint_command_string and mode=="extremities":
-        selection_strings=GenerateExtremities(configuration,pdbpath,n_extremities)
+    elif "auto" in restraint_command_string and restraint_args["mode"]=="extremities":
+        selection_strings=GenerateExtremities(configuration,pdbpath,restraint_args["n_extremities"])
         for selection in selection_strings:
-            restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,k=kval,shape=shape))
+            restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,**restraint_args))
+            
+    
     if "manual" in restraint_command_string:
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
         for key in manual_restraint_list:
