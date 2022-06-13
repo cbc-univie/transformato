@@ -47,6 +47,7 @@ For calculating relative binding free energies between two (or more ligands) one
 Repeat step 3 and 4 for every other Ligand.
 5. Now provide all files in the following folder structure: *ligand1/waterbox*, *ligand1/complex*, *ligand2/waterbox*, *ligand2/complex* where the folders named **waterbox** and **complex** contain the downloaded CHARMM-GUI output (the needed structure can also be seen for an example in [transformato/data/cdk2-1h1q](https://github.com/wiederm/transformato/tree/master/data/cdk2-1h1q))
 
+	*Ensure the residue names between the complex and waterbox systems match each other and that defined in the .yaml config file!*
 ### Equilibration of the system
 
 1. Before starting the simulation, you might want to equilibrate each system. Therefore, go for each system into the corresponding openmm folder (e.g. ligand1/waterbox/openmm) and run the equilibration (you can use the start of the *README* file provided by CHARMM-GUI).
@@ -79,9 +80,15 @@ You **must ** change the following entries for each mutation:
 
 The command `run_simulation(i.output_files, engine='openMM')` in the *submit.ipynb* file runs the simulation for each intermediate state one after another on your local machine. For most of the systems it might be good to use some computing cluster. If the *submit.ipynb* file is executed at the place where one wants to create the folder one can use something like the following line: 
     
-```
+```python
+import os
+import glob
+import subprocess
+
 wd = os.getcwd()
-output_files = glob.glob(wd + f"/{folder}/*/*/intst*", recursive = True)
+output_files = glob.glob(wd + f"/{folder}/*/*/intst*", recursive = True) 
+	#Whether {folder} is necessary depends on your folder setup relative to your working directory -
+	# in general, this should point to your intst** folders
 
 for path in sorted(output_files):
 	# because path is object not string
@@ -90,14 +97,45 @@ for path in sorted(output_files):
 	output = exe.stdout.read()
 	print(output)
 ```
-#### Analyzing the trajectories
+Alternatively, as this way is quite temperamental and prone to sudden and unexplained failure, you may simply use a shell script:
 
-The trajectories can be analyzed the following way:
+##### sbash_simulations.sh
+```bash
+for {i} in ./**/**/intst**/; #This assumes you start from the directory above the initial structure directory - you may change as necessary.
+do cd ${i}; # to prevent issues, it is preferred to switch to the script directory
+sbash simulation.sh;
+cd ../../..; # switch working directory back to original
+done;
 
 ```
+Either way, as these simulations take a fair bit of processing power, it is recommended to offload the workload to a cluster.
+
+#### Analyzing the trajectories
+
+The trajectories can be analyzed by creating the following script:
+
+##### analysis.py
+```python
+import subprocess
+from transformato import load_config_yaml
+from transformato.utils import postprocessing
+import sys
+
+# comes frome the .sh file
+folder = sys.argv[1]
+path = sys.argv[2]
+conf = sys.argv[3]
+
+# proc = sys.argv[4]
+# frames = sys.argv[5]
+
+# print(f"Using {proc} CPUS and frames {frames}")
+
+configuration = load_config_yaml(config=conf, input_dir=path, output_dir=folder)
+
 for name in (
     configuration["system"]["structure1"]["name"],
-    configuration["system"]["structure2"][following],
+    configuration["system"]["structure2"]["name"],
 ):
 
     ddG_openMM, dddG, f_openMM = postprocessing(
@@ -110,10 +148,33 @@ for name in (
         show_summary=True,
     )
     print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")
-   ```
-   Which gives a free energy for each ligand to the common core (``ddG_openMM``), from calculating the difference between ``ddG_openMM`` of ligand 1 and ligand 2 one obtaines the final free energy &Delta;&Delta;G(Ligand1 --> Ligand 2).
- 
- 
+```
+To be then distributed to the computing nodes:
+##### analysis.sh
+```bash
+#!/bin/bash
+#SBATCH --gres=gpu
+#SBATCH -p lgpu
+
+#The commands above obviously depend on which workload manager you use
+#if you run this code locally, you may exlude it entirely
+source ~/miniconda3/etc/profile.d/conda.sh # As an example - you likely do not need to include this, if your environment is stable. Point to your installation in any case.
+conda activate fep # Ensures you run it in the transformato - provided environment
+
+folder=./run3/ # We recommend having your replicates as subfolders like this
+
+
+time python analysis.py ${folder} 2oj9_struc25-2oj9_struc26-rbfe config.yaml > ./analysis_${folder}.out
+```
+	
+Which gives a free energy for each ligand to the common core (``ddG_openMM``), from calculating the difference between ``ddG_openMM`` of ligand 1 and ligand 2 one obtaines the final free energy &Delta;&Delta;G(Ligand1 --> Ligand 2). As such, at the very end of the analysis output you should see something similar to this:
+	
+##### analysis.out
+```
+Free energy to common core: -3.31657770719368 [kT] with uncertanty: 1.431017708999154 [kT].
+Free energy difference: -3.31657770719368 +- 1.431017708999154 [kT]
+Both states are considered
+```
 ## Maintainers
 
 - Marcus Wieder <marcus.wieder@univie.ac.at> (University of Vienna)
@@ -122,7 +183,7 @@ for name in (
 
 ### Copyright
 
-Copyright (c) 2021, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch
+Copyright (c) 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch
 
 
 #### Acknowledgements

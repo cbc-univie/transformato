@@ -2,6 +2,7 @@ import logging
 from collections import namedtuple, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
+from mmap import MADV_UNMERGEABLE
 from typing import List, Tuple
 
 import numpy as np
@@ -320,6 +321,9 @@ class ProposeMutationRoute(object):
         self.dummy_region_cc1: DummyRegion
         self.dummy_region_cc2: DummyRegion
 
+        self.manually_added_m1_idx: list =[]
+        self.manually_added_m2_idx: list =[]
+
         self._check_cgenff_versions()
 
     def _check_cgenff_versions(self):
@@ -565,12 +569,27 @@ class ProposeMutationRoute(object):
         return mcs
 
     def finish_common_core(
+
+        
         self,
         connected_dummy_regions_cc1: list = [],
         connected_dummy_regions_cc2: list = [],
         odered_connected_dummy_regions_cc1: list = [],
         odered_connected_dummy_regions_cc2: list = [],
     ):
+        # Add sorted manually added idxs to common core. Sorting prevents error looking up mutation parameters.
+
+        if self.manually_added_m1_idx!=[]:
+            self.manually_added_m1_idx.sort()
+            print("Adding idx to common core: %s"%self.manually_added_m1_idx)
+            for idx in self.manually_added_m1_idx:
+                self._add_common_core_atom("m1",idx)
+        if self.manually_added_m2_idx!=[]:
+            self.manually_added_m2_idx.sort()
+            print("Adding idx to common core: %s"%self.manually_added_m2_idx)
+            for idx in self.manually_added_m2_idx:
+                self._add_common_core_atom("m2",idx)
+                  
         # set the teriminal real/dummy atom indices
         self._set_common_core_parameters()
         # match the real/dummy atoms
@@ -722,14 +741,17 @@ class ProposeMutationRoute(object):
             print(f"Idx: {idx} not in common core.")
 
     def add_idx_to_common_core_of_mol1(self, idx_list: list):
+
         for idx in idx_list:
-            self._add_common_core_atom("m1", idx)
-        print(self.get_common_core_idx_mol1())
+            self.manually_added_m1_idx.append(idx)
+            
+        print("Staged IDX for addition to common core m1: %s"%self.manually_added_m1_idx)
 
     def add_idx_to_common_core_of_mol2(self, idx_list: list):
         for idx in idx_list:
-            self._add_common_core_atom("m2", idx)
-        print(self.get_common_core_idx_mol2())
+            self.manually_added_m2_idx.append(idx)
+            
+        print("Staged IDX for addition to common core m2: %s"%self.manually_added_m2_idx)
 
     def _add_common_core_atom(self, name: str, idx: int):
         if idx in self.added_indeces[name] or idx in self._get_common_core(name):
@@ -1232,6 +1254,12 @@ class CommonCoreTransformation(object):
         [dict]
             matched common core atom names
         """
+        # Prepare Variables to use for restraint cc checks
+        global cc_names_struc1, cc_names_struc2
+        cc_names_struc1=[]
+        cc_names_struc2=[]
+
+
         # match atomes in common cores
         match_atom_names_cc1_to_cc2 = {}
         for cc1_idx, cc2_idx in zip(self.cc1_indicies, self.cc2_indicies):
@@ -1239,8 +1267,15 @@ class CommonCoreTransformation(object):
             ligand2_atom = self.ligand2_psf[cc2_idx]
             match_atom_names_cc1_to_cc2[ligand1_atom.name] = ligand2_atom.name
 
+            cc_names_struc1.append(ligand1_atom.name)
+            cc_names_struc2.append(ligand2_atom.name)
+
+
+        print(f"CC Struc1: {cc_names_struc1}")
+        print(f"CC Struc2: {cc_names_struc2}")
         return match_atom_names_cc1_to_cc2
 
+        
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
 
         # common core of psf 1 is transformed to psf 2

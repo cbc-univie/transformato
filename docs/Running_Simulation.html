@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running Simulations &mdash; transformato  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Trajectory Analysis" href="Analysis.html" />
+    <link rel="prev" title="System Setup" href="System_Setup.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html">
+            <img src="_static/logo_transformato.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="whatistransformato.html"><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> in a nutshell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Running Simulations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-intermediary-states">Creating intermediary states</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#loading-structures-and-generating-forcefields">Loading structures and generating forcefields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generating-the-mutation-route-and-common-core">Generating the mutation route and common core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-mutations-and-write-intermediate-states">Create mutations and write intermediate states</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-simulation">Running the simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#openmm">openMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#charmm">CHARMM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#automation-and-offloading-to-a-cluster">Automation and offloading to a cluster</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Analysis.html">Trajectory Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">transformato</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Running Simulations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Running_Simulation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="running-simulations">
+<h1>Running Simulations<a class="headerlink" href="#running-simulations" title="Permalink to this heading"></a></h1>
+<div class="admonition seealso" id="rst-submitfiledesc">
+<p class="admonition-title">See also</p>
+<p>If you are unsure or need inspiration, the <a class="reference external" href="https://github.com/wiederm/transformato/tree/master/notebooks">transformato/notebooks</a> folder has a number of detailed examples.</p>
+</div>
+<p>After setting up a system, actually running it is comprised of two steps:</p>
+<ul>
+<li><p>Creating the intermediate states</p>
+<p>During this stage you may also make final adjustments to the common core and dummy regions of your system.</p>
+</li>
+<li><p>Simulating the system</p>
+<p>Here, you will essentially conducting small MD simulations for complex and waterbox in each of the intermediary states. This will generate the trajcetory files to be analysed later.</p>
+</li>
+</ul>
+<div class="section" id="creating-intermediary-states">
+<h2>Creating intermediary states<a class="headerlink" href="#creating-intermediary-states" title="Permalink to this heading"></a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>We recommend using an ipython interpreter like jupyter-notebook or VSCode to run the notebooks, as this will enable you to easier visualize the common-core and make the necessary adjustments.</p>
+</div>
+<div class="section" id="loading-structures-and-generating-forcefields">
+<h3>Loading structures and generating forcefields<a class="headerlink" href="#loading-structures-and-generating-forcefields" title="Permalink to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">transformato</span> <span class="kn">import</span> <span class="n">load_config_yaml</span><span class="p">,</span> <span class="n">SystemStructure</span><span class="p">,</span> <span class="n">IntermediateStateFactory</span><span class="p">,</span> <span class="n">ProposeMutationRoute</span>
+<span class="kn">from</span> <span class="nn">transformato.mutate</span> <span class="kn">import</span> <span class="n">perform_mutations</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">SVG</span>
+<span class="kn">from</span> <span class="nn">transformato.utils</span> <span class="kn">import</span> <span class="n">run_simulation</span><span class="p">,</span> <span class="n">postprocessing</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;parmed&#39;</span><span class="p">)</span>
+
+<span class="n">configuration</span> <span class="o">=</span> <span class="n">load_config_yaml</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="s1">&#39;24to25.yaml&#39;</span><span class="p">,</span><span class="n">input_dir</span><span class="o">=</span><span class="s1">&#39;../&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./longrun-norestraints-1/&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>During this part, we load the required modules and tell transformato to load our config.yaml. Please note input_dir and output_dir as additional arguments for load_config_yaml: These folders are where to find you structures and where to write your intermediate states, respectively.</p>
+</div>
+<div class="section" id="generating-the-mutation-route-and-common-core">
+<h3>Generating the mutation route and common core<a class="headerlink" href="#generating-the-mutation-route-and-common-core" title="Permalink to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">SystemStructure</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="s2">&quot;structure1&quot;</span><span class="p">)</span>
+<span class="n">s2</span> <span class="o">=</span> <span class="n">SystemStructure</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="s2">&quot;structure2&quot;</span><span class="p">)</span>
+<span class="n">s1_to_s2</span> <span class="o">=</span> <span class="n">ProposeMutationRoute</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>These commands tell transformato to create a mutation route. It’ll take some time for CGenFF to create parameter files for the proposed route.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s1_to_s2</span><span class="o">.</span><span class="n">propose_common_core</span><span class="p">()</span>
+<span class="n">SVG</span><span class="p">(</span><span class="n">s1_to_s2</span><span class="o">.</span><span class="n">show_common_core_on_mol1</span><span class="p">())</span>
+<span class="n">SVG</span><span class="p">(</span><span class="n">s1_to_s2</span><span class="o">.</span><span class="n">show_common_core_on_mol2</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>This will instruct transformato to create and assign both the common core and dummy regions. Using the SVG() order you can then take a look at your structure and decide if the common core is proper or if adjustments need to be made.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s1_to_s2</span><span class="o">.</span><span class="n">add_idx_to_common_core_of_mol1</span><span class="p">([</span><span class="mi">34</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">38</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">37</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">s1_to_s2</span><span class="o">.</span><span class="n">add_idx_to_common_core_of_mol2</span><span class="p">([</span><span class="mi">34</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">36</span><span class="p">,</span><span class="mi">38</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">37</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">35</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This will instruct transformato to add the atoms with the given idxs to the common core. The idxs are identical to the numbers visualized in the SVG. Manually added atoms are not added directly, but staged until finish_common_core() is called.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s1_to_s2</span><span class="o">.</span><span class="n">finish_common_core</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>transformato will add staged idxs and start attempting to scale charges. If you want, you may now repeat the SVG() command from above to see the changes you made.</p>
+</div>
+<div class="section" id="create-mutations-and-write-intermediate-states">
+<h3>Create mutations and write intermediate states<a class="headerlink" href="#create-mutations-and-write-intermediate-states" title="Permalink to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mutation_list</span> <span class="o">=</span> <span class="n">s1_to_s2</span><span class="o">.</span><span class="n">generate_mutations_to_common_core_for_mol1</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mutation_list</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">IntermediateStateFactory</span><span class="p">(</span>
+<span class="n">system</span><span class="o">=</span><span class="n">s1</span><span class="p">,</span>
+<span class="n">configuration</span><span class="o">=</span><span class="n">configuration</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This will generate the necessary mutation list from one endstate to the common core.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">perform_mutations</span><span class="p">(</span><span class="n">nr_of_mutation_steps_charge</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">configuration</span><span class="o">=</span><span class="n">configuration</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">mutation_list</span><span class="o">=</span><span class="n">mutation_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With this command, the actual intermediate state directories are written. After this has finished without errors, you may proceed to actually running the simulation.</p>
+</div>
+</div>
+<div class="section" id="running-the-simulation">
+<h2>Running the simulation<a class="headerlink" href="#running-the-simulation" title="Permalink to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is <em>technically</em> possible to run all simulations locally, as long as you have a CUDA - capable device. However, even with top-end hardware, expect simulation and analysis to take <em>at least</em> 15 hours per replicate, depending on timestep, system size, simulation length and especially the number of intermediary states required.</p>
+</div>
+<p>If you take  a look at the intst*/ directories now created (located at <code class="code docutils literal notranslate"><span class="pre">project-folder/replicate-folder/combinedstructure/singlestructure/intst*</span></code>) you’ll find two scripts: <code class="code docutils literal notranslate"><span class="pre">simulation.sh</span></code> and <code class="code docutils literal notranslate"><span class="pre">simulation_charmm.sh</span></code></p>
+<p>Somewhat unsuprisingly, these are responsible for running the simulation as either openMM or charmm, containing the required information and arguments.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>You only need to run <em>one</em> of the options below. Please note, however, that CHARMM does not have the same features as openMM. If you need to modify these scripts for all future use in some way, you may find their sources in <code class="code docutils literal notranslate"><span class="pre">transformato/bin</span></code></p>
+</div>
+<div class="section" id="openmm">
+<h3>openMM<a class="headerlink" href="#openmm" title="Permalink to this heading"></a></h3>
+<p>For openMM, use <code class="code docutils literal notranslate"><span class="pre">simulate.sh</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#SBATCH -p lgpu</span>
+<span class="c1">#SBATCH --gres=gpu</span>
+
+
+<span class="nb">source</span> ~/anaconda3/etc/profile.d/conda.sh
+conda activate fep
+
+<span class="nv">path</span><span class="o">=</span><span class="nv">$1</span>
+
+<span class="nb">cd</span> <span class="si">${</span><span class="nv">path</span><span class="si">}</span>
+<span class="nb">pwd</span>
+hostname
+
+<span class="nv">input</span><span class="o">=</span>lig_in_complex
+<span class="nv">init</span><span class="o">=</span>lig_in_complex
+<span class="nv">pstep</span><span class="o">=</span>lig_in_complex
+<span class="nv">istep</span><span class="o">=</span>lig_in_complex
+<span class="nv">irst</span><span class="o">=</span>lig_in_complex
+<span class="nv">orst</span><span class="o">=</span>lig_in_complex_rst
+python -u openmm_run.py -i <span class="si">${</span><span class="nv">input</span><span class="si">}</span>.inp -t toppar.str -p <span class="si">${</span><span class="nv">init</span><span class="si">}</span>.psf -c <span class="si">${</span><span class="nv">init</span><span class="si">}</span>.crd -irst <span class="si">${</span><span class="nv">irst</span><span class="si">}</span>.rst -orst <span class="si">${</span><span class="nv">irst</span><span class="si">}</span> -odcd <span class="si">${</span><span class="nv">istep</span><span class="si">}</span>.dcd <span class="p">&amp;</span>&gt; complex_out.log
+
+<span class="nv">input</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">init</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">pstep</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">istep</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">irst</span><span class="o">=</span>lig_in_waterbox
+<span class="nv">orst</span><span class="o">=</span>lig_in_waterbox_rst
+python -u openmm_run.py -i <span class="si">${</span><span class="nv">input</span><span class="si">}</span>.inp -t toppar.str -p <span class="si">${</span><span class="nv">init</span><span class="si">}</span>.psf -c <span class="si">${</span><span class="nv">init</span><span class="si">}</span>.crd -irst <span class="si">${</span><span class="nv">irst</span><span class="si">}</span>.rst -orst <span class="si">${</span><span class="nv">irst</span><span class="si">}</span> -odcd <span class="si">${</span><span class="nv">istep</span><span class="si">}</span>.dcd  <span class="p">&amp;</span>&gt; waterbox_out.log
+</pre></div>
+</div>
+<p>Essentially, this file just tells openMM what to run and then runs it, providing a bit of debug information along the way. Importantly, it takes <strong>the working directory as argument</strong>.</p>
+<p>So, if you want to simulate this intermediate state, you would run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./simulation.sh /absolute/or/relative/path/to/that/intstate
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Assuming your current working directory is that intstate, you can just supply <code class="code docutils literal notranslate"><span class="pre">./</span></code> as argument.</p>
+</div>
+</div>
+<div class="section" id="charmm">
+<h3>CHARMM<a class="headerlink" href="#charmm" title="Permalink to this heading"></a></h3>
+<p>For CHARMM, use <code class="code docutils literal notranslate"><span class="pre">simulate_charmm.sh</span></code></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+<span class="c1">#SBATCH -p lgpu</span>
+<span class="c1">#SBATCH --gres=gpu</span>
+<span class="nv">path</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">SWITCH</span><span class="o">=</span><span class="nv">$2</span>
+
+<span class="nb">cd</span> <span class="si">${</span><span class="nv">path</span><span class="si">}</span>
+<span class="nb">pwd</span>
+hostname
+
+
+run_complex <span class="o">()</span> <span class="o">{</span>
+<span class="nv">input</span><span class="o">=</span>charmm_run_complex
+<span class="nv">OMP_NUM_THREADS</span><span class="o">=</span><span class="m">8</span> <span class="si">${</span><span class="nv">CHARMM</span><span class="si">}</span> -i <span class="si">${</span><span class="nv">input</span><span class="si">}</span>.inp &gt; log_complex.out
+<span class="o">}</span>
+
+run_waterbox <span class="o">()</span> <span class="o">{</span>
+<span class="nv">input</span><span class="o">=</span>charmm_run_waterbox
+<span class="nv">OMP_NUM_THREADS</span><span class="o">=</span><span class="m">8</span> <span class="si">${</span><span class="nv">CHARMM</span><span class="si">}</span> -i <span class="si">${</span><span class="nv">input</span><span class="si">}</span>.inp &gt; log_solv.out
+<span class="o">}</span>
+
+
+<span class="k">case</span> <span class="si">${</span><span class="nv">SWITCH</span><span class="si">}</span> <span class="k">in</span>
+<span class="m">1</span><span class="o">)</span>
+run_complex
+<span class="p">;;</span>
+<span class="m">2</span><span class="o">)</span>
+run_complex
+run_waterbox
+<span class="p">;;</span>
+<span class="k">esac</span>
+</pre></div>
+</div>
+<p>Importantly, unlike openMM this takes <strong>two arguments</strong>: The path, same as before, and a CASE statement. You need to run both, so that will always be 2 for you. You also need to have the ${CHARMM} system variable defined.</p>
+<p>So, to run the simulation using CHARMM:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./simulate_charmm.sh /absolute/or/relative/path/to/your/intstate <span class="m">2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="automation-and-offloading-to-a-cluster">
+<h3>Automation and offloading to a cluster<a class="headerlink" href="#automation-and-offloading-to-a-cluster" title="Permalink to this heading"></a></h3>
+<p>There are two methods to automate running simulations:</p>
+<ul>
+<li><p>Running it from the submit.ipynb</p>
+<p>Has the advantage of no extra step being necessary, but pythons multiprocessing facilities can be capricious. This variant also does not allow inspection of the intermediate states before submission.</p>
+<p>If you’d like this option, add this code to the bottom of your submit.ipynb:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="n">wd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+<span class="n">output_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">wd</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">folder</span><span class="si">}</span><span class="s2">/*/*/intst*&quot;</span><span class="p">,</span> <span class="n">recursive</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="c1">#Whether {folder} is necessary depends on your folder setup relative to your working directory -</span>
+    <span class="c1"># in general, this should point to your intst** folders</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">output_files</span><span class="p">):</span>
+    <span class="c1"># because path is object not string</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start sampling for: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">exe</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s2">&quot;ssh&quot;</span><span class="p">,</span> <span class="s2">&quot;your clustername&quot;</span><span class="p">,</span> <span class="s2">&quot;sbatch&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="si">}</span><span class="s2">/simulation.sh&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)],</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span> <span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">exe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You will have to replace ‘your-clustername’ and modify the paths according to your setup.</p>
+</li>
+<li><p>Running it via script</p>
+<p>Has the advantage of allowing inspection beforehand and being more reliable, as well as allowing the modification of cluster instructions during submit.</p>
+<p>To use, create a script similar to this:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="o">{</span>i<span class="o">}</span> <span class="k">in</span> ./**/**/intst**/<span class="p">;</span> <span class="c1">#This assumes you start from the directory above the initial structure directory - you may change as necessary.</span>
+<span class="k">do</span> <span class="nb">cd</span> <span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="p">;</span> <span class="c1"># to prevent issues, it is preferred to switch to the script directory</span>
+sbash simulation.sh<span class="p">;</span> <span class="c1"># sbash being the command for the workload manager slurm - you may need to replace as necessary.</span>
+<span class="nb">cd</span> ../../..<span class="p">;</span> <span class="c1"># switch working directory back to original so next loop starts properly</span>
+<span class="k">done</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>If you run this from the folder containing the replicate directories, any correctly built transformato replicate should be submitted to run. You can modify the loop glob to restrict the script to certain directories.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="System_Setup.html" class="btn btn-neutral float-left" title="System Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Analysis.html" class="btn btn-neutral float-right" title="Trajectory Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
