@@ -1,5 +1,5 @@
 import logging
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
 from mmap import MADV_UNMERGEABLE
@@ -298,6 +298,8 @@ class ProposeMutationRoute(object):
             mol1_name: s1.psfs["waterbox"][f":{s1.tlc}"],
             mol2_name: s2.psfs["waterbox"][f":{s2.tlc}"],
         }
+        self.psf1: pm.charmm.CharmmPsfFile = s1.psfs
+        self.psf2: pm.charmm.CharmmPsfFile = s2.psfs
         self._substructure_match: dict = {mol1_name: [], mol2_name: []}
         self.removed_indeces: dict = {mol1_name: [], mol2_name: []}
         self.added_indeces: dict = {mol1_name: [], mol2_name: []}
@@ -513,6 +515,55 @@ class ProposeMutationRoute(object):
 
         return ordered_LJ_mutations
 
+    def _check_for_lp(
+        self,
+        odered_connected_dummy_regions_cc_with_lp: list,
+        psf: pm.charmm.CharmmPsfFile,
+        tlc: str,
+        name: str,
+    ) -> list:
+        """
+        With the help of parmed this function will look in the ordered_connected_dummy_regions list if
+        there is a atom which has lonepairs. It will check wheather the lp belongs to the common core or
+        to the dummy region and assign it into the sorted list accordingly.
+        """
+
+        flat_ordered_connected_dummy_regions = [
+            item
+            for sublist in odered_connected_dummy_regions_cc_with_lp
+            for item in sublist
+        ]
+        lp_dict_dummy_region = defaultdict(list)
+        lp_dict_common_core = defaultdict(list)
+
+        for atom in psf.view[f":{tlc}"].atoms:
+            if atom.name.find("LP") == False:
+                if atom.frame.atom1.idx in flat_ordered_connected_dummy_regions:
+                    lp_dict_dummy_region[atom.frame.atom1.idx].append(atom.idx)
+
+                elif atom.frame.atom1.idx not in lp_dict_common_core and name == "m1":
+                    logger.info(f"Adding atom {atom.idx} to the common core of mol1")
+                    self.add_idx_to_common_core_of_mol1([atom.idx])
+
+                elif atom.frame.atom1.idx not in lp_dict_common_core and name == "m2":
+                    logger.info(f"Adding atom {atom.idx} to the common core of mol1")
+                    self.add_idx_to_common_core_of_mol2([atom.idx])
+
+        if lp_dict_dummy_region:
+            for i in odered_connected_dummy_regions_cc_with_lp:
+                lp_to_insert = []
+                for atom in i:
+                    if atom in lp_dict_dummy_region.keys():
+                        lp_to_insert.extend(lp_dict_dummy_region[atom])
+                for lp_num in reversed(lp_to_insert):
+                    i.insert(0, lp_num)
+
+        logger.debug(
+            f"Orderd connected dummy atoms containing the lp {odered_connected_dummy_regions_cc_with_lp}"
+        )
+
+        return odered_connected_dummy_regions_cc_with_lp
+
     def propose_common_core(self):
         mcs = self._find_mcs("m1", "m2")
         return mcs
@@ -523,6 +574,8 @@ class ProposeMutationRoute(object):
         self,
         connected_dummy_regions_cc1: list = [],
         connected_dummy_regions_cc2: list = [],
+        odered_connected_dummy_regions_cc1: list = [],
+        odered_connected_dummy_regions_cc2: list = [],
     ):
         # Add sorted manually added idxs to common core. Sorting prevents error looking up mutation parameters.
 
@@ -557,22 +610,40 @@ class ProposeMutationRoute(object):
         logger.debug(f"connected dummy regions for mol2: {connected_dummy_regions_cc2}")
 
         # calculate the ordering or LJ mutations
-        odered_connected_dummy_regions_cc1 = self._calculate_order_of_LJ_mutations(
-            connected_dummy_regions_cc1,
-            match_terminal_atoms_cc1,
-            self.graphs["m1"].copy(),
-        )
-        odered_connected_dummy_regions_cc2 = self._calculate_order_of_LJ_mutations(
-            connected_dummy_regions_cc2,
-            match_terminal_atoms_cc2,
-            self.graphs["m2"].copy(),
-        )
+        if not odered_connected_dummy_regions_cc1:
+            odered_connected_dummy_regions_cc1 = self._calculate_order_of_LJ_mutations(
+                connected_dummy_regions_cc1,
+                match_terminal_atoms_cc1,
+                self.graphs["m1"].copy(),
+            )
+        if not odered_connected_dummy_regions_cc2:
+            odered_connected_dummy_regions_cc2 = self._calculate_order_of_LJ_mutations(
+                connected_dummy_regions_cc2,
+                match_terminal_atoms_cc2,
+                self.graphs["m2"].copy(),
+            )
         logger.info(
             f"sorted connected dummy regions for mol1: {odered_connected_dummy_regions_cc1}"
         )
         logger.info(
             f"sorted connected dummy regions for mol2: {odered_connected_dummy_regions_cc2}"
         )
+
+        if odered_connected_dummy_regions_cc1:
+            odered_connected_dummy_regions_cc1 = self._check_for_lp(
+                odered_connected_dummy_regions_cc1,
+                self.psf1["waterbox"],
+                self.s1_tlc,
+                "m1",
+            )
+
+        if odered_connected_dummy_regions_cc2:
+            odered_connected_dummy_regions_cc2 = self._check_for_lp(
+                odered_connected_dummy_regions_cc2,
+                self.psf2["waterbox"],
+                self.s2_tlc,
+                "m2",
+            )
 
         # find the atoms from dummy_region in s1 that needs to become lj default
         (
@@ -782,6 +853,7 @@ class ProposeMutationRoute(object):
 
         self._substructure_match[mol1_name] = list(s1)
         self._substructure_match[mol2_name] = list(s2)
+
         return mcs
 
     def _return_atom_idx_from_bond_idx(self, mol: Chem.Mol, bond_idx: int):
@@ -890,7 +962,7 @@ class ProposeMutationRoute(object):
             raise RuntimeError("First generate the MCS. Aborting.")
 
         m = self._mutate_to_common_core(
-            self.dummy_region_cc1, self.get_common_core_idx_mol1()
+            self.dummy_region_cc1, self.get_common_core_idx_mol1(), mol_name="m1"
         )
         m["transform"] = self._transform_common_core()
         return m
@@ -907,7 +979,7 @@ class ProposeMutationRoute(object):
             raise RuntimeError("First generate the MCS")
 
         m = self._mutate_to_common_core(
-            self.dummy_region_cc2, self.get_common_core_idx_mol2()
+            self.dummy_region_cc2, self.get_common_core_idx_mol2(), mol_name="m2"
         )
         return m
 
@@ -1012,7 +1084,9 @@ class ProposeMutationRoute(object):
 
         return (list(set(terminal_dummy_atoms)), list(set(terminal_real_atoms)))
 
-    def _mutate_to_common_core(self, dummy_region: DummyRegion, cc_idx: list) -> dict:
+    def _mutate_to_common_core(
+        self, dummy_region: DummyRegion, cc_idx: list, mol_name: str
+    ) -> dict:
         """
         Helper function - do not call directly.
         Generates the mutation route to the common fore for mol.
@@ -1020,9 +1094,9 @@ class ProposeMutationRoute(object):
 
         from collections import defaultdict
 
-        name = dummy_region.mol_name
+        # copy of the currently used psf
+        psf = self.psfs[f"{mol_name}"][:, :, :]
 
-        mol = self.mols[name]
         mutations = defaultdict(list)
 
         # get the atom that connects the common core to the dummy regiom
@@ -1035,18 +1109,23 @@ class ProposeMutationRoute(object):
             list_termin_dummy_atoms.extend(list(m))
         logger.info(f"Terminal dummy atoms: {list_termin_dummy_atoms}")
 
+        tlc = self.s1_tlc
+        if mol_name == "m2":
+            tlc = self.s2_tlc
+
         # iterate through atoms and select atoms that need to be mutated
         atoms_to_be_mutated = []
         hydrogens = []
-        for atom in mol.GetAtoms():
-            idx = atom.GetIdx()
+
+        for atom in psf.view[f":{tlc}"].atoms:
+            # idx = atom.idx - self.offset
+            idx = atom.idx
             if idx not in cc_idx:
-                # hydrogens are collected seperatly IF they are not terminal dummy atoms
-                if atom.GetSymbol() == "H" and idx not in list_termin_dummy_atoms:
+                if atom.name.find("H") == False and idx not in list_termin_dummy_atoms:
                     hydrogens.append(idx)
                 atoms_to_be_mutated.append(idx)
                 logger.info(
-                    "Will be decoupled: Idx:{} Element:{}".format(idx, atom.GetSymbol())
+                    "Will be decoupled: Idx:{} Element:{}".format(idx, atom.name)
                 )
 
         if atoms_to_be_mutated:
