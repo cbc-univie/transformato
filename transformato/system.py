@@ -1,3 +1,4 @@
+from ast import Raise
 import logging
 import os
 import re
@@ -233,8 +234,15 @@ class SystemStructure(object):
             psf = pm.charmm.CharmmPsfFile(psf_file_path)
             coord = pm.charmm.CharmmCrdFile(crd_file_path)
             psf.coordinates = coord.coordinates
-            # extract only ligand to generate vacuum system
+
+            for atom in psf.atoms:
+                if hasattr(atom, "frame"):
+                    raise NotImplementedError(
+                        "Currently lonepairs are not supported for rsfe calculations"
+                    )
+
             psf = psf[f":{self.tlc}"]
+
         else:
             psf_file_name = configuration["system"][self.structure][env][
                 "psf_file_name"
