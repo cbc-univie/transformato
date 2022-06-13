@@ -1,33 +1,71 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>transformato.mutate &mdash; transformato  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <meta charset="utf-8">
   
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>transformato.mutate &mdash; transformato  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="../../index.html">
+          
+
+          
+            
             <img src="../../_static/logo_transformato.png" class="logo" alt="Logo"/>
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -35,7 +73,17 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../whatistransformato.html"><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> in a nutshell</a></li>
@@ -47,33 +95,69 @@
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
 </ul>
 
+            
+          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">transformato</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
+        
       <li>transformato.mutate</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <h1>Source code for transformato.mutate</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">mmap</span> <span class="kn">import</span> <span class="n">MADV_UNMERGEABLE</span>
@@ -372,6 +456,8 @@
             <span class="n">mol1_name</span><span class="p">:</span> <span class="n">s1</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">s1</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
             <span class="n">mol2_name</span><span class="p">:</span> <span class="n">s2</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">s2</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
         <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">psfs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psf2</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">psfs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[],</span> <span class="n">mol2_name</span><span class="p">:</span> <span class="p">[]}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">removed_indeces</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[],</span> <span class="n">mol2_name</span><span class="p">:</span> <span class="p">[]}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">added_indeces</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[],</span> <span class="n">mol2_name</span><span class="p">:</span> <span class="p">[]}</span>
@@ -587,6 +673,55 @@
 
         <span class="k">return</span> <span class="n">ordered_LJ_mutations</span>
 
+<div class="viewcode-block" id="ProposeMutationRoute._check_for_lp"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._check_for_lp">[docs]</a>    <span class="k">def</span> <span class="nf">_check_for_lp</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">odered_connected_dummy_regions_cc_with_lp</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
+        <span class="n">tlc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        With the help of parmed this function will look in the ordered_connected_dummy_regions list if</span>
+<span class="sd">        there is a atom which has lonepairs. It will check wheather the lp belongs to the common core or</span>
+<span class="sd">        to the dummy region and assign it into the sorted list accordingly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">flat_ordered_connected_dummy_regions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">item</span>
+            <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">odered_connected_dummy_regions_cc_with_lp</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span>
+        <span class="p">]</span>
+        <span class="n">lp_dict_dummy_region</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="n">lp_dict_common_core</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">flat_ordered_connected_dummy_regions</span><span class="p">:</span>
+                    <span class="n">lp_dict_dummy_region</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lp_dict_common_core</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;m1&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding atom </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2"> to the common core of mol1&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_idx_to_common_core_of_mol1</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lp_dict_common_core</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;m2&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding atom </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2"> to the common core of mol1&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_idx_to_common_core_of_mol2</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">lp_dict_dummy_region</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">odered_connected_dummy_regions_cc_with_lp</span><span class="p">:</span>
+                <span class="n">lp_to_insert</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">lp_dict_dummy_region</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">lp_to_insert</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">lp_dict_dummy_region</span><span class="p">[</span><span class="n">atom</span><span class="p">])</span>
+                <span class="k">for</span> <span class="n">lp_num</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">lp_to_insert</span><span class="p">):</span>
+                    <span class="n">i</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">lp_num</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Orderd connected dummy atoms containing the lp </span><span class="si">{</span><span class="n">odered_connected_dummy_regions_cc_with_lp</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">odered_connected_dummy_regions_cc_with_lp</span></div>
+
     <span class="k">def</span> <span class="nf">propose_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">mcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_mcs</span><span class="p">(</span><span class="s2">&quot;m1&quot;</span><span class="p">,</span> <span class="s2">&quot;m2&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">mcs</span>
@@ -597,6 +732,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">connected_dummy_regions_cc1</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">connected_dummy_regions_cc2</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">odered_connected_dummy_regions_cc1</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">odered_connected_dummy_regions_cc2</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[],</span>
     <span class="p">):</span>
         <span class="c1"># Add sorted manually added idxs to common core. Sorting prevents error looking up mutation parameters.</span>
 
@@ -631,22 +768,40 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;connected dummy regions for mol2: </span><span class="si">{</span><span class="n">connected_dummy_regions_cc2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># calculate the ordering or LJ mutations</span>
-        <span class="n">odered_connected_dummy_regions_cc1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_order_of_LJ_mutations</span><span class="p">(</span>
-            <span class="n">connected_dummy_regions_cc1</span><span class="p">,</span>
-            <span class="n">match_terminal_atoms_cc1</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
-        <span class="p">)</span>
-        <span class="n">odered_connected_dummy_regions_cc2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_order_of_LJ_mutations</span><span class="p">(</span>
-            <span class="n">connected_dummy_regions_cc2</span><span class="p">,</span>
-            <span class="n">match_terminal_atoms_cc2</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">odered_connected_dummy_regions_cc1</span><span class="p">:</span>
+            <span class="n">odered_connected_dummy_regions_cc1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_order_of_LJ_mutations</span><span class="p">(</span>
+                <span class="n">connected_dummy_regions_cc1</span><span class="p">,</span>
+                <span class="n">match_terminal_atoms_cc1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">odered_connected_dummy_regions_cc2</span><span class="p">:</span>
+            <span class="n">odered_connected_dummy_regions_cc2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_order_of_LJ_mutations</span><span class="p">(</span>
+                <span class="n">connected_dummy_regions_cc2</span><span class="p">,</span>
+                <span class="n">match_terminal_atoms_cc2</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;sorted connected dummy regions for mol1: </span><span class="si">{</span><span class="n">odered_connected_dummy_regions_cc1</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;sorted connected dummy regions for mol2: </span><span class="si">{</span><span class="n">odered_connected_dummy_regions_cc2</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">odered_connected_dummy_regions_cc1</span><span class="p">:</span>
+            <span class="n">odered_connected_dummy_regions_cc1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_lp</span><span class="p">(</span>
+                <span class="n">odered_connected_dummy_regions_cc1</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="p">,</span>
+                <span class="s2">&quot;m1&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">odered_connected_dummy_regions_cc2</span><span class="p">:</span>
+            <span class="n">odered_connected_dummy_regions_cc2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_lp</span><span class="p">(</span>
+                <span class="n">odered_connected_dummy_regions_cc2</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">psf2</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">s2_tlc</span><span class="p">,</span>
+                <span class="s2">&quot;m2&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
 
         <span class="c1"># find the atoms from dummy_region in s1 that needs to become lj default</span>
         <span class="p">(</span>
@@ -856,6 +1011,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol1_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol2_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">mcs</span></div>
 
     <span class="k">def</span> <span class="nf">_return_atom_idx_from_bond_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">,</span> <span class="n">bond_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
@@ -964,7 +1120,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;First generate the MCS. Aborting.&quot;</span><span class="p">)</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_to_common_core</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span> <span class="n">mol_name</span><span class="o">=</span><span class="s2">&quot;m1&quot;</span>
         <span class="p">)</span>
         <span class="n">m</span><span class="p">[</span><span class="s2">&quot;transform&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_common_core</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">m</span></div>
@@ -981,7 +1137,7 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;First generate the MCS&quot;</span><span class="p">)</span>
 
         <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_to_common_core</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span> <span class="n">mol_name</span><span class="o">=</span><span class="s2">&quot;m2&quot;</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">m</span></div>
 
@@ -1086,7 +1242,9 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terminal_dummy_atoms</span><span class="p">)),</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">terminal_real_atoms</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="ProposeMutationRoute._mutate_to_common_core"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._mutate_to_common_core">[docs]</a>    <span class="k">def</span> <span class="nf">_mutate_to_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dummy_region</span><span class="p">:</span> <span class="n">DummyRegion</span><span class="p">,</span> <span class="n">cc_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ProposeMutationRoute._mutate_to_common_core"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._mutate_to_common_core">[docs]</a>    <span class="k">def</span> <span class="nf">_mutate_to_common_core</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dummy_region</span><span class="p">:</span> <span class="n">DummyRegion</span><span class="p">,</span> <span class="n">cc_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">mol_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function - do not call directly.</span>
 <span class="sd">        Generates the mutation route to the common fore for mol.</span>
@@ -1094,9 +1252,9 @@
 
         <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
-        <span class="n">name</span> <span class="o">=</span> <span class="n">dummy_region</span><span class="o">.</span><span class="n">mol_name</span>
+        <span class="c1"># copy of the currently used psf</span>
+        <span class="n">psf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">mol_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">][:,</span> <span class="p">:,</span> <span class="p">:]</span>
 
-        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="n">mutations</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
 
         <span class="c1"># get the atom that connects the common core to the dummy regiom</span>
@@ -1109,18 +1267,23 @@
             <span class="n">list_termin_dummy_atoms</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Terminal dummy atoms: </span><span class="si">{</span><span class="n">list_termin_dummy_atoms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="n">tlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span>
+        <span class="k">if</span> <span class="n">mol_name</span> <span class="o">==</span> <span class="s2">&quot;m2&quot;</span><span class="p">:</span>
+            <span class="n">tlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2_tlc</span>
+
         <span class="c1"># iterate through atoms and select atoms that need to be mutated</span>
         <span class="n">atoms_to_be_mutated</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">hydrogens</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="c1"># idx = atom.idx - self.offset</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">idx</span>
             <span class="k">if</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cc_idx</span><span class="p">:</span>
-                <span class="c1"># hydrogens are collected seperatly IF they are not terminal dummy atoms</span>
-                <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span> <span class="ow">and</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list_termin_dummy_atoms</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list_termin_dummy_atoms</span><span class="p">:</span>
                     <span class="n">hydrogens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
                 <span class="n">atoms_to_be_mutated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;Will be decoupled: Idx:</span><span class="si">{}</span><span class="s2"> Element:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">())</span>
+                    <span class="s2">&quot;Will be decoupled: Idx:</span><span class="si">{}</span><span class="s2"> Element:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">atoms_to_be_mutated</span><span class="p">:</span>
@@ -1936,30 +2099,42 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
+  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.</p>
-  </div>
+    <p>
+        &copy; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

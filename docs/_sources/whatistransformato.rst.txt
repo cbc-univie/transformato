@@ -14,25 +14,55 @@ water and ligand solvated in water and bound to the receptor (protein).
 
 |trafo| will create intermediate state folders to connect each ligand with its common core structure.
 Each folder will contain a plain MD simulation, which can be run individually from all other simulations. Finally, for 
-each ligand the free energy accrding to the common core structure can be calculated. Since both common core structures 
+each ligand the free energy according to the common core structure can be calculated. Since both common core structures 
 are the same, the resulting free energy difference :math:`\Delta\Delta G^{bind}_{L1\rightarrow L2}` can  be obtained.
+
+Interplay with CHARMM-GUI
+###########################
+
+|trafo| works closely together with CHARMM-GUI. For starting RBFE simulations one needs output from the CHARMM-GUI
+solution builder.
+
+.. figure:: assets/images/tf_overview_v3.png
+    :scale: 8%
+    :alt: scheme of transformato
+        
+    Figure: Interplay between |trafo| and CHARMM-GUI
 
 The common-core approach
 ###########################
 
-With standard alchemical FES, the two endpoints are generally transformed directly into each other, with bonded and nonbonded forces scaled according to the coupling parameter :math:`\lambda`, while introducing dummy atoms to ensure a constant number of particles in the system\ [#fshirts]_\ .
+With standard alchemical FES, the two endpoints are generally transformed directly into each other, 
+with bonded and nonbonded forces scaled according to the coupling parameter :math:`\lambda`, 
+while introducing dummy atoms to ensure a constant number of particles in the system\ [#fshirts]_\ .
 
-
-With transformato however, the structures are not transformed into each other directly. Instead, each structure is transformed into a 'common core', a common topology to both systems (ideally - and usually - the *maximum* common topology between systems), with the free energy being the sum of free energies necessary to reach the common core:
+With transformato however, the structures are not transformed into each other directly.
+Instead, each structure is transformed into a 'common core structure', a common topology of both systems 
+(ideally - and usually - the *maximum* common topology between systems), with the free energy 
+being the sum of free energies necessary to reach the common core:
 
 .. math::
     
     \Delta\Delta G^{bind}_{L1\rightarrow L2} = \Delta\Delta G^{bind}_{L1\rightarrow |DL_1| - R_{CC}} - \Delta\Delta G^{bind}_{L2\rightarrow\ |DL_2| - R_{CC}}
 
-:math:`|DL_1|` and :math:`|DL_2|` refer to the dummy regions of Endstate 1 and 2 respectively. :math:`R_{CC}` refers to the common core.
+:math:`|DL_1|` and :math:`|DL_2|` refer to the non-CC (dummy region) of Endstate 1 and 2, respectively. 
+:math:`R_{CC}` refers to the common core.
 
+.. figure:: assets/images/partA.png
+    :alt: alchemical pathway
+        
+    Figure: Alchemical pathway as implemented in the common core approach. 
+    Free energies are calculated relative to a common core structure in the 
+    two environments (for RBFE: ligand solvated in water and ligand bound to a protein and solvated in water). 
+    This common core structure of the two ligands differs only in the number of dummy atoms, 
+    thus the contribution cancels out when calculating relative free energies.
 
-The main advantage of this (and transformato as a whole) is that it generally cuts down enormously on the number of simulations required - while a typical alchemical FES will require 20 to 30 intermediate states, transformato may require as little as 14\ [#fjohannes]_\ , further reducing simulation time in conjunction with SAI.
+Serial-Atom-Insertion approach
+###########################
+
+Lennard-Jones interactions are turned off on an atom-by-atom basis. This means that LJ parameters are eiter fully
+interacting (1) or non-interacting (0). For the heavy atoms (non hydrogen atoms) the interaction is turned off 
+for each atom one by one.
 
 
 Citations, License and Contact
