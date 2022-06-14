@@ -18,9 +18,22 @@ import simtk.openmm
 import numpy as np
 import os
 import sys
+import glob
+
+from simtk.unit import *
+from simtk.openmm import *
+from simtk.openmm.app import *
 
 TRAFO_DIR="./transformato/"
 PATH_2OJ9=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/step3_input.pdb"
+PATH_2OJ9_DIR=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/"
+
+from transformato.tests.omm_readinputs import *
+from transformato.tests.omm_readparams import *
+from transformato.tests.omm_vfswitch import *
+from transformato.tests.omm_barostat import *
+from transformato.tests.omm_restraints import *
+from transformato.tests.omm_rewrap import *
 
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
@@ -79,3 +92,67 @@ def test_write_yaml(tmp_path):
 
     assert os.path.exists(path)
 
+
+@pytest.mark.restraints
+@pytest.mark.restraints_integrationtests
+def test_integration():
+    """
+    Full scale integration test of automatic and manual restraints, including an openMM test system
+
+    """
+    
+
+    inputs = read_inputs(f"{PATH_2OJ9_DIR}step5_production.inp")
+    params = CharmmParameterSet(*(glob.glob(f"{PATH_2OJ9_DIR}../*/*.prm")+glob.glob(f"{PATH_2OJ9_DIR}../*/*.str")
+    +glob.glob(f"{PATH_2OJ9_DIR}../*/*.rtf")+glob.glob(f"{PATH_2OJ9_DIR}../toppar/*.prm")))
+    psf = CharmmPsfFile(f"{PATH_2OJ9_DIR}step3_input.psf")
+    crd = read_crd(f"{PATH_2OJ9_DIR}step3_input.crd")
+
+    top=gen_box(psf,crd)
+    
+    # Build system
+    nboptions = dict(
+        nonbondedMethod=inputs.coulomb,
+        nonbondedCutoff=inputs.r_off * nanometers,
+        constraints=inputs.cons,
+        ewaldErrorTolerance=inputs.ewald_Tol,
+    )
+
+    if inputs.vdw == "Switch":
+        nboptions["switchDistance"] = inputs.r_on * nanometers
+    system = psf.createSystem(params, **nboptions)
+    if inputs.vdw == "Force-switch":
+        system = vfswitch(system, psf, inputs)
+
+    system = barostat(system, inputs)
+    if inputs.rest == "yes":
+        system = restraints(system, crd, inputs)
+    integrator = LangevinIntegrator(
+        inputs.temp * kelvin, inputs.fric_coeff / picosecond, inputs.dt * picoseconds
+    )
+
+    # Set platform
+    platform = Platform.getPlatformByName("CUDA")
+    prop = dict()
+    pdbpath=PATH_2OJ9
+    with open(f"{TRAFO_DIR}/tests/config/test-2oj9-restraints.yaml","r") as stream:
+        try:
+            configuration=yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+                print(exc)
+
+    cc_names=configuration["system"]["structure"]["ccs"]
+
+    # Add forces via transformato.restraints
+    
+    if not os.path.exists(pdbpath):
+        raise FileNotFoundError(f"Couldnt find {pdbpath} necessary for Restraint Analysis")
+
+    
+    restraintList=tfrs.create_restraints_from_config(configuration,pdbpath)
+
+    for restraint in restraintList:
+        restraint.createForce(cc_names)
+        restraint.applyForce(system)
+
+    

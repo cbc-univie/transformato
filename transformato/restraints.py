@@ -45,8 +45,7 @@ class Restraint():
         k:float=3,
         shape:str="harmonic",
         wellsize:float=0.05,
-        mode:str=None,
-        n_extremities:str=None,
+        **kwargs,
         ):
         """Class representing a restraint to apply to the system.
 
@@ -61,8 +60,8 @@ class Restraint():
             pdbpath: the path to the pdbfile underlying the topology analysis
             shape: 'harmonic' or 'flatbottom'. Defines the shape of the harmonic energy potential.
             wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.
-            mode: Catcher for unneeded restraint_args entry
-            n_extremities: Catcher for unneeded restraint_args entry
+            kwargs: Catcher for unneeded restraint_args entry
+            
             """
 
         self.shape=shape
@@ -360,7 +359,10 @@ def create_restraints_from_config(configuration,pdbpath):
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
         for key in manual_restraint_list:
             restraint=configuration["simulation"]["manualrestraints"][key]
-            restraints.append(Restraint(restraint["group1"],restraint["group2"],pdbpath,k=restraint["k"]))
+            restraint_kw={}
+            for key in restraint.keys():
+                restraint_kw[key]=restraint[key]
+            restraints.append(Restraint(restraint["group1"],restraint["group2"],pdbpath,**restraint_kw))
     
 
     return restraints
