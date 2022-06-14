@@ -357,6 +357,7 @@ def create_restraints_from_config(configuration,pdbpath):
     
     if "manual" in restraint_command_string:
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
+        logger.debug(f"Manual restraints defined: {manual_restraint_list}")
         for key in manual_restraint_list:
             restraint=configuration["simulation"]["manualrestraints"][key]
             restraint_kw={}

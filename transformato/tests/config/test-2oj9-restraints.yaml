@@ -9,6 +9,13 @@ simulation:
       group2: protein and name CA
       shape: harmonic
 
+    restraint2:
+      k: 10
+      group1: resname BMI and type C
+      group2: protein and name CA
+      shape: flatbottom
+      wellsize: 0.12
+
 system:
   structure:
     ccs:
