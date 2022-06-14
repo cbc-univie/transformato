@@ -329,7 +329,7 @@ def create_restraints_from_config(configuration,pdbpath):
     restraints=[]
     # parse config arguments and pass to restraint generation:
     restraint_command_string=configuration["simulation"]["restraints"].split()
-    restraint_args={}
+    restraint_args={"mode":"simple"}
     
     for arg in restraint_command_string:
         if "k=" in arg:
