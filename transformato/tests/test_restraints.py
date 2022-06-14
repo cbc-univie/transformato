@@ -28,12 +28,12 @@ TRAFO_DIR="./transformato/"
 PATH_2OJ9=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/step3_input.pdb"
 PATH_2OJ9_DIR=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/"
 
-from transformato.tests.omm_readinputs import *
-from transformato.tests.omm_readparams import *
-from transformato.tests.omm_vfswitch import *
-from transformato.tests.omm_barostat import *
-from transformato.tests.omm_restraints import *
-from transformato.tests.omm_rewrap import *
+from .omm_readinputs import *
+from .omm_readparams import *
+from .omm_vfswitch import *
+from .omm_barostat import *
+from .omm_restraints import *
+from .omm_rewrap import *
 
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
