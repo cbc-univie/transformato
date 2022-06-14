@@ -131,7 +131,7 @@ def test_integration():
     )
 
     # Set platform
-    platform = Platform.getPlatformByName("CUDA")
+    platform = Platform.getPlatformByName("CPU")
     prop = dict()
     pdbpath=PATH_2OJ9
     with open(f"{TRAFO_DIR}/tests/config/test-2oj9-restraints.yaml","r") as stream:
