@@ -180,6 +180,9 @@ def test_integration():
     for restraint in restraintList:
         restraint.applyForce(system)
     logger.debug("FORCES APPLIED")
+    for i,f in enumerate(system.getForces()):
+        f.setForceGroup(i)
+    
     forcesinsystem=system.getForces()
     
     assert len(restraintList)==5 # 3 from ex3 auto, 2 manual
@@ -191,8 +194,25 @@ def test_integration():
 
     logger.info(f"Potential energy {simulation.context.getState(getEnergy=True).getPotentialEnergy()}")
 
-    simulation.minimizeEnergy(tolerance=inputs.mini_Tol*kilojoule/mole, maxIterations=1)
+    simulation.minimizeEnergy(tolerance=inputs.mini_Tol*kilojoule/mole, maxIterations=10)
     logger.info(f"Potential energy after 1-iter minimization {simulation.context.getState(getEnergy=True).getPotentialEnergy()}")
+    for i,f in enumerate(system.getForces()):
+        if isinstance(f,CustomCentroidBondForce):
+            state=simulation.context.getState(getEnergy=True,groups={i})
+            logger.info("Force contributions before steps:")
+            logger.info(f"{f}::{state.getPotentialEnergy()}")
     logger.info("Simulation stepping")
     simulation.step(1)
+    for i,f in enumerate(system.getForces()):
+        if isinstance(f,CustomCentroidBondForce):
+            state=simulation.context.getState(getEnergy=True,groups={i})
+            logger.info("Force contributions after 1 steps:")
+            logger.info(f"{f}::{state.getPotentialEnergy()}")
+    simulation.step(10)
+    for i,f in enumerate(system.getForces()):
+        if isinstance(f,CustomCentroidBondForce):
+            state=simulation.context.getState(getEnergy=True,groups={i})
+            logger.info("Force contributions after 11 steps:")
+            logger.info(f"{f}::{state.getPotentialEnergy()}")
+    
     logger.info("Test complete")
