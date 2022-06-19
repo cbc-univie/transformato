@@ -36,6 +36,14 @@ from .omm_barostat import *
 from .omm_restraints import *
 from .omm_rewrap import *
 
+from pytest import approx
+
+
+# Disable useless parmed warnings for structure generation
+import warnings
+warnings.filterwarnings("ignore", module='parmed')
+
+
 import logging
 logger=logging.getLogger(__name__)
 
@@ -192,8 +200,11 @@ def test_integration():
     simulation = Simulation(top.topology, system, integrator, platform, prop)
     simulation.context.setPositions(crd.positions)
 
+    
     logger.info(f"Potential energy {simulation.context.getState(getEnergy=True).getPotentialEnergy()}")
 
+    
+    
     simulation.minimizeEnergy(tolerance=inputs.mini_Tol*kilojoule/mole, maxIterations=10)
     logger.info(f"Potential energy after 1-iter minimization {simulation.context.getState(getEnergy=True).getPotentialEnergy()}")
     for i,f in enumerate(system.getForces()):
@@ -202,17 +213,49 @@ def test_integration():
             logger.info("Force contributions before steps:")
             logger.info(f"{f}::{state.getPotentialEnergy()}")
     logger.info("Simulation stepping")
-    simulation.step(1)
+    simulation.step(9)
+    temp_results=[]
     for i,f in enumerate(system.getForces()):
         if isinstance(f,CustomCentroidBondForce):
             state=simulation.context.getState(getEnergy=True,groups={i})
-            logger.info("Force contributions after 1 steps:")
+            logger.info("Force contributions after 10 steps:")
             logger.info(f"{f}::{state.getPotentialEnergy()}")
+            temp_results.append(state.getPotentialEnergy())
     simulation.step(10)
     for i,f in enumerate(system.getForces()):
         if isinstance(f,CustomCentroidBondForce):
             state=simulation.context.getState(getEnergy=True,groups={i})
-            logger.info("Force contributions after 11 steps:")
+            logger.info("Force contributions after 20 steps:")
             logger.info(f"{f}::{state.getPotentialEnergy()}")
     
+    assert all([results<0.1*kilojoule/mole for results in temp_results]) # assert all force contributions at this point are very small
+    assert 0*kilojoule/mole in temp_results # assert there is at least one flatbottom with 0 kJ/mol
+
+    # Change position of r0 and check force contributions now
+    # Both harmonic and flatbottom potentials should be off the charts
+    
+    logger.info("Changing Bond Parameters to ensure restraint activation")
+
+    for i,f in enumerate(system.getForces()):
+        if isinstance(f,CustomCentroidBondForce):
+            logger.debug(f.getBondParameters(0))
+            if f.getNumPerBondParameters()==2: # harmonic shape
+                f.setBondParameters(0,[0,1],[25,5])
+            else: # flatbottom shape:
+                f.setBondParameters(0,[0,1],[25,5,0.1])
+            f.updateParametersInContext(simulation.context)
+    
+   
+    temp_results=[]
+    simulation.step(10)
+    for i,f in enumerate(system.getForces()):
+        if isinstance(f,CustomCentroidBondForce):
+            state=simulation.context.getState(getEnergy=True,groups={i})
+            logger.info("Force contributions after 20 steps:")
+            logger.info(f"{f}::{state.getPotentialEnergy()}")
+            temp_results.append(state.getPotentialEnergy())
+
+    assert all([results>50*kilojoule/mole for results in temp_results]) # assert all force contributions at this point are rather large
+    assert all([results!=0*kilojoule/mole for results in temp_results]) # assert there is no restraint without force contribution
+
     logger.info("Test complete")
