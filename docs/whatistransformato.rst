@@ -27,14 +27,14 @@ solution builder.
     :scale: 8%
     :alt: scheme of transformato
         
-    Figure: Interplay between |trafo| and CHARMM-GUI
+    Figure: Interplay between |trafo| and CHARMM-GUI.
 
 The common-core approach
 ###########################
 
 With standard alchemical FES, the two endpoints are generally transformed directly into each other, 
-with bonded and nonbonded forces scaled according to the coupling parameter :math:`\lambda`, 
-while introducing dummy atoms to ensure a constant number of particles in the system\ [#fshirts]_\ .
+with nonbonded forces (electrostatics) scaled according to the coupling parameter :math:`\lambda`,
+and bonded LJ interactions beeing turned off on an atom by atom basis. [#fshirts]_\ .
 
 With transformato however, the structures are not transformed into each other directly.
 Instead, each structure is transformed into a 'common core structure', a common topology of both systems 
