@@ -29,12 +29,15 @@ TRAFO_DIR="./transformato/"
 PATH_2OJ9=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/step3_input.pdb"
 PATH_2OJ9_DIR=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/"
 
-from .omm_readinputs import *
-from .omm_readparams import *
-from .omm_vfswitch import *
-from .omm_barostat import *
-from .omm_restraints import *
-from .omm_rewrap import *
+
+sys.path.append(f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/") # Enables module lookup in 2OJ9 for omm_ files
+
+from omm_readinputs import *
+from omm_readparams import *
+from omm_vfswitch import *
+from omm_barostat import *
+from omm_restraints import *
+from omm_rewrap import *
 
 from pytest import approx
 
