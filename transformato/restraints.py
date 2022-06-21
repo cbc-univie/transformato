@@ -178,6 +178,36 @@ def get3DDistance(pos1, pos2):
     distance=np.linalg.norm(vec)
     return distance
 
+def generate_simple_selection(configuration,pdbpath):
+    """Takes the common core and selects surrounding carbon-alphas
+    
+    This ensures that the initial simple restraints on both sides is identical
+    
+    Args:
+        configuration (dict): the read-in restraints.yaml
+        pdbpath (str): path to local pdb used as base for the restraints
+
+    Returns:
+        str: An MDAnalysis selection string, representing the carbon-alphas surrounding the cores.
+    """
+
+    ligand_topology=MDAnalysis.Universe(pdbpath)
+    tlc=configuration["system"]["structure"]["tlc"]
+    ccs=configuration["system"]["structure"]["ccs"]
+    cc_names_selection=""
+
+    # limit ligand group to common core by way of selection string
+    
+    for ccname in ccs:
+        cc_names_selection+=f"name {ccname} or "
+    cc_names_selection=cc_names_selection[0:-4]
+    
+    
+      
+    selstr=f"(sphlayer 5 15 ({cc_names_selection})) and name CA and protein"
+    logger.debug (f"Common core selection string: {selstr}")
+    return selstr
+
 def generate_extremities(configuration,pdbpath,n_extremities,sphinner=0,sphouter=5):
     """Takes the common core and generates n extremities at the furthest point
     
@@ -324,16 +354,19 @@ def create_restraints_from_config(configuration,pdbpath):
             restraint_args["wellsize"]=float(arg.split("=")[1])
 
     if "auto" in restraint_command_string and restraint_args["mode"]=="simple":
-        
-        restraints.append(Restraint(f"resname {tlc} and type C" , f"(sphlayer 5 15 resname {tlc}) and name CA and protein" , pdbpath,**restraint_args))
+        logger.debug("generating simple selection")
+        selstr=generate_simple_selection(configuration,pdbpath)
+        restraints.append(Restraint(f"resname {tlc} and type C" , selstr , pdbpath,**restraint_args))
     
     elif "auto" in restraint_command_string and restraint_args["mode"]=="extremities":
+        logger.debug("generating extremity selections")
         selection_strings=generate_extremities(configuration,pdbpath,restraint_args["n_extremities"])
         for selection in selection_strings:
             restraints.append(Restraint(selection , f"(sphlayer 3 10 ({selection})) and name CA" , pdbpath,**restraint_args))
             
     
     if "manual" in restraint_command_string:
+        logger.debug("generating manual selections")
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
         logger.debug(f"Manual restraints defined: {manual_restraint_list}")
         for key in manual_restraint_list:
