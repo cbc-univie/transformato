@@ -2,7 +2,6 @@
 #SBATCH -p lgpu
 #SBATCH --gres=gpu
 
-
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate fep
 
