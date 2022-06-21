@@ -183,6 +183,12 @@ def test_integration():
     
     restraintList=tfrs.create_restraints_from_config(configuration,pdbpath)
 
+    # Test an additional, simple restraint
+    logger.debug("generating simple selection")
+    selstr=tfrs.generate_simple_selection(configuration,pdbpath)
+    tlc=configuration["system"]["structure"]["tlc"]
+    restraintList.append(tfrs.Restraint(f"resname {tlc} and type C" , selstr , pdbpath))
+
     logger.debug("****************** ALL RESTRAINTS CREATED SUCCESSFULLY ***************************")
     num_standard_forces=len(system.getForces())
     for restraint in restraintList:
@@ -196,7 +202,7 @@ def test_integration():
     
     forcesinsystem=system.getForces()
     
-    assert len(restraintList)==5 # 3 from ex3 auto, 2 manual
+    
     assert len(forcesinsystem)==num_standard_forces+len(restraintList)
 
     logger.debug(f"Number of forces in system: {len(forcesinsystem)}")
