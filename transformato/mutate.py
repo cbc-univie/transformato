@@ -722,6 +722,16 @@ class ProposeMutationRoute(object):
             print(f"Idx: {idx} not in common core.")
 
     def add_idx_to_common_core_of_mol1(self, idx_list: list):
+        """Adds a list of atoms to the common core of molecule 1
+
+        .. caution::
+            Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2
+        
+        Args:
+            idx_list: Array of atom idxs to add
+        
+        
+        """
         for idx in idx_list:
             self._add_common_core_atom("m1", idx)
         logger.warning(
@@ -732,6 +742,16 @@ class ProposeMutationRoute(object):
         )
 
     def add_idx_to_common_core_of_mol2(self, idx_list: list):
+        """Adds a list of atoms to the common core of molecule 1
+
+        .. caution::
+            Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2
+
+        Args:
+            idx_list: Array of atom idxs to add
+
+        
+        """
         for idx in idx_list:
             self._add_common_core_atom("m2", idx)
         logger.warning(
