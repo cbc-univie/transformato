@@ -29,12 +29,15 @@ TRAFO_DIR="./transformato/"
 PATH_2OJ9=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/step3_input.pdb"
 PATH_2OJ9_DIR=f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/"
 
-from .omm_readinputs import *
-from .omm_readparams import *
-from .omm_vfswitch import *
-from .omm_barostat import *
-from .omm_restraints import *
-from .omm_rewrap import *
+
+sys.path.append(f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/") # Enables module lookup in 2OJ9 for omm_ files
+
+from omm_readinputs import *
+from omm_readparams import *
+from omm_vfswitch import *
+from omm_barostat import *
+from omm_restraints import *
+from omm_rewrap import *
 
 from pytest import approx
 
@@ -180,6 +183,12 @@ def test_integration():
     
     restraintList=tfrs.create_restraints_from_config(configuration,pdbpath)
 
+    # Test an additional, simple restraint
+    logger.debug("generating simple selection")
+    selstr=tfrs.generate_simple_selection(configuration,pdbpath)
+    tlc=configuration["system"]["structure"]["tlc"]
+    restraintList.append(tfrs.Restraint(f"resname {tlc} and type C" , selstr , pdbpath))
+
     logger.debug("****************** ALL RESTRAINTS CREATED SUCCESSFULLY ***************************")
     num_standard_forces=len(system.getForces())
     for restraint in restraintList:
@@ -193,7 +202,7 @@ def test_integration():
     
     forcesinsystem=system.getForces()
     
-    assert len(restraintList)==5 # 3 from ex3 auto, 2 manual
+    
     assert len(forcesinsystem)==num_standard_forces+len(restraintList)
 
     logger.debug(f"Number of forces in system: {len(forcesinsystem)}")
