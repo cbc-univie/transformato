@@ -1,7 +1,10 @@
-#!/bin/bash
-#SBATCH -p lgpu
-#SBATCH --gres=gpu
-#SBATCH --exclude='n00[20-26]'
+#$ -S /bin/bash
+#$ -M marcus.wieder@univie.ac.at
+#$ -m e
+#$ -j y
+#$ -p -500
+#$ -o /data/shared/projects/SGE_LOG/
+#$ -l gpu=1
 
 
 path=$1
