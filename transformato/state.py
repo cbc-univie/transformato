@@ -353,7 +353,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
             # copy simulation bash script
             omm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/{self.configuration['simulation']['workload-manager']}-simulation-rbfe.sh"
+                f"{self.configuration['bin_dir']}/simulation-rbfe.sh"
             )
             omm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation.sh"
