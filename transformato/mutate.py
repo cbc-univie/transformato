@@ -722,6 +722,16 @@ class ProposeMutationRoute(object):
             print(f"Idx: {idx} not in common core.")
 
     def add_idx_to_common_core_of_mol1(self, idx_list: list):
+        """Adds a list of atoms to the common core of molecule 1
+
+        .. caution::
+            Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2
+        
+        Args:
+            idx_list: Array of atom idxs to add
+        
+        
+        """
         for idx in idx_list:
             self._add_common_core_atom("m1", idx)
         logger.warning(
@@ -732,6 +742,16 @@ class ProposeMutationRoute(object):
         )
 
     def add_idx_to_common_core_of_mol2(self, idx_list: list):
+        """Adds a list of atoms to the common core of molecule 1
+
+        .. caution::
+            Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2
+
+        Args:
+            idx_list: Array of atom idxs to add
+
+        
+        """
         for idx in idx_list:
             self._add_common_core_atom("m2", idx)
         logger.warning(
@@ -1242,6 +1262,12 @@ class CommonCoreTransformation(object):
         [dict]
             matched common core atom names
         """
+        # Prepare Variables to use for restraint cc checks
+        global cc_names_struc1, cc_names_struc2
+        cc_names_struc1=[]
+        cc_names_struc2=[]
+
+
         # match atomes in common cores
         match_atom_names_cc1_to_cc2 = {}
         for cc1_idx, cc2_idx in zip(self.cc1_indicies, self.cc2_indicies):
@@ -1249,8 +1275,15 @@ class CommonCoreTransformation(object):
             ligand2_atom = self.ligand2_psf[cc2_idx]
             match_atom_names_cc1_to_cc2[ligand1_atom.name] = ligand2_atom.name
 
+            cc_names_struc1.append(ligand1_atom.name)
+            cc_names_struc2.append(ligand2_atom.name)
+
+
+        print(f"CC Struc1: {cc_names_struc1}")
+        print(f"CC Struc2: {cc_names_struc2}")
         return match_atom_names_cc1_to_cc2
 
+        
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
 
         # common core of psf 1 is transformed to psf 2

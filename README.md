@@ -80,7 +80,7 @@ You **must ** change the following entries for each mutation:
 
 The command `run_simulation(i.output_files, engine='openMM')` in the *submit.ipynb* file runs the simulation for each intermediate state one after another on your local machine. For most of the systems it might be good to use some computing cluster. If the *submit.ipynb* file is executed at the place where one wants to create the folder one can use something like the following line: 
     
-```
+```python
 import os
 import glob
 import subprocess
@@ -100,7 +100,7 @@ for path in sorted(output_files):
 Alternatively, as this way is quite temperamental and prone to sudden and unexplained failure, you may simply use a shell script:
 
 ##### sbash_simulations.sh
-```
+```bash
 for {i} in ./**/**/intst**/; #This assumes you start from the directory above the initial structure directory - you may change as necessary.
 do cd ${i}; # to prevent issues, it is preferred to switch to the script directory
 sbash simulation.sh;
@@ -115,7 +115,7 @@ Either way, as these simulations take a fair bit of processing power, it is reco
 The trajectories can be analyzed by creating the following script:
 
 ##### analysis.py
-```
+```python
 import subprocess
 from transformato import load_config_yaml
 from transformato.utils import postprocessing
@@ -151,7 +151,7 @@ for name in (
 ```
 To be then distributed to the computing nodes:
 ##### analysis.sh
-```
+```bash
 #!/bin/bash
 #SBATCH --gres=gpu
 #SBATCH -p lgpu
