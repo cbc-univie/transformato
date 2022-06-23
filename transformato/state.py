@@ -333,7 +333,7 @@ with open(file_name + '_system.xml','w') as outfile:
             shutil.copyfile(
                 omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
-            self._
+
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
             for env in self.system.envs:
