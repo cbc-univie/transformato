@@ -123,6 +123,26 @@ with open(file_name + '_system.xml','w') as outfile:
             prms[key] = self.configuration["simulation"]["parameters"][key]
         return prms
 
+    def _write_workload_preamble(self,filepath):
+        """
+        Prepends the preamble of the selected workload manager in the file specified by filepath
+
+        The preamble is the *-preamble.sh file found in transformato/bin
+
+        Args:
+            filepath (str): Path to the file (usually _script_target)
+
+        """
+
+        workloadmanager=self.configuration["simulation"]["workload-manager"]
+        with open(f"{self.configuration['bin_dir']}/{workloadmanager}-preamble.sh","r") as preamblefile:
+            preamble=preamblefile.read()
+        
+        with open(filepath,"r+") as script_to_prepend_to:
+            content=script_to_prepend_to.read()
+            script_to_prepend_to.seek(0)
+            script_to_prepend_to.write(f"{preamble}\n{content}")
+        
     def _copy_charmm_files(self, intermediate_state_file_path: str):
         """
         _copy_charmm_files Copy CHARMM specific files in running directories
@@ -138,7 +158,7 @@ with open(file_name + '_system.xml','w') as outfile:
         if self.configuration["simulation"]["free-energy-type"] == "rsfe":
             # copy simulation bash script
             charmm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/{self.configuration['simulation']['workload-manager']}-simulation-rsfe_charmm.sh"
+                f"{self.configuration['bin_dir']}/simulation-rsfe_charmm.sh"
             )
             charmm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation_charmm.sh"
@@ -148,6 +168,7 @@ with open(file_name + '_system.xml','w') as outfile:
                 charmm_simulation_submit_script_target,
             )
 
+            
             for env in self.system.envs:
                 if env == "waterbox":
                     # write charmm production scripte
@@ -198,7 +219,7 @@ with open(file_name + '_system.xml','w') as outfile:
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # copy simulation bash script
             charmm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/{self.configuration['simulation']['workload-manager']}-simulation-rbfe_charmm.sh"
+                f"{self.configuration['bin_dir']}/simulation-rbfe_charmm.sh"
             )
             charmm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation_charmm.sh"
@@ -233,9 +254,13 @@ with open(file_name + '_system.xml','w') as outfile:
 
                 else:
                     raise NotImplementedError()
+        
 
         else:
             pass
+        
+        # Prepend workload manager instructions
+        self._write_workload_preamble(charmm_simulation_submit_script_target)
 
         # copy diverse set of helper files for CHARMM
         for env in self.system.envs:
@@ -300,7 +325,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
             # copy simulation bash script
             omm_simulation_submit_script_source = (
-                f"{self.configuration['bin_dir']}/{self.configuration['simulation']['workload-manager']}-simulation-rsfe.sh"
+                f"{self.configuration['bin_dir']}/simulation-rsfe.sh"
             )
             omm_simulation_submit_script_target = (
                 f"{intermediate_state_file_path}/simulation.sh"
@@ -308,6 +333,7 @@ with open(file_name + '_system.xml','w') as outfile:
             shutil.copyfile(
                 omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
+            self._
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
             for env in self.system.envs:
@@ -329,6 +355,10 @@ with open(file_name + '_system.xml','w') as outfile:
             )
         else:
             raise RuntimeError(f"Only solvation/binding free energies implemented")
+
+        # Prepend workload manager instructions
+        self._write_workload_preamble(omm_simulation_submit_script_target)
+
 
         # copy rst files
         for env in self.system.envs:
