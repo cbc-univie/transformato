@@ -1,9 +1,6 @@
-#!/bin/bash
-#SBATCH -p lgpu
-#SBATCH --gres=gpu
 
-#. /data/shared/software/python_env/anaconda3/etc/profile.d/conda.sh
-#conda activate transformato
+
+
 
 path=$1
 SWITCH=$2
