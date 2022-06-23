@@ -1,6 +1,6 @@
 
 
-source ~/anaconda3/etc/profile.d/conda.sh
+source ~/miniconda3/etc/profile.d/conda.sh
 conda activate fep
 
 path=$1
