@@ -724,12 +724,22 @@ class ProposeMutationRoute(object):
     def add_idx_to_common_core_of_mol1(self, idx_list: list):
         for idx in idx_list:
             self._add_common_core_atom("m1", idx)
-        print(self.get_common_core_idx_mol1())
+        logger.warning(
+            f"ATTENTION: Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2"
+        )
+        logger.info(
+            f"Atom idx of the new common core: {self.get_common_core_idx_mol1()}"
+        )
 
     def add_idx_to_common_core_of_mol2(self, idx_list: list):
         for idx in idx_list:
             self._add_common_core_atom("m2", idx)
-        print(self.get_common_core_idx_mol2())
+        logger.warning(
+            f"ATTENTION: Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 1"
+        )
+        logger.info(
+            f" Atom idx of the new common core: {self.get_common_core_idx_mol2()}"
+        )
 
     def _add_common_core_atom(self, name: str, idx: int):
         if idx in self.added_indeces[name] or idx in self._get_common_core(name):
