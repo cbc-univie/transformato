@@ -6,37 +6,34 @@ Prerequisites
 
 #. A working version of `conda/miniconda <https://docs.conda.io/en/latest/>`_ 
 #. A working version of git
-#. A somewhat recent version of python
 #. A CUDA - capable device (locally or node). A CUDA device is not required to generate the intermediate states, but one is required to do simulations or analysises.
 
 Getting transformato
 #########################
 
-The following assumes the use of a bash shell:
+First, install conda on your machine. Then clone the `repository <https://github.com/wiederm/transformato.git>`_
 
 .. code-block:: bash
 
-    cd /directory/you/want/transformato/in
-    git clone https://github.com/JohannesKarwou/transformato.git # if you don't depend on features in development here - use the main repo
-
-
-This should download transformato. Afterwards, do:
+    git clone `https://github.com/wiederm/transformato.git
+    
+Within the newly created ``transformato`` directory, a ``yaml`` file can be found in  ``devtools/conda-envs/``. Use conda to create 
+an environment called ``fep`` by going into the transformato directory and using conda:
 
 .. code-block:: bash
 
     cd transformato
-    python setup.py install
+    conda env create --file devtools/conda-envs/fep_env.yaml
 
-
-which will register transformato with conda, create an environment called `fep`, and install dependencies.
-Now go to the environment `fep`:
+Activate the environment with ``conda activate fep``. Now install |trafo| with:
 
 .. code-block:: bash
 
-    conda activate fep
+    python setup.py install
 
+This will install |trafo| in your current (``fep``) conda environment.   
 
-Now, run a python script:
+Now, you can open ``python`` try the following command:
 
 ::
     
@@ -44,3 +41,7 @@ Now, run a python script:
     print(transformato.__version__)
 
 If you output the current transformato version, then congratulations! You are now ready to use transformato.
+
+
+
+.. |trafo| replace:: :math:`\texttt{TRANSFORMATO}`

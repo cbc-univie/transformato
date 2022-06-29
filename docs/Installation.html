@@ -26,6 +26,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -170,28 +171,27 @@
 <ol class="arabic simple">
 <li><p>A working version of <a class="reference external" href="https://docs.conda.io/en/latest/">conda/miniconda</a></p></li>
 <li><p>A working version of git</p></li>
-<li><p>A somewhat recent version of python</p></li>
 <li><p>A CUDA - capable device (locally or node). A CUDA device is not required to generate the intermediate states, but one is required to do simulations or analysises.</p></li>
 </ol>
 </div>
 <div class="section" id="getting-transformato">
 <h2>Getting transformato<a class="headerlink" href="#getting-transformato" title="Permalink to this heading">¶</a></h2>
-<p>The following assumes the use of a bash shell:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> /directory/you/want/transformato/in
-git clone https://github.com/JohannesKarwou/transformato.git <span class="c1"># if you don&#39;t depend on features in development here - use the main repo</span>
+<p>First, install conda on your machine. Then clone the <a class="reference external" href="https://github.com/wiederm/transformato.git">repository</a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone <span class="sb">`</span>https://github.com/wiederm/transformato.git
 </pre></div>
 </div>
-<p>This should download transformato. Afterwards, do:</p>
+<p>Within the newly created <code class="docutils literal notranslate"><span class="pre">transformato</span></code> directory, a <code class="docutils literal notranslate"><span class="pre">yaml</span></code> file can be found in  <code class="docutils literal notranslate"><span class="pre">devtools/conda-envs/</span></code>. Use conda to create
+an environment called <code class="docutils literal notranslate"><span class="pre">fep</span></code> by going into the transformato directory and using conda:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> transformato
-python setup.py install
+conda env create --file devtools/conda-envs/fep_env.yaml
 </pre></div>
 </div>
-<p>which will register transformato with conda, create an environment called <cite>fep</cite>, and install dependencies.
-Now go to the environment <cite>fep</cite>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda activate fep
+<p>Activate the environment with <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">fep</span></code>. Now install <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install
 </pre></div>
 </div>
-<p>Now, run a python script:</p>
+<p>This will install <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> in your current (<code class="docutils literal notranslate"><span class="pre">fep</span></code>) conda environment.</p>
+<p>Now, you can open <code class="docutils literal notranslate"><span class="pre">python</span></code> try the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">transformato</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">transformato</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
 </pre></div>

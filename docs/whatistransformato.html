@@ -188,14 +188,14 @@ are the same, the resulting free energy difference <span class="math notranslate
 solution builder.</p>
 <div class="figure align-default" id="id10">
 <a class="reference internal image-reference" href="_images/tf_overview_v3.png"><img alt="scheme of transformato" src="_images/tf_overview_v3.png" style="width: 400.72px; height: 538.16px;" /></a>
-<p class="caption"><span class="caption-text">Figure: Interplay between <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> and CHARMM-GUI</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Figure: Interplay between <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> and CHARMM-GUI.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="the-common-core-approach">
 <h2>The common-core approach<a class="headerlink" href="#the-common-core-approach" title="Permalink to this heading">¶</a></h2>
 <p>With standard alchemical FES, the two endpoints are generally transformed directly into each other,
-with bonded and nonbonded forces scaled according to the coupling parameter <span class="math notranslate nohighlight">\(\lambda\)</span>,
-while introducing dummy atoms to ensure a constant number of particles in the system<a class="footnote-reference brackets" href="#fshirts" id="id2">3</a>.</p>
+with nonbonded forces (electrostatics) scaled according to the coupling parameter <span class="math notranslate nohighlight">\(\lambda\)</span>,
+and bonded LJ interactions beeing turned off on an atom by atom basis. <a class="footnote-reference brackets" href="#fshirts" id="id2">3</a>.</p>
 <p>With transformato however, the structures are not transformed into each other directly.
 Instead, each structure is transformed into a ‘common core structure’, a common topology of both systems
 (ideally - and usually - the <em>maximum</em> common topology between systems), with the free energy
