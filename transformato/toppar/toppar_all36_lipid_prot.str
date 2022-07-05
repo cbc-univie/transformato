@@ -116,6 +116,7 @@ BOND  C14 C15 C15 H15A C15 H15B
 BOND  C15 C16 C16 H16A C16 H16B C16 H16C
 IMPR C1 O1 SG C2
 IMPR N -C CA HN  C CA +N O
+CMAP -C  N  CA  C   N  CA  C  +N
 
 DONOR HN N
 ACCEPTOR O C
@@ -271,6 +272,7 @@ BOND  C13 C14 C14 H14A C14 H14B C14 H14C
 IMPR C1 O1 N C2
 IMPR N C1 CA HN  C CA +N O
 !IMPR C CA +N O
+CMAP -C  N  CA  C   N  CA  C  +N
 
 DONOR HN N
 ACCEPTOR O C
@@ -431,7 +433,7 @@ BOND  C10 C11 C11 H11A C11 H11B
 BOND  C11 C12 C12 H12A C12 H12B
 BOND  C12 C13 C13 H13A C13 H13B
 BOND  C13 C14 C14 H14A C14 H14B C14 H14C
-IMPR C1 O1 N C2
+IMPR C1 O1 NZ C2
 IMPR N C1 CA HN  C CA +N O
 !IMPR C CA +N O
 CMAP -C  N  CA  C   N  CA  C  +N
@@ -596,6 +598,8 @@ BOND C11 H11A  C11 H11B              ! C11 hydrogens
 BOND C12 H12A                        ! C12 hydrogen
 BOND C14 H14A  C14 H14B  C14 H14C    ! C14 hydrogens
 BOND C15 H15A  C15 H15B  C15 H15C    ! C15 hydrogens
+
+CMAP -C  N  CA  C   N  CA  C  +N
 
 IC -C     CA    *N     HN         1.3479  123.93  180.00  114.77   0.9982
 IC -C     N     CA     C          1.3479  123.93  180.00  105.89   1.5202
@@ -769,6 +773,8 @@ BOND C16 H16A  C16 H16B                 ! C16 hydrogens
 BOND C17 H17A                           ! C17 hydrogen
 BOND C19 H19A  C19 H19B  C19 H19C       ! C19 hydrogens
 BOND C20 H20A  C20 H20B  C20 H20C       ! C20 hydrogens
+
+CMAP -C  N  CA  C   N  CA  C  +N
 
 IC -C     CA    *N     HN         1.3479  123.93  180.00  114.77   0.9982
 IC -C     N     CA     C          1.3479  123.93  180.00  105.89   1.5202
@@ -1112,6 +1118,8 @@ IMPR N CA1 CA HN  C CA +N O
 IMPR CD1  O12  CD2  OD1
 IMPR CX1  O11  CX2  OX1
 
+CMAP -C  N  CA  C   N  CA  C  +N
+
 DONOR HN N
 ACCEPTOR O C
 ACCEPTOR OA1 CA1
@@ -1288,6 +1296,88 @@ IC CX14  CX15  CX16  H16X   1.5331 109.01  -61.78 119.36  1.0834
 IC H16X  CX15  *CX16 H16Y   1.0834 119.36  138.24 116.61  1.0932
 IC H16X  CX15  *CX16 H16Z   1.0834 119.36 -107.69 109.08  1.1555
 
+PRES NACG          0.00  ! linkage for N-acylated glycine; from GLYM
+DELE ATOM 2O2
+
+GROUP
+ATOM 1N    NH1    -0.47  !  
+ATOM 1HN   H       0.31  !         HA1
+ATOM 1CA   CT2    -0.02  !         |
+ATOM 1HA1  HB2     0.09  !    O=C--CA---N-HN
+ATOM 1HA2  HB2     0.09  !      |  |    |
+GROUP                    !         HA2  |
+ATOM 2C1   C       0.55  !              |
+ATOM 2O1   O      -0.60  !           O1=C1 
+ATOM 2C2   CTL2   -0.07  !              |
+ATOM 2H2R  HAL2    0.06  !         H2S-C2-H2R
+ATOM 2H2S  HAL2    0.06  !
+
+! Bond order
+BOND  1N   2C1
+IMPR 2C1 2O1 1N 2C2
+IMPR 1N 2C1 1CA 1HN
+
+! Internal Coordinates
+IC 2C1   1CA   *1N    1HN    0.0000  0.0000  180.00  0.0000 0.0000
+IC 2C1   1N    1CA    1C     0.0000  0.0000  180.00  0.0000 0.0000
+IC 1CA   1N    2C1    2C2    0.0000  0.0000  158.80  0.0000 0.0000
+IC 2C2   1N    *2C1   2O1    0.0000  0.0000 -174.68  0.0000 0.0000
+IC 1N    2C1   2C2    2C3    0.0000  0.0000  152.55  0.0000 0.0000
+
+PRES NACP          0.00  ! linkage for N-acylated proline
+DELE ATOM 2O2
+
+GROUP                    !        HA1          
+ATOM 1N    N      -0.29  !        |           
+ATOM 1CD   CP3     0.00  !   O=C--CA-------N
+ATOM 1HD1  HA2     0.09  !        |      / |  
+ATOM 1HD2  HA2     0.09  !       -CB- -CD- |  
+ATOM 1CA   CP1     0.02  !         \  /    |
+ATOM 1HA   HB1     0.09  !        - CG -   C1=O1
+GROUP                    !                 |
+ATOM 2C1   C       0.55  !             H2R-C2-H2S
+ATOM 2O1   O      -0.60  !                 |     
+ATOM 2C2   CTL2   -0.07  ! 
+ATOM 2H2R  HAL2    0.06  ! 
+ATOM 2H2S  HAL2    0.06  !  
+
+! Bond order
+BOND  1N   2C1
+IMPR 2C1 2O1 1N 2C2
+
+! Internal Coordinates
+IC 2C1   1N    1CA    1C     1.3278  121.86  -77.65  111.12   1.5224
+IC 1CA   1N    2C1    2C2    1.4528  121.86  155.16  120.95   1.5064
+IC 2C2   1N    *2C1   2O1    1.5064  120.95  178.80  121.39   1.2311
+IC 1N    2C1   2C2    2C3    1.3278  120.95   88.33  111.81   1.5455
+
+PRES NACA          0.00  ! linkage for N-acylated amino acids
+DELE ATOM 2O2
+
+GROUP
+ATOM 1N    NH1    -0.47  !       HA 
+ATOM 1HN   H       0.31  !       |       
+ATOM 1CA   CT1     0.07  !  O=C--CA--N-HN 
+ATOM 1HA   HB1     0.09  !    |  |   |    
+GROUP                    !       R   |
+ATOM 2C1   C       0.55  !           |  
+ATOM 2O1   O      -0.60  !        O1=C1
+ATOM 2C2   CTL2   -0.07  !           | 
+ATOM 2H2R  HAL2    0.06  !      H2S-C2-H2R 
+ATOM 2H2S  HAL2    0.06  !
+
+! Bond order
+BOND  1N   2C1
+IMPR 2C1 2O1 1N 2C2
+IMPR 1N 2C1 1CA 1HN
+
+! Internal Coordinates
+IC 2C1   1CA   *1N    1HN    0.0000  0.0000  180.00  0.0000 0.0000
+IC 2C1   1N    1CA    1C     0.0000  0.0000  180.00  0.0000 0.0000
+IC 1CA   1N    2C1    2C2    0.0000  0.0000  158.80  0.0000 0.0000
+IC 2C2   1N    *2C1   2O1    0.0000  0.0000 -174.68  0.0000 0.0000
+IC 1N    2C1   2C2    2C3    0.0000  0.0000  152.55  0.0000 0.0000
+
 end
 
 read para card append flex
@@ -1317,6 +1407,7 @@ HGA2   CG321   CTL1   26.500   110.10   22.53   2.179  ! from, HAL2 CTL2 CTL1, a
 CG321  CTL1    HAL1   34.500   110.10   22.53   2.179  ! from, HAL1 CTL1 CTL2, alkane, 3/92
 CG321  CTL1    OSL    75.700   110.10   ! from, OSL  CTL1 CTL2, acetic acid
 CG321  CTL1    CTL2   58.350   113.50   11.16   2.561  ! from, CTL2 CTL1 CTL2, glycerol
+N      C       CTL2   20.000   112.5000 ! from N C CT2
 
 DIHEDRALS
 
@@ -1354,12 +1445,18 @@ S        CG321    CTL1     CTL2    0.200   3      0.0 ! from, par27 X CTL1 CTL2 
 HGA2     CG321    CTL1     HAL1    0.200   3      0.0 ! from, par27 X CTL1 CTL2 X
 HGA2     CG321    CTL1     OSL     0.200   3      0.0 ! from, par27 X CTL1 CTL2 X
 HGA2     CG321    CTL1     CTL2    0.200   3      0.0 ! from, par27 X CTL1 CTL2 X
-
+N        C        CTL2     HAL2    0.0000  1     0.00 ! from N   C   CT2  HB2
+N        C        CTL2     CTL2    1.5000  1     0.00 ! from NG2S0  CG2O1  CG321  CG331
+CTL2     C        N        CP3     2.7500  2   180.00 ! from CT2 C N CP3 
+CTL2     C        N        CP3     0.3000  4     0.00 ! from CT2 C N CP3 
+CTL2     C        N        CP1     2.7500  2   180.00 ! from CT2 C N CP1 
+CTL2     C        N        CP1     0.3000  4     0.00 ! from CT2 C N CP1 
 
 IMPROPER
 
 CL   X    X   CTL2    96.0000         0      0.0000 ! from, CC   X    X    CT2
 C    O    NH1 CTL2    96.0000         0      0.0000 ! from, CC   X    X    CT2 
+C    O    N   CTL2    96.0000         0      0.0000 ! from CC   X    X    CT2
 end
 
 return

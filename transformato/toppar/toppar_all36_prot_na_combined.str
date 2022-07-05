@@ -37,6 +37,13 @@ DECL -O
 DECL +N  
 DECL +HN  
 DECL +CA  
+!
+DECL  +P
+DECL  +O1P
+DECL  +O2P
+DECL  +O5'
+DECL  -O3'
+
 DEFA FIRS NTER LAST CTER   
 
 !IMIDAZOLE ANALOGS FROM toppar_all27_na_model.str
@@ -1598,6 +1605,19 @@ IC C2'   C4'   *C3'  O3'    1.5424  104.09 -125.57  110.37   1.4304
 IC C2'   C4'   *C3'  H3'    1.5424  104.09  114.80  107.09   1.1125
 IC C4'   C3'   O3'   H3T    1.5226  110.37  165.88  110.05   0.9672
 
+PRES CE1X        -0.18  ! Patch to link Cys sidechain to E1X (NA base: N1,O6-ethanoxanthine)
+                        ! PATCH CE1X PROA 145 DNAA 7 SETUP WARN: 
+DELETE ATOM 1HG1
+DELETE ATOM 2H111
+GROUP   
+ATOM 1CB  CT2    -0.10 !
+ATOM 1SG  S      -0.08 !     1SG--1CB--2C11-2C10, Methione S type
+GROUP                  !                       
+ATOM 2C11  CN8   -0.18 !
+ATOM 2H112 HN8    0.09 !
+ATOM 2H113 HN8    0.09 !
+
+BOND 1SG 2C11
 
 end
 
@@ -1632,9 +1652,10 @@ CN8B S      240.000     1.8160 ! sahc
 CN8B SP     198.000     1.8160
 CT2  SP     198.000     1.8160
 CT3  SP     240.000     1.8160
-
 ! C1'-ND1 in imidazole model compound
 CN7B NR1    220.000     1.4620  ! From crystal nucleosides A/G (NF)
+!E1X-Cys link parameters
+S    CN8     198.000     1.8180  !fitted to C-S
  
 ANGLES
 !
@@ -1700,8 +1721,11 @@ CN8  CN7B NR1     140.0    113.70  ! k guessed, theta from ribo./desox. xtal (NF
 CN7B CN7B NR1     140.0    113.70  ! RNUS
 CN7B NR1  CPH2    130.0    127.00  ! k guessed, theta from A/G xtal (NF)
 CN7B NR1  CPH1    130.0    126.00  ! k guessed, theta from A/G xtal (NF)
-HN7  CN7B NR1      30.0    106.3  ! k guessed, theta from ai (NF)
-!CPH2 NR1  CPH1    130.0    107.0000 ! From imidazole (NF). Nonstandard; modified for 360 deg. condition. Generates "Error: Repeated ANGLE".
+HN7  CN7B NR1      30.0    106.3   ! k guessed, theta from ai (NF)
+!E1X-Cys link parameters
+CT2  S    CN8      34.0     95.00  !Methione
+S    CN8  CN8      58.000   114.5  !Methione
+S    CN8  HN8      46.100   111.3  !Methione
 
 DIHEDRALS
 !
@@ -1849,6 +1873,13 @@ CN7B ON6  CN7  CN8      0.0     3     0.0 ! 25P1
 CN7  ON6  CN7B NR1      0.0     3     0.0
 CN7  ON6B CN7B NR1      0.0     3     0.0 ! RNUS
 NR1  CN7B CN8  CN7      0.0     3     0.0
+!E1X-Cys link parameters
+CT1  CT2  S    CN8     0.2400  1   180.00 ! PROT expt. MeEtS
+CT1  CT2  S    CN8     0.3700  3     0.00 ! PROT expt. MeEtS
+CT2  S    CN8  CN8     0.2400  1   180.00 ! PROT expt. MeEtS
+CT2  S    CN8  CN8     0.3700  3     0.00 ! PROT expt. MeEtS
+CT2  S    CN8  HN8     0.2800  3     0.00 ! PROT DTN
+HA2  CT2  S    CN8     0.2800  3     0.00 ! PROT DTN
 
 IMPROPER
 !

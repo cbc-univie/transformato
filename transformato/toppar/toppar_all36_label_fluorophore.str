@@ -43,7 +43,7 @@ MASS    -1 C321X1    12.011000
 ! from toppar_all36_spin_fret-lret.str
 !! BODIPY
 MASS   -1  HC00       1.008000   !OVERLAP
-MASS   -1  C3        12.010000
+MASS   -1  C3_0      12.010000
 MASS   -1  H1         1.008000
 MASS   -1  SS0       32.060000    !OVERLAP
 MASS   -1  CA0       12.010000     ! OVERLAP 47
@@ -491,7 +491,7 @@ ATOM HN   H       0.31
 ATOM CA   CT1     0.07  
 ATOM HA   HB1     0.09  
 GROUP
-ATOM CB      C3       0.110
+ATOM CB      C3_0     0.110
 ATOM HB1     H1       0.032
 ATOM HB2     H1       0.032
 ATOM SG      SS0      -0.221
@@ -502,7 +502,7 @@ ATOM C4     CC0       -0.323
 ATOM H5     HA0        0.170
 ATOM C5     CD0        0.049
 ATOM C6     CA0        0.129
-ATOM C7     C3       -0.124
+ATOM C7     C3_0     -0.124
 ATOM H6     H1        0.114
 ATOM H7     H1        0.114
 ATOM C8     CC0        0.049
@@ -511,19 +511,19 @@ ATOM N1     NA_1     -0.035
 ATOM C10    CD_0      0.131
 ATOM C11    CC0       -0.323
 ATOM H8     HA0        0.170
-ATOM C12    C3       -0.130
+ATOM C12    C3_0     -0.130
 ATOM H9     HC00        0.060
 ATOM H10    HC00        0.060
 ATOM H11    HC00        0.060
-ATOM C13    C3       -0.207
+ATOM C13    C3_0     -0.207
 ATOM H12    HC00        0.098
 ATOM H13    HC00        0.098
 ATOM H14    HC00        0.098
-ATOM C14    C3       -0.130
+ATOM C14    C3_0     -0.130
 ATOM H15    HC00        0.060
 ATOM H16    HC00        0.060
 ATOM H17    HC00        0.060
-ATOM C15    C3       -0.207
+ATOM C15    C3_0     -0.207
 ATOM H18    HC00        0.098
 ATOM H19    HC00        0.098
 ATOM H20    HC00        0.098
@@ -2133,7 +2133,7 @@ MASS    -1 C321X1    12.011000
 ! from toppar_all36_spin_fret-lret.str
 !! BODIPY
 MASS   -1  HC00       1.008000   !OVERLAP
-MASS   -1  C3        12.010000
+MASS   -1  C3_0      12.010000
 MASS   -1  H1         1.008000
 MASS   -1  SS0       32.060000    !OVERLAP
 MASS   -1  CA0       12.010000     ! OVERLAP 47
@@ -2293,25 +2293,25 @@ C321X  CT1   222.500     1.5380 ! ALLOW   ALI
                               ! alkane update, adm jr., 3/2/92
 
 ! from toppar_all36_spin_fret-lret.str
-C3 HC00  337.30   1.092
-C3 C3  303.10   1.535
-C3 H1  335.90   1.093
-C3 SS0  225.80   1.821
-CA0 NA  470.30   1.350
-CA0 CD0  411.70   1.434
-CA0 CA0  478.40   1.387
-CC0 NA  438.80   1.371
-CC0 CC0  418.30   1.429
-C3 CC0  337.30   1.499
-CC0 HA0  347.20   1.085
-CC0 CD0  504.00   1.371
-C3 CD0  337.30   1.499
-C3 CA0  323.50   1.513
-CA0 CC0  411.70   1.434
-CD0 NA  438.80   1.371
-CA0 F   363.80   1.344
+C3_0 HC00  337.30   1.092
+C3_0 C3_0  303.10   1.535
+C3_0 H1    335.90   1.093
+C3_0 SS0   225.80   1.821
+CA0  NA    470.30   1.350
+CA0  CD0   411.70   1.434
+CA0  CA0   478.40   1.387
+CC0  NA    438.80   1.371
+CC0  CC0   418.30   1.429
+C3_0 CC0   337.30   1.499
+CC0  HA0   347.20   1.085
+CC0  CD0   504.00   1.371
+C3_0 CD0   337.30   1.499
+C3_0 CA0   323.50   1.513
+CA0  CC0   411.70   1.434
+CD0  NA    438.80   1.371
+CA0  F     363.80   1.344
 
-C3  CT1   222.500     1.5380 ! ALLOW   ALI
+C3_0 CT1   222.500     1.5380 ! ALLOW   ALI
 
 NA B   362.786  1.5682  ! FROM AFMM - HUAN
 B  F   309.234  1.3750  ! FROM AFMM - HUAN
@@ -2320,12 +2320,12 @@ CA0       NA_0       470.300 1.350000000000000
 NA_0     CC_0       438.800 1.319350195437133
 NA_0     B          362.786 1.568200000000000
 CC_0     CC0         418.300 1.429000000000000
-CC_0     C3         337.300 1.499000000000000
+CC_0     C3_0       337.300 1.499000000000000
 CA0       NA_1       470.300 1.350000000000000
 NA_1     CD_0       438.800 1.320029323992463
 NA_1     B          362.786 1.568200000000000
 CD_0     CC0         504.000 1.371000000000000
-CD_0     C3         337.300 1.499000000000000
+CD_0     C3_0       337.300 1.499000000000000
 CA_0     NA_0       470.300   1.350
 CA_0     CD0         411.700   1.434
 CA_0     CA0         478.400   1.387
@@ -2367,14 +2367,11 @@ CG251O CG3C50  300.00     1.5300 ! MOL-OP , FROM CG2R53 CG3C52, PENALTY= 74
 CG251O NG3C51  380.00     1.4000 ! MOL-OP , FROM CG2R53 NG3C51, PENALTY= 64
 CG2DX2 CG2R52  365.00     1.4500 ! MOL-OP , FROM CG2DX1 CG2R61, PENALTY= 45
 CG2R52 CG3C50  350.00     1.5050 ! MOL-OP , FROM CG2R52 CG3C52, PENALTY= 10
-CG2R53 CG3C51  300.00     1.5300 ! MOL-OP , FROM CG2R53 CG3C52, PENALTY= 4
 CG2RX0 CG3C50  305.00     1.5200 ! MOL-OP , FROM CG2RX0 CG3C52, PENALTY= 10
 CG2RX0 NG2R52  380.00     1.3700 ! MOL-OP , FROM CG2R51 NG2R52, PENALTY= 30
 CG321A  NG2R53  320.00     1.4300 ! MOL-OP , FROM CG311 NG2R53, PENALTY= 4
 CG321A  NG3C51  263.00     1.4740 ! MOL-OP , FROM CG321A NG311, PENALTY= 20
 CG324A  NG2R52  300.00     1.4530 ! MOL-OP , FROM CG324A NG2P1, PENALTY= 20
-CG331  CG3C50  222.50     1.5280 ! MOL-OP , FROM CG331 CG3C51, PENALTY= 6
-CG3C51 SG311   198.00     1.8180 ! MOL-OP , FROM CG321A SG311, PENALTY= 65
 CG321A    NG3CA0     263.000 1.474000000000000
 NG3CA0   CG25A0     380.000 1.327410232030777
 NG3CA0   CG2RX0     330.000 1.400000000000000
@@ -2737,42 +2734,42 @@ HGA2X    C321X   CT1      26.500    110.10   22.53   2.17900 ! ALLOW   ALI
 
 
 ! BODIPY from toppar_all36_spin_fret-lret.str
-HC00 C3 HC00   39.430     108.350
-HC00 C3 C3   46.370     110.050
-C3 C3 H1   46.360     110.070
-C3 C3 SS0   77.330     112.690
-C3 SS0 C3   37.940      99.920
-H1 C3 H1   39.180     109.550
-H1 C3 SS0   53.660     109.340
-SS0 C3 CA0   78.350     110.660
+HC00 C3_0 HC00   39.430     108.350
+HC00 C3_0 C3_0 46.370     110.050
+C3_0 C3_0 H1   46.360     110.070
+C3_0 C3_0 SS0   77.330     112.690
+C3_0 SS0 C3_0 37.940      99.920
+H1 C3_0 H1   39.180     109.550
+H1 C3_0 SS0   53.660     109.340
+SS0 C3_0 CA0   78.350     110.660
 CA0 NA CC0   68.460     113.150
 CA0 NA CA0   66.980     120.090
 CA0 CD0 CC0   68.230     113.510
-CA0 CD0 C3   64.050     117.810
-CA0 CA0 C3   63.840     120.630
+CA0 CD0 C3_0 64.050     117.810
+CA0 CA0 C3_0 63.840     120.630
 CA0 CA0 CA0   67.180     119.970
 NA CA0 CD0   67.440     119.850	! SAME AS CE CA0 NA
 NA CA0 CA0   70.210     118.340
 NA CC0 CC0   72.210     106.800
-NA CC0 C3   65.440     122.990
+NA CC0 C3_0 65.440     122.990
 NA CA0 NA   76.480     107.650
 NA CA0 F    72.103     112.575   ! CALCULATED WITH EMPIRICAL APPROACH
 CC0 CC0 HA0   47.460     119.260
 CC0 CC0 CD0   68.160     114.190
-CC0 C3 HC00   47.200     110.860
-CC0 CC0 C3   64.660     115.970
-CC0 CD0 C3   64.810     119.450
+CC0 C3_0 HC00   47.200     110.860
+CC0 CC0 C3_0 64.660     115.970
+CC0 CD0 C3_0 64.810     119.450
 HA0 CC0 CD0   48.350     122.890
 CD0 CA0 CA0   65.990     120.100
-CD0 C3 HC00   47.200     110.860
-CA0 C3 H1   46.780     110.950
+CD0 C3_0 HC00   47.200     110.860
+CA0 C3_0 H1   46.780     110.950
 CA0 CA0 CC0   65.990     120.100
 CC0 CA0 NA   67.440     119.850	! SAME AS CE CA0 NA
 CA0 CC0 CC0   67.660     111.040
-CA0 CC0 C3   61.830     126.430
+CA0 CC0 C3_0 61.830     126.430
 CA0 NA CD0   68.460     113.150
 NA CD0 CC0   72.910     109.420
-NA CD0 C3   65.670     122.140
+NA CD0 C3_0 65.670     122.140
 
 CA0  NA  B        60.000  124.80  ! FROM AFMM
 CC0  NA  B        60.000  127.00
@@ -2786,44 +2783,44 @@ CA0       NA_0     B           60.000 124.799999999999997
 NA_0     CA0       CD0          67.440 119.849999999999994
 NA_0     CA0       CA0          70.210 118.340000000000018
 NA_0     CC_0     CC0          72.210 106.799999999999997
-NA_0     CC_0     C3          65.440 122.990000000000009
+NA_0     CC_0     C3_0        65.440 122.990000000000009
 NA_0     B        NA_1        93.703 106.599999999999994
 NA_0     B        F           31.512 109.770000000000010
 CC_0     NA_0     B           60.000 127.000000000000014
 CC_0     CC0       HA0          47.460 119.260000000000005
 CC_0     CC0       CD0          68.160 114.189999999999998
-CC_0     C3       HC00          47.200 110.859999999999999
-CC0       CC_0     C3          64.660 115.970000000000013
+CC_0     C3_0     HC00          47.200 110.859999999999999
+CC0       CC_0     C3_0        64.660 115.970000000000013
 CA0       CA0       NA_1        70.210 118.340000000000018
 CC0       CA0       NA_1        67.440 119.849999999999994
 CA0       NA_1     CD_0        68.460 113.150000000000006
 CA0       NA_1     B           60.000 124.799999999999997
 NA_1     CD_0     CC0          72.910 109.420000000000002
-NA_1     CD_0     C3          65.670 122.140000000000015
+NA_1     CD_0     C3_0        65.670 122.140000000000015
 NA_1     B        F           31.512 109.770000000000010
 CD_0     NA_1     B           60.000 127.000000000000014
 CC0       CC0       CD_0        68.160 114.189999999999998
 CD_0     CC0       HA0          48.350 122.890000000000015
-CD_0     C3       HC00          47.200 110.859999999999999
-CC0       CD_0     C3          64.810 119.450000000000003
+CD_0     C3_0     HC00          47.200 110.859999999999999
+CC0       CD_0     C3_0        64.810 119.450000000000003
 CA_0     NA_0     CC_0        68.460      113.150
 CA_0     NA_0     B           60.000      124.800
 CA_0     CD0       CC0          68.230      113.510
-CA_0     CD0       C3          64.050      117.810
-CA_0     CA0       C3          63.840      120.630
+CA_0     CD0       C3_0        64.050      117.810
+CA_0     CA0       C3_0        63.840      120.630
 CA_0     CA0       CA0          67.180      119.970
 NA_0     CA_0     CD0          67.440      119.850
 NA_0     CA_0     CA0          70.210      118.340
 CD0       CA_0     CA0          65.990      120.100
 
 !! added by Huan
-NH3  CT1  C3    67.700   110.0000 ! ALLOW   ALI POL
-HB1  CT1  C3    35.000   111.0000 ! ALLOW  PEP
-C3  CT1  C      52.000   108.0000 ! ALLOW   ALI PEP POL ARO
-H1  C3  CT1   26.500    110.10   22.53   2.17900 ! ALLOW   ALI
-SS0    C3  CT1    58.000   112.5000 ! ALLOW   ALI SUL ION
-C3  CT1  CC     52.000   108.0000 ! ALLOW   ALI PEP POL ARO
-NH1  CT1  C3    70.000   113.5000 ! ALLOW   ALI PEP POL ARO
+NH3  CT1  C3_0   67.700   110.0000 ! ALLOW   ALI POL
+HB1  CT1  C3_0   35.000   111.0000 ! ALLOW  PEP
+C3_0 CT1  C      52.000   108.0000 ! ALLOW   ALI PEP POL ARO
+H1   C3_0 CT1    26.500   110.10   22.53   2.17900 ! ALLOW   ALI
+SS0  C3_0 CT1    58.000   112.5000 ! ALLOW   ALI SUL ION
+C3_0 CT1  CC     52.000   108.0000 ! ALLOW   ALI PEP POL ARO
+NH1  CT1  C3_0   70.000   113.5000 ! ALLOW   ALI PEP POL ARO
 
 !! Huan - angle param for cy3r - begin
 CG2DX2  CG2DX1  HGA4       42.000   118.0000
@@ -2880,8 +2877,6 @@ CG2R52 CG2DX2 HGA4     32.00    120.00 ! MOL-OP , FROM CG2R61 CG2DX1 HGA4, PENAL
 CG2DX2 CG2R52 CG3C50   65.00    126.70 ! MOL-OP , FROM CG3C52 CG2R53 OG2D1, PENALTY= 79.2
 CG2DX2 CG2R52 NG2R52   45.80    122.00 ! MOL-OP , FROM CG321A CG2R51 NG2R52, PENALTY= 75
 CG3C50 CG2R52 NG2R52  170.00    112.00 ! MOL-OP , FROM CG3C52 CG2R52 NG2R50, PENALTY= 33.2
-CG3C51 CG2R53 NG2R53  120.00    105.50 ! MOL-OP , FROM CG3C52 CG2R53 NG2R53, PENALTY= 0.4
-CG3C51 CG2R53 OG2D1    65.00    126.70 ! MOL-OP , FROM CG3C52 CG2R53 OG2D1, PENALTY= 0.4
 CG2R61 CG2RX0 CG3C50   60.00    130.00 ! MOL-OP , FROM CG2R61 CG2RX0 CG3C52, PENALTY= 1.2
 CG2R61 CG2RX0 NG2R52  130.00    130.00 ! MOL-OP , FROM CG2R61 CG2RX0 NG2R50, PENALTY= 32
 CG2RX0 CG2RX0 CG3C50  110.00    110.00 ! MOL-OP , FROM CG2RX0 CG2RX0 CG3C52, PENALTY= 1.2
@@ -2892,19 +2887,11 @@ NG2R53 CG321A  HGA2     51.50    109.50 ! MOL-OP , FROM NG2S1 CG321A HGA2, PENAL
 NG3C51 CG321A  HGA2     32.40    109.50   50.00   2.13000 ! MOL-OP , FROM NG311 CG321A HGA2, PENALTY= 3
 CG321A  CG324A  NG2R52   67.70    110.00 ! MOL-OP , FROM CG321A CG324A NG2P1, PENALTY= 2
 NG2R52 CG324A  HGA2     42.00    110.10 ! MOL-OP , FROM NG2P1 CG324A HGA2, PENALTY= 2
-CG3C50 CG331  HGA3     34.60    110.10   22.53   2.17900 ! MOL-OP , FROM CG3C51 CG331 HGA3, PENALTY= 0.8
 CG251O CG3C50 CG2RX0   40.00    107.30 ! MOL-OP , FROM CG2R51 CG3C52 CG2RX0, PENALTY= 14
 CG251O CG3C50 CG331    62.00    103.00 ! MOL-OP , FROM CG2R51 CG3C54 NG3P2, PENALTY= 63.5
 CG2R52 CG3C50 CG2RX0   70.00    105.00 ! MOL-OP , FROM CG2R52 CG3C52 CG2RX0, PENALTY= 10
 CG2R52 CG3C50 CG331    62.00    103.00 ! MOL-OP , FROM CG2R51 CG3C54 NG3P2, PENALTY= 61.5
 CG2RX0 CG3C50 CG331    62.00    103.00 ! MOL-OP , FROM CG2R51 CG3C54 NG3P2, PENALTY= 60.5
-CG331  CG3C50 CG331    58.35    113.50   11.16   2.56100 ! MOL-OP , FROM CG321A CG3RC1 CG331, PENALTY= 22.9
-CG2R53 CG3C51 CG3C52   70.00    106.50 ! MOL-OP , FROM CG2R53 CG3C52 CG3C52, PENALTY= 4
-CG2R53 CG3C51 SG311    62.00    103.00 ! MOL-OP , FROM CG2R51 CG3C54 NG3P2, PENALTY= 130
-CG2R53 CG3C51 HGA1     58.00    111.00 ! MOL-OP , FROM CG2R53 CG3C52 HGA2, PENALTY= 4
-CG3C52 CG3C51 SG311   110.00    111.00 ! MOL-OP , FROM CG3C51 CG3C51 NG301, PENALTY= 111
-SG311  CG3C51 HGA1     46.10    111.30 ! MOL-OP , FROM SG311 CG321A HGA2, PENALTY= 65
-CG2R53 CG3C52 CG3C51   70.00    106.50 ! MOL-OP , FROM CG2R53 CG3C52 CG3C52, PENALTY= 0.4
 CG2R52 NG2R52 CG2RX0  145.00    108.00 ! MOL-OP , FROM CG2R51 NG2R52 CG2R53, PENALTY= 2
 CG2R52 NG2R52 CG324A    29.00    123.20 ! MOL-OP , FROM CG2R52 NG2R52 HGP2, PENALTY= 141
 CG2RX0 NG2R52 CG324A    25.00    124.90   15.00   2.13000 ! MOL-OP , FROM CG2R51 NG2R52 HGP2, PENALTY= 142
@@ -3786,24 +3773,24 @@ C321X     S311X0   C321X     CT1        0.030388875531000         4     180.0
 C321X     S311X0   C321X     CT1        0.015600759150000         6       0.
 
 ! from toppar_all36_spin_fret-lret.str
-X  C3 C3 X      0.156         3       0.0
-X  C3 SS0 X      0.333         3       0.0
+X  C3_0 C3_0 X      0.156         3       0.0
+X  C3_0 SS0 X      0.333         3       0.0
 X  CA0 NA X      0.300         2     180.0
 NA CA0 CD0 CC0     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
 CA0 CA0 CD0 CC0     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
-NA CA0 CD0 C3     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
-CA0 CA0 CD0 C3     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
+NA CA0 CD0 C3_0   2.550         2     180.0      ! SAME AS X  C2 CA0 X 
+CA0 CA0 CD0 C3_0   2.550         2     180.0      ! SAME AS X  C2 CA0 X 
 X  CA0 CA0 X      3.625         2     180.0
 X  CC0 NA X      1.700         2     180.0
 X  CC0 CC0 X      4.000         2     180.0
-X  C3 CC0 X      0.000         3       0.0
+X  C3_0 CC0 X      0.000         3       0.0
 X  CC0 CD0 X      4.000         2     180.0
-X  C3 CD0 X      0.000         3       0.0
-X  C3 CA0 X      0.000         2       0.0
+X  C3_0 CD0 X      0.000         3       0.0
+X  C3_0 CA0 X      0.000         2       0.0
 CC0 CC0 CA0 CA0     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
-C3 CC0 CA0 CA0     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
+C3_0 CC0 CA0 CA0     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
 CC0 CC0 CA0 NA     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
-C3 CC0 CA0 NA     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
+C3_0 CC0 CA0 NA     2.550         2     180.0      ! SAME AS X  C2 CA0 X 
 X  CD0 NA X      1.700         2     180.0
 
 X  X NA   B     3.625         2     180.0
@@ -3814,16 +3801,16 @@ CC0 NA  B  F     0.000         2     180.0
 CD0 NA  B  F     0.000         2     180.0
 CA0 NA  B  F     0.000         2     180.0
 CA0       NA_0     CC_0     CC0          1.700   2     180.0
-CA0       NA_0     CC_0     C3          1.700   2     180.0
+CA0       NA_0     CC_0     C3_0        1.700   2     180.0
 CA0       NA_0     B        NA_1        3.625   2     180.0
 CA0       NA_0     B        F           0.000   2     180.0
 NA_0     CA0       CD0       CC0          2.550   2     180.0
-NA_0     CA0       CD0       C3          2.550   2     180.0
-NA_0     CA0       CA0       C3          3.625   2     180.0
+NA_0     CA0       CD0       C3_0        2.550   2     180.0
+NA_0     CA0       CA0       C3_0        3.625   2     180.0
 NA_0     CA0       CA0       CA0          3.625   2     180.0
 NA_0     CC_0     CC0       HA0          4.000   2     180.0
 NA_0     CC_0     CC0       CD0          4.000   2     180.0
-NA_0     CC_0     C3       HC00          0.000   2     180.0
+NA_0     CC_0     C3_0     HC00          0.000   2     180.0
 NA_0     B        NA_1     CA0          3.625   2     180.0
 NA_0     B        NA_1     CD_0        3.625   2     180.0
 CC_0     NA_0     CA0       CD0          0.300   2     180.0
@@ -3833,91 +3820,91 @@ CC_0     NA_0     B        F           0.000   2     180.0
 CC0       CC_0     NA_0     B           3.625   2     180.0
 CD0       CA0       NA_0     B           3.625   2     180.0
 CA0       CA0       NA_0     B           3.625   2     180.0
-C3       CC_0     NA_0     B           3.625   2     180.0
+C3_0     CC_0     NA_0     B           3.625   2     180.0
 CA0       CD0       CC0       CC_0        4.000   2     180.0
-CC_0     CC0       CD0       C3          4.000   2     180.0
-CC0       CC_0     C3       HC00          0.000   2     180.0
-HA0       CC0       CC_0     C3          4.000   2     180.0
-CD0       CC0       CC_0     C3          4.000   2     180.0
+CC_0     CC0       CD0       C3_0        4.000   2     180.0
+CC0       CC_0     C3_0     HC00          0.000   2     180.0
+HA0       CC0       CC_0     C3_0        4.000   2     180.0
+CD0       CC0       CC_0     C3_0        4.000   2     180.0
 CA0       CA0       CA0       NA_1        3.625   2     180.0
 CA0       CA0       NA_1     CD_0        0.300   2     180.0
 CA0       CA0       NA_1     B           3.625   2     180.0
-C3       CA0       CA0       NA_1        3.625   2     180.0
+C3_0     CA0       CA0       NA_1        3.625   2     180.0
 CC0       CA0       NA_1     CD_0        0.300   2     180.0
 CC0       CA0       NA_1     B           3.625   2     180.0
 CC0       CC0       CD_0     NA_1        4.000   2     180.0
 CA0       NA_1     CD_0     CC0          1.700   2     180.0
-CA0       NA_1     CD_0     C3          1.700   2     180.0
+CA0       NA_1     CD_0     C3_0        1.700   2     180.0
 CA0       NA_1     B        F           0.000   2     180.0
 NA_1     CA0       CC0       CC0          2.550   2     180.0
-NA_1     CA0       CC0       C3          2.550   2     180.0
+NA_1     CA0       CC0       C3_0        2.550   2     180.0
 NA_1     CD_0     CC0       HA0          4.000   2     180.0
-NA_1     CD_0     C3       HC00          0.000   2     180.0
+NA_1     CD_0     C3_0     HC00          0.000   2     180.0
 CD_0     NA_1     B        F           0.000   2     180.0
 CC0       CD_0     NA_1     B           3.625   2     180.0
-C3       CD_0     NA_1     B           3.625   2     180.0
-CC0       CC0       CD_0     C3          4.000   2     180.0
+C3_0     CD_0     NA_1     B           3.625   2     180.0
+CC0       CC0       CD_0     C3_0        4.000   2     180.0
 CA0       CC0       CC0       CD_0        4.000   2     180.0
-CD_0     CC0       CC0       C3          4.000   2     180.0
-CC0       CD_0     C3       HC00          0.000   2     180.0
-HA0       CC0       CD_0     C3          4.000   2     180.0
-C3       C3       SS0      C3          0.849093193840304         1       0.0
-C3       C3       SS0      C3          0.185740252496616         2       0.0
-C3       C3       SS0      C3          0.333955203354125         3       0.0
-C3       C3       SS0      C3          0.010190238662746         6       0.0
-C3       SS0      C3       CA0          1.251923461354995         1       0.0
-C3       SS0      C3       CA0          0.841449965387835         2       0.0
-C3       SS0      C3       CA0          0.047223997370188         3       0.0
-C3       SS0      C3       CA0          0.311538993960903         4     180.0
-SS0      C3       CA0       CA_0      0.972863710889165   1       0.0
-SS0      C3       CA0       CA_0      10.823450343011434   2       0.0
-SS0      C3       CA0       CA_0      0.580764476951692   3       0.0
-SS0      C3       CA0       CA_0      4.769680341593285   4       0.0
-SS0      C3       CA0       CA_0      1.202772884070420   6       0.0
+CD_0     CC0       CC0       C3_0        4.000   2     180.0
+CC0       CD_0     C3_0     HC00          0.000   2     180.0
+HA0       CC0       CD_0     C3_0        4.000   2     180.0
+C3_0     C3_0     SS0      C3_0        0.849093193840304         1       0.0
+C3_0     C3_0     SS0      C3_0        0.185740252496616         2       0.0
+C3_0     C3_0     SS0      C3_0        0.333955203354125         3       0.0
+C3_0     C3_0     SS0      C3_0        0.010190238662746         6       0.0
+C3_0     SS0      C3_0     CA0          1.251923461354995         1       0.0
+C3_0     SS0      C3_0     CA0          0.841449965387835         2       0.0
+C3_0     SS0      C3_0     CA0          0.047223997370188         3       0.0
+C3_0     SS0      C3_0     CA0          0.311538993960903         4     180.0
+SS0      C3_0     CA0       CA_0      0.972863710889165   1       0.0
+SS0      C3_0     CA0       CA_0      10.823450343011434   2       0.0
+SS0      C3_0     CA0       CA_0      0.580764476951692   3       0.0
+SS0      C3_0     CA0       CA_0      4.769680341593285   4       0.0
+SS0      C3_0     CA0       CA_0      1.202772884070420   6       0.0
 CA_0     NA_0     CC_0     CC0        1.700000000000000   2     180.0
-CA_0     NA_0     CC_0     C3        1.700000000000000   2     180.0
+CA_0     NA_0     CC_0     C3_0      1.700000000000000   2     180.0
 CA_0     NA_0     B        NA_1      3.625000000000000   2     180.0
 CA_0     NA_0     B        F         0.000000000000000   2     180.0
 CA_0     CD0       CC0       CC_0      4.000000000000000   2     180.0
 CA_0     CD0       CC0       HA0        4.000000000000000   2     180.0
-CA_0     CD0       C3       HC00        0.000000000000000   3       0.0
-CA_0     CA0       C3       H1        0.000000000000000   2       0.0
+CA_0     CD0       C3_0     HC00        0.000000000000000   3       0.0
+CA_0     CA0       C3_0     H1        0.000000000000000   2       0.0
 CA_0     CA0       CA0       CC0        3.625000000000000   2     180.0
 CA_0     CA0       CA0       NA_1      3.625000000000000   2     180.0
 NA_0     CA_0     CD0       CC0        2.550000000000000   2     180.0
-NA_0     CA_0     CD0       C3        2.550000000000000   2     180.0
-NA_0     CA_0     CA0       C3        3.625000000000000   2     180.0
+NA_0     CA_0     CD0       C3_0      2.550000000000000   2     180.0
+NA_0     CA_0     CA0       C3_0      3.625000000000000   2     180.0
 NA_0     CA_0     CA0       CA0        3.625000000000000   2     180.0
 CC_0     NA_0     CA_0     CD0        0.300000000000000   2     180.0
 CC_0     NA_0     CA_0     CA0        0.300000000000000   2     180.0
 CC0       CD0       CA_0     CA0        2.550000000000000   2     180.0
 CD0       CA_0     NA_0     B         3.625000000000000   2     180.0
-CD0       CA_0     CA0       C3        3.625000000000000   2     180.0
+CD0       CA_0     CA0       C3_0      3.625000000000000   2     180.0
 CD0       CA_0     CA0       CA0        3.625000000000000   2     180.0
 CA0       CA_0     NA_0     B         3.625000000000000   2     180.0
-CA0       CA_0     CD0       C3        2.550000000000000   2     180.0
+CA0       CA_0     CD0       C3_0      2.550000000000000   2     180.0
 
 
 !! Added by Huan
-C3  CT1  NH1  C        1.8000  1     0.00 ! ALLOW PEP
-NH1  CT1  C3  H1      0.2000  3     0.00 ! From X    CT1  CT2  X
-NH1  CT1  C3  SS0        0.3400  1     0.00
-NH1  CT1  C3  SS0        0.5000  2   180.00
-NH1  CT1  C3  SS0        1.4300  3     0.00
-H    NH1  CT1  C3      0.0000  1     0.00 ! ALLOW PEP
-HB1  CT1  C3  H1      0.2000  3     0.00 ! From X    CT1  CT2  X
-HB1  CT1  C3  SS0        0.2000  3     0.00 ! From X    CT1  CT2  X
-O    C    CT1  C3      1.4000  1     0.00 !   ALLOW PEP
-NH1  C    CT1  C3      0.0000  1     0.00 !   ALLOW PEP
-N    C    CT1  C3      0.0000  1     0.00 !   ALLOW PEP PRO
-H1   C3  CT1  C        0.2000  3     0.00 ! From X    CT1  CT2  X
-C    CT1  C3  SS0        0.2400  1   180.00
-C    CT1  C3  SS0        0.7500  2   180.00
-C    CT1  C3  SS0        1.3500  3   180.00
-NH3   CT1  C3  H1      0.2000  3     0.00 ! From X    CT1  CT2  X
-NH3  CT1  C3  SS0        0.3400  1     0.00
-NH3  CT1  C3  SS0        0.5000  2   180.00
-NH3  CT1  C3  SS0        1.4300  3     0.00
+C3_0 CT1  NH1  C        1.8000  1     0.00 ! ALLOW PEP
+NH1  CT1  C3_0 H1      0.2000  3     0.00 ! From X    CT1  CT2  X
+NH1  CT1  C3_0 SS0        0.3400  1     0.00
+NH1  CT1  C3_0 SS0        0.5000  2   180.00
+NH1  CT1  C3_0 SS0        1.4300  3     0.00
+H    NH1  CT1  C3_0     0.0000  1     0.00 ! ALLOW PEP
+HB1  CT1  C3_0 H1      0.2000  3     0.00 ! From X    CT1  CT2  X
+HB1  CT1  C3_0 SS0        0.2000  3     0.00 ! From X    CT1  CT2  X
+O    C    CT1  C3_0     1.4000  1     0.00 !   ALLOW PEP
+NH1  C    CT1  C3_0     0.0000  1     0.00 !   ALLOW PEP
+N    C    CT1  C3_0     0.0000  1     0.00 !   ALLOW PEP PRO
+H1   C3_0 CT1  C        0.2000  3     0.00 ! From X    CT1  CT2  X
+C    CT1  C3_0 SS0        0.2400  1   180.00
+C    CT1  C3_0 SS0        0.7500  2   180.00
+C    CT1  C3_0 SS0        1.3500  3   180.00
+NH3   CT1  C3_0 H1      0.2000  3     0.00 ! From X    CT1  CT2  X
+NH3  CT1  C3_0 SS0        0.3400  1     0.00
+NH3  CT1  C3_0 SS0        0.5000  2   180.00
+NH3  CT1  C3_0 SS0        1.4300  3     0.00
 
 !! Huan - dihe param for cy3r - begin
 HGA4    CG2DX1  CG2DX2  CG2DX2     1.0000         2      180.0
@@ -4020,17 +4007,7 @@ CG2DX2 CG2R52 NG2R52 CG2RX0    12.0000  2   180.00 ! MOL-OP , FROM CG2R51 CG2R51
 CG2DX2 CG2R52 NG2R52 CG324A      6.0000  2   180.00 ! MOL-OP , FROM CG2R51 CG2R52 NG2R52 CG3C54, PENALTY= 88.7
 CG3C50 CG2R52 NG2R52 CG2RX0     2.5000  2   180.00 ! MOL-OP , FROM CG321A CG2R51 NG2R52 CG2R53, PENALTY= 39
 CG3C50 CG2R52 NG2R52 CG324A      6.0000  2   180.00 ! MOL-OP , FROM CG2R51 CG2R52 NG2R52 CG3C54, PENALTY= 121.2
-NG2R53 CG2R53 CG3C51 CG3C52     1.0500  3   180.00 ! MOL-OP , FROM NG2R53 CG2R53 CG3C52 CG3C52, PENALTY= 4
-NG2R53 CG2R53 CG3C51 SG311      1.0500  3   180.00 ! MOL-OP , FROM NG2R53 CG2R53 CG3C52 CG3C52, PENALTY= 140
-NG2R53 CG2R53 CG3C51 HGA1       0.0000  3   180.00 ! MOL-OP , FROM NG2R53 CG2R53 CG3C52 HGA2, PENALTY= 4
-OG2D1  CG2R53 CG3C51 CG3C52     0.0800  3     0.00 ! MOL-OP , FROM OG2D1 CG2R53 CG3C52 CG3C52, PENALTY= 4
-OG2D1  CG2R53 CG3C51 SG311      0.0800  3     0.00 ! MOL-OP , FROM OG2D1 CG2R53 CG3C52 CG3C52, PENALTY= 140
-OG2D1  CG2R53 CG3C51 HGA1       0.0000  3     0.00 ! MOL-OP , FROM OG2D1 CG2R53 CG3C52 HGA2, PENALTY= 4
-NG2R53 CG2R53 CG3C52 CG3C51     1.0500  3   180.00 ! MOL-OP , FROM NG2R53 CG2R53 CG3C52 CG3C52, PENALTY= 0.4
-OG2D1  CG2R53 CG3C52 CG3C51     0.0800  3     0.00 ! MOL-OP , FROM OG2D1 CG2R53 CG3C52 CG3C52, PENALTY= 0.4
-CG3C51 CG2R53 NG2R53 CG2R53     0.5000  2   180.00 ! MOL-OP , FROM NG2R53 CG2R53 NG2R53 CG2R53, PENALTY= 87.5
 CG3C51 CG2R53 NG2R53 CG321A      0.4000  2   180.00 ! MOL-OP , FROM CG3C52 CG2R53 NG2R53 CG3C52, PENALTY= 31.4
-CG3C52 CG2R53 NG2R53 CG2R53     0.5000  2   180.00 ! MOL-OP , FROM NG2R53 CG2R53 NG2R53 CG2R53, PENALTY= 87.5
 CG3C52 CG2R53 NG2R53 CG321A      0.4000  2   180.00 ! MOL-OP , FROM CG3C52 CG2R53 NG2R53 CG3C52, PENALTY= 31
 OG2D1  CG2R53 NG2R53 CG321A      2.5000  2   180.00 ! MOL-OP , FROM OG2D1 CG2R53 NG2R53 CG311, PENALTY= 0.6
 CG2RX0 CG2R61 CG2R61 SG3O1      3.1000  2   180.00 ! MOL-OP , FROM CG2R61 CG2R61 CG2R61 SG3O1, PENALTY= 1.5
@@ -4101,12 +4078,6 @@ HGA2   CG324A  NG2R52 CG2RX0     0.1500  3   180.00 ! MOL-OP , FROM HGA3 CG334 N
 HGA3   CG331  CG3C50 CG251O     0.1600  3     0.00 ! MOL-OP , FROM HGA3 CG331 CG3C51 CG3C52, PENALTY= 81
 HGA3   CG331  CG3C50 CG2R52     0.1600  3     0.00 ! MOL-OP , FROM HGA3 CG331 CG3C51 CG3C52, PENALTY= 80
 HGA3   CG331  CG3C50 CG2RX0     0.1600  3     0.00 ! MOL-OP , FROM HGA3 CG331 CG3C51 CG3C52, PENALTY= 80
-HGA3   CG331  CG3C50 CG331      0.1600  3     0.00 ! MOL-OP , FROM HGA3 CG331 CG3RC1 CG321, PENALTY= 22.9
-CG2R53 CG3C51 CG3C52 CG2R53     0.0000  3     0.00 ! MOL-OP , FROM CG2R52 CG3C52 CG3C52 NG3C51, PENALTY= 76
-CG2R53 CG3C51 CG3C52 HGA2       0.0000  3     0.00 ! MOL-OP , FROM CG2R53 CG3C52 CG3C52 HGA2, PENALTY= 4
-SG311  CG3C51 CG3C52 CG2R53     0.6000  3   180.00 ! MOL-OP , FROM CG2R51 CG3C52 CG3C54 NG3P2, PENALTY= 130
-SG311  CG3C51 CG3C52 HGA2       0.1500  3   180.00 ! MOL-OP , FROM NG321 CG3C51 CG3C52 HGA2, PENALTY= 111.2
-HGA1   CG3C51 CG3C52 CG2R53     0.0000  3     0.00 ! MOL-OP , FROM CG2R53 CG3C52 CG3C52 HGA2, PENALTY= 4
 CG2R53 CG3C51 SG311  CG321A      0.2400  1   180.00 ! MOL-OP , FROM CG321A CG321A SG311 CG321, PENALTY= 156
 CG2R53 CG3C51 SG311  CG321A      0.3700  3     0.00 ! MOL-OP , FROM CG321A CG321A SG311 CG321, PENALTY= 156
 CG3C52 CG3C51 SG311  CG321A      0.2400  1   180.00 ! MOL-OP , FROM CG3C51 CG321A SG311 CG321, PENALTY= 85.4
@@ -5452,14 +5423,14 @@ C2O1X     C321X1   N2S1X1   O2D1X      120.000     0       0.0
 !from toppar_all36_spin_fret-lret.str 
 CA0 CD0 CA0 NA     1.100         2     180.0    ! USING DEFAULT VALUE
 CA0 CA0 NA CC0     1.100         2     180.0    ! USING DEFAULT VALUE
-C3 CC0 CC0 NA     1.100         2     180.0     ! USING DEFAULT VALUE
+C3_0 CC0 CC0 NA     1.100         2     180.0     ! USING DEFAULT VALUE
 CC0 CD0 CC0 HA0     1.100         2     180.0   ! USING DEFAULT VALUE
-C3 CA0 CD0 CC0     1.100         2     180.0    ! USING DEFAULT VALUE
-C3 CA0 CA0 CA0     1.100         2     180.0
-C3 CA0 CC0 CC0     1.100         2     180.0    ! USING DEFAULT VALUE
+C3_0 CA0 CD0 CC0     1.100         2     180.0    ! USING DEFAULT VALUE
+C3_0 CA0 CA0 CA0     1.100         2     180.0
+C3_0 CA0 CC0 CC0     1.100         2     180.0    ! USING DEFAULT VALUE
 CA0 CC0 CA0 NA     1.100         2     180.0    ! USING DEFAULT VALUE
 CA0 CA0 NA CD0     1.100         2     180.0    ! USING DEFAULT VALUE
-C3 CC0 CD0 NA     1.100         2     180.0     ! USING DEFAULT VALUE
+C3_0 CC0 CD0 NA     1.100         2     180.0     ! USING DEFAULT VALUE
 F  NA CA0 NA     1.100         2     180.0      ! USING DEFAULT VALUE
 
 CA0 B NA CC0      1.100         2     180.0
@@ -5468,16 +5439,16 @@ B CA0 NA CC0      1.100         2     180.0
 B CA0 NA CD0      1.100         2     180.0
 CA0       CD0       CA0       NA_0        1.100     2     180.0
 CA0       B        NA_0     CC_0        1.100     2     180.0
-C3       CC0       CC_0     NA_0        1.100     2     180.0
+C3_0     CC0       CC_0     NA_0        1.100     2     180.0
 CC_0     CD0       CC0       HA0          1.100     2     180.0
 CA0       CC0       CA0       NA_1        1.100     2     180.0
 CA0       B        NA_1     CD_0        1.100     2     180.0
-C3       CC0       CD_0     NA_1        1.100     2     180.0
+C3_0     CC0       CD_0     NA_1        1.100     2     180.0
 CC0       CD_0     CC0       HA0          1.100     2     180.0
 CA0       CD0       CA_0     NA_0        1.100     2     180.0
 CA_0     B        NA_0     CC_0        1.100     2     180.0
-C3       CA_0     CD0       CC0          1.100     2     180.0
-C3       CA0       CA0       CA_0        1.100     2     180.0
+C3_0     CA_0     CD0       CC0          1.100     2     180.0
+C3_0     CA0       CA0       CA_0        1.100     2     180.0
 
 !! Huan - improper param for cy3r - begin
 CG2O1   CG321A   NG2S1   OG2D1    120.0000         0        0.0
@@ -5552,7 +5523,7 @@ C321X1     0.00   -0.0560    2.0100
 
 ! from toppar_all36_spin_fret-lret.str 
 HC00      0.00   -0.0157    1.4870      0.00   -0.0078    1.4870
-C3      0.00   -0.1094    1.9080      0.00   -0.0547    1.9080
+C3_0    0.00   -0.1094    1.9080      0.00   -0.0547    1.9080
 H1      0.00   -0.0157    1.3870      0.00   -0.0078    1.3870
 SS0     0.00   -0.2500    2.0000      0.00   -0.1250    2.0000
 CA0      0.00   -0.0860    1.9080      0.00   -0.0430    1.9080

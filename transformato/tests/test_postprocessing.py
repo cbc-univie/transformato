@@ -45,7 +45,7 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
     base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/"
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -117,7 +117,7 @@ def test_compare_energies_2OJ9_original_waterbox(caplog):
     base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/"
     output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -163,7 +163,7 @@ def test_compare_energies_2OJ9_tautomer_vacuum(caplog):
     base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-tautomer/"
     _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -210,7 +210,7 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
     base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-tautomer/"
     _, output_files_t2 = _set_output_files_2oj9_tautomer_pair()
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -251,7 +251,7 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
 )
 def test_2oj9_postprocessing_with_different_engines():
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -318,7 +318,7 @@ def test_2oj9_postprocessing_with_openMM():
 
     initialize_NUM_PROC(1)
 
-    conf = "transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -351,7 +351,7 @@ def test_compare_energies_acetylacetone_enol_vacuum(caplog):
         output_files_keto,
     ) = _set_output_files_acetylaceton_tautomer_pair()
 
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -400,7 +400,7 @@ def test_compare_energies_acetylacetone_enol_waterbox(caplog):
         output_files_keto,
     ) = _set_output_files_acetylaceton_tautomer_pair()
 
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -451,7 +451,7 @@ def test_compare_energies_acetylacetone_keto_vacuum(caplog):
         output_files_keto,
     ) = _set_output_files_acetylaceton_tautomer_pair()
 
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -500,7 +500,7 @@ def test_compare_energies_acetylacetone_keto_waterbox(caplog):
         output_files_keto,
     ) = _set_output_files_acetylaceton_tautomer_pair()
 
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -541,7 +541,7 @@ def test_compare_energies_acetylacetone_keto_waterbox(caplog):
 )
 def test_acetylacetone_postprocessing_different_engines():
 
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -604,7 +604,7 @@ def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
     from ..constants import kT
     from simtk import unit
 
-    conf = "transformato/tests/config/test-acetylacetone-tautomer-rsfe.yaml"
+    conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -686,7 +686,7 @@ def test_compare_energies_methane_vacuum(caplog):
         output_files_toluene,
     ) = _set_output_files_toluene_methane_pair()
 
-    conf = "transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    conf = "data/config/test-toluene-methane-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -735,7 +735,7 @@ def test_compare_energies_methane_waterbox(caplog):
         output_files_toluene,
     ) = _set_output_files_toluene_methane_pair()
 
-    conf = "transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    conf = "data/config/test-toluene-methane-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -783,7 +783,7 @@ def test_compare_energies_toluene_vacuum(caplog):
         output_files_toluene,
     ) = _set_output_files_toluene_methane_pair()
 
-    conf = "transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    conf = "data/config/test-toluene-methane-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -831,7 +831,7 @@ def test_compare_energies_toluene_waterbox(caplog):
         output_files_toluene,
     ) = _set_output_files_toluene_methane_pair()
 
-    conf = "transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    conf = "data/config/test-toluene-methane-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -871,7 +871,7 @@ def test_compare_energies_toluene_waterbox(caplog):
 )
 def test_toluene_to_methane_calculate_rsfe_with_different_engines():
 
-    conf = "transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    conf = "data/config/test-toluene-methane-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -927,7 +927,7 @@ def test_toluene_to_methane_calculate_rsfe_with_different_engines():
 def test_postprocessing_thinning():
     from transformato import FreeEnergyCalculator
 
-    conf = "transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    conf = "data/config/test-toluene-methane-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
@@ -969,7 +969,7 @@ def test_postprocessing_toluene_methane_rsfe_with_mda():
     )
     from transformato.utils import postprocessing
 
-    conf = "transformato/tests/config/test-toluene-methane-rsfe.yaml"
+    conf = "data/config/test-toluene-methane-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
     )  # NOTE: for preprocessing input_dir is the output dir
