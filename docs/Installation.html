@@ -177,7 +177,7 @@
 <div class="section" id="getting-transformato">
 <h2>Getting transformato<a class="headerlink" href="#getting-transformato" title="Permalink to this heading">¶</a></h2>
 <p>First, install conda on your machine. Then clone the <a class="reference external" href="https://github.com/wiederm/transformato.git">repository</a></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone <span class="sb">`</span>https://github.com/wiederm/transformato.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/wiederm/transformato.git
 </pre></div>
 </div>
 <p>Within the newly created <code class="docutils literal notranslate"><span class="pre">transformato</span></code> directory, a <code class="docutils literal notranslate"><span class="pre">yaml</span></code> file can be found in  <code class="docutils literal notranslate"><span class="pre">devtools/conda-envs/</span></code>. Use conda to create
@@ -186,7 +186,20 @@ an environment called <code class="docutils literal notranslate"><span class="pr
 conda env create --file devtools/conda-envs/fep_env.yaml
 </pre></div>
 </div>
-<p>Activate the environment with <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">fep</span></code>. Now install <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> with:</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>If you are doing this the first time, this may take a while (up to 10 minutes!)</p>
+</div>
+<p>Activate the environment with <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">fep</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For running simulations on a <strong>NVIDIA</strong> machine using <strong>CUDA</strong>, openMM will install the python
+package cudatoolkits. Make sure the version in your environment is not higher than the
+CUDA version of your NVIDIA driver (you can check by using <code class="docutils literal notranslate"><span class="pre">nvidia-smi</span></code> for the driver
+and by <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">list</span></code> you can see your current version). If necessary you can install
+the correct cudatoolkit version by using <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">cudatoolkit=X.Y</span> <span class="pre">-c</span> <span class="pre">conda-forge</span></code></p>
+</div>
+<p>Now install <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python setup.py install
 </pre></div>
 </div>

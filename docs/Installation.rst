@@ -15,7 +15,7 @@ First, install conda on your machine. Then clone the `repository <https://github
 
 .. code-block:: bash
 
-    git clone `https://github.com/wiederm/transformato.git
+    git clone https://github.com/wiederm/transformato.git
     
 Within the newly created ``transformato`` directory, a ``yaml`` file can be found in  ``devtools/conda-envs/``. Use conda to create 
 an environment called ``fep`` by going into the transformato directory and using conda:
@@ -25,7 +25,19 @@ an environment called ``fep`` by going into the transformato directory and using
     cd transformato
     conda env create --file devtools/conda-envs/fep_env.yaml
 
-Activate the environment with ``conda activate fep``. Now install |trafo| with:
+.. caution:: 
+    If you are doing this the first time, this may take a while (up to 10 minutes!)
+
+Activate the environment with ``conda activate fep``. 
+
+.. note:: 
+    For running simulations on a **NVIDIA** machine using **CUDA**, openMM will install the python
+    package cudatoolkits. Make sure the version in your environment is not higher than the 
+    CUDA version of your NVIDIA driver (you can check by using ``nvidia-smi`` for the driver 
+    and by ``conda list`` you can see your current version). If necessary you can install 
+    the correct cudatoolkit version by using ``conda install cudatoolkit=X.Y -c conda-forge``
+
+Now install |trafo| with:
 
 .. code-block:: bash
 
