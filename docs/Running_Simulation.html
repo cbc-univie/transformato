@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Trajectory Analysis" href="Analysis.html" />
-    <link rel="prev" title="System Setup" href="System_Setup.html" /> 
+    <link rel="prev" title="Additional Settings" href="Additional_Settings.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,10 +91,9 @@
 <li class="toctree-l1"><a class="reference internal" href="whatistransformato.html"><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Additional_Settings.html">Additional Settings</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Running Simulations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#creating-intermediary-states">Creating intermediary states</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#loading-structures-and-generating-forcefields">Loading structures and generating forcefields</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#generating-the-mutation-route-and-common-core">Generating the mutation route and common core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-creating-intermediary-states">Step 3 - Creating intermediary states</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#create-mutations-and-write-intermediate-states">Create mutations and write intermediate states</a></li>
 </ul>
 </li>
@@ -177,7 +176,9 @@
 <h1>Running Simulations<a class="headerlink" href="#running-simulations" title="Permalink to this heading">¶</a></h1>
 <div class="admonition seealso" id="rst-submitfiledesc">
 <p class="admonition-title">See also</p>
-<p>If you are unsure or need inspiration, the <a class="reference external" href="https://github.com/wiederm/transformato/tree/master/notebooks">transformato/notebooks</a> folder has a number of detailed examples.</p>
+<p>If you are unsure or need inspiration,
+the <a class="reference external" href="https://github.com/wiederm/transformato/tree/master/notebooks">transformato/notebooks</a>
+folder has a number of detailed examples.</p>
 </div>
 <p>After setting up a system, actually running it is comprised of two steps:</p>
 <ul>
@@ -185,17 +186,25 @@
 <p>During this stage you may also make final adjustments to the common core and dummy regions of your system.</p>
 </li>
 <li><p>Simulating the system</p>
-<p>Here, you will essentially conducting small MD simulations for complex and waterbox in each of the intermediary states. This will generate the trajcetory files to be analysed later.</p>
+<p>Here, you will essentially conducting small MD simulations for complex and
+waterbox in each of the intermediary states. This will generate the trajcetory files to be analysed later.</p>
 </li>
 </ul>
-<div class="section" id="creating-intermediary-states">
-<h2>Creating intermediary states<a class="headerlink" href="#creating-intermediary-states" title="Permalink to this heading">¶</a></h2>
+<div class="section" id="step-3-creating-intermediary-states">
+<h2>Step 3 - Creating intermediary states<a class="headerlink" href="#step-3-creating-intermediary-states" title="Permalink to this heading">¶</a></h2>
+<p>We are now following the notebook shown here XXXXXXXXXXXXXXXX</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>We recommend using an ipython interpreter like jupyter-notebook or VSCode to run the notebooks, as this will enable you to easier visualize the common-core and make the necessary adjustments.</p>
+<p>We recommend using an ipython interpreter like jupyter-notebook or VSCode
+to run the notebooks, as this will enable you to easier visualize the common-core
+and make the necessary adjustments.</p>
 </div>
-<div class="section" id="loading-structures-and-generating-forcefields">
-<h3>Loading structures and generating forcefields<a class="headerlink" href="#loading-structures-and-generating-forcefields" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Loading structures</p></li>
+</ol>
+<p>During this part, we load the required modules and tell transformato to load our config.yaml.
+Please note input_dir and output_dir as additional arguments for load_config_yaml:
+These folders are where to find you structures and where to write your intermediate states, respectively.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">transformato</span> <span class="kn">import</span> <span class="n">load_config_yaml</span><span class="p">,</span> <span class="n">SystemStructure</span><span class="p">,</span> <span class="n">IntermediateStateFactory</span><span class="p">,</span> <span class="n">ProposeMutationRoute</span>
 <span class="kn">from</span> <span class="nn">transformato.mutate</span> <span class="kn">import</span> <span class="n">perform_mutations</span>
 <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">SVG</span>
@@ -206,10 +215,9 @@
 <span class="n">configuration</span> <span class="o">=</span> <span class="n">load_config_yaml</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="s1">&#39;24to25.yaml&#39;</span><span class="p">,</span><span class="n">input_dir</span><span class="o">=</span><span class="s1">&#39;../&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;./longrun-norestraints-1/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>During this part, we load the required modules and tell transformato to load our config.yaml. Please note input_dir and output_dir as additional arguments for load_config_yaml: These folders are where to find you structures and where to write your intermediate states, respectively.</p>
-</div>
-<div class="section" id="generating-the-mutation-route-and-common-core">
-<h3>Generating the mutation route and common core<a class="headerlink" href="#generating-the-mutation-route-and-common-core" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Generating the mutation route and common core</p></li>
+</ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s1</span> <span class="o">=</span> <span class="n">SystemStructure</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="s2">&quot;structure1&quot;</span><span class="p">)</span>
 <span class="n">s2</span> <span class="o">=</span> <span class="n">SystemStructure</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="s2">&quot;structure2&quot;</span><span class="p">)</span>
 <span class="n">s1_to_s2</span> <span class="o">=</span> <span class="n">ProposeMutationRoute</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
@@ -231,7 +239,6 @@
 </pre></div>
 </div>
 <p>transformato will add staged idxs and start attempting to scale charges. If you want, you may now repeat the SVG() command from above to see the changes you made.</p>
-</div>
 <div class="section" id="create-mutations-and-write-intermediate-states">
 <h3>Create mutations and write intermediate states<a class="headerlink" href="#create-mutations-and-write-intermediate-states" title="Permalink to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mutation_list</span> <span class="o">=</span> <span class="n">s1_to_s2</span><span class="o">.</span><span class="n">generate_mutations_to_common_core_for_mol1</span><span class="p">()</span>
@@ -401,7 +408,7 @@ sbash simulation.sh<span class="p">;</span> <span class="c1"># sbash being the c
         <a href="Analysis.html" class="btn btn-neutral float-right" title="Trajectory Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="System_Setup.html" class="btn btn-neutral float-left" title="System Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="Additional_Settings.html" class="btn btn-neutral float-left" title="Additional Settings" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

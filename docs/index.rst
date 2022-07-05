@@ -27,6 +27,7 @@ head over to our `github repository <https://github.com/wiederm/transformato>`_\
    whatistransformato
    Installation
    System_Setup
+   Additional_Settings
    Running_Simulation
    Analysis
    Troubleshooting

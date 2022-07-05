@@ -6,7 +6,9 @@ Running Simulations
 .. _rst_submitfiledesc:
 
 .. seealso::
-    If you are unsure or need inspiration, the `transformato/notebooks <https://github.com/wiederm/transformato/tree/master/notebooks>`_ folder has a number of detailed examples.
+    If you are unsure or need inspiration, 
+    the `transformato/notebooks <https://github.com/wiederm/transformato/tree/master/notebooks>`_ 
+    folder has a number of detailed examples.
 
 After setting up a system, actually running it is comprised of two steps:
 
@@ -16,18 +18,26 @@ After setting up a system, actually running it is comprised of two steps:
 
 +   Simulating the system
 
-    Here, you will essentially conducting small MD simulations for complex and waterbox in each of the intermediary states. This will generate the trajcetory files to be analysed later.
+    Here, you will essentially conducting small MD simulations for complex and 
+    waterbox in each of the intermediary states. This will generate the trajcetory files to be analysed later.
 
 
-Creating intermediary states
-#################################
+Step 3 - Creating intermediary states
+######################################
 
+We are now following the notebook shown here XXXXXXXXXXXXXXXX
 
 .. tip::
-    We recommend using an ipython interpreter like jupyter-notebook or VSCode to run the notebooks, as this will enable you to easier visualize the common-core and make the necessary adjustments.
+    We recommend using an ipython interpreter like jupyter-notebook or VSCode 
+    to run the notebooks, as this will enable you to easier visualize the common-core 
+    and make the necessary adjustments.
 
-Loading structures and generating forcefields
-**********************************************
+
+#. Loading structures
+
+During this part, we load the required modules and tell transformato to load our config.yaml. 
+Please note input_dir and output_dir as additional arguments for load_config_yaml: 
+These folders are where to find you structures and where to write your intermediate states, respectively.
 
 .. code-block:: python
 
@@ -40,10 +50,10 @@ Loading structures and generating forcefields
 
     configuration = load_config_yaml(config='24to25.yaml',input_dir='../', output_dir='./longrun-norestraints-1/')
 
-During this part, we load the required modules and tell transformato to load our config.yaml. Please note input_dir and output_dir as additional arguments for load_config_yaml: These folders are where to find you structures and where to write your intermediate states, respectively.
 
-Generating the mutation route and common core
-**********************************************
+
+#. Generating the mutation route and common core
+
 
 .. code-block:: python
     

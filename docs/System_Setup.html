@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Running Simulations" href="Running_Simulation.html" />
+    <link rel="next" title="Additional Settings" href="Additional_Settings.html" />
     <link rel="prev" title="Installation" href="Installation.html" /> 
 </head>
 
@@ -93,14 +93,10 @@
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">System Setup</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#step-1-creating-systems-using-charmm-gui">Step 1 – creating Systems using CHARMM-GUI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#step-2-modifying-the-yaml-file">Step 2 – modifying the yaml file</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#restraints">Restraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-modifying-the-yaml-file">Step 2 – modifying the yaml file</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#automatic-restraints">Automatic Restraints</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#manual-restraints">Manual Restraints</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="Additional_Settings.html">Additional Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Analysis.html">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
@@ -204,20 +200,20 @@ move it to this folder and rename it into <strong>waterbox</strong></p></li>
 <li><p><strong>Run the equillibration</strong> part of the provided simulation input. An equillibrated system (and the generated .rst file) are necesary for transformato.</p></li>
 </ol>
 <p>As indictated in the Figure above, your files should be strucred the following way:</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>for the waterbox of structure 1:</dt><dd><ul>
+<ul>
+<li><p>for the <strong>waterbox</strong> of structure 1:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">your-structure-1/waterbox/openmm</span></code> containg among other files important psf and crd file as well as a <code class="docutils literal notranslate"><span class="pre">your-structure-1/waterbox/CHARMM-GUI-resname</span></code> directory containg among other files the sdf, prm and rtf file</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
-<li><dl class="simple">
-<dt>for the complex of structure 1:</dt><dd><ul>
+<li><p>for the <strong>complex</strong> of structure 1:</p>
+<blockquote>
+<div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">your-structure-1/complex/openmm</span></code> containg among other files important psf and crd file as well as a <code class="docutils literal notranslate"><span class="pre">your-structure-1/complex/CHARMM-GUI-resname</span></code> directory containg among other files the sdf, prm and rtf file</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
 </li>
 </ul>
 <p>The same applies for all other ligands (structures) of interest.</p>
@@ -233,17 +229,18 @@ can generate this yourself using <a class="reference external" href="https://cge
 </div>
 <div class="section" id="step-2-modifying-the-yaml-file">
 <h2>Step 2 – modifying the yaml file<a class="headerlink" href="#step-2-modifying-the-yaml-file" title="Permalink to this heading">¶</a></h2>
-<p>The config.yaml is perhaps the most important file you’ll create. It contains:</p>
+<p>The config.yaml provides all information necessary for setting up a mutation between two ligands.
+It contains:</p>
 <ol class="arabic simple">
-<li><p>Definitions of your structures and under which name to find them</p></li>
+<li><p>The names of the folders containing the complex and waterbox folder</p></li>
 <li><p>Simulation parameters, such as simulation step and length</p></li>
-<li><p>Eventual restraints, both automatic and manual</p></li>
+<li><p>Additional parameters such as restratints</p></li>
 </ol>
 <p>Let’s take a look at a complete config.yaml:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1">################</span>
 <span class="nt">system</span><span class="p">:</span>
 <span class="c1">################</span>
-    <span class="nt">structure2</span><span class="p">:</span>
+    <span class="nt">structure1</span><span class="p">:</span>
         <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;vim2_zn148&quot;</span>
         <span class="nt">tlc</span><span class="p">:</span> <span class="s">&quot;LIG&quot;</span>
         <span class="nt">waterbox</span><span class="p">:</span>
@@ -255,13 +252,13 @@ can generate this yourself using <a class="reference external" href="https://cge
         <span class="nt">intermediate-filename</span><span class="p">:</span> <span class="s">&quot;lig_in_waterbox&quot;</span>
         <span class="nt">complex</span><span class="p">:</span>
         <span class="nt">dirname</span><span class="p">:</span> <span class="s">&quot;complex&quot;</span>
-        <span class="nt">psf_file_name</span><span class="p">:</span> <span class="s">&quot;step3.1_omm&quot;</span>
-        <span class="nt">crd_file_name</span><span class="p">:</span> <span class="s">&quot;step3.1_omm&quot;</span>
+        <span class="nt">psf_file_name</span><span class="p">:</span> <span class="s">&quot;step3.input&quot;</span>
+        <span class="nt">crd_file_name</span><span class="p">:</span> <span class="s">&quot;step3.input&quot;</span>
         <span class="nt">rst_file_name</span><span class="p">:</span> <span class="s">&quot;step4_equilibration&quot;</span>
         <span class="nt">simulation_parameter</span><span class="p">:</span> <span class="s">&quot;step5_production.inp&quot;</span>
         <span class="nt">intermediate-filename</span><span class="p">:</span> <span class="s">&quot;lig_in_complex&quot;</span>
 
-    <span class="nt">structure1</span><span class="p">:</span>
+    <span class="nt">structure2</span><span class="p">:</span>
         <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;vim2_zn222&quot;</span>
         <span class="nt">tlc</span><span class="p">:</span> <span class="s">&quot;LIG&quot;</span>
         <span class="nt">waterbox</span><span class="p">:</span>
@@ -300,38 +297,42 @@ can generate this yourself using <a class="reference external" href="https://cge
     <span class="nt">steps_for_equilibration</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1000</span>
 </pre></div>
 </div>
-<p>The <em>system</em> container contains the setup information from your structure directories. Most importantly, the <em>name</em> parameter must be the folder name of that structure (the one containing the waterbox/ligand directories.)</p>
+<p>The <em>system</em> container contains the setup information from your structure directories. Most importantly,
+the <em>name</em> parameter must be the folder name of that structure (the one containing the <strong>waterbox</strong>/ <strong>complex</strong>
+directories.)</p>
 <p>You may actually define any number of structures. The structure you want is referenced when setting up the system.</p>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">system</span></span></dt>
 <dd><dl class="object">
 <dt class="sig sig-object">
-<span class="sig-name descname"><span class="pre">[structurename]</span></span></dt>
-<dd><p>Can be whatever you want - just be sure to point you <code class="docutils literal notranslate"><span class="pre">submit.ipynb</span></code> towards the correct structures. That being said, you can also stick with the boring-but-practical <code class="docutils literal notranslate"><span class="pre">structure1</span></code>, <code class="docutils literal notranslate"><span class="pre">structure2</span></code> you see in our notebooks.</p>
+<span class="sig-name descname"><span class="pre">[structure1]</span></span></dt>
+<dd><p>Should not be changed</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-name">
 <span class="sig-name descname"><span class="pre">name</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-name" title="Permalink to this definition">¶</a></dt>
-<dd><p>The folder name of the folder containing the complex/ligand folders for that structure</p>
+<dd><p>The name of the folder containing the <strong>waterbox</strong>/ <strong>complex</strong> folders for that structure
+(<em>in this example the folder needs to be called vim2_zn148</em>)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-tlc">
 <span class="sig-name descname"><span class="pre">tlc</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-tlc" title="Permalink to this definition">¶</a></dt>
-<dd><p>The residue name (resname) of the structure</p>
+<dd><p>The residue name (resname) of the structure. when using CHARMM-GUI output its often called UNK</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-other">
 <span class="sig-name descname"><span class="pre">other</span></span><span class="sig-prename descclassname"> <span class="pre">parameters</span></span><a class="headerlink" href="#cmdoption-arg-other" title="Permalink to this definition">¶</a></dt>
-<dd><p>These refer to the various files in the /openmm/ subfolder.</p>
+<dd><p>These refer to the various files in the /openmm/ subfolder (e.g. the psf and crd files).</p>
 </dd></dl>
 
 </dd></dl>
 
 </dd></dl>
 
-<p>The <em>simulation</em> container contains the simulation parameters you want to use.</p>
+<p>The same needs to be changed for ligand2 in the structure2 section.
+The <em>simulation</em> container contains the simulation parameters you want to use.</p>
 <dl class="object">
 <dt class="sig sig-object">
 <span class="sig-name descname"><span class="pre">simulation</span></span></dt>
@@ -347,31 +348,39 @@ can generate this yourself using <a class="reference external" href="https://cge
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nstdcd">
 <span class="sig-name descname"><span class="pre">nstdcd:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstdcd" title="Permalink to this definition">¶</a></dt>
-<dd><p>How many steps you want in your trajectory file overall</p>
+<dd><p>Writing coordinates trajectory frequency (steps)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nstout">
 <span class="sig-name descname"><span class="pre">nstout:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstout" title="Permalink to this definition">¶</a></dt>
-<dd><p>How many steps you want written out in the .log.out files</p>
+<dd><p>Writing output frequency (steps)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-cons">
-<span class="sig-name descname"><span class="pre">cons:</span></span><span class="sig-prename descclassname"> <span class="pre">[&quot;HBond&quot;,None]</span></span><a class="headerlink" href="#cmdoption-arg-cons" title="Permalink to this definition">¶</a></dt>
-<dd><p>What constraints (not <em>restraints</em>) you want in your system.</p>
+<span id="cmdoption-arg-None"></span><span id="cmdoption-arg-none"></span><span class="sig-name descname"><span class="pre">cons:</span></span><span class="sig-prename descclassname"> <span class="pre">[&quot;HBonds&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">None]</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-cons" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether you want to use constraints or not.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-dt">
 <span class="sig-name descname"><span class="pre">dt:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-dt" title="Permalink to this definition">¶</a></dt>
-<dd><p>The timestep in picoseconds. With hydrogen mass repartitioning, up to 0.004 ps should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.</p>
+<dd><p>The timestep in picoseconds.</p>
+<blockquote>
+<div><div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>If you set <code class="docutils literal notranslate"><span class="pre">cons:</span> <span class="pre">None</span></code>, dt should be <strong>0.001</strong> ps, When using <code class="docutils literal notranslate"><span class="pre">cons:</span> <span class="pre">HBonds</span></code> a time step of
+<strong>0.002</strong> ps can be used. This can be further extended when using Hydrogen Mass Repartitioning
+see <a class="reference internal" href="Additional_Settings.html"><span class="doc">Additional Settings</span></a> for detailed information.</p>
+</div>
+</div></blockquote>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-switch">
-<span class="sig-name descname"><span class="pre">switch:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;vfswitch&quot;,&quot;vfoff&quot;])</span></span><a class="headerlink" href="#cmdoption-arg-switch" title="Permalink to this definition">¶</a></dt>
-<dd><p>How the van-der-Waals forces are switched.</p>
+<span id="cmdoption-arg-switch"></span><span class="sig-name descname"><span class="pre">switch:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;vfswitch&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;switch&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-switch" title="Permalink to this definition">¶</a></dt>
+<dd><p>vdW cut-off method</p>
 </dd></dl>
 
 <dl class="std option">
@@ -382,201 +391,29 @@ can generate this yourself using <a class="reference external" href="https://cge
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-GPU">
-<span id="cmdoption-arg-gpu"></span><span class="sig-name descname"><span class="pre">GPU:</span></span><span class="sig-prename descclassname"> <span class="pre">([True/False])</span></span><a class="headerlink" href="#cmdoption-arg-GPU" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.</p>
+<span id="cmdoption-arg-gpu"></span><span id="cmdoption-arg-False"></span><span id="cmdoption-arg-false"></span><span class="sig-name descname"><span class="pre">GPU:</span></span><span class="sig-prename descclassname"> <span class="pre">([True</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">False])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-GPU" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether you want to use GPU support or not. It’s strongly recommended to enable GPU support if possible.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-workload-manager">
-<span class="sig-name descname"><span class="pre">workload-manager:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;slurm&quot;,&quot;CGE&quot;])</span></span><a class="headerlink" href="#cmdoption-arg-workload-manager" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-arg-SGE"></span><span id="cmdoption-arg-sge"></span><span class="sig-name descname"><span class="pre">workload-manager:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;slurm&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;SGE&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-workload-manager" title="Permalink to this definition">¶</a></dt>
 <dd><p>For which workload-manager the script files should be output.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-free-energy-type">
-<span class="sig-name descname"><span class="pre">free-energy-type:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;rbfe&quot;,&quot;rsfe&quot;])</span></span><a class="headerlink" href="#cmdoption-arg-free-energy-type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate relative binding free energy or relative solvation free energy</p>
+<span id="cmdoption-arg-rsfe"></span><span class="sig-name descname"><span class="pre">free-energy-type:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;rbfe&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;rsfe&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-free-energy-type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate relative <strong>binding</strong> free energy or relative <strong>solvation</strong> free energy</p>
 </dd></dl>
 
 </dd></dl>
 
 </dd></dl>
 
-<div class="section" id="restraints">
-<h3>Restraints<a class="headerlink" href="#restraints" title="Permalink to this heading">¶</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The documentation here is not yet implemented in the main branch yet and more aspirational/for development branches</p>
-</div>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>This section only applies if you are running your simulations with openMM. Should you run your simulations using CHARMM, it will not apply the restraints <strong>and give no warning about it</strong>.</p>
-</div>
-<p>transformato supports two types of restraints: automatic and manual restraints.</p>
-</div>
-</div>
-<div class="section" id="automatic-restraints">
-<h2>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this heading">¶</a></h2>
-<p>To activate automatic restraints for your ligand, add</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span>
-    <span class="nt">restraints</span><span class="p">:</span> <span class="s">&quot;auto&quot;</span>
-</pre></div>
-</div>
-<p>to your <cite>config.yaml</cite>. This wil restrain your ligand in its original position using a harmonic potential of the form <span class="math notranslate nohighlight">\(E=0.5k \cdot (r-r_0)²\)</span> (where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance, <span class="math notranslate nohighlight">\(r_0\)</span> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant), applied within the centers of mass of your ligand and the surrounding protein structure, keeping these two vaguely fixed.</p>
-<p>You may specify further keywords:</p>
-<p class="rubric">Options for automatic restraints</p>
-<dl class="object">
-<dt class="sig sig-object">
-<span class="sig-name descname"><span class="pre">restraints:</span> <span class="pre">auto</span></span></dt>
-<dd><dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-k">
-<span class="sig-name descname"><span class="pre">k</span></span><span class="sig-prename descclassname"><span class="pre">=[int]</span></span><a class="headerlink" href="#cmdoption-arg-k" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>optional:</em> Defines the spring constant used for force calculations. Default is 3</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-extremities">
-<span class="sig-name descname"><span class="pre">extremities</span></span><span class="sig-prename descclassname"><span class="pre">=[int]</span></span><a class="headerlink" href="#cmdoption-arg-extremities" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>optional:</em> If used, transformato will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-shape">
-<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-prename descclassname"><span class="pre">=[&quot;harmonic&quot;,&quot;flatbottom&quot;]`</span></span><a class="headerlink" href="#cmdoption-arg-shape" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>optional:</em> Defines the shape of the energy potential.</p>
-<p>The potential energy term for the two forms is given as:</p>
-<ul class="simple">
-<li><p>harmonic: <span class="math notranslate nohighlight">\(E=0.5k \cdot (r-r_0)²\)</span></p></li>
-<li><p>flatbottom: <span class="math notranslate nohighlight">\(E=k \cdot step(|r-r_0|),thresh) \cdot (r-r_0)²,\)</span></p></li>
-</ul>
-<p>where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance, <span class="math notranslate nohighlight">\(r_0\)</span> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant. The step function returns 0 until the threshold <span class="math notranslate nohighlight">\(thresh\)</span> (defined as <code class="code docutils literal notranslate"><span class="pre">wellsize</span></code> by the config.yaml) has been surpassed, after which it returns 1. As such,
-the flat-bottom potential is essentially a harmonic potential where the energy within the &quot;well&quot; is zero. Note that the <code class="code docutils literal notranslate"><span class="pre">wellsize</span></code> acts like a <em>radius</em>, meaning it extends in all directions from its origin.</p>
-</dd></dl>
-
-<div class="figure align-default" id="id1">
-<img alt="harmonic and flatbottom potentials" src="_images/harm_vs_fb.png" />
-<p class="caption"><span class="caption-text">Figure: The difference between a harmonic (<em>A</em>) and flat-bottom (<em>B</em>) potential. While both allow more movement closer to the restraint origin, a flat-bottom potential effectively allows defining
-a fixed sampling area that the ligand can move in without hindrance, but cannot leave (assuming a strong enough value for <em>k</em>).</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-scaling">
-<span class="sig-name descname"><span class="pre">scaling</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-scaling" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>optional:</em> If present, the k - Value of the force is linearly scaled in the first four intermediate states (<code class="docutils literal notranslate"><span class="pre">intst1:</span> <span class="pre">0;</span> <span class="pre">intst2:</span> <span class="pre">0.25;</span> <span class="pre">intst3:</span> <span class="pre">0.5;</span> <span class="pre">intst4:</span> <span class="pre">0.75;</span> <span class="pre">intst5:</span> <span class="pre">1.0</span></code>)</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-wellsize">
-<span class="sig-name descname"><span class="pre">wellsize</span></span><span class="sig-prename descclassname"> <span class="pre">[float]</span></span><a class="headerlink" href="#cmdoption-arg-wellsize" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>optional</em>: Only takes effect in a flat-bottom potential. Defines the wellsize in nanometers. Default is 0.1 nm.</p>
-</dd></dl>
-
-</dd></dl>
-
-<p>A full entry in your config.yaml might thus look like this:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">restraints</span><span class="p">:</span> <span class="s">&quot;auto</span><span class="nv"> </span><span class="s">k=10</span><span class="nv"> </span><span class="s">extremities=3</span><span class="nv"> </span><span class="s">shape=harmonic</span><span class="nv"> </span><span class="s">scaling&quot;</span>
-</pre></div>
-</div>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>Be somewhat sure of what your structure looks like, and do a sanity check on the generated restraints before production. As all restraints only act on the common core, setting an arbitrarily high number of extermities can lead to strange results</p>
-</div>
-<p>It should be noted that this means that a small file called <cite>restraints.yaml</cite> is created in your <cite>intst*</cite> - folders.
-These have the following structure:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">system</span><span class="p">:</span>
-    <span class="nt">structure</span><span class="p">:</span>
-        <span class="nt">tlc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">LIG</span> <span class="c1"># same as in the config.yaml, but only one structure (as only one relevant)</span>
-
-<span class="nt">simulation</span><span class="p">:</span>
-    <span class="nt">restraints</span><span class="p">:</span> <span class="s">&quot;auto&quot;</span> <span class="c1"># same as in config.yaml</span>
-    <span class="nt">ccs</span><span class="p">:</span>  <span class="c1"># this represents an array of your common core, upon which restraints can be applied</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">C1</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">C2</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">H2</span>
-<span class="nt">intst</span><span class="p">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">scaling:0.8</span> <span class="c1"># for non-immediate switches, how far along the scaling is. Only relevant for harmonic potentials.</span>
-</pre></div>
-</div>
-<p>It is not recommended to manually edit these files, as they are automatically created for each intermediate state.</p>
-</div>
-<div class="section" id="manual-restraints">
-<h2>Manual Restraints<a class="headerlink" href="#manual-restraints" title="Permalink to this heading">¶</a></h2>
-<p>To activate manual restraints for your ligand, add</p>
-<p><em>config.yaml</em></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span>
-    <span class="nt">restraints</span><span class="p">:</span> <span class="s">&quot;manual&quot;</span>
-</pre></div>
-</div>
-<p>to your config.yaml. Below, you may now specify an arbitrary number of restraints using the <a class="reference external" href="https://docs.mdanalysis.org/stable/documentation_pages/selections.html#simple-selections">MDAnalysis selection syntax</a> :</p>
-<p><em>config.yaml</em></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span>
-    <span class="nt">restraints</span><span class="p">:</span> <span class="s">&quot;manual&quot;</span>
-    <span class="nt">manualrestraints</span><span class="p">:</span>
-        <span class="nt">restraint1</span><span class="p">:</span>
-            <span class="nt">shape</span><span class="p">:</span> <span class="s">&quot;harmonic&quot;</span>
-            <span class="nt">group1</span><span class="p">:</span> <span class="s">&quot;resname</span><span class="nv"> </span><span class="s">LIG</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">C&quot;</span>
-            <span class="nt">group2</span><span class="p">:</span> <span class="s">&quot;protein</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">CA&quot;</span>
-            <span class="nt">k</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
-            <span class="nt">r0</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">2.41</span>
-</pre></div>
-</div>
-<p>You may define as many restraints as you like:</p>
-<p>Code example with multiple restraints:</p>
-<p><em>config.yaml</em></p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">simulation</span><span class="p">:</span>
-    <span class="nt">restraints</span><span class="p">:</span> <span class="s">&quot;manual&quot;</span>
-    <span class="nt">manualrestraints</span><span class="p">:</span>
-        <span class="nt">restraint1</span><span class="p">:</span>
-            <span class="nt">shape</span><span class="p">:</span> <span class="s">&quot;harmonic&quot;</span>
-            <span class="nt">group1</span><span class="p">:</span> <span class="s">&quot;resname</span><span class="nv"> </span><span class="s">LIG</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">C&quot;</span>
-            <span class="nt">group2</span><span class="p">:</span> <span class="s">&quot;protein</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">CA&quot;</span>
-        <span class="nt">restraint2</span><span class="p">:</span>
-            <span class="nt">shape</span><span class="p">:</span> <span class="s">&quot;flatbottom&quot;</span>
-            <span class="nt">group1</span><span class="p">:</span> <span class="s">&quot;resname</span><span class="nv"> </span><span class="s">LIG</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">C&quot;</span>
-            <span class="nt">group2</span><span class="p">:</span> <span class="s">&quot;protein</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">CA&quot;</span>
-        <span class="nt">restraint3</span><span class="p">:</span>
-            <span class="nt">shape</span><span class="p">:</span> <span class="s">&quot;harmonic&quot;</span>
-            <span class="nt">group1</span><span class="p">:</span> <span class="s">&quot;resname</span><span class="nv"> </span><span class="s">LIG</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">name</span><span class="nv"> </span><span class="s">C14&quot;</span>
-            <span class="nt">group2</span><span class="p">:</span> <span class="s">&quot;sphlayer</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">15</span><span class="nv"> </span><span class="s">name</span><span class="nv"> </span><span class="s">C14</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">protein</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">type</span><span class="nv"> </span><span class="s">CA&quot;</span>
-</pre></div>
-</div>
-<p>Note that the individual restraints all need to have distinct names (restraint1, restraint2 etc.). It is common that they are numbered, but not required - they simply need to adhere to the yaml syntax.</p>
-<p class="rubric">Options for manual restraints</p>
-<dl class="object">
-<dt class="sig sig-object">
-<span class="sig-name descname"><span class="pre">restraints:</span> <span class="pre">manual</span></span></dt>
-<dd><dl class="object">
-<dt class="sig sig-object">
-<span class="sig-name descname"><span class="pre">manual-restraint</span></span></dt>
-<dd><p>You may freely choose the name of the restraint here. It may be useful to provide a ‘speaking’ name, as this will allow identification later.</p>
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-0">
-<span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-prename descclassname"><span class="pre">=[&quot;harmonic&quot;,&quot;flatbottom&quot;]'</span></span><a class="headerlink" href="#cmdoption-arg-0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shape of the energy potential. Default is “harmonic”. See automatic restraints for details.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-group1-group2">
-<span class="sig-name descname"><span class="pre">group1,group2</span></span><span class="sig-prename descclassname"><span class="pre">=[MDAnalysis</span> <span class="pre">selection</span> <span class="pre">string]</span></span><a class="headerlink" href="#cmdoption-arg-group1-group2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines which Common Core atoms are members of group1 or group2. Please note that group1 <strong>must</strong> be the ligand, and group2 the protein.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-1">
-<span class="sig-name descname"><span class="pre">k</span></span><span class="sig-prename descclassname"><span class="pre">=[int]</span></span><a class="headerlink" href="#cmdoption-arg-1" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>(optional):</em> Defines the harmonic force constant. Default is 3.</p>
-</dd></dl>
-
-<dl class="std option">
-<dt class="sig sig-object std" id="cmdoption-arg-2">
-<span class="sig-name descname"><span class="pre">wellsize</span></span><span class="sig-prename descclassname"><span class="pre">=[float]</span></span><a class="headerlink" href="#cmdoption-arg-2" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>(optional):</em> Defines the wellsize for flat-bottom restraints (unit is nanometers). Defaults to 0.1 nm.</p>
-</dd></dl>
-
-</dd></dl>
-
-</dd></dl>
-
-<p>As with automatic restraints, even manually specified restraints will never act on atoms not in the common core, as this would lead to nonsensical energy calculations.</p>
+<p>After creating your yaml file, you can now move on either to <a class="reference internal" href="Additional_Settings.html"><span class="doc">Additional Settings</span></a> if you want to apply
+restraints or Hydrogen Mass Repartitioning or you can directly go to <span class="xref std std-doc">Running_Simulations</span> and continue with
+step 4.</p>
 </div>
 </div>
 
@@ -588,7 +425,7 @@ These have the following structure:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="Running_Simulation.html" class="btn btn-neutral float-right" title="Running Simulations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="Additional_Settings.html" class="btn btn-neutral float-right" title="Additional Settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

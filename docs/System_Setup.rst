@@ -18,7 +18,7 @@ the Figure below. During the following steps this Figure might be interesting to
 
 
 Step 1 -- creating Systems using CHARMM-GUI
-*******************************************
+********************************************
 
 First, one needs input files for the physical endstates. It is strongly encouraged to use CHARMM-GUI (specifically 
 the solution builder) to create them. For running CHARMM-GUI you need a pdb file of your ligand as well as a pdb
@@ -41,9 +41,12 @@ you need to do the following:
 
 As indictated in the Figure above, your files should be strucred the following way:
 
-+ for the waterbox of structure 1:
++ for the **waterbox** of structure 1:
+
     + ``your-structure-1/waterbox/openmm`` containg among other files important psf and crd file as well as a ``your-structure-1/waterbox/CHARMM-GUI-resname`` directory containg among other files the sdf, prm and rtf file
-+ for the complex of structure 1:
+
++ for the **complex** of structure 1:
+
     + ``your-structure-1/complex/openmm`` containg among other files important psf and crd file as well as a ``your-structure-1/complex/CHARMM-GUI-resname`` directory containg among other files the sdf, prm and rtf file
 
 The same applies for all other ligands (structures) of interest.
@@ -61,12 +64,12 @@ The same applies for all other ligands (structures) of interest.
 Step 2 -- modifying the yaml file
 *******************************************
 
-The config.yaml is perhaps the most important file you'll create. It contains:
+The config.yaml provides all information necessary for setting up a mutation between two ligands.
+It contains:
 
-#. Definitions of your structures and under which name to find them
+#. The names of the folders containing the complex and waterbox folder
 #. Simulation parameters, such as simulation step and length
-#. Eventual restraints, both automatic and manual
-
+#. Additional parameters such as restratints
 
 Let's take a look at a complete config.yaml:
 
@@ -75,7 +78,7 @@ Let's take a look at a complete config.yaml:
     ################
     system:
     ################
-        structure2:
+        structure1:
             name: "vim2_zn148"
             tlc: "LIG"
             waterbox:
@@ -87,13 +90,13 @@ Let's take a look at a complete config.yaml:
             intermediate-filename: "lig_in_waterbox"
             complex:
             dirname: "complex"
-            psf_file_name: "step3.1_omm"
-            crd_file_name: "step3.1_omm"
+            psf_file_name: "step3.input"
+            crd_file_name: "step3.input"
             rst_file_name: "step4_equilibration"
             simulation_parameter: "step5_production.inp"
             intermediate-filename: "lig_in_complex"
 
-        structure1:
+        structure2:
             name: "vim2_zn222"
             tlc: "LIG"
             waterbox:
@@ -132,30 +135,32 @@ Let's take a look at a complete config.yaml:
         steps_for_equilibration: 1000
 
 
-The *system* container contains the setup information from your structure directories. Most importantly, the *name* parameter must be the folder name of that structure (the one containing the waterbox/ligand directories.)
+The *system* container contains the setup information from your structure directories. Most importantly, 
+the *name* parameter must be the folder name of that structure (the one containing the **waterbox**/ **complex**
+directories.)
 
 You may actually define any number of structures. The structure you want is referenced when setting up the system.
 
 .. object:: system
 
-    .. object:: [structurename]
+    .. object:: [structure1]
 
-        Can be whatever you want - just be sure to point you ``submit.ipynb`` towards the correct structures. That being said, you can also stick with the boring-but-practical ``structure1``, ``structure2`` you see in our notebooks.
-
+        Should not be changed
         
         .. option:: name
 
-            The folder name of the folder containing the complex/ligand folders for that structure
+            The name of the folder containing the **waterbox**/ **complex** folders for that structure 
+            (*in this example the folder needs to be called vim2_zn148*)
 
         .. option:: tlc
 
-            The residue name (resname) of the structure
+            The residue name (resname) of the structure. when using CHARMM-GUI output its often called UNK
 
         .. option:: other parameters
 
-            These refer to the various files in the /openmm/ subfolder.
+            These refer to the various files in the /openmm/ subfolder (e.g. the psf and crd files).
 
-
+The same needs to be changed for ligand2 in the structure2 section.
 The *simulation* container contains the simulation parameters you want to use.
 
 .. object:: simulation
@@ -168,224 +173,48 @@ The *simulation* container contains the simulation parameters you want to use.
 
         .. option:: nstdcd: (int)
 
-            How many steps you want in your trajectory file overall
+            Writing coordinates trajectory frequency (steps)
 
         .. option:: nstout: (int)
 
-            How many steps you want written out in the .log.out files
+            Writing output frequency (steps)
 
-        .. option:: cons: ["HBond",None]
+        .. option:: cons: ["HBonds", None]
 
-            What constraints (not *restraints*) you want in your system.
+            Whether you want to use constraints or not.
 
         .. option:: dt: (int)
 
-            The timestep in picoseconds. With hydrogen mass repartitioning, up to 0.004 ps should be fine. Without it, the upper limit is realistically 0.002 before the simulation gets unstable.
+            The timestep in picoseconds. 
 
-        .. option:: switch: (["vfswitch","vfoff"])
+             .. attention:: 
 
-            How the van-der-Waals forces are switched.
+                If you set ``cons: None``, dt should be **0.001** ps, When using ``cons: HBonds`` a time step of 
+                **0.002** ps can be used. This can be further extended when using Hydrogen Mass Repartitioning
+                see :doc:`Additional_Settings` for detailed information.
+
+        .. option:: switch: (["vfswitch", "switch"])
+
+            vdW cut-off method
 
         .. option:: mini_nstep: (int)
 
             Steps for minimisation
 
-        .. option:: GPU: ([True/False])
+        .. option:: GPU: ([True, False])
         
-            Use GPU yes/no? For openMM this should always be yes. For CHARMM it should be yes until you run into problems.
+            Whether you want to use GPU support or not. It's strongly recommended to enable GPU support if possible.
 
-        .. option:: workload-manager: (["slurm","CGE"])
+        .. option:: workload-manager: (["slurm", "SGE"])
 
             For which workload-manager the script files should be output.
 
-        .. option:: free-energy-type: (["rbfe","rsfe"])
+        .. option:: free-energy-type: (["rbfe", "rsfe"])
 
-            Calculate relative binding free energy or relative solvation free energy
+            Calculate relative **binding** free energy or relative **solvation** free energy
 
-Restraints
-###########
-
-.. warning:: The documentation here is not yet implemented in the main branch yet and more aspirational/for development branches
-
-.. danger:: This section only applies if you are running your simulations with openMM. Should you run your simulations using CHARMM, it will not apply the restraints **and give no warning about it**.
-
-
-
-transformato supports two types of restraints: automatic and manual restraints.
-
-Automatic Restraints
-**************************
-
-To activate automatic restraints for your ligand, add 
-
-.. code-block:: yaml
-
-    simulation:
-        restraints: "auto"
-        
-to your `config.yaml`. This wil restrain your ligand in its original position using a harmonic potential of the form :math:`E=0.5k \cdot (r-r_0)²` (where  :math:`r`` is the current distance, :math:`r_0`` the initial distance, and :math:`k`` the force constant), applied within the centers of mass of your ligand and the surrounding protein structure, keeping these two vaguely fixed.
-
-You may specify further keywords:
-
-.. rubric:: Options for automatic restraints
-
-.. object:: restraints: auto
-    
-
-    .. option:: k=[int]
-
-        *optional:* Defines the spring constant used for force calculations. Default is 3
-
-    .. option:: extremities=[int]
-
-        *optional:* If used, transformato will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.
-
-    .. option:: shape=["harmonic","flatbottom"]`
-
-        *optional:* Defines the shape of the energy potential.
-        
-        The potential energy term for the two forms is given as:
-
-        + harmonic: :math:`E=0.5k \cdot (r-r_0)²`
-        + flatbottom: :math:`E=k \cdot step(|r-r_0|),thresh) \cdot (r-r_0)²,`
-
-        where  :math:`r`` is the current distance, :math:`r_0`` the initial distance, and :math:`k`` the force constant. The step function returns 0 until the threshold :math:`thresh` (defined as :code:`wellsize` by the config.yaml) has been surpassed, after which it returns 1. As such,
-        the flat-bottom potential is essentially a harmonic potential where the energy within the \"well\" is zero. Note that the :code:`wellsize` acts like a *radius*, meaning it extends in all directions from its origin.
-
-    .. figure:: assets/images/harm_vs_fb.png
-        :alt: harmonic and flatbottom potentials
-        
-        Figure: The difference between a harmonic (*A*) and flat-bottom (*B*) potential. While both allow more movement closer to the restraint origin, a flat-bottom potential effectively allows defining
-        a fixed sampling area that the ligand can move in without hindrance, but cannot leave (assuming a strong enough value for *k*).
-
-    .. option:: scaling
-
-        *optional:* If present, the k - Value of the force is linearly scaled in the first four intermediate states (``intst1: 0; intst2: 0.25; intst3: 0.5; intst4: 0.75; intst5: 1.0``)
-
-    .. option:: wellsize [float]
-
-        *optional*: Only takes effect in a flat-bottom potential. Defines the wellsize in nanometers. Default is 0.1 nm.
-
-A full entry in your config.yaml might thus look like this:
-
-
-
-.. code-block:: yaml
-
-    restraints: "auto k=10 extremities=3 shape=harmonic scaling" 
-
-
-
-.. caution:: Be somewhat sure of what your structure looks like, and do a sanity check on the generated restraints before production. As all restraints only act on the common core, setting an arbitrarily high number of extermities can lead to strange results
-
-It should be noted that this means that a small file called `restraints.yaml` is created in your `intst*` - folders.
-These have the following structure:
-
-
-.. code-block:: yaml
-
-    system:
-        structure:
-            tlc: LIG # same as in the config.yaml, but only one structure (as only one relevant)
-
-    simulation:
-        restraints: "auto" # same as in config.yaml
-        ccs:  # this represents an array of your common core, upon which restraints can be applied
-            - C1
-            - C2
-            - H2
-    intst:
-        scaling:0.8 # for non-immediate switches, how far along the scaling is. Only relevant for harmonic potentials.
-
-
-It is not recommended to manually edit these files, as they are automatically created for each intermediate state.
-
-Manual Restraints
-*******************
-
-To activate manual restraints for your ligand, add 
-
-*config.yaml*
-
-.. code-block:: yaml
-
-    simulation:
-        restraints: "manual"
-
-to your config.yaml. Below, you may now specify an arbitrary number of restraints using the `MDAnalysis selection syntax <https://docs.mdanalysis.org/stable/documentation_pages/selections.html#simple-selections>`_ :
-
-*config.yaml*
-
-.. code-block:: yaml
-
-    simulation:
-        restraints: "manual"
-        manualrestraints:
-            restraint1:
-                shape: "harmonic"
-                group1: "resname LIG and type C"
-                group2: "protein and type CA"
-                k: 30
-                r0: 2.41
-
-You may define as many restraints as you like:
-
-Code example with multiple restraints:
-
-*config.yaml*
-
-.. code-block:: yaml
-
-    simulation:
-        restraints: "manual"
-        manualrestraints:
-            restraint1:
-                shape: "harmonic"
-                group1: "resname LIG and type C"
-                group2: "protein and type CA"
-            restraint2:
-                shape: "flatbottom"
-                group1: "resname LIG and type C"
-                group2: "protein and type CA"
-            restraint3:
-                shape: "harmonic"
-                group1: "resname LIG and name C14"
-                group2: "sphlayer 5 15 name C14 and protein and type CA"
-
-Note that the individual restraints all need to have distinct names (restraint1, restraint2 etc.). It is common that they are numbered, but not required - they simply need to adhere to the yaml syntax.
-
-.. rubric:: Options for manual restraints
-
-
-.. object:: restraints: manual
-
-    .. object:: manual-restraint
-
-        You may freely choose the name of the restraint here. It may be useful to provide a 'speaking' name, as this will allow identification later.
-
-        .. option:: shape=["harmonic","flatbottom"]'
-
-            Shape of the energy potential. Default is "harmonic". See automatic restraints for details.
-
-        .. option:: group1,group2=[MDAnalysis selection string]
-
-            Defines which Common Core atoms are members of group1 or group2. Please note that group1 **must** be the ligand, and group2 the protein.
-
-        .. option:: k=[int]
-
-            *(optional):* Defines the harmonic force constant. Default is 3.
-
-        .. option:: wellsize=[float]
-            
-            *(optional):* Defines the wellsize for flat-bottom restraints (unit is nanometers). Defaults to 0.1 nm.
-
-
-As with automatic restraints, even manually specified restraints will never act on atoms not in the common core, as this would lead to nonsensical energy calculations.
-
-
-
-
-
-
+After creating your yaml file, you can now move on either to :doc:`Additional_Settings` if you want to apply 
+restraints or Hydrogen Mass Repartitioning or you can directly go to :doc:`Running_Simulations` and continue with 
+step 4.
 
 .. |trafo| replace:: :math:`\texttt{TRANSFORMATO}`

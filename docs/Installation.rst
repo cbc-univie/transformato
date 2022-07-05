@@ -32,7 +32,7 @@ Activate the environment with ``conda activate fep``.
 
 .. note:: 
     For running simulations on a **NVIDIA** machine using **CUDA**, openMM will install the python
-    package cudatoolkits. Make sure the version in your environment is not higher than the 
+    package cudatoolkit. Make sure the version in your environment is not higher than the 
     CUDA version of your NVIDIA driver (you can check by using ``nvidia-smi`` for the driver 
     and by ``conda list`` you can see your current version). If necessary you can install 
     the correct cudatoolkit version by using ``conda install cudatoolkit=X.Y -c conda-forge``
