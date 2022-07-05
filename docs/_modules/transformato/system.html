@@ -335,8 +335,8 @@
                 <span class="n">_</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
                 <span class="n">cgenff</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CGenFF version: </span><span class="si">{</span><span class="n">cgenff</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="c1"># cgenff_version = re.findall(&quot;\d+\.\d+&quot;, cgenff)[0]</span>
-                <span class="c1"># self.cgenff_version = float(cgenff_version)</span>
+                <span class="n">cgenff_version</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;\d+\.\d+&quot;</span><span class="p">,</span> <span class="n">cgenff</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cgenff_version</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cgenff_version</span><span class="p">)</span>
 
         <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/top_all36_prot.rtf&quot;</span><span class="p">,)</span>
         <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/par_all36m_prot.prm&quot;</span><span class="p">,)</span>
@@ -347,7 +347,6 @@
         <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/par_all36_lipid.prm&quot;</span><span class="p">,)</span>
         <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/top_all36_lipid.rtf&quot;</span><span class="p">,)</span>
         <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_water_ions.str&quot;</span><span class="p">,)</span>
-        <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_moreions.str&quot;</span><span class="p">,)</span>
         <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_prot_na_combined.str&quot;</span><span class="p">,</span>
         <span class="p">)</span>  <span class="c1"># if modified aminoacids are needed</span>
@@ -506,7 +505,7 @@
             <span class="n">atom_name_to_atom_type</span><span class="p">,</span>
             <span class="n">atom_idx_to_atom_partial_charge</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_atom_tables_from_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;das ist mol </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
             <span class="n">atom</span><span class="o">.</span><span class="n">SetProp</span><span class="p">(</span><span class="s2">&quot;atom_name&quot;</span><span class="p">,</span> <span class="n">atom_idx_to_atom_name</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()])</span>
             <span class="n">atom</span><span class="o">.</span><span class="n">SetProp</span><span class="p">(</span>
@@ -520,8 +519,6 @@
 
         <span class="c1"># check if psf and sdf have same indeces</span>
         <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;das ist a </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; und das </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
                 <span class="k">pass</span>
             <span class="k">else</span><span class="p">:</span>

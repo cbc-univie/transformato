@@ -2,42 +2,64 @@ System Setup
 ===============
 
 
-After successfully installing transformato, you can now setup your first system. For this, you require three items:
-
+After successfully installing |trafo|, you can now setup your first system. For this, you require three items:
 
 + The output of `CHARMM-GUI <http://www.charmm-gui.org/>`_ 's solution builder for your ligand - solvated once at its position within the protein-ligand complex and once in a pure waterbox.
 + A `config.yaml` which describes your general simulation parameters.
 + A `submit.ipynb` (or just standard .py) that generates your intermediate states.
++ Finally, to actually analyze your simulations and calculate the resulting free energies, 
+  an *analysis.py* script - this is covered on the :doc:`Analysis` page.
 
-
-.. hint:: 
-    It is not strictly necessary to use CHARMM - GUI to solvate your system. You may build and solvate your system yourself. In this case however, you will also need to supply proper parameter files along with input scripts.
-
-Finally, to actually analyze your simulations and calculate the resulting free energies, you'll need an `analysis.py` script - this is covered on the *Analysis* page.
-
-File structure and supplying your protein/ligand
-#####################################################
-
-Please refer to this convenient and practical flowchart to understand transformato's folder structure:
+The overall structure on how everything needs to be set up and where which file has to be stored is given in
+the Figure below. During the following steps this Figure might be interesting to look at.
 
 .. image:: assets/images/transformato-tree.svg
     :alt: transformato-tree
 
-While this may look complicated, all you need to do is to:
 
-#. Create a folder called `your-structure-1` for your first structure
-#. Take the CHARMM-GUI output folder (called something like charmm-gui-4842148) for your solvated ligand-protein complex, move it to this folder and rename it into `complex`
-#. Take the CHARMM-GUI output folder for your solvated ligand in the waterbox, move it to this folder and rename it into `waterbox`
+Step 1 -- creating Systems using CHARMM-GUI
+*******************************************
+
+First, one needs input files for the physical endstates. It is strongly encouraged to use CHARMM-GUI (specifically 
+the solution builder) to create them. For running CHARMM-GUI you need a pdb file of your ligand as well as a pdb
+file of your ligand bound to the protein. In addition you might need to provide CHARMM-GUI with a sdf or mol2 file
+of your ligand. When you created the CHARMM-GUI folders, per ligand one for the waterbox and one for the complex
+you need to do the following:
+
+.. important:: 
+    In the last step of the CHARMM-GUI solution builder make sure to check the box **OpenMM** or **CHARMM/OpenMM**
+    depending on which engine you want to use later for your production runs (OpenMM is installed by default in 
+    the ``fep`` environment).
+
+#. Create a folder called **your-structure-1** for your first structure
+#. Take the CHARMM-GUI output folder (called something like charmm-gui-4842148) for your solvated ligand-protein
+   complex, move it to this folder and rename it into **complex**
+#. Take the CHARMM-GUI output folder for your solvated ligand in the waterbox, 
+   move it to this folder and rename it into **waterbox**
 #. Do the same with your second, third, fourth... etc. structure
 #. **Run the equillibration** part of the provided simulation input. An equillibrated system (and the generated .rst file) are necesary for transformato.
 
-You`ll create the remaining files down below.
+As indictated in the Figure above, your files should be strucred the following way:
 
-.. note:: 
-    The submit.ipynb file is covered in :doc:`Running_Simulation`\ .
++ for the waterbox of structure 1:
+    + ``your-structure-1/waterbox/openmm`` containg among other files important psf and crd file as well as a ``your-structure-1/waterbox/CHARMM-GUI-resname`` directory containg among other files the sdf, prm and rtf file
++ for the complex of structure 1:
+    + ``your-structure-1/complex/openmm`` containg among other files important psf and crd file as well as a ``your-structure-1/complex/CHARMM-GUI-resname`` directory containg among other files the sdf, prm and rtf file
 
-The config.yaml
-#################
+The same applies for all other ligands (structures) of interest.
+
+.. admonition:: For expert users only!
+
+    It is not strictly necessary to use CHARMM-GUI to solvate your system. You may build
+    and solvate your system yourself. In this case however, you will also need to supply proper
+    parameter files along with input scripts. For each ligand you need to provide in the respective
+    folder a **psf** and **crd** for the ligand only and bound to the protein, as well as a folder 
+    named after the ligands resname, containing **sdf**, **prm** and **rtf** file of the ligand (you 
+    can generate this yourself using `CGenFF <https://cgenff.umaryland.edu/>`_).
+
+
+Step 2 -- modifying the yaml file
+*******************************************
 
 The config.yaml is perhaps the most important file you'll create. It contains:
 
@@ -359,3 +381,11 @@ Note that the individual restraints all need to have distinct names (restraint1,
 
 
 As with automatic restraints, even manually specified restraints will never act on atoms not in the common core, as this would lead to nonsensical energy calculations.
+
+
+
+
+
+
+
+.. |trafo| replace:: :math:`\texttt{TRANSFORMATO}`
