@@ -26,6 +26,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -91,6 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="whatistransformato.html"><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Additional_Settings.html">Additional Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
@@ -179,11 +181,6 @@ a separate file (usually called <code class="code docutils literal notranslate">
 <span class="n">path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">conf</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
 
-<span class="c1"># proc = sys.argv[4]</span>
-<span class="c1"># frames = sys.argv[5]</span>
-
-<span class="c1"># print(f&quot;Using {proc} CPUS and frames {frames}&quot;)</span>
-
 <span class="n">configuration</span> <span class="o">=</span> <span class="n">load_config_yaml</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
@@ -219,8 +216,9 @@ a separate file (usually called <code class="code docutils literal notranslate">
 </pre></div>
 </div>
 <p>The <code class="code docutils literal notranslate"><span class="pre">SBATCH</span></code> - lines are cluster instructions and will differ depending on your needs and workload - manager.</p>
-<p>If you have aliased this script as e.g. <code class="code docutils literal notranslate"><span class="pre">transformato-analyse</span></code> , you may now simply go to the folder containing your replicates and run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>transformato-analyse ./replicate-folder/ ./your-config.yaml
+<p>If you have aliased this script as e.g. <code class="code docutils literal notranslate"><span class="pre">transformato-analyse</span></code> , you may now simply go to
+the folder containing your replicates and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python transformato-analyse ./replicate-folder/ ./your-config.yaml
 </pre></div>
 </div>
 <p>You will get your results in a file called <code class="code docutils literal notranslate"><span class="pre">analysis_replicate-folder.out</span></code></p>

@@ -1,6 +1,12 @@
 System Setup
 ===============
 
+.. attention:: 
+
+        In this section we are only talking about **RBFE**, this means we do always have a complex and 
+        a waterbox environment. When using **RSFE**, the only change would be that there is only the 
+        **waterbox** environment necesary, the corresponding **vacuum** environment for the gas phase
+        will be created by |trafo| automatically.
 
 After successfully installing |trafo|, you can now setup your first system. For this, you require three items:
 
@@ -214,7 +220,7 @@ The *simulation* container contains the simulation parameters you want to use.
             Calculate relative **binding** free energy or relative **solvation** free energy
 
 After creating your yaml file, you can now move on either to :doc:`Additional_Settings` if you want to apply 
-restraints or Hydrogen Mass Repartitioning or you can directly go to :doc:`Running_Simulations` and continue with 
-step 4.
+restraints or Hydrogen Mass Repartitioning or you can directly go to :doc:`Running_Simulation` and continue with 
+step 3.
 
 .. |trafo| replace:: :math:`\texttt{TRANSFORMATO}`

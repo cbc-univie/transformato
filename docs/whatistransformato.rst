@@ -70,11 +70,6 @@ Citations, License and Contact
 
 Transformato is released under the MIT License. For further information, visit the `repository license page <https://github.com/wiederm/transformato/blob/master/LICENSE>`_\ .
 
-.. admonition:: todo
-
-    Have Johannes give contact information and list desired citations
-
-
 Acknowledgements
 ####################
 

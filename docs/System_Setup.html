@@ -167,6 +167,13 @@
             
   <div class="section" id="system-setup">
 <h1>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this heading">¶</a></h1>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>In this section we are only talking about <strong>RBFE</strong>, this means we do always have a complex and
+a waterbox environment. When using <strong>RSFE</strong>, the only change would be that there is only the
+<strong>waterbox</strong> environment necesary, the corresponding <strong>vacuum</strong> environment for the gas phase
+will be created by <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> automatically.</p>
+</div>
 <p>After successfully installing <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span>, you can now setup your first system. For this, you require three items:</p>
 <ul class="simple">
 <li><p>The output of <a class="reference external" href="http://www.charmm-gui.org/">CHARMM-GUI</a> ‘s solution builder for your ligand - solvated once at its position within the protein-ligand complex and once in a pure waterbox.</p></li>
@@ -412,8 +419,8 @@ see <a class="reference internal" href="Additional_Settings.html"><span class="d
 </dd></dl>
 
 <p>After creating your yaml file, you can now move on either to <a class="reference internal" href="Additional_Settings.html"><span class="doc">Additional Settings</span></a> if you want to apply
-restraints or Hydrogen Mass Repartitioning or you can directly go to <span class="xref std std-doc">Running_Simulations</span> and continue with
-step 4.</p>
+restraints or Hydrogen Mass Repartitioning or you can directly go to <a class="reference internal" href="Running_Simulation.html"><span class="doc">Running Simulations</span></a> and continue with
+step 3.</p>
 </div>
 </div>
 

@@ -23,11 +23,6 @@ a separate file (usually called :code:`analysis.py``) that can be aliased and ru
     path = sys.argv[2]
     conf = sys.argv[3]
 
-    # proc = sys.argv[4]
-    # frames = sys.argv[5]
-
-    # print(f"Using {proc} CPUS and frames {frames}")
-
     configuration = load_config_yaml(config=conf, input_dir=path, output_dir=folder)
 
     for name in (
@@ -66,10 +61,15 @@ To further simplify matters, create an executable :code:`analysis.sh` file conta
 
 The :code:`SBATCH` - lines are cluster instructions and will differ depending on your needs and workload - manager.
 
-If you have aliased this script as e.g. :code:`transformato-analyse` , you may now simply go to the folder containing your replicates and run:
+If you have aliased this script as e.g. :code:`transformato-analyse` , you may now simply go to 
+the folder containing your replicates and run:
 
 .. code-block:: bash
 
-    transformato-analyse ./replicate-folder/ ./your-config.yaml
+    python transformato-analyse ./replicate-folder/ ./your-config.yaml
 
 You will get your results in a file called :code:`analysis_replicate-folder.out`
+
+
+
+.. |trafo| replace:: :math:`\texttt{TRANSFORMATO}`
