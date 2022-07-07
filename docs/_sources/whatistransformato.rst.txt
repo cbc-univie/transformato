@@ -58,7 +58,7 @@ being the sum of free energies necessary to reach the common core:
    thus, the contribution cancels out when calculating relative free energies.
  
 Serial-Atom-Insertion approach
-###########################
+################################
  
 Lennard-Jones interactions are turned off on an atom-by-atom basis. This means that LJ parameters are either fully
 interacting (1) or non-interacting (0). For the heavy atoms (non hydrogen atoms) the interaction is turned off
