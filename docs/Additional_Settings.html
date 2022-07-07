@@ -92,7 +92,15 @@
 <li class="toctree-l1"><a class="reference internal" href="whatistransformato.html"><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> in a nutshell</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Additional Settings</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Additional Settings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#restraints">Restraints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-restraints">Automatic Restraints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#manual-restraints">Manual Restraints</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#hydrogen-mass-repartitioning-hmr">Hydrogen Mass Repartitioning (HMR)</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Analysis.html">Trajectory Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
@@ -171,7 +179,7 @@
 Should you run your simulations using CHARMM, it will not apply the restraints
 and give <strong>no warning about it</strong>.</p>
 </div>
-<p>transformato supports two types of restraints: automatic and manual restraints.</p>
+<p><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> supports two types of restraints: automatic and manual restraints.</p>
 <div class="section" id="automatic-restraints">
 <h3>Automatic Restraints<a class="headerlink" href="#automatic-restraints" title="Permalink to this heading">¶</a></h3>
 <p>To activate automatic restraints for your ligand, add</p>
@@ -179,7 +187,7 @@ and give <strong>no warning about it</strong>.</p>
     <span class="nt">restraints</span><span class="p">:</span> <span class="s">&quot;auto&quot;</span>
 </pre></div>
 </div>
-<p>to your <cite>config.yaml</cite>. This wil restrain your ligand in its original position using a harmonic potential of the form <span class="math notranslate nohighlight">\(E=0.5k \cdot (r-r_0)²\)</span> (where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance, <span class="math notranslate nohighlight">\(r_0\)</span> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant), applied within the centers of mass of your ligand and the surrounding protein structure, keeping these two vaguely fixed.</p>
+<p>to your <cite>config.yaml</cite>. This wil restrain your ligand in its original position using a harmonic potential of the form <span class="math notranslate nohighlight">\(E=0.5k \cdot (r-r_0)²\)</span> (where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance,:math:<cite>r_0`</cite> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant), applied within the centers of mass of your ligand and the surrounding protein structure, keeping these two vaguely fixed.</p>
 <p>You may specify further keywords:</p>
 <p class="rubric">Options for automatic restraints</p>
 <dl class="object">
@@ -194,7 +202,7 @@ and give <strong>no warning about it</strong>.</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-extremities">
 <span class="sig-name descname"><span class="pre">extremities</span></span><span class="sig-prename descclassname"><span class="pre">=[int]</span></span><a class="headerlink" href="#cmdoption-arg-extremities" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>optional:</em> If used, transformato will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.</p>
+<dd><p><em>optional:</em> If used, <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> will not restraint the entire common core but rather look for [int] extremities. These are then restrained to the surrounding protein carbon-alphas.</p>
 </dd></dl>
 
 <dl class="std option">
@@ -207,7 +215,7 @@ and give <strong>no warning about it</strong>.</p>
 <li><p>flatbottom: <span class="math notranslate nohighlight">\(E=k \cdot step(|r-r_0|),thresh) \cdot (r-r_0)²,\)</span></p></li>
 </ul>
 <p>where  <span class="math notranslate nohighlight">\(r\)</span> is the current distance, <span class="math notranslate nohighlight">\(r_0\)</span> the initial distance, and <span class="math notranslate nohighlight">\(k\)</span> the force constant. The step function returns 0 until the threshold <span class="math notranslate nohighlight">\(thresh\)</span> (defined as <code class="code docutils literal notranslate"><span class="pre">wellsize</span></code> by the config.yaml) has been surpassed, after which it returns 1. As such,
-the flat-bottom potential is essentially a harmonic potential where the energy within the &quot;well&quot; is zero. Note that the <code class="code docutils literal notranslate"><span class="pre">wellsize</span></code> acts like a <em>radius</em>, meaning it extends in all directions from its origin.</p>
+the flat-bottom potential is essentially a harmonic potential, where the energy within the &quot;well&quot; is zero. Note that the <code class="code docutils literal notranslate"><span class="pre">wellsize</span></code> acts like a <em>radius</em>, meaning it extends in all directions from its origin.</p>
 </dd></dl>
 
 <div class="figure align-default" id="id1">

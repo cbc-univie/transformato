@@ -171,7 +171,7 @@
   <div class="section" id="trafo-in-a-nutshell">
 <h1><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> in a nutshell<a class="headerlink" href="#trafo-in-a-nutshell" title="Permalink to this heading">¶</a></h1>
 <p><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> <a class="footnote-reference brackets" href="#fspeedlimits" id="id1">1</a> is a python package designed to calculate
-either <strong>relative binding free energies</strong> (RBFE) or <strong>relative solvation free energies</strong> (RSFE) between two similiar
+either <strong>relative binding free energies</strong> (RBFE) or <strong>relative solvation free energies</strong> (RSFE) between two similar
 ligands. The two ligands are the two physical endstates which are mutated to a common core structure.</p>
 <p>For that reason, <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> first searches for the common core (Common Core approach). All atoms which are not part of this
 CC and thus differ between the two ligands are then turned off step-wise. First,
@@ -185,7 +185,7 @@ each ligand the free energy according to the common core structure can be calcul
 are the same, the resulting free energy difference <span class="math notranslate nohighlight">\(\Delta\Delta G^{bind}_{L1\rightarrow L2}\)</span> can  be obtained.</p>
 <div class="section" id="interplay-with-charmm-gui">
 <h2>Interplay with CHARMM-GUI<a class="headerlink" href="#interplay-with-charmm-gui" title="Permalink to this heading">¶</a></h2>
-<p><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> works closely together with CHARMM-GUI. For starting RBFE simulations one needs output from the CHARMM-GUI
+<p><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> works closely together with CHARMM-GUI. For starting RBFE simulations, one needs output from the CHARMM-GUI
 solution builder.</p>
 <div class="figure align-default" id="id10">
 <a class="reference internal image-reference" href="_images/tf_overview_v3.png"><img alt="scheme of transformato" src="_images/tf_overview_v3.png" style="width: 400.72px; height: 538.16px;" /></a>
@@ -196,8 +196,8 @@ solution builder.</p>
 <h2>The common-core approach<a class="headerlink" href="#the-common-core-approach" title="Permalink to this heading">¶</a></h2>
 <p>With standard alchemical FES, the two endpoints are generally transformed directly into each other,
 with nonbonded forces (electrostatics) scaled according to the coupling parameter <span class="math notranslate nohighlight">\(\lambda\)</span>,
-and bonded LJ interactions beeing turned off on an atom by atom basis. <a class="footnote-reference brackets" href="#fshirts" id="id2">3</a>.</p>
-<p>With transformato however, the structures are not transformed into each other directly.
+and bonded LJ interactions being turned off on an atom by atom basis. <a class="footnote-reference brackets" href="#fshirts" id="id2">3</a>.</p>
+<p>With <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> however, the structures are not transformed into each other directly.
 Instead, each structure is transformed into a ‘common core structure’, a common topology of both systems
 (ideally - and usually - the <em>maximum</em> common topology between systems), with the free energy
 being the sum of free energies necessary to reach the common core:</p>
@@ -211,12 +211,12 @@ being the sum of free energies necessary to reach the common core:</p>
 Free energies are calculated relative to a common core structure in the
 two environments (for RBFE: ligand solvated in water and ligand bound to a protein and solvated in water).
 This common core structure of the two ligands differs only in the number of dummy atoms,
-thus the contribution cancels out when calculating relative free energies.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+thus, the contribution cancels out when calculating relative free energies.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="serial-atom-insertion-approach">
 <h2>Serial-Atom-Insertion approach<a class="headerlink" href="#serial-atom-insertion-approach" title="Permalink to this heading">¶</a></h2>
-<p>Lennard-Jones interactions are turned off on an atom-by-atom basis. This means that LJ parameters are eiter fully
+<p>Lennard-Jones interactions are turned off on an atom-by-atom basis. This means that LJ parameters are either fully
 interacting (1) or non-interacting (0). For the heavy atoms (non hydrogen atoms) the interaction is turned off
 for each atom one by one.</p>
 </div>
@@ -226,10 +226,10 @@ for each atom one by one.</p>
 </div>
 <div class="section" id="acknowledgements">
 <h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this heading">¶</a></h2>
-<p>Apart from the default python packages, transformato relies in large parts on the following packages:</p>
+<p>Apart from the default python packages, <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> relies in large parts on the following packages:</p>
 <ul class="simple">
 <li><p>MDAnalysis<a class="footnote-reference brackets" href="#fmdanalysis1" id="id3">5</a> <a class="footnote-reference brackets" href="#fmdanalysis2" id="id4">6</a> : Used for general purpose protein and ligand analysis, atom selection and especially trajectory analysis.</p></li>
-<li><p>Numpy<a class="footnote-reference brackets" href="#fnumpy1" id="id5">7</a> : Well, its numpy. We use it for math.</p></li>
+<li><p>Numpy<a class="footnote-reference brackets" href="#fnumpy1" id="id5">7</a> : Well, it is numpy. We use it for math.</p></li>
 <li><p>parmed<a class="footnote-reference brackets" href="#fparmed1" id="id6">9</a> : Protein structure manipulations.</p></li>
 <li><p>pymbar<a class="footnote-reference brackets" href="#fpymbar" id="id7">8</a> : mBAR analysis.</p></li>
 <li><p>RDKit: Visualisation of molecular structures.</p></li>
@@ -246,7 +246,7 @@ for each atom one by one.</p>
 <dd><p>Shirts, M. R., Mobley, D. L. and Chodera, J. D. (2007). <em>Alchemical free energy calculations: Ready for prime time?</em>  Annual Reports in Computational Chemistry, Vol. 3</p>
 </dd>
 <dt class="label" id="fjohannes"><span class="brackets">4</span></dt>
-<dd><p>Karwounopoulos, J., Wieder, M., and Boresch, S. (2022). <em>Relative binding free energy calculations with Transformato: a molecular dynamics engine-independent tool.</em> frontiers, <em>submitted</em>.</p>
+<dd><p>Karwounopoulos, J., Wieder, M., and Boresch, S. (2022). <em>Relative binding free energy calculations with Transformato: a molecular dynamics engine-independent tool.</em> Frontiers, <em>submitted</em>.</p>
 </dd>
 <dt class="label" id="fmdanalysis1"><span class="brackets"><a class="fn-backref" href="#id3">5</a></span></dt>
 <dd><p>Gowers, R. et al., 2016. <em>MDAnalysis: A Python Package for the Rapid Analysis of Molecular Dynamics Simulations</em>. In Proceedings of the Python in Science Conference.  SciPy.</p>
