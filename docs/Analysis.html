@@ -94,7 +94,11 @@
 <li class="toctree-l1"><a class="reference internal" href="System_Setup.html">System Setup</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Additional_Settings.html">Additional Settings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Running_Simulation.html">Running Simulations</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Trajectory Analysis</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Trajectory Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-analysis-py-file">The <em>analysis.py</em> file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#offloading-the-analysis-to-a-cluster">Offloading the analysis to a cluster</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
@@ -163,25 +167,41 @@
             
   <div class="section" id="trajectory-analysis">
 <h1>Trajectory Analysis<a class="headerlink" href="#trajectory-analysis" title="Permalink to this heading">¶</a></h1>
-<p>In theory, you could run your analysis directly in your <code class="code docutils literal notranslate"><span class="pre">submit.ipynb</span></code>, after the simulations are done. However, we instead recommend putting it into
+<p>In theory, you could run your analysis directly in your <code class="code docutils literal notranslate"><span class="pre">submit.ipynb</span></code>, after the simulations are done.
+However, we instead recommend (at least for <strong>RBFE</strong> calculations) putting it into
 a separate file (usually called <code class="code docutils literal notranslate"><span class="pre">analysis.py`</span></code>) that can be aliased and run by shell/script commands.</p>
+<div class="section" id="the-analysis-py-file">
+<h2>The <em>analysis.py</em> file<a class="headerlink" href="#the-analysis-py-file" title="Permalink to this heading">¶</a></h2>
+<p>Below you can see the code necessary for analysing your trajetories. You can run this code snippet
+in your jupyter-notebook after all simulation runs finished or run it in a terminal in your <code class="docutils literal notranslate"><span class="pre">fep</span></code>
+environment with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">analysis</span><span class="o">.</span><span class="n">py</span> <span class="n">output_dir</span> <span class="n">path</span> <span class="n">conf</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Analysis, just like simulation, takes a decent amount of time and computational resources, depending on the number of intermediate states.</p>
-<p>Like simulations, it is therefore recommended to offload it to a cluster.</p>
+<p>To check whether your run have finished properly, go into the <em>intstX</em> directories and check the
+waterbox_out.log and complex_out.log (for RSFE: vacuum_out.log) files</p>
 </div>
-<p><strong>analysis.py</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">from</span> <span class="nn">transformato</span> <span class="kn">import</span> <span class="n">load_config_yaml</span>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This can be done only for <strong>RSFE</strong> in a decent amout of time!
+Analysis, just like simulation, takes a decent amount of computational resources,
+depending on the number of intermediate states.
+Like simulations, it is therefore recommended to offload it to a cluster (especially for <strong>RBFE</strong>).</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">transformato</span> <span class="kn">import</span> <span class="n">load_config_yaml</span>
 <span class="kn">from</span> <span class="nn">transformato.utils</span> <span class="kn">import</span> <span class="n">postprocessing</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="c1"># comes frome the .sh file</span>
-<span class="n">folder</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1"># comes frome the .sh file only needed when running</span>
+<span class="c1"># the analysis.py as standalone script outside your</span>
+<span class="c1"># jupyter-notebook</span>
+<span class="n">output_dir</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">conf</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
 
-<span class="n">configuration</span> <span class="o">=</span> <span class="n">load_config_yaml</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">folder</span><span class="p">)</span>
+<span class="n">configuration</span> <span class="o">=</span> <span class="n">load_config_yaml</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">conf</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
     <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure1&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
@@ -200,7 +220,28 @@ a separate file (usually called <code class="code docutils literal notranslate">
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Free energy difference: </span><span class="si">{</span><span class="n">ddG_openMM</span><span class="si">}</span><span class="s2"> +- </span><span class="si">{</span><span class="n">dddG</span><span class="si">}</span><span class="s2"> [kT]&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To further simplify matters, create an executable <code class="code docutils literal notranslate"><span class="pre">analysis.sh</span></code> file containing the following code:</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">postprocessing</span></code> function you can set up several things</p>
+<dl class="object">
+<dt class="sig sig-object">
+<span class="sig-name descname"><span class="pre">postprocessing</span></span></dt>
+<dd><dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-arg-name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-name" title="Permalink to this definition">¶</a></dt>
+<dd><p>if you only want to analyze one ligand enter the ligand folders name here</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="offloading-the-analysis-to-a-cluster">
+<h2>Offloading the analysis to a cluster<a class="headerlink" href="#offloading-the-analysis-to-a-cluster" title="Permalink to this heading">¶</a></h2>
+<p>As for the simulations there are two options to start the analysis:</p>
+<blockquote>
+<div><ul>
+<li><p>You can run it via your <code class="docutils literal notranslate"><span class="pre">submit.ipynb</span></code>:</p></li>
+<li><p>You can offload it manually</p>
+<blockquote>
+<div><p>To further simplify matters, create an executable <code class="code docutils literal notranslate"><span class="pre">analysis.sh</span></code> file containing the following code:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="c1">#SBATCH --gres=gpu</span>
 <span class="c1">#SBATCH -p lgpu</span>
@@ -222,6 +263,11 @@ the folder containing your replicates and run:</p>
 </pre></div>
 </div>
 <p>You will get your results in a file called <code class="code docutils literal notranslate"><span class="pre">analysis_replicate-folder.out</span></code></p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div>
 </div>
 
 
