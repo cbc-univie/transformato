@@ -1,5 +1,5 @@
-|trafo| in a nutshell
-======================
+Theoretical background
+==========================
  
 :math:`\texttt{TRANSFORMATO}` [#fspeedlimits]_ is a python package designed to calculate
 either **relative binding free energies** (RBFE) or **relative solvation free energies** (RSFE) between two similar

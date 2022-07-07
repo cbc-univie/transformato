@@ -3,7 +3,7 @@
   You can adapt this file completely to your liking, but it should at least
   contain the root `toctree` directive.
  
-Welcome to the |trafo| documentation!
+Welcome to the documentation for |trafo|!
 =========================================================
  
 The python package |trafo| is an implementation of the Common Core / Serial-Atom-Insertion
@@ -50,9 +50,9 @@ head over to our `github repository <https://github.com/wiederm/transformato>`_\
  
 .. rubric:: Maintainers
  
-+ `Markus Wieder <marcus.wieder@univie.ac.at>`_\ , University of Vienna
-+ `Johannes Karwounopoulos <johannes.karwounopoulos@univie.ac.at>`_\, University of Vienna
-+ `Stefan Boresch <stefan@mdy.univie.ac.at>`_\ , University of Vienna
++ `Markus Wieder <marcus.wieder@univie.ac.at>`_\ , Department of Pharmaceutical Sciences, University of Vienna
++ `Johannes Karwounopoulos <johannes.karwounopoulos@univie.ac.at>`_\, `Institute of Computational Biological Chemistry <https://www.mdy.univie.ac.at/index.html>`_, University of Vienna
++ `Stefan Boresch <stefan@mdy.univie.ac.at>`_\ , `Institute of Computational Biological Chemistry <https://www.mdy.univie.ac.at/index.html>`_, University of Vienna
  
  
 .. |trafo| replace:: :math:`\texttt{TRANSFORMATO}`

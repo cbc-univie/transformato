@@ -94,7 +94,7 @@ In the ``postprocessing`` function you can set up several things
     ::math:`\Delta\Delta G^{bind}_{L1\rightarrow |DL_1| - R_{CC}}`. To calculate the final binding free energy 
     ::math:`\Delta\Delta G^{bind}_{L1\rightarrow L2}` you need to substract the free energy difference of ligand2 from 
     ligand 1: ::math:`\Delta\Delta G^{bind}_{L1\rightarrow L2} = \Delta\Delta G^{bind}_{L1\rightarrow |DL_1| - R_{CC}} - \Delta\Delta G^{bind}_{L2\rightarrow\ |DL_2| - R_{CC}}`
-    as explained in the |trafo| in a nutshell section. The same applies for RSFE calculations.
+    as explained in :doc:`whatistransformato`. The same applies for RSFE calculations. 
 
 
 Offloading the analysis to a cluster
