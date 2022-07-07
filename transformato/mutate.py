@@ -740,11 +740,11 @@ class ProposeMutationRoute(object):
 
         .. caution::
             Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2
-        
+
         Args:
             idx_list: Array of atom idxs to add
-        
-        
+
+
         """
         for idx in idx_list:
             self._add_common_core_atom("m1", idx)
@@ -764,7 +764,7 @@ class ProposeMutationRoute(object):
         Args:
             idx_list: Array of atom idxs to add
 
-        
+
         """
         for idx in idx_list:
             self._add_common_core_atom("m2", idx)
@@ -934,19 +934,23 @@ class ProposeMutationRoute(object):
         AllChem.Compute2DCoords(mol)
         display(mol)
 
-    def show_common_core_on_mol1(self):
+    def show_common_core_on_mol1(self, show_atom_types: bool = False):
         """
         Shows common core on mol1
         """
-        return self._show_common_core(self.mols["m1"], self.get_common_core_idx_mol1())
+        return self._show_common_core(
+            self.mols["m1"], self.get_common_core_idx_mol1(), show_atom_types
+        )
 
-    def show_common_core_on_mol2(self):
+    def show_common_core_on_mol2(self, show_atom_types: bool = False):
         """
         Shows common core on mol2
         """
-        return self._show_common_core(self.mols["m2"], self.get_common_core_idx_mol2())
+        return self._show_common_core(
+            self.mols["m2"], self.get_common_core_idx_mol2(), show_atom_types
+        )
 
-    def _show_common_core(self, mol, highlight):
+    def _show_common_core(self, mol, highlight: list, show_atom_type: bool):
         """
         Helper function - do not call directly.
         Show common core.
@@ -957,14 +961,20 @@ class ProposeMutationRoute(object):
         AllChem.Compute2DCoords(mol)
 
         drawer = rdMolDraw2D.MolDraw2DSVG(800, 800)
-        drawer.SetFontSize(0.3)
+        drawer.SetFontSize(6)
 
         opts = drawer.drawOptions()
 
-        for i in mol.GetAtoms():
-            opts.atomLabels[i.GetIdx()] = (
-                str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
-            )
+        if show_atom_type:
+            for i in mol.GetAtoms():
+                opts.atomLabels[i.GetIdx()] = (
+                    str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
+                )
+        else:
+            for i in mol.GetAtoms():
+                opts.atomLabels[i.GetIdx()] = (
+                    str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_name")
+                )
 
         drawer.DrawMolecule(mol, highlightAtoms=highlight)
         Draw.DrawingOptions.includeAtomNumbers = False
@@ -1278,9 +1288,8 @@ class CommonCoreTransformation(object):
         """
         # Prepare Variables to use for restraint cc checks
         global cc_names_struc1, cc_names_struc2
-        cc_names_struc1=[]
-        cc_names_struc2=[]
-
+        cc_names_struc1 = []
+        cc_names_struc2 = []
 
         # match atomes in common cores
         match_atom_names_cc1_to_cc2 = {}
@@ -1292,12 +1301,10 @@ class CommonCoreTransformation(object):
             cc_names_struc1.append(ligand1_atom.name)
             cc_names_struc2.append(ligand2_atom.name)
 
-
         print(f"CC Struc1: {cc_names_struc1}")
         print(f"CC Struc2: {cc_names_struc2}")
         return match_atom_names_cc1_to_cc2
 
-        
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
 
         # common core of psf 1 is transformed to psf 2
