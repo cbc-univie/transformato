@@ -5,6 +5,7 @@ channels:
 dependencies:
   # Base depends
   - openmm==7.5.1
+  - openmmtools
   - numpy
   - ipython
   - pymbar
