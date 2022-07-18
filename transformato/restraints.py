@@ -121,7 +121,7 @@ class Restraint:
             self.force.addBond(
                 [0, 1], [self.force_constant, self.initial_distance / 10]
             )
-
+            
             logger.info(
                 f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}"""
             )
@@ -135,7 +135,7 @@ class Restraint:
                 restrained_atom_indices1=self.g1_openmm,
                 restrained_atom_indices2=self.g2_openmm,
             )
-
+            
             self.force.setUsesPeriodicBoundaryConditions(periodic=True)
 
             logger.info(
