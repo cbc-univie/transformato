@@ -163,7 +163,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
         basedir = self.system.charmm_gui_base
 
-        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
+        if self.configuration["simulation"]["free-energy-type"] == "rsfe" or "asfe":
             # copy simulation bash script
             charmm_simulation_submit_script_source = (
                 f"{self.configuration['bin_dir']}/simulation-rsfe_charmm.sh"
@@ -314,7 +314,7 @@ with open(file_name + '_system.xml','w') as outfile:
         """
         basedir = self.system.charmm_gui_base
 
-        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
+        if self.configuration["simulation"]["free-energy-type"] == "rsfe" or "asfe":
             # parse omm simulation paramter
             for env in self.system.envs:
                 if env == "waterbox":
@@ -408,7 +408,7 @@ with open(file_name + '_system.xml','w') as outfile:
         self._change_platform(omm_simulation_script_target)
         self._check_switching_function()
 
-        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
+        if self.configuration["simulation"]["free-energy-type"] == "rsfe" or "asfe":
             # add vacuum scripts
             omm_simulation_script_source = (
                 f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
