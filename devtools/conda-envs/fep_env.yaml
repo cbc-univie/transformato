@@ -23,4 +23,4 @@ dependencies:
   - codecov
     # Pip-only installs
   - pip:
-     - git+https://github.com/wiederm/transforato_tetsystems.git
+     - git+https://github.com/wiederm/transformato_testsystems.git
