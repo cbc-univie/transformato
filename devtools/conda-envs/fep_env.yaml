@@ -21,3 +21,6 @@ dependencies:
   - pytest
   - pytest-cov
   - codecov
+    # Pip-only installs
+  - pip:
+     - git+https://github.com/wiederm/transforato_tetsystems.git
