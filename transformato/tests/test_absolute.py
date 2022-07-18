@@ -13,7 +13,11 @@ import warnings
 
 warnings.filterwarnings("ignore", module="parmed")
 
-
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_create_asfe_system():
 
     configuration = load_config_yaml(
