@@ -14,7 +14,7 @@ import warnings
 warnings.filterwarnings("ignore", module="parmed")
 
 
-def test_first_idea():
+def test_create_asfe_system():
 
     configuration = load_config_yaml(
         config="/site/raid2/johannes/transformato/transformato/tests/config/test-methanol-asfe.yaml",
