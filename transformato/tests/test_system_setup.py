@@ -21,8 +21,8 @@ from transformato import (
     psf_correction,
 )
 from transformato.mutate import perform_mutations
-from transformato.constants import loeffler_testsystems_dir
 from transformato.tests.paths import get_test_output_dir
+from transformato_testsystems.testsystems import get_testsystems_dir
 
 warnings.filterwarnings("ignore", module="parmed")
 
@@ -41,13 +41,11 @@ def test_read_yaml():
 
 def test_io_psf_files():
     from simtk.openmm.app import CharmmPsfFile
-    from transformato.testsystems import mutate_toluene_to_methane_cc
-
-    from .test_run_production import run_simulation
+    from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
         config="data/config/test-toluene-methane-rsfe.yaml",
-        input_dir="data/",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -88,7 +86,7 @@ def test_initialize_systems(caplog):
 
     configuration = load_config_yaml(
         config="data/config/test-toluene-methane-rsfe.yaml",
-        input_dir="data/",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -105,7 +103,7 @@ def test_initialize_systems(caplog):
 
     configuration = load_config_yaml(
         config="data/config/test-2oj9-tautomer-pair-rsfe.yaml",
-        input_dir="data/",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -119,36 +117,33 @@ def test_initialize_systems(caplog):
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_setup_system_for_methane_common_core():
-    from transformato.testsystems import mutate_methane_to_methane_cc
+    from transformato_testsystems.testsystems import perform_generic_mutation
+
+    print(get_testsystems_dir())
 
     configuration = load_config_yaml(
         config="data/config/test-toluene-methane-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
-    output_files = mutate_methane_to_methane_cc(configuration=configuration)
+    print(configuration)
+    output_files = perform_generic_mutation(configuration=configuration)
 
     assert len(output_files) == 3
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_setup_system_for_toluene_common_core_with_HMR():
-    from transformato.testsystems import mutate_toluene_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
         config="data/config/test-toluene-methane-rsfe-HMR.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
     output_files = mutate_toluene_to_methane_cc(configuration=configuration)
@@ -173,20 +168,15 @@ def test_setup_system_for_toluene_common_core_with_HMR():
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_setup_system_for_methane_common_core_with_HMR():
-    from transformato.testsystems import mutate_methane_to_methane_cc
+    from transformato_testsystems.testsystems import perform_generic_mutation
 
     configuration = load_config_yaml(
         config="data/config/test-toluene-methane-rsfe-HMR.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
-    output_files = mutate_methane_to_methane_cc(configuration=configuration)
+    output_files = perform_generic_mutation(configuration=configuration)
 
     assert len(output_files) == 3
 
@@ -251,7 +241,7 @@ def test_lonepairs_in_dummy_region():
 
     configuration = load_config_yaml(
         config="data/config/jnk1-17124-18631.yaml",
-        input_dir="data/",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -287,7 +277,7 @@ def test_lonepairs_in_common_core():
 
     configuration = load_config_yaml(
         config="data/config/tyk2-ejm_45_ejm_42.yaml",
-        input_dir="data/",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
