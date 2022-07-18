@@ -103,11 +103,18 @@ class IntermediateStateFactory(object):
         self.output_files.append(output_file_base)
 
         # Used for restraints:
-        if "restraints"  in self.configuration["simulation"].keys():
-            
-            logger.info("Found restraints in configuration file - writing restraints.yaml")
-            write_restraints_yaml(f"{output_file_base}/restraints.yaml",self.system,self.configuration,self.current_step)
-            
+        if "restraints" in self.configuration["simulation"].keys():
+
+            logger.info(
+                "Found restraints in configuration file - writing restraints.yaml"
+            )
+            write_restraints_yaml(
+                f"{output_file_base}/restraints.yaml",
+                self.system,
+                self.configuration,
+                self.current_step,
+            )
+
         self.current_step += 1
 
     def _add_serializer(self, file):
@@ -131,7 +138,7 @@ with open(file_name + '_system.xml','w') as outfile:
             prms[key] = self.configuration["simulation"]["parameters"][key]
         return prms
 
-    def _write_workload_preamble(self,filepath):
+    def _write_workload_preamble(self, filepath):
         """
         Prepends the preamble of the selected workload manager in the file specified by filepath
 
@@ -142,15 +149,17 @@ with open(file_name + '_system.xml','w') as outfile:
 
         """
 
-        workloadmanager=self.configuration["simulation"]["workload-manager"]
-        with open(f"{self.configuration['bin_dir']}/{workloadmanager}-preamble.sh","r") as preamblefile:
-            preamble=preamblefile.read()
-        
-        with open(filepath,"r+") as script_to_prepend_to:
-            content=script_to_prepend_to.read()
+        workloadmanager = self.configuration["simulation"]["workload-manager"]
+        with open(
+            f"{self.configuration['bin_dir']}/{workloadmanager}-preamble.sh", "r"
+        ) as preamblefile:
+            preamble = preamblefile.read()
+
+        with open(filepath, "r+") as script_to_prepend_to:
+            content = script_to_prepend_to.read()
             script_to_prepend_to.seek(0)
             script_to_prepend_to.write(f"{preamble}\n{content}")
-        
+
     def _copy_charmm_files(self, intermediate_state_file_path: str):
         """
         _copy_charmm_files Copy CHARMM specific files in running directories
@@ -163,7 +172,10 @@ with open(file_name + '_system.xml','w') as outfile:
 
         basedir = self.system.charmm_gui_base
 
-        if self.configuration["simulation"]["free-energy-type"] == "rsfe" or "asfe":
+        if (
+            self.configuration["simulation"]["free-energy-type"] == "rsfe"
+            or self.configuration["simulation"]["free-energy-type"] == "asfe"
+        ):
             # copy simulation bash script
             charmm_simulation_submit_script_source = (
                 f"{self.configuration['bin_dir']}/simulation-rsfe_charmm.sh"
@@ -176,7 +188,6 @@ with open(file_name + '_system.xml','w') as outfile:
                 charmm_simulation_submit_script_target,
             )
 
-            
             for env in self.system.envs:
                 if env == "waterbox":
                     # write charmm production scripte
@@ -262,11 +273,10 @@ with open(file_name + '_system.xml','w') as outfile:
 
                 else:
                     raise NotImplementedError()
-        
 
         else:
             pass
-        
+
         # Prepend workload manager instructions
         self._write_workload_preamble(charmm_simulation_submit_script_target)
 
@@ -314,7 +324,10 @@ with open(file_name + '_system.xml','w') as outfile:
         """
         basedir = self.system.charmm_gui_base
 
-        if self.configuration["simulation"]["free-energy-type"] == "rsfe" or "asfe":
+        if (
+            self.configuration["simulation"]["free-energy-type"] == "rsfe"
+            or self.configuration["simulation"]["free-energy-type"] == "asfe"
+        ):
             # parse omm simulation paramter
             for env in self.system.envs:
                 if env == "waterbox":
@@ -367,7 +380,6 @@ with open(file_name + '_system.xml','w') as outfile:
         # Prepend workload manager instructions
         self._write_workload_preamble(omm_simulation_submit_script_target)
 
-
         # copy rst files
         for env in self.system.envs:
             rst_file_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
@@ -408,7 +420,10 @@ with open(file_name + '_system.xml','w') as outfile:
         self._change_platform(omm_simulation_script_target)
         self._check_switching_function()
 
-        if self.configuration["simulation"]["free-energy-type"] == "rsfe" or "asfe":
+        if (
+            self.configuration["simulation"]["free-energy-type"] == "rsfe"
+            or self.configuration["simulation"]["free-energy-type"] == "asfe"
+        ):
             # add vacuum scripts
             omm_simulation_script_source = (
                 f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
