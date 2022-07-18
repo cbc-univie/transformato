@@ -190,6 +190,19 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
         "tlc"
     ].upper()
 
+    # read workload manager from yaml
+    if settingsMap["simulation"].get("workload-manager") == None:
+        settingsMap["simulation"]["workload-manager"] = "SGE"
+        print("No workload-manager found in yaml config. Defaulting to SGE")
+    elif (
+        settingsMap["simulation"]["workload-manager"] == "SGE"
+        or settingsMap["simulation"]["workload-manager"] == "slurm"
+    ):
+        print(
+            "Workload-Manager for output files set to %s"
+            % settingsMap["simulation"]["workload-manager"]
+        )
+
     # for absolute solvation only one ligand is necessaryy
     if settingsMap["simulation"]["free-energy-type"] == "asfe":
 
