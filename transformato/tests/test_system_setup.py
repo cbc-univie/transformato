@@ -118,7 +118,7 @@ def test_initialize_systems(caplog):
 
 @pytest.mark.rsfe
 def test_setup_system_for_methane_common_core():
-    from transformato_testsystems.testsystems import perform_generic_mutation
+    from transformato_testsystems.testsystems import perform_generic_mutation_for_mol2
 
     print(get_testsystems_dir())
 
@@ -128,7 +128,7 @@ def test_setup_system_for_methane_common_core():
         output_dir=get_test_output_dir(),
     )
     print(configuration)
-    output_files = perform_generic_mutation(configuration=configuration)
+    output_files = perform_generic_mutation_for_mol2(configuration=configuration)
 
     assert len(output_files) == 3
 
