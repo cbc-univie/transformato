@@ -1721,7 +1721,11 @@ class Mutation(object):
             atom.charge = atom.initial_charge * lambda_value
             logger.debug(f"New charge: {atom.charge}")
 
-        if lambda_value != 1:
+        # check to avoid compensating charges when doing asfe
+        if (
+            lambda_value != 1
+            and len(self.dummy_region.match_termin_real_and_dummy_atoms) != 0
+        ):
             # compensate for the total change in charge the terminal atom
             self._compensate_charge(psf, total_charge, offset)
 
