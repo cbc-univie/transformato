@@ -24,3 +24,4 @@ dependencies:
     # Pip-only installs
   - pip:
      - git+https://github.com/wiederm/transformato_testsystems.git
+    - git+https://github.com/wiederm/tf_routes.git

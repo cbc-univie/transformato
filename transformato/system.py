@@ -111,7 +111,7 @@ class SystemStructure(object):
     @staticmethod
     def mol_to_nx(mol: Chem.Mol):
         try:
-            from tf_routes.tf_routes import preprocessing
+            from tf_routes import preprocessing
 
             return preprocessing._mol_to_nx_full_weight(mol)
         except ModuleNotFoundError:
