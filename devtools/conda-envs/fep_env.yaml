@@ -4,7 +4,7 @@ channels:
   - defaults
 dependencies:
   # Base depends
-  - openmm==7.5.1
+  - openmm
   - openmmtools
   - numpy
   - ipython
