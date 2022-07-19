@@ -180,21 +180,50 @@ def perform_mutations(
                     heavy_atoms_to_turn_off_in_a_single_step
                 ]
             ]
-        print("####################")
-        print(
-            f"Turn off Heavy atom vdW parameter in: {i.current_step} on atoms: {heavy_atoms_to_turn_off_in_a_single_step}"
-        )
-        print("####################")
 
-        if nr_of_mutation_steps_lj_of_heavy_atoms == 1:
+        # only used in asfe to ensure that last atom is
+        # turned off in two steps
+
+        if (
+            heavy_atoms_to_turn_off_in_a_single_step
+            == list_of_heavy_atoms_to_be_mutated[-1]
+            and configuration["simulation"]["free-energy-type"] == "asfe"
+        ):
+
+            for lambda_value in np.linspace(
+                0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
+            ):
+                print("####################")
+                print(
+                    f"Turn off last heavy atom vdW parameter in: {i.current_step} on atoms: {heavy_atoms_to_turn_off_in_a_single_step} with lambda {lambda_value}"
+                )
+                print("####################")
+                i.write_state(
+                    mutation_conf=mutations,
+                    lambda_value_vdw=lambda_value,
+                )
+
+        elif nr_of_mutation_steps_lj_of_heavy_atoms == 1:
+            print("####################")
+            print(
+                f"Turn off heavy atom vdW parameter in: {i.current_step} on atoms: {heavy_atoms_to_turn_off_in_a_single_step}"
+            )
+            print("####################")
+
             i.write_state(
                 mutation_conf=mutations,
                 lambda_value_vdw=0.0,
             )
+
         else:
             for lambda_value in np.linspace(
                 0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
             ):
+                print("####################")
+                print(
+                    f"Turn off heavy atom vdW parameter in: {i.current_step} on atoms: {heavy_atoms_to_turn_off_in_a_single_step} with lambda {lambda_value}"
+                )
+                print("####################")
                 i.write_state(
                     mutation_conf=mutations,
                     lambda_value_vdw=lambda_value,
@@ -203,16 +232,18 @@ def perform_mutations(
     ######################################
     # generate terminal LJ
     ######################################
-    print("####################")
-    print(
-        f"Generate terminal LJ particle in step: {i.current_step} on atoms: {[v.vdw_atom_idx for v in mutation_list['default-lj']]}"
-    )
-    print("####################")
+    if not configuration["simulation"]["free-energy-type"] == "asfe":
 
-    i.write_state(
-        mutation_conf=mutation_list["default-lj"],
-        lambda_value_vdw=0.0,
-    )
+        print("####################")
+        print(
+            f"Generate terminal LJ particle in step: {i.current_step} on atoms: {[v.vdw_atom_idx for v in mutation_list['default-lj']]}"
+        )
+        print("####################")
+
+        i.write_state(
+            mutation_conf=mutation_list["default-lj"],
+            lambda_value_vdw=0.0,
+        )
 
     ######################################
     # mutate common core
