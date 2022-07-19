@@ -3,6 +3,7 @@ Unit and regression test for the transformato package.
 """
 
 import sys, os
+
 # Import package, test suite, and other packages as needed
 import logging
 import pytest
@@ -18,8 +19,7 @@ from transformato import (
 
 from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
-from transformato.constants import loeffler_testsystems_dir
-
+from transformato_testsystems.testsystems import get_testsystems_dir
 
 warnings.filterwarnings("ignore", module="parmed")
 
@@ -31,11 +31,15 @@ def test_transformato_imported():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_acetylaceton_methyl_common_core():
-    from ..testsystems import mutate_acetylaceton_methyl_common_core
+    from transformato_testsystems.testsystems import (
+        mutate_acetylaceton_methyl_common_core,
+    )
 
     conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir=get_test_output_dir()
+        config=conf,
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
     )  # NOTE: for preprocessing input_dir is the output dir
 
     mutate_acetylaceton_methyl_common_core(configuration=configuration)
@@ -53,7 +57,9 @@ def test_rbfe_mutate_2oj9():
     conf_path = "data/config/test-2oj9-tautomer-pair-rbfe.yaml"
 
     configuration = load_config_yaml(
-        config=conf_path, input_dir="data/", output_dir=get_test_output_dir()
+        config=conf_path,
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -80,7 +86,7 @@ def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
 
     conf = "data/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir=get_test_output_dir()
+        config=conf, input_dir=get_testsystems_dir(), output_dir=get_test_output_dir()
     )
 
     (output_files_t1, output_files_t2), _, _ = setup_acetylacetone_tautomer_pair(
@@ -89,17 +95,12 @@ def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_toluene_commmon_core():
-    from transformato.testsystems import mutate_toluene_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
         config="data/config/test-toluene-methane-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -121,17 +122,12 @@ def test_generate_alchemical_path_for_toluene_commmon_core():
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_toluene_commmon_core_with_CUDA():
-    from transformato.testsystems import mutate_toluene_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
         config="data/config/test-toluene-methane-rsfe-CUDA.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -157,17 +153,12 @@ def test_generate_alchemical_path_for_toluene_commmon_core_with_CUDA():
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_2MIN_common_core():
-    from transformato.testsystems import mutate_2_methylindole_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_2_methylindole_to_methane_cc
 
     configuration = load_config_yaml(
         config="data/config/test-2MIN-methane-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -176,17 +167,12 @@ def test_generate_alchemical_path_for_2MIN_common_core():
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_2MFN_common_core():
-    from transformato.testsystems import mutate_2_methylfuran_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_2_methylfuran_to_methane_cc
 
     configuration = load_config_yaml(
         config="data/config/test-2MFN-methane-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -195,17 +181,12 @@ def test_generate_alchemical_path_for_2MFN_common_core():
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_neopentane_common_core():
-    from transformato.testsystems import mutate_neopentane_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_neopentane_to_methane_cc
 
     configuration = load_config_yaml(
         config="data/config/test-neopentane-methane-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -214,36 +195,40 @@ def test_generate_alchemical_path_for_neopentane_common_core():
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_methanol_common_core():
-    from transformato.testsystems import mutate_methanol_to_methane_cc
+    from transformato_testsystems.testsystems import perform_generic_mutation
 
     configuration = load_config_yaml(
         config="data/config/test-methanol-methane-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
 
-    output_files = mutate_methanol_to_methane_cc(configuration=configuration)
-    assert len(output_files) == 13
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=3,
+    )
+    assert len(i.output_files) == 11
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_2_CPI_to_common_core():
-    from transformato.testsystems import mutate_2_CPI_to_7_CPI_cc
+    from transformato_testsystems.testsystems import mutate_2_CPI_to_7_CPI_cc
 
     configuration = load_config_yaml(
         config="data/config/test-7-CPI-2-CPI-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -252,17 +237,12 @@ def test_generate_alchemical_path_for_2_CPI_to_common_core():
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_generate_alchemical_path_for_7_CPI_to_common_core():
-    from transformato.testsystems import mutate_7_CPI_to_2_CPI_cc
+    from transformato_testsystems.testsystems import mutate_7_CPI_to_2_CPI_cc
 
     configuration = load_config_yaml(
         config="data/config/test-7-CPI-2-CPI-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -275,10 +255,9 @@ def test_generate_alchemical_path_for_1a0q_1a07(caplog):
 
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.INFO)
-    workdir = get_test_output_dir()
     conf = "data/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir=workdir
+        config=conf, input_dir=get_testsystems_dir(), output_dir=get_test_output_dir()
     )
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
