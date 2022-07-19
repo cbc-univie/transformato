@@ -121,30 +121,25 @@ class Restraint:
             self.force.addBond(
                 [0, 1], [self.force_constant, self.initial_distance / 10]
             )
-
+            
             logger.info(
                 f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}"""
             )
         elif self.shape == "flatbottom":
-            # create force with flat-bottom potential
+            # create force with flat-bottom potential using openmmtools
+            from openmmtools.forces import FlatBottomRestraintForce
 
-            self.force = CustomCentroidBondForce(
-                2, "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2"
+            self.force = FlatBottomRestraintForce(
+                spring_constant=self.force_constant,
+                well_radius=self.initial_distance * angstrom,
+                restrained_atom_indices1=self.g1_openmm,
+                restrained_atom_indices2=self.g2_openmm,
             )
-
-            # Native openMM step function. Should be 0 for x<0 and 1 for x>=0.
-            self.force.addPerBondParameter("k")
-            self.force.addPerBondParameter("r0")
-            self.force.addPerBondParameter("w")
-            self.force.addGroup(self.g1_openmm)
-            self.force.addGroup(self.g2_openmm)
-
-            self.force.addBond(
-                [0, 1], [self.force_constant, self.initial_distance / 10, self.wellsize]
-            )
+            
+            self.force.setUsesPeriodicBoundaryConditions(periodic=True)
 
             logger.info(
-                f"Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant} wellsize={self.wellsize}"
+                f"Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant} the finall parameters are: {self.force.getBondParameters(0)}"
             )
 
         else:
