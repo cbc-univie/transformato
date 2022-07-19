@@ -92,7 +92,6 @@ def test_3D_distance():
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
 def test_write_yaml(tmp_path):
-    
     class MockSystem:
         def __init__(self):
             self.tlc = "LIG"
@@ -118,6 +117,14 @@ def test_integration():
     Full scale integration test of automatic and manual restraints, including an openMM test system.
     Essentially a modified openmm_run.py
     """
+    from openmm.unit import nanometers, kelvin, kilojoule, mole, picoseconds
+    from openmm.app import (
+        CharmmParameterSet,
+        CharmmPsfFile,
+        CharmmCrdFile,
+        LangevinIntegrator,
+        Platform,
+    )
 
     inputs = read_inputs(f"{PATH_2OJ9_DIR}step5_production.inp")
     params = CharmmParameterSet(
@@ -129,7 +136,7 @@ def test_integration():
         )
     )
     psf = CharmmPsfFile(f"{PATH_2OJ9_DIR}step3_input.psf")
-    crd = read_crd(f"{PATH_2OJ9_DIR}step3_input.crd")
+    crd = CharmmCrdFile(f"{PATH_2OJ9_DIR}step3_input.crd")
 
     top = gen_box(psf, crd)
 
@@ -151,7 +158,7 @@ def test_integration():
     if inputs.rest == "yes":
         system = restraints(system, crd, inputs)
     integrator = LangevinIntegrator(
-        inputs.temp * kelvin, inputs.fric_coeff / picosecond, inputs.dt * picoseconds
+        inputs.temp * kelvin, inputs.fric_coeff / picoseconds, inputs.dt * picoseconds
     )
 
     # Set platform
