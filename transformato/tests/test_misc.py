@@ -7,8 +7,11 @@ import numpy as np
 import mdtraj as md
 from transformato.utils import load_config_yaml
 from transformato.analysis import return_reduced_potential
-from .test_mutation import _set_output_files_2oj9_tautomer_pair
 from transformato.tests.paths import get_test_output_dir
+from transformato_testsystems.testsystems import (
+    get_testsystems_dir,
+    get_output_files_2oj9_tautomer_pair,
+)
 
 
 def test_reduced_energy():
@@ -102,16 +105,16 @@ def test_old_scaling():
 def test_reading_of_coords():
 
     env = "vacuum"
-    base = "data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/"
-    output_files_t1, _ = _set_output_files_2oj9_tautomer_pair()
+    output_files_t1, _ = get_output_files_2oj9_tautomer_pair()
 
     conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
 
     configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="data"
+        config=conf, input_dir=get_testsystems_dir(), output_dir=get_test_output_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
 
     b = output_files_t1[0]
+    print(b)
     traj_load = md.load_dcd(
         f"{b}/lig_in_{env}.dcd",
         f"{b}/lig_in_{env}.psf",
