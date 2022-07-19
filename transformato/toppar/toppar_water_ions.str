@@ -301,8 +301,8 @@ CLA      0.0       -0.150      2.27     ! Chloride
 NBFIX
 !              Emin         Rmin
 !            (kcal/mol)     (A)
-SOD    CLA      -0.083875   3.731 !  From osmotic pressure calibration, J. Phys.Chem.Lett. 1:183-189
-POT    CLA      -0.114236   4.081 !  From osmotic pressure calibration, J. Phys.Chem.Lett. 1:183-189
+!SOD    CLA      -0.083875   3.731 !  From osmotic pressure calibration, J. Phys.Chem.Lett. 1:183-189
+!POT    CLA      -0.114236   4.081 !  From osmotic pressure calibration, J. Phys.Chem.Lett. 1:183-189
 END
 
 ! The following section contains NBFixes for sodium interacting with
@@ -361,16 +361,23 @@ CLA    LIT      -0.0187     3.6875 ! Savelyev and MacKerell, JPCB 2015
 CLA    SOD      -0.0839     3.7310 ! Savelyev and MacKerell, JPCB 2015
 CLA    POT      -0.1142     4.0810 ! Savelyev and MacKerell, JPCB 2015
 
+!Potassium NBFixes
+!carboxylate O
+POT    OC       -0.1022   3.524   ! PNAS, 111: E5354-E5362 (2014)
+POT    OCL      -0.1022   3.524   ! PNAS, 111: E5354-E5362 (2014)
+POT    OC2D2    -0.1022   3.524   ! PNAS, 111: E5354-E5362 (2014)
+POT    OG2D2    -0.1022   3.524   ! PNAS, 111: E5354-E5362 (2014)
+
 !Calcium NBFixes: 2019-8
 CAL    CLA      -0.134164   3.727 ! from J. Phys. Chem. B 2018, 122, 1484−1494
 CAL    O2L      -0.12       3.256 ! from J. Phys. Chem. B 2018, 122, 1484−1494
 CAL    OC2DP    -0.12       3.256 ! from J. Phys. Chem. B 2018, 122, 1484−1494
 CAL    OG2P1    -0.12       3.256 ! from J. Phys. Chem. B 2018, 122, 1484−1494
-!
+!carboxylate O
 CAL    OCL      -0.12       3.232 ! Rong Shen and Benoit Roux, personal communication
-CAL    OC       -0.12       3.232 ! Rong Shen and Benoit Roux, personal communication
-CAL    OC2D2    -0.12       3.232 ! Rong Shen and Benoit Roux, personal communication
-CAL    OG2D2    -0.12       3.232 ! Rong Shen and Benoit Roux, personal communication
+CAL    OC       -0.12       3.232 ! Nature Structural & Molecular Biology 23: 590 (2016)
+CAL    OC2D2    -0.12       3.232 ! 
+CAL    OG2D2    -0.12       3.232 ! 
 
 END
 BOMLEV @bom @PARA

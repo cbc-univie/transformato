@@ -6,6 +6,7 @@
 !CLAY MINERAL
 MASS -1 IAY1   26.981539  ! Al  6 coordinate ; Aluminum atom(+1.45) or magnesium defect(+1.1) in octahedral aluminate sheet
 MASS -1 IAY2   26.981539  ! Al  6 coordinate ; Aluminum atom +1.45) or magnesium defect(+1.1) in octahedral aluminate sheet
+MASS -1 IMY1   24.305000  ! Mg  6 coordinate ; Magnesium defect(+1.1) in octahedral aluminate sheet
 MASS -1 IHOK    1.008000  ! H   1 coordinate ; Hydrogen atom in AlOH surface group in kaolinite
 MASS -1 IHOY    1.008000  ! H   1 coordinate ; Hydrogen atom in (Al,Mg,Si)OH and OH- group in clay, silica
 MASS -1 IOY1   15.999400  ! O   2 coordinate ; Oxygen atom in silicate sheet, surface (-0.55, -0.783 if next to Al defect)
@@ -36,6 +37,8 @@ MASS -1 ISC4   28.086000  ! Si  4 coordinate ; Silicon atom in silica (+1.1 in b
 MASS -1 ICA_S  40.080000  ! Ca  0 coordinate ; Calcium ion in Ca3SiO5 (+1.5) and organic salts. replace CA++ with ICA_S in C3S.
 MASS -1 ICA_A  40.080000  ! Ca  0 coordinate ; Calcium ion in Ca3Al2O6 (+1.5). replace CA+A with ICA_A in C3A.
 MASS -1 ICA_G  40.080000  ! Ca  0 coordinate ; Calcium ion in gypsum, hemihydrate, and anhydrite(+1.5). replace CA+G with ICA_G.
+MASS -1 ISCS   32.060000  ! S   4 coordinate ; Sulfur atom in Calcium Sulphates: Gypsum, Hemihydrate, and Anhydrite
+MASS -1 IOCS   15.999400  ! O                ; Sulfur atom in Calcium Sulphates: Gypsum, Hemihydrate, and Anhydrite
 MASS -1 ICA_H  40.080000  ! Ca  0 coordinate ; Calcium ion in hydroxyapatite (+1.5). replace CA+H with ICA_H.
 MASS -1 ICA_E  40.080000  ! CA  0 coordinate ; Calcium ion in ettringite(+1.6). replace CA+E with ICA_E.
 MASS -1 ICA_T  40.080000  ! Ca  0 coordinate ; Calcium ion in tobermolite (+1.5). replace CA+T with ICA_T.
@@ -74,29 +77,55 @@ MASS -1 IOPEO 15.999400  ! O   2 coordinate ; Oxygen atom in PEO backbone. Becau
 MASS -1 ST    32.06000   ! S   3 coordinate ; sulfur atom in staple motif
 !MASS -1 OET5 14.999400  ! O   2 coordinate ; Oxygen atom in PEO backbone with lone pairs ET5 attached (et5=-0.12)
 !MASS -1 OAT5 14.999400  ! O   2 coordinate ; Oxygen atom in terminal OH group in PEO with lone pairs et5 attached (et5=-0.18)
+MASS -1 IMO1  95.950000  ! Mo  6 coordinate ; Molybdenum disulfide (0.5)
+MASS -1 IMO2  95.950000  ! Mo  6 coordinate ; Molybdenum disulfide (0.5)
+MASS -1 ISM1  32.080000  ! S   3 coordinate ; Sulfur atom in Molybdenum disulfide (-0.25)
+MASS -1 ISM2  32.080000  ! S   3 coordinate ; Sulfur atom in Molybdenum disulfide (-0.25)
+MASS -1 ISM3  32.080000  ! S   3 coordinate ; Sulfur atom in Molybdenum disulfide (-0.25)
+MASS -1 ISM4  32.080000  ! S   3 coordinate ; Sulfur atom in Molybdenum disulfide (-0.25)
+MASS -1 ICG1  10.011150  ! C   3 coordinate ; sp2 hybridized carbon atom in graphene sheet
+MASS -1 ICGE   1.007970  ! H   1 coordinate ; Dummy atom attached delocalized carbon of graphene
 !METAL
-MASS  -1 AG  107.868200  ! AG  0 coordinate ; Silver metal (HH et al. 2008)
-MASS  -1 AL   26.981539  ! AL  0 coordinate ; Aluminium metal (HH et al. 2008)
-MASS  -1 AU  196.966500  ! AU  0 coordinate ; Gold metal (HH et al. 2008)
+MASS  -1 IAG  107.868200 ! AG  0 coordinate ; Silver metal (HH et al. 2008)
+MASS  -1 IAL   26.981539 ! AL  0 coordinate ; Aluminium metal (HH et al. 2008)
+MASS  -1 IAU  196.966500  ! AU  0 coordinate ; Gold metal (HH et al. 2008)
 MASS  -1 AUL  196.966500  ! AU  0 coordinate ; Gold metal (HH et al. 2008)
 MASS  -1 AUS  196.966500  ! AU  0 coordinate ; Gold metal (HH et al. 2008)
 MASS  -1 AUD  196.966500  ! AU  0 coordinate ; Gold metal (HH et al. 2008)
-MASS  -1 CU   63.546000  ! CU  0 coordinate ; Copper metal (HH et al. 2008)
-MASS  -1 NI   58.693400  ! NI  0 coordinate ; Nickel metal (HH et al. 2008)
-MASS  -1 PB  207.200000  ! PB  0 coordinate ; Lead metal (HH et al. 2008)
-MASS  -1 PD  106.420000  ! PD  0 coordinate ; Palladium metal (HH et al. 2008)
-MASS  -1 PT  195.084000  ! PT  0 coordinate ; Platinum metal (HH et al. 2008)
-MASS  -1 AC  107.868200  ! AC  0 coordinate ; Actinium metal (HH et al. ****)
-MASS  -1 IFCA  107.868200  ! CA  0 coordinate ; Calcium (α) metal (HH et al. ****)
-MASS  -1 CE  107.868200  ! CE  0 coordinate ; Cerium (γ) metal (HH et al. ****)
-MASS  -1 ES  107.868200  ! ES  0 coordinate ; Einsteinium (β) metal (HH et al. ****)
-MASS  -1 IR  107.868200  ! IR  0 coordinate ; Iridium metal (HH et al. ****)
-MASS  -1 IFFE  107.868200  ! FE  0 coordinate ; Iron (γ) metal (HH et al. ****)
-MASS  -1 RH  107.868200  ! RH  0 coordinate ; Rhodium metal (HH et al. ****)
-MASS  -1 SR  107.868200  ! SR  0 coordinate ; Strontium metal (HH et al. ****)
-MASS  -1 TH  107.868200  ! TH  0 coordinate ; Thorium metal (HH et al. ****)
-MASS  -1 YB  107.868200  ! YB  0 coordinate ; Ytterbium metal (HH et al. ****)
+MASS  -1 ICU   63.546000  ! CU  0 coordinate ; Copper metal (HH et al. 2008)
+MASS  -1 INI   58.693400  ! NI  0 coordinate ; Nickel metal (HH et al. 2008)
+MASS  -1 IPB  207.200000  ! PB  0 coordinate ; Lead metal (HH et al. 2008)
+MASS  -1 IPD  106.420000 ! PD  0 coordinate ; Palladium metal (HH et al. 2008)
+MASS  -1 IPT  195.084000  ! PT  0 coordinate ; Platinum metal (HH et al. 2008)
+MASS  -1 IAC  227.00000  ! AC  0 coordinate ; Actinium metal (HH et al. ****)
+MASS  -1 ICA  40.07800  ! CA  0 coordinate ; Calcium (α) metal (HH et al. ****)
+MASS  -1 ICE  140.11600  ! CE  0 coordinate ; Cerium (γ) metal (HH et al. ****)
+MASS  -1 IES  252.00000  ! ES  0 coordinate ; Einsteinium (β) metal (HH et al. ****)
+MASS  -1 IIR  192.21700  ! IR  0 coordinate ; Iridium metal (HH et al. ****)
+MASS  -1 IFE  55.84700  ! FE  0 coordinate ; Iron (γ) metal (HH et al. ****)
+MASS  -1 IRH  102.90550  ! RH  0 coordinate ; Rhodium metal (HH et al. ****)
+MASS  -1 ISR  87.62000  ! SR  0 coordinate ; Strontium metal (HH et al. ****)
+MASS  -1 ITH  232.03770  ! TH  0 coordinate ; Thorium metal (HH et al. ****)
+MASS  -1 IYB  173.04500  ! YB  0 coordinate ; Ytterbium metal (HH et al. ****)
 !MASS -1 SG    32.080000  ! S   1 coordinate ; S in Calcium Sulphate Minerals.
+MASS  -1 IALO  26.981539 ! AL  6 coordinate ; Aluminium alpha-Al2O3 (non-bond oxide model charge: +1.71)
+MASS  -1 IOAL  15.999400 ! O   4 coordinate ; Oxygen alpha-Al2O3 (non-bond oxide model charge: -1.14)
+MASS  -1 ICRO  51.996000 ! Cr  6 coordinate ; Chromium alpha-Cr2O3 (non-bond oxide model charge: +1.68)
+MASS  -1 IOCR  15.999400 ! O   4 coordinate ; Oxygen alpha-Cr2O3 (non-bond oxide model charge: -1.12)
+MASS  -1 IFEO  55.84700  ! FE  6 coordinate ; Iron alpha-Fe2O3 (non-bond oxide model charge: +1.56)
+MASS  -1 IOFE  15.999400 ! O   4 coordinate ; Oxygen alpha-Fe2O3 (non-bond oxide model charge: -1.04)
+MASS  -1 ICAO  40.08000  ! Ca  6 coordinate ; Calcium CaO (non-bond oxide model charge: +1.30)
+MASS  -1 IOCA  15.999400 ! O   6 coordinate ; Oxygen CaO (non-bond oxide model charge: -1.30)
+MASS  -1 IMGO  24.30500  ! Mg  6 coordinate ; Magnesium MgO (non-bond oxide model charge: +1.15)
+MASS  -1 IOMG  15.999400 ! O   6 coordinate ; Oxygen MgO (non-bond oxide model charge: -1.15)
+MASS  -1 INIO  58.710000 ! Ni  6 coordinate ; Mickel NiO (non-bond oxide model charge: +1.10)
+MASS  -1 IONI  15.999400 ! O   6 coordinate ; Oxygen NiO (non-bond oxide model charge: -1.10)
+MASS  -1 ICCH  40.08000  ! Ca  0 coordinate ; Calcium Ca(OH)2 (non-bond oxide model charge: +1.70)
+MASS  -1 IOCH  15.999400 ! O   0 coordinate ; Oxygen Ca(OH)2 (non-bond oxide model charge: -1.32)
+MASS  -1 IHCH  1.007970  ! H   0 coordinate ; Hydrogen Ca(OH)2 (non-bond oxide model charge: +0.47)
+MASS  -1 INNH  58.710000 ! Ni  0 coordinate ; Nickel Ni(OH)2 (non-bond oxide model charge: +1.40)
+MASS  -1 IONH  15.999400 ! O   0 coordinate ; Oxygen Ni(OH)2 (non-bond oxide model charge: -1.00)
+MASS  -1 IHNH  1.007970  ! H   0 coordinate ; Hydrogen Ni(OH)2 (non-bond oxide model charge: +0.30)
 
 DEFA FIRS none LAST none
 AUTOGENERATE ANGLE DIHEDRALS
@@ -387,6 +416,103 @@ BOND  O8    H1    O12   H2    O13   H3    O18   H4
 
 DEFA FIRS none LAST none
 AUTOGENERATE ANGLE DIHEDRALS
+
+RESI PP001             0.000 ! montmorillonite KAL3Mg[Si4O10(OH)2]2 in kind of cement minerals
+GROUP                        !
+ATOM  SI1   ISY1        1.100 !
+ATOM  SI2   ISY2        1.100 !
+ATOM  SI3   ISY1        1.100 !
+ATOM  SI4   ISY2        1.100 !
+ATOM  O1    IOY2       -0.550 !          O20        O21      O22      O23      O24
+ATOM  O2    IOY3       -0.550 !             \      /  \      / \     /  \      /
+ATOM  O3    IOY1       -0.550 !              \    /    \    /   \   /    \    /
+ATOM  O4    IOY2       -0.550 !               \  /      \  /     \ /      \  /
+ATOM  O5    IOY3       -0.550 !                SI5       SI6     SI7       SI8
+ATOM  O6    IOY1       -0.550 !               / |        |        |         |
+GROUP                        !              /  |        |        |         |
+ATOM  AL1   IAY1        1.465 !            O19  |        |        |         |
+ATOM  AL2   IAY2        1.465 !                 O9       O14      O17       O18
+ATOM  AL4   IAY1        1.465 !                / \       |\       / \       /
+ATOM  AL3   IAY2        1.465 !               /   \      | \     /   \     /
+ATOM  O7    IOY4       -0.757 !     H1-O10   /     \ H3-O13 \   /     \   /
+ATOM  O8    IOY5       -0.757 !          \  /       \  /   \ \ /       \ /
+ATOM  O9    IOY8       -0.757 !           AL1       AL2     AL4        AL3
+ATOM  O10   IOY9       -0.701 !          /  \       / \\   /  \       / \
+ATOM  O11   IOY4       -0.757 !         /    \     /   \O12-H2 \     /   O16-H4
+ATOM  O12   IOY6       -0.701 !        /      \   /     \       \   /
+ATOM  O13   IOY9       -0.701 !       /        \ /       \       \ /
+ATOM  O14   IOY7       -0.757 !      O7         O8       O11     O15
+ATOM  O15   IOY5       -0.757 !      |          |         |       |
+ATOM  O16   IOY6       -0.701 !      |          |         |       |
+ATOM  O17   IOY8       -0.757 !      |          |         |       |
+ATOM  O18   IOY7       -0.757 !     SI1        SI2       SI3     SI4---O6
+ATOM  H1    IHOY        0.200 !     /  \       /  \      / \     / \
+ATOM  H2    IHOY        0.200 !    /    \     /    \    /   \   /   \
+ATOM  H3    IHOY        0.200 !   /      \   /      \  /     \ /     \
+ATOM  H4    IHOY        0.200 !  O1       O2         O3       O4      O5
+GROUP                        !
+ATOM  SI5   ISY2        1.100 !
+ATOM  SI6   ISY1        1.100 !
+ATOM  SI7   ISY2        1.100 !
+ATOM  SI8   ISY1        1.100 !
+ATOM  O19   IOY1       -0.550 !
+ATOM  O20   IOY3       -0.550 !
+ATOM  O21   IOY2       -0.550 !
+ATOM  O22   IOY1       -0.550 !
+ATOM  O23   IOY3       -0.550 !
+ATOM  O24   IOY2       -0.550 !
+GROUP                        !
+!ATOM  K1    IK_CM       1.002 !
+BOND  SI1   O1    SI1   O2    SI1   O7    SI2   O2
+BOND  SI2   O3    SI2   O8    SI3   O3    SI3   O4
+BOND  SI3   O11   SI4   O4    SI4   O5    SI4   O6
+BOND  SI4   O15   SI5   O9    SI5   O19   SI5   O20
+BOND  SI5   O21   SI6   O14   SI6   O21   SI6   O22
+BOND  SI7   O17   SI7   O22   SI7   O23   SI8   O18
+BOND  SI8   O23   SI8   O24   AL1   O7    AL1   O8
+BOND  AL1   O9    AL1   O10   AL2   O8    AL2   O9
+BOND  AL2   O11   AL2   O12   AL2   O13   AL4   O12
+BOND  AL4   O13   AL4   O14   AL4   O15   AL4   O17
+BOND  AL3   O15   AL3   O16   AL3   O17   AL3   O18
+BOND  O10   H1    O12   H2    O13   H3    O16   H4
+!IC     I       J        K     L         R(I(J/K))T(I(JK/KJ)) PHI  T(JKL)   R(KL)
+ IC    O2      O7      *SI1    O1          1.6506  110.29  119.07  112.52   1.6353
+ IC    O7      SI1     O2      SI2         1.6489  110.29   31.91  128.16   1.6418
+ IC    SI1     O2      SI2     O8          1.6506  128.16  -19.56  110.44   1.6483
+ IC    O8      O2      *SI2    O3          1.6483  110.44  120.11  107.29   1.6462
+ IC    O2      SI2     O3      SI3         1.6418  107.29 -151.85  128.80   1.6436
+ IC    SI2     O3      SI3     O4          1.6462  128.80  143.75  110.02   1.6353
+ IC    O4      O3      *SI3    O11         1.6353  110.02 -124.52  110.04   1.6489
+ IC    O3      SI3     O4      SI4         1.6436  110.02  -83.31  139.86   1.6412
+ IC    SI3     O4      SI4     O15         1.6353  139.86  -39.69  112.17   1.6483
+ IC    O15     O4      *SI4    O5          1.6483  112.17  123.05  109.59   1.6418
+ IC    O5      O4      *SI4    O6          1.6418  109.59  116.02  106.99   1.6462
+ IC    O1      SI1     O7      AL1         1.6353  112.52  124.95  127.50   1.9437
+ IC    AL1     SI2     *O8     AL2         1.9269  123.80  144.46  127.22   1.9456
+ IC    O4      SI4     O15     AL4         1.6412  112.17   90.19  123.80   1.9269
+ IC    AL4     SI4     *O15    AL3         1.9269  123.80  144.46  127.22   1.9456
+ IC    O8      O7      *AL1    O9          1.9269   92.77  -78.62   98.23   1.9456
+ IC    O8      O7      *AL1    O10         1.9269   92.77  131.63  167.12   1.9166
+ IC    O9      O8      *AL2    O12         1.9269   78.35   95.32   92.93   1.9166
+ IC    O9      O8      *AL2    O13         1.9269   78.35   57.99  167.30   1.9206
+ IC    O12     O15     *AL4    O17         1.9206   94.75 -169.22   78.35   1.9456
+ IC    O12     O15     *AL4    O14         1.9206   94.75  140.74  166.66   1.9255
+ IC    O17     O15     *AL3    O18         1.9269   78.35  -91.14   98.23   1.9437
+ IC    O17     O15     *AL3    O16         1.9269   78.35   95.32   92.93   1.9166
+ IC    O7      AL1     O10     H1          1.9437  167.12 -166.01  116.19   0.9288
+ IC    AL4     AL2     *O12    H2          1.9206  102.97  128.19  116.19   0.9288
+ IC    AL4     AL2     *O13    H3          1.9166  102.97  128.18  116.20   0.9288
+ IC    O15     AL3     O16     H4          1.9456   92.93  -43.95  116.19   0.9288
+ IC    AL2     AL1     *O9     SI5         1.9269  101.65  150.45  127.22   1.6483
+ IC    O15     AL4     O14     SI6         1.9269  166.66  103.06  123.65   1.6489
+ IC    AL3     AL4     *O17    SI7         1.9269  101.65  150.45  127.22   1.6483
+ IC    O15     AL3     O18     SI8         1.9456   98.23  118.06  127.50   1.6489
+ IC    AL1     O9      SI5     O19         1.9456  127.22    6.27  110.18   1.6462
+ IC    O19     O9      *SI5    O20         1.6462  110.18 -118.35  110.44   1.6418
+ IC    O19     O9      *SI5    O21         1.6462  110.18  119.08  112.17   1.6412
+ IC    O21     O14     *SI6    O22         1.6353  112.52 -123.07  110.04   1.6436
+ IC    O22     O17     *SI7    O23         1.6462  110.18 -118.35  110.44   1.6418
+ IC    O23     O18     *SI8    O24         1.6506  110.29 -119.07  112.52   1.6353
 
 RESI MM001             0.000 ! montmorillonite KAL3Mg[Si4O10(OH)2]2 in kind of cement minerals
 GROUP                        !
@@ -863,6 +989,189 @@ BOND  SI4  O12    SI4   O18   SI4   O28   SI4   O29
 BOND  SI5  O16    SI5   O17   SI5   O19   SI5   O24
 BOND  SI6  O1     SI6   O9    SI6   O10   SI6   O13
 
+RESI TSR010             0.000 ! tricalcuim silicate [Ca3O(SiO4)]6 in kind of cement minerals
+GROUP                         ! C=CaO S=SiO2 C3=Ca3O3 C3S=Ca3O3SiO2 Ca:Si:O=3:1:5
+ATOM   CA1   ICA_S      1.500 !
+ATOM   CA2   ICA_S      1.500 !
+ATOM   CA3   ICA_S      1.500 !
+ATOM   CA4   ICA_S      1.500 !
+ATOM   CA5   ICA_S      1.500 !
+ATOM   CA6   ICA_S      1.500 !
+ATOM   CA7   ICA_S      1.500 !
+ATOM   CA8   ICA_S      1.500 !
+ATOM   CA9   ICA_S      1.500 !
+ATOM   CA10  ICA_S      1.500 !
+ATOM   CA11  ICA_S      1.500 !
+ATOM   CA12  ICA_S      1.500 !
+ATOM   CA13  ICA_S      1.500 !
+ATOM   CA14  ICA_S      1.500 !
+ATOM   CA15  ICA_S      1.500 !
+ATOM   CA16  ICA_S      1.500 !
+ATOM   CA17  ICA_S      1.500 !
+ATOM   CA18  ICA_S      1.500 !
+ATOM   SI1   ISC1       1.000 !
+ATOM   SI2   ISC1       1.000 !
+ATOM   SI3   ISC1       1.000 !
+ATOM   SI4   ISC1       1.000 !
+ATOM   SI5   ISC1       1.000 !
+ATOM   SI6   ISC1       1.000 !
+ATOM   SI7   ISC1       1.000 !
+ATOM   SI8   ISC1       1.000 !
+ATOM   SI9   ISC1       1.000 !
+ATOM   O1    IOC1      -1.000 !
+ATOM   O2    IOC1      -1.000 !
+ATOM   O3    IOC1      -1.000 !
+ATOM   O4    IOC2      -1.500 !
+ATOM   O5    IOC2      -1.500 !
+ATOM   O6    IOC2      -1.500 !
+ATOM   O7    IOC1      -1.000 !
+ATOM   O8    IOC1      -1.000 !
+ATOM   O9    IOC1      -1.000 !
+ATOM   O10   IOC1      -1.000 !
+ATOM   O11   IOC1      -1.000 !
+ATOM   O12   IOC1      -1.000 !
+ATOM   O13   IOC1      -1.000 !
+ATOM   O14   IOC1      -1.000 !
+ATOM   O15   IOC1      -1.000 !
+ATOM   O16   IOC2      -1.500 !
+ATOM   O17   IOC2      -1.500 !
+ATOM   O18   IOC2      -1.500 !
+ATOM   O19   IOC2      -1.500 !
+ATOM   O20   IOC2      -1.500 !
+ATOM   O21   IOC2      -1.500 !
+ATOM   O22   IOC1      -1.000 !
+ATOM   O23   IOC1      -1.000 !
+ATOM   O24   IOC1      -1.000 !
+ATOM   O25   IOC1      -1.000 !
+ATOM   O26   IOC1      -1.000 !
+ATOM   O27   IOC1      -1.000 !
+ATOM   O28   IOC1      -1.000 !
+ATOM   O29   IOC1      -1.000 !
+ATOM   CA19  ICA_S      1.500 !
+ATOM   CA20  ICA_S      1.500 !
+ATOM   CA21  ICA_S      1.500 !
+ATOM   CA22  ICA_S      1.500 !
+ATOM   CA23  ICA_S      1.500 !
+ATOM   CA24  ICA_S      1.500 !
+ATOM   CA25  ICA_S      1.500 !
+ATOM   CA26  ICA_S      1.500 !
+ATOM   CA27  ICA_S      1.500 !
+ATOM   O30   IOC1      -1.000 !
+ATOM   O31   IOC1      -1.000 !
+ATOM   O32   IOC1      -1.000 !
+ATOM   O33   IOC1      -1.000 !
+ATOM   O34   IOC1      -1.000 !
+ATOM   CA28  ICA_S      1.500 !
+ATOM   CA29  ICA_S      1.500 !
+ATOM   CA30  ICA_S      1.500 !
+ATOM   CA31  ICA_S      1.500 !
+ATOM   CA32  ICA_S      1.500 !
+ATOM   CA33  ICA_S      1.500 !
+ATOM   CA34  ICA_S      1.500 !
+ATOM   CA35  ICA_S      1.500 !
+ATOM   CA36  ICA_S      1.500 !
+ATOM   CA37  ICA_S      1.500 !
+ATOM   CA38  ICA_S      1.500 !
+ATOM   CA39  ICA_S      1.500 !
+ATOM   CA40  ICA_S      1.500 !
+ATOM   CA41  ICA_S      1.500 !
+ATOM   CA42  ICA_S      1.500 !
+ATOM   CA43  ICA_S      1.500 !
+ATOM   CA44  ICA_S      1.500 !
+ATOM   CA45  ICA_S      1.500 !
+ATOM   SI10  ISC1       1.000 !
+ATOM   SI11  ISC1       1.000 !
+ATOM   SI12  ISC1       1.000 !
+ATOM   SI13  ISC1       1.000 !
+ATOM   SI14  ISC1       1.000 !
+ATOM   SI15  ISC1       1.000 !
+ATOM   SI16  ISC1       1.000 !
+ATOM   SI17  ISC1       1.000 !
+ATOM   SI18  ISC1       1.000 !
+ATOM   O35   IOC1      -1.000 !
+ATOM   O36   IOC1      -1.000 !
+ATOM   O37   IOC2      -1.500 !
+ATOM   O38   IOC2      -1.500 !
+ATOM   O39   IOC2      -1.500 !
+ATOM   O40   IOC1      -1.000 !
+ATOM   O41   IOC1      -1.000 !
+ATOM   O42   IOC1      -1.000 !
+ATOM   O43   IOC1      -1.000 !
+ATOM   O44   IOC1      -1.000 !
+ATOM   O45   IOC1      -1.000 !
+ATOM   O46   IOC1      -1.000 !
+ATOM   O47   IOC1      -1.000 !
+ATOM   O48   IOC1      -1.000 !
+ATOM   O49   IOC1      -1.000 !
+ATOM   O50   IOC1      -1.000 !
+ATOM   O51   IOC1      -1.000 !
+ATOM   O52   IOC2      -1.500 !
+ATOM   O53   IOC2      -1.500 !
+ATOM   O54   IOC2      -1.500 !
+ATOM   O55   IOC2      -1.500 !
+ATOM   O56   IOC2      -1.500 !
+ATOM   O57   IOC2      -1.500 !
+ATOM   O58   IOC1      -1.000 !
+ATOM   O59   IOC1      -1.000 !
+ATOM   O60   IOC1      -1.000 !
+ATOM   O61   IOC1      -1.000 !
+ATOM   O62   IOC1      -1.000 !
+ATOM   O63   IOC1      -1.000 !
+ATOM   O64   IOC1      -1.000 !
+ATOM   O65   IOC1      -1.000 !
+ATOM   O66   IOC1      -1.000 !
+ATOM   CA46  ICA_S      1.500 !
+ATOM   CA47  ICA_S      1.500 !
+ATOM   CA48  ICA_S      1.500 !
+ATOM   CA49  ICA_S      1.500 !
+ATOM   CA50  ICA_S      1.500 !
+ATOM   CA51  ICA_S      1.500 !
+ATOM   CA52  ICA_S      1.500 !
+ATOM   CA53  ICA_S      1.500 !
+ATOM   CA54  ICA_S      1.500 !
+ATOM   O67   IOC1      -1.000 !
+ATOM   O68   IOC1      -1.000 !
+ATOM   O69   IOC1      -1.000 !
+ATOM   O70   IOC1      -1.000 !
+ATOM   O71   IOC1      -1.000 !
+ATOM   O72   IOC1      -1.000 !
+ATOM   O73   IOC1      -1.000 !
+ATOM   O74   IOC1      -1.000 !
+ATOM   O75   IOC1      -1.000 !
+ATOM   O76   IOC1      -1.000 !
+ATOM   O77   IOC1      -1.000 !
+ATOM   O78   IOC1      -1.000 !
+ATOM   O79   IOC1      -1.000 !
+ATOM   O80   IOC1      -1.000 !
+ATOM   O81   IOC1      -1.000 !
+ATOM   O82   IOC1      -1.000 !
+ATOM   O83   IOC1      -1.000 !
+ATOM   O84   IOC1      -1.000 !
+ATOM   O85   IOC1      -1.000 !
+ATOM   O86   IOC1      -1.000 !
+ATOM   O87   IOC1      -1.000 !
+ATOM   O88   IOC1      -1.000 !
+ATOM   O89   IOC1      -1.000 !
+ATOM   O90   IOC1      -1.000 !
+BOND  SI1   O72    SI1    O73   SI1    O74   SI1     O75
+BOND  SI2   O12    SI2    O76   SI2    O62   SI2     O30
+BOND  SI3   O13    SI3    O31   SI3    O63   SI3     O77
+BOND  SI4   O78    SI4    O80   SI4    O7    SI4     O79
+BOND  SI5   O8     SI5    O10   SI5    O14   SI5     O81
+BOND  SI6   O11    SI6    O15   SI6    O82   SI6     O9
+BOND  SI7   O35    SI7    O64   SI7    O60   SI7     O83
+BOND  SI8   O36    SI8    O65   SI8    O61   SI8     O84
+BOND  SI9   O85    SI9    O86   SI9    O87   SI9     O66
+BOND  SI10  O46    SI10   O88   SI10   O89   SI10    O90
+BOND  SI11  O47    SI11   O25   SI11   O70   SI11    O58
+BOND  SI12  O26    SI12   O48   SI12   O59   SI12    O71
+BOND  SI13  O40    SI13   O43   SI13   O49   SI13    O67
+BOND  SI14  O41    SI14   O44   SI14   O50   SI14    O68
+BOND  SI15  O42    SI15   O45   SI15   O51   SI15    O69
+BOND  SI16  O1     SI16   O22   SI16   O32   SI16    O27
+BOND  SI17  O2     SI17   O28   SI17   O23   SI17    O33
+BOND  SI18  O3     SI18   O24   SI18   O29   SI18    O34
+
 RESI TS100          0.000 !
 GROUP
 ATOM  CA1    ICA_S    1.500 !
@@ -926,6 +1235,129 @@ BOND  SI4  O12    SI4   O18   SI4   O28   SI4   O29
 BOND  SI5  O16    SI5   O17   SI5   O19   SI5   O24
 BOND  SI6  O1     SI6   O9    SI6   O10   SI6   O13
 
+RESI TSR100             0.000 ! tricalcuim silicate [Ca3O(SiO4)]6 in kind of cement minerals
+GROUP                         ! C=CaO S=SiO2 C3=Ca3O3 C3S=Ca3O3SiO2 Ca:Si:O=3:1:5
+ATOM   CA1   ICA_S      1.500 !
+ATOM   CA2   ICA_S      1.500 !
+ATOM   CA3   ICA_S      1.500 !
+ATOM   CA4   ICA_S      1.500 !
+ATOM   CA5   ICA_S      1.500 !
+ATOM   CA6   ICA_S      1.500 !
+ATOM   CA7   ICA_S      1.500 !
+ATOM   CA8   ICA_S      1.500 !
+ATOM   CA9   ICA_S      1.500 !
+ATOM   CA10  ICA_S      1.500 !
+ATOM   CA11  ICA_S      1.500 !
+ATOM   CA12  ICA_S      1.500 !
+ATOM   SI1   ISC1       1.000 !
+ATOM   SI2   ISC1       1.000 !
+ATOM   SI3   ISC1       1.000 !
+ATOM   SI4   ISC1       1.000 !
+ATOM   SI5   ISC1       1.000 !
+ATOM   SI6   ISC1       1.000 !
+ATOM   O1    IOC1      -1.000 !
+ATOM   O2    IOC1      -1.000 !
+ATOM   O3    IOC2      -1.500 !
+ATOM   O4    IOC2      -1.500 !
+ATOM   O5    IOC1      -1.000 !
+ATOM   O6    IOC1      -1.000 !
+ATOM   O7    IOC1      -1.000 !
+ATOM   O8    IOC1      -1.000 !
+ATOM   O9    IOC2      -1.500 !
+ATOM   O10   IOC2      -1.500 !
+ATOM   O11   IOC2      -1.500 !
+ATOM   O12   IOC2      -1.500 !
+ATOM   O13   IOC1      -1.000 !
+ATOM   O14   IOC1      -1.000 !
+ATOM   O15   IOC1      -1.000 !
+ATOM   O16   IOC1      -1.000 !
+ATOM   O17   IOC1      -1.000 !
+ATOM   O18   IOC1      -1.000 !
+ATOM   O19   IOC1      -1.000 !
+ATOM   O20   IOC1      -1.000 !
+ATOM   CA13  ICA_S      1.500 !
+ATOM   CA14  ICA_S      1.500 !
+ATOM   CA15  ICA_S      1.500 !
+ATOM   CA16  ICA_S      1.500 !
+ATOM   CA17  ICA_S      1.500 !
+ATOM   CA18  ICA_S      1.500 !
+ATOM   O21   IOC1      -1.000 !
+ATOM   O22   IOC1      -1.000 !
+ATOM   O23   IOC1      -1.000 !
+ATOM   O24   IOC1      -1.000 !
+ATOM   CA19  ICA_S      1.500 !
+ATOM   CA20  ICA_S      1.500 !
+ATOM   CA21  ICA_S      1.500 !
+ATOM   CA22  ICA_S      1.500 !
+ATOM   CA23  ICA_S      1.500 !
+ATOM   CA24  ICA_S      1.500 !
+ATOM   CA25  ICA_S      1.500 !
+ATOM   CA26  ICA_S      1.500 !
+ATOM   CA27  ICA_S      1.500 !
+ATOM   CA28  ICA_S      1.500 !
+ATOM   CA29  ICA_S      1.500 !
+ATOM   CA30  ICA_S      1.500 !
+ATOM   SI7   ISC1       1.000 !
+ATOM   SI8   ISC1       1.000 !
+ATOM   SI9   ISC1       1.000 !
+ATOM   SI10  ISC1       1.000 !
+ATOM   SI11  ISC1       1.000 !
+ATOM   SI12  ISC1       1.000 !
+ATOM   O25   IOC1      -1.000 !
+ATOM   O26   IOC2      -1.500 !
+ATOM   O27   IOC2      -1.500 !
+ATOM   O28   IOC1      -1.000 !
+ATOM   O29   IOC1      -1.000 !
+ATOM   O30   IOC1      -1.000 !
+ATOM   O31   IOC1      -1.000 !
+ATOM   O32   IOC1      -1.000 !
+ATOM   O33   IOC1      -1.000 !
+ATOM   O34   IOC1      -1.000 !
+ATOM   O35   IOC1      -1.000 !
+ATOM   O36   IOC2      -1.500 !
+ATOM   O37   IOC2      -1.500 !
+ATOM   O38   IOC2      -1.500 !
+ATOM   O39   IOC2      -1.500 !
+ATOM   O40   IOC1      -1.000 !
+ATOM   O41   IOC1      -1.000 !
+ATOM   O42   IOC1      -1.000 !
+ATOM   O43   IOC1      -1.000 !
+ATOM   O44   IOC1      -1.000 !
+ATOM   CA31  ICA_S      1.500 !
+ATOM   CA32  ICA_S      1.500 !
+ATOM   CA33  ICA_S      1.500 !
+ATOM   CA34  ICA_S      1.500 !
+ATOM   CA35  ICA_S      1.500 !
+ATOM   CA36  ICA_S      1.500 !
+ATOM   O45   IOC1      -1.000 !
+ATOM   O46   IOC1      -1.000 !
+ATOM   O47   IOC1      -1.000 !
+ATOM   O48   IOC1      -1.000 !
+ATOM   O49   IOC1      -1.000 !
+ATOM   O50   IOC1      -1.000 !
+ATOM   O51   IOC1      -1.000 !
+ATOM   O52   IOC1      -1.000 !
+ATOM   O53   IOC1      -1.000 !
+ATOM   O54   IOC1      -1.000 !
+ATOM   O55   IOC1      -1.000 !
+ATOM   O56   IOC1      -1.000 !
+ATOM   O57   IOC1      -1.000 !
+ATOM   O58   IOC1      -1.000 !
+ATOM   O59   IOC1      -1.000 !
+ATOM   O60   IOC1      -1.000 !
+BOND  SI1   O13    SI1    O51   SI1    O52   SI1     O53
+BOND  SI2   O7     SI2    O14   SI2    O44   SI2     O54
+BOND  SI3   O5     SI3    O8    SI3    O21   SI3     O55
+BOND  SI4   O6     SI4    O56   SI4    O57   SI4     O22
+BOND  SI5   O42    SI5    O49   SI5    O58   SI5     O59
+BOND  SI6   O25    SI6    O43   SI6    O50   SI6     O60
+BOND  SI7   O32    SI7    O17   SI7    O47   SI7     O40
+BOND  SI8   O18    SI8    O33   SI8    O41   SI8     O48
+BOND  SI9   O28    SI9    O30   SI9    O34   SI9     O45
+BOND  SI10  O31    SI10   O46   SI10   O29   SI10    O35
+BOND  SI11  O1     SI11   O15   SI11   O19   SI11    O23
+BOND  SI12  O2     SI12   O16   SI12   O24   SI12    O20
+
 RESI TS001             0.000 ! tricalcuim silicate [Ca3O(SiO4)]6 in kind of cement minerals
 GROUP ! residue1             ! C=CaO S=SiO2 C3=Ca3O3 C3S=Ca3O3SiO2 Ca:Si:O=3:1:5
 ATOM   CA1   ICA_S      1.500 !
@@ -988,6 +1420,190 @@ BOND  SI3  O16    SI3   O25   SI3   O27   SI3   O30
 BOND  SI4  O11    SI4   O20   SI4   O24   SI4   O29
 BOND  SI5  O18    SI5   O19   SI5   O21   SI5   O28
 BOND  SI6  O1     SI6   O10   SI6   O12   SI6   O15
+
+
+RESI TSR001             0.000 ! tricalcuim silicate [Ca3O(SiO4)]6 in kind of cement minerals
+GROUP                         ! C=CaO S=SiO2 C3=Ca3O3 C3S=Ca3O3SiO2 Ca:Si:O=3:1:5
+ATOM   CA1   ICA_S      1.500 !
+ATOM   CA2   ICA_S      1.500 !
+ATOM   CA3   ICA_S      1.500 !
+ATOM   CA4   ICA_S      1.500 !
+ATOM   CA5   ICA_S      1.500 !
+ATOM   CA6   ICA_S      1.500 !
+ATOM   CA7   ICA_S      1.500 !
+ATOM   CA8   ICA_S      1.500 !
+ATOM   CA9   ICA_S      1.500 !
+ATOM   CA10  ICA_S      1.500 !
+ATOM   CA11  ICA_S      1.500 !
+ATOM   CA12  ICA_S      1.500 !
+ATOM   CA13  ICA_S      1.500 !
+ATOM   CA14  ICA_S      1.500 !
+ATOM   CA15  ICA_S      1.500 !
+ATOM   CA16  ICA_S      1.500 !
+ATOM   CA17  ICA_S      1.500 !
+ATOM   CA18  ICA_S      1.500 !
+ATOM   SI1   ISC1       1.000 !
+ATOM   SI2   ISC1       1.000 !
+ATOM   SI3   ISC1       1.000 !
+ATOM   SI4   ISC1       1.000 !
+ATOM   SI5   ISC1       1.000 !
+ATOM   SI6   ISC1       1.000 !
+ATOM   SI7   ISC1       1.000 !
+ATOM   SI8   ISC1       1.000 !
+ATOM   SI9   ISC1       1.000 !
+ATOM   O1    IOC1      -1.000 !
+ATOM   O2    IOC1      -1.000 !
+ATOM   O3    IOC1      -1.000 !
+ATOM   O4    IOC2      -1.500 !
+ATOM   O5    IOC2      -1.500 !
+ATOM   O6    IOC2      -1.500 !
+ATOM   O7    IOC1      -1.000 !
+ATOM   O8    IOC1      -1.000 !
+ATOM   O9    IOC1      -1.000 !
+ATOM   O10   IOC1      -1.000 !
+ATOM   O11   IOC1      -1.000 !
+ATOM   O12   IOC1      -1.000 !
+ATOM   O13   IOC1      -1.000 !
+ATOM   O14   IOC1      -1.000 !
+ATOM   O15   IOC1      -1.000 !
+ATOM   O16   IOC2      -1.500 !
+ATOM   O17   IOC2      -1.500 !
+ATOM   O18   IOC2      -1.500 !
+ATOM   O19   IOC2      -1.500 !
+ATOM   O20   IOC2      -1.500 !
+ATOM   O21   IOC2      -1.500 !
+ATOM   O22   IOC1      -1.000 !
+ATOM   O23   IOC1      -1.000 !
+ATOM   O24   IOC1      -1.000 !
+ATOM   O25   IOC1      -1.000 !
+ATOM   O26   IOC1      -1.000 !
+ATOM   O27   IOC1      -1.000 !
+ATOM   O28   IOC1      -1.000 !
+ATOM   O29   IOC1      -1.000 !
+ATOM   CA19  ICA_S      1.500 !
+ATOM   CA20  ICA_S      1.500 !
+ATOM   CA21  ICA_S      1.500 !
+ATOM   CA22  ICA_S      1.500 !
+ATOM   CA23  ICA_S      1.500 !
+ATOM   CA24  ICA_S      1.500 !
+ATOM   CA25  ICA_S      1.500 !
+ATOM   CA26  ICA_S      1.500 !
+ATOM   CA27  ICA_S      1.500 !
+ATOM   O30   IOC1      -1.000 !
+ATOM   O31   IOC1      -1.000 !
+ATOM   O32   IOC1      -1.000 !
+ATOM   O33   IOC1      -1.000 !
+ATOM   O34   IOC1      -1.000 !
+ATOM   CA28  ICA_S      1.500 !
+ATOM   CA29  ICA_S      1.500 !
+ATOM   CA30  ICA_S      1.500 !
+ATOM   CA31  ICA_S      1.500 !
+ATOM   CA32  ICA_S      1.500 !
+ATOM   CA33  ICA_S      1.500 !
+ATOM   CA34  ICA_S      1.500 !
+ATOM   CA35  ICA_S      1.500 !
+ATOM   CA36  ICA_S      1.500 !
+ATOM   CA37  ICA_S      1.500 !
+ATOM   CA38  ICA_S      1.500 !
+ATOM   CA39  ICA_S      1.500 !
+ATOM   CA40  ICA_S      1.500 !
+ATOM   CA41  ICA_S      1.500 !
+ATOM   CA42  ICA_S      1.500 !
+ATOM   CA43  ICA_S      1.500 !
+ATOM   CA44  ICA_S      1.500 !
+ATOM   CA45  ICA_S      1.500 !
+ATOM   SI10  ISC1       1.000 !
+ATOM   SI11  ISC1       1.000 !
+ATOM   SI12  ISC1       1.000 !
+ATOM   SI13  ISC1       1.000 !
+ATOM   SI14  ISC1       1.000 !
+ATOM   SI15  ISC1       1.000 !
+ATOM   SI16  ISC1       1.000 !
+ATOM   SI17  ISC1       1.000 !
+ATOM   SI18  ISC1       1.000 !
+ATOM   O35   IOC1      -1.000 !
+ATOM   O36   IOC1      -1.000 !
+ATOM   O37   IOC2      -1.500 !
+ATOM   O38   IOC2      -1.500 !
+ATOM   O39   IOC2      -1.500 !
+ATOM   O40   IOC1      -1.000 !
+ATOM   O41   IOC1      -1.000 !
+ATOM   O42   IOC1      -1.000 !
+ATOM   O43   IOC1      -1.000 !
+ATOM   O44   IOC1      -1.000 !
+ATOM   O45   IOC1      -1.000 !
+ATOM   O46   IOC1      -1.000 !
+ATOM   O47   IOC1      -1.000 !
+ATOM   O48   IOC1      -1.000 !
+ATOM   O49   IOC1      -1.000 !
+ATOM   O50   IOC1      -1.000 !
+ATOM   O51   IOC1      -1.000 !
+ATOM   O52   IOC2      -1.500 !
+ATOM   O53   IOC2      -1.500 !
+ATOM   O54   IOC2      -1.500 !
+ATOM   O55   IOC2      -1.500 !
+ATOM   O56   IOC2      -1.500 !
+ATOM   O57   IOC2      -1.500 !
+ATOM   O58   IOC1      -1.000 !
+ATOM   O59   IOC1      -1.000 !
+ATOM   O60   IOC1      -1.000 !
+ATOM   O61   IOC1      -1.000 !
+ATOM   O62   IOC1      -1.000 !
+ATOM   O63   IOC1      -1.000 !
+ATOM   O64   IOC1      -1.000 !
+ATOM   O65   IOC1      -1.000 !
+ATOM   O66   IOC1      -1.000 !
+ATOM   CA46  ICA_S      1.500 !
+ATOM   CA47  ICA_S      1.500 !
+ATOM   CA48  ICA_S      1.500 !
+ATOM   CA49  ICA_S      1.500 !
+ATOM   CA50  ICA_S      1.500 !
+ATOM   CA51  ICA_S      1.500 !
+ATOM   CA52  ICA_S      1.500 !
+ATOM   CA53  ICA_S      1.500 !
+ATOM   CA54  ICA_S      1.500 !
+ATOM   O67   IOC1      -1.000 !
+ATOM   O68   IOC1      -1.000 !
+ATOM   O69   IOC1      -1.000 !
+ATOM   O70   IOC1      -1.000 !
+ATOM   O71   IOC1      -1.000 !
+ATOM   O72   IOC1      -1.000 !
+ATOM   O73   IOC1      -1.000 !
+ATOM   O74   IOC1      -1.000 !
+ATOM   O75   IOC1      -1.000 !
+ATOM   O76   IOC1      -1.000 !
+ATOM   O77   IOC1      -1.000 !
+ATOM   O78   IOC1      -1.000 !
+ATOM   O79   IOC1      -1.000 !
+ATOM   O80   IOC1      -1.000 !
+ATOM   O81   IOC1      -1.000 !
+ATOM   O82   IOC1      -1.000 !
+ATOM   O83   IOC1      -1.000 !
+ATOM   O84   IOC1      -1.000 !
+ATOM   O85   IOC1      -1.000 !
+ATOM   O86   IOC1      -1.000 !
+ATOM   O87   IOC1      -1.000 !
+ATOM   O88   IOC1      -1.000 !
+ATOM   O89   IOC1      -1.000 !
+ATOM   O90   IOC1      -1.000 !
+BOND  SI1   O72    SI1    O73   SI1    O74   SI1     O75
+BOND  SI2   O12    SI2    O76   SI2    O62   SI2     O30
+BOND  SI3   O13    SI3    O31   SI3    O63   SI3     O77
+BOND  SI4   O78    SI4    O80   SI4    O7    SI4     O79
+BOND  SI5   O8     SI5    O10   SI5    O14   SI5     O81
+BOND  SI6   O11    SI6    O15   SI6    O82   SI6     O9
+BOND  SI7   O35    SI7    O64   SI7    O60   SI7     O83
+BOND  SI8   O36    SI8    O65   SI8    O61   SI8     O84
+BOND  SI9   O85    SI9    O86   SI9    O87   SI9     O66
+BOND  SI10  O46    SI10   O88   SI10   O89   SI10    O90
+BOND  SI11  O47    SI11   O25   SI11   O70   SI11    O58
+BOND  SI12  O26    SI12   O48   SI12   O59   SI12    O71
+BOND  SI13  O40    SI13   O43   SI13   O49   SI13    O67
+BOND  SI14  O41    SI14   O44   SI14   O50   SI14    O68
+BOND  SI15  O42    SI15   O45   SI15   O51   SI15    O69
+BOND  SI16  O1     SI16   O22   SI16   O32   SI16    O27
+BOND  SI17  O2     SI17   O28   SI17   O23   SI17    O33
+BOND  SI18  O3     SI18   O24   SI18   O29   SI18    O34
 
 
 RESI ETTR              0.000 !
@@ -1348,7 +1964,7 @@ BOND  O101  H129  O101  H130  O102  H131  O102  H132 ! H2O
  IC    O52     AL3     O57     H72         2.0200   90.00  180.00  115.00   0.9290
  IC    O59     O58     *S4     O60         1.5000  109.50  120.00  109.50   1.5000
 
-RESI TB001             0.000 !
+RESI TB004             0.000 !
 GROUP                        !
 ATOM  SI1   ISC3        1.000 !
 ATOM  SI2   ISC2        1.000 !
@@ -1655,7 +2271,7 @@ BOND  O87  H45   O87  H46   O88  H47   O88  H48  !
  IC    O75     SI22    O76     H38         1.6023  111.04  -29.05  115.45   0.9549
  IC    H44     H43     *O86    H48         0.9835  100.78 -120.41  114.96   4.5522
 
-RESI CR001              0.000 ! cristobalite 001 surface structure
+RESI CR20-2              0.000 ! cristobalite 001 surface structure
 GROUP ! group_1              !
 ATOM  SI1   ISC4        1.100 !
 ATOM  SI2   ISC4        1.100 !
@@ -1787,33 +2403,33 @@ BOND  SI6   O12
 
 RESI AH001             0.000 !   [(SO4)Ca]4
 GROUP                        !
-ATOM  S1    IS_AN       0.500 !                                CA4
-ATOM  O1    IOC11      -0.500 !
-ATOM  O2    IOC11      -0.500 !     O10    O11             O16
-ATOM  O3    IOC11      -0.500 !      \    /                 |
-ATOM  O4    IOC11      -0.500 !       \  /                  |
-ATOM  CA1   ICA_G       1.500 !        S3                   S4
+ATOM  S1    ISCS        0.500 !                                CA4
+ATOM  O1    IOCS       -0.550 !
+ATOM  O2    IOCS       -0.550 !     O10    O11             O16
+ATOM  O3    IOCS       -0.550 !      \    /                 |
+ATOM  O4    IOCS       -0.550 !       \  /                  |
+ATOM  CA1   ICA_G       1.700 !        S3                   S4
 GROUP                        !       / |                  /| \
-ATOM  S2    IS_AN       0.500 !     O12 |               O15 |  O14
-ATOM  O5    IOC11      -0.500 !         O9                 O13
-ATOM  O6    IOC11      -0.500 !      CA3
-ATOM  O7    IOC11      -0.500 !
-ATOM  O8    IOC11      -0.500 !                                 O5
-ATOM  CA2   ICA_G       1.500 !                         O8     /
+ATOM  S2    ISCS        0.500 !     O12 |               O15 |  O14
+ATOM  O5    IOCS       -0.550 !         O9                 O13
+ATOM  O6    IOCS       -0.550 !      CA3
+ATOM  O7    IOCS       -0.550 !
+ATOM  O8    IOCS       -0.550 !                                 O5
+ATOM  CA2   ICA_G       1.700 !                         O8     /
 GROUP                        !          CA1             \    /
-ATOM  S3    IS_AN       0.500 !                           \  /
-ATOM  O9    IOC11      -0.500 !       O2     O3            S2
-ATOM  O10   IOC11      -0.500 !        \    /             / \
-ATOM  O11   IOC11      -0.500 !         \  /             /   \
-ATOM  O12   IOC11      -0.500 !          S1             O7    O6
-ATOM  CA3   ICA_G       1.500 !         / |                CA2
+ATOM  S3    ISCS        0.500 !                           \  /
+ATOM  O9    IOCS       -0.550 !       O2     O3            S2
+ATOM  O10   IOCS       -0.550 !        \    /             / \
+ATOM  O11   IOCS       -0.550 !         \  /             /   \
+ATOM  O12   IOCS       -0.550 !          S1             O7    O6
+ATOM  CA3   ICA_G       1.700 !         / |                CA2
 GROUP                        !       O4  |
-ATOM  S4    IS_AN       0.500 !           O1
-ATOM  O13   IOC11      -0.500 !
-ATOM  O14   IOC11      -0.500 !
-ATOM  O15   IOC11      -0.500 !
-ATOM  O16   IOC11      -0.500 !
-ATOM  CA4   ICA_G       1.500 !
+ATOM  S4    ISCS        0.500 !           O1
+ATOM  O13   IOCS       -0.550 !
+ATOM  O14   IOCS       -0.550 !
+ATOM  O15   IOCS       -0.550 !
+ATOM  O16   IOCS       -0.550 !
+ATOM  CA4   ICA_G       1.700 !
 BOND  S1  O1    S1  O2    S1   O3    S1   O4
 BOND  S2  O5    S2  O6    S2   O7    S2   O8
 BOND  S3  O9    S3  O10   S3   O11   S3   O12
@@ -1831,22 +2447,22 @@ BOND  S4  O13   S4  O14   S4   O15   S4   O16
 
 RESI GS001            0.000 !   (SO4)4 8H2O
 GROUP                       !
-ATOM   O1   IOC11    -0.550  !
-ATOM   O2   IOC11    -0.550  !
-ATOM   O3   IOC11    -0.550  !
-ATOM   O4   IOC11    -0.550  !
-ATOM   O5   IOC11    -0.550  !
-ATOM   O6   IOC11    -0.550  !
-ATOM   O7   IOC11    -0.550  !
-ATOM   O8   IOC11    -0.550  !
-ATOM   O9   IOC11    -0.550  !
-ATOM   O10  IOC11    -0.550  !
-ATOM   O11  IOC11    -0.550  !
-ATOM   O12  IOC11    -0.550  !
-ATOM   O13  IOC11    -0.550  !
-ATOM   O14  IOC11    -0.550  !
-ATOM   O15  IOC11    -0.550  !
-ATOM   O16  IOC11    -0.550  !
+ATOM   O1   IOCS     -0.550  !
+ATOM   O2   IOCS     -0.550  !
+ATOM   O3   IOCS     -0.550  !
+ATOM   O4   IOCS     -0.550  !
+ATOM   O5   IOCS     -0.550  !
+ATOM   O6   IOCS     -0.550  !
+ATOM   O7   IOCS     -0.550  !
+ATOM   O8   IOCS     -0.550  !
+ATOM   O9   IOCS     -0.550  !
+ATOM   O10  IOCS     -0.550  !
+ATOM   O11  IOCS     -0.550  !
+ATOM   O12  IOCS     -0.550  !
+ATOM   O13  IOCS     -0.550  !
+ATOM   O14  IOCS     -0.550  !
+ATOM   O15  IOCS     -0.550  !
+ATOM   O16  IOCS     -0.550  !
 ATOM   O17  IO_SC    -0.820  !
 ATOM   O18  IO_SC    -0.820  !
 ATOM   O19  IO_SC    -0.820  !
@@ -1875,10 +2491,10 @@ ATOM   Ca1  ICA_G     1.700  !
 ATOM   Ca2  ICA_G     1.700  !
 ATOM   Ca3  ICA_G     1.700  !
 ATOM   Ca4  ICA_G     1.700  !
-ATOM   S1   IS_AN     0.500  !
-ATOM   S2   IS_AN     0.500  !
-ATOM   S3   IS_AN     0.500  !
-ATOM   S4   IS_AN     0.500  !
+ATOM   S1   ISCS      0.500  !
+ATOM   S2   ISCS      0.500  !
+ATOM   S3   ISCS      0.500  !
+ATOM   S4   ISCS      0.500  !
 BOND  S1  O1    S1  O3    S1   O9    S1   O11
 BOND  S2  O2    S2  O4    S2   O10   S2   O12
 BOND  S3  O5    S3  O7    S3   O13   S3   O15
@@ -1887,57 +2503,181 @@ BOND  O17 H1    O17 H9    O18  H2    O18  H10
 BOND  O19 H3    O19 H11   O20  H4    O20  H12
 BOND  O21 H5    O21 H13   O22  H6    O22  H14
 BOND  O23 H7    O23 H15   O24  H8    O24  H16
+
+RESI GSR001            0.000 !   (SO4)4 8H2O
+GROUP                        !
+ATOM   O1   IOCS     -0.550  !
+ATOM   O2   IOCS     -0.550  !
+ATOM   O3   IOCS     -0.550  !
+ATOM   O4   IOCS     -0.550  !
+ATOM   O5   IOCS     -0.550  !
+ATOM   O6   IOCS     -0.550  !
+ATOM   O7   IOCS     -0.550  !
+ATOM   O8   IOCS     -0.550  !
+ATOM   O9   IOCS     -0.550  !
+ATOM   O10  IOCS     -0.550  !
+ATOM   O11  IOCS     -0.550  !
+ATOM   O12  IOCS     -0.550  !
+ATOM   O13  IOCS     -0.550  !
+ATOM   O14  IOCS     -0.550  !
+ATOM   O15  IOCS     -0.550  !
+ATOM   O16  IOCS     -0.550  !
+ATOM   O17  IOCS     -0.550  !
+ATOM   O18  IOCS     -0.550  !
+ATOM   O19  IOCS     -0.550  !
+ATOM   O20  IOCS     -0.550  !
+ATOM   O21  IOCS     -0.550  !
+ATOM   O22  IOCS     -0.550  !
+ATOM   O23  IOCS     -0.550  !
+ATOM   O24  IOCS     -0.550  !
+ATOM   O25  IO_SC    -0.820  !
+ATOM   O26  IO_SC    -0.820  !
+ATOM   O27  IO_SC    -0.820  !
+ATOM   O28  IO_SC    -0.820  !
+ATOM   O29  IO_SC    -0.820  !
+ATOM   O30  IO_SC    -0.820  !
+ATOM   O31  IO_SC    -0.820  !
+ATOM   O32  IO_SC    -0.820  !
+ATOM   O33  IO_SC    -0.820  !
+ATOM   O34  IO_SC    -0.820  !
+ATOM   O35  IO_SC    -0.820  !
+ATOM   O36  IO_SC    -0.820  !
+ATOM   O37  IO_SC    -0.820  !
+ATOM   O38  IO_SC    -0.820  !
+ATOM   O39  IO_SC    -0.820  !
+ATOM   O40  IO_SC    -0.820  !
+ATOM   H1   IH_SC     0.410  !
+ATOM   H2   IH_SC     0.410  !
+ATOM   H3   IH_SC     0.410  !
+ATOM   H4   IH_SC     0.410  !
+ATOM   H5   IH_SC     0.410  !
+ATOM   H6   IH_SC     0.410  !
+ATOM   H7   IH_SC     0.410  !
+ATOM   H8   IH_SC     0.410  !
+ATOM   H9   IH_SC     0.410  !
+ATOM   H10  IH_SC     0.410  !
+ATOM   H11  IH_SC     0.410  !
+ATOM   H12  IH_SC     0.410  !
+ATOM   H13  IH_SC     0.410  !
+ATOM   H14  IH_SC     0.410  !
+ATOM   H15  IH_SC     0.410  !
+ATOM   H16  IH_SC     0.410  !
+ATOM   H17  IH_SC     0.410  !
+ATOM   H18  IH_SC     0.410  !
+ATOM   H19  IH_SC     0.410  !
+ATOM   H20  IH_SC     0.410  !
+ATOM   H21  IH_SC     0.410  !
+ATOM   H22  IH_SC     0.410  !
+ATOM   H23  IH_SC     0.410  !
+ATOM   H24  IH_SC     0.410  !
+ATOM   H25  IH_SC     0.410  !
+ATOM   H26  IH_SC     0.410  !
+ATOM   H27  IH_SC     0.410  !
+ATOM   H28  IH_SC     0.410  !
+ATOM   CA1  ICA_G     1.700  !
+ATOM   CA2  ICA_G     1.700  !
+ATOM   CA3  ICA_G     1.700  !
+ATOM   CA4  ICA_G     1.700  !
+ATOM   CA5  ICA_G     1.700  !
+ATOM   CA6  ICA_G     1.700  !
+ATOM   CA7  ICA_G     1.700  !
+ATOM   CA8  ICA_G     1.700  !
+ATOM   S1   ISCS      0.500  !
+ATOM   S2   ISCS      0.500  !
+ATOM   S3   ISCS      0.500  !
+ATOM   S4   ISCS      0.500  !
+ATOM   S5   ISCS      0.500  !
+ATOM   S6   ISCS      0.500  !
+ATOM   S7   ISCS      0.500  !
+ATOM   S8   ISCS      0.500  !
+ATOM   H29  IH_SC     0.410  !
+ATOM   H30  IH_SC     0.410  !
+ATOM   H31  IH_SC     0.410  !
+ATOM   H32  IH_SC     0.410  !
+ATOM   O41  IOCS     -0.550  !
+ATOM   O42  IOCS     -0.550  !
+ATOM   O43  IOCS     -0.550  !
+ATOM   O44  IOCS     -0.550  !
+ATOM   O45  IOCS     -0.550  !
+ATOM   O46  IOCS     -0.550  !
+ATOM   O47  IOCS     -0.550  !
+ATOM   O48  IOCS     -0.550  !
+BOND  S1  O1    S1  O13   S1   O41   S1   O42
+BOND  S2  O2    S2  O5    S2   O14   S2   O16
+BOND  S3  O3    S3  O6    S3   O15   S3   O17
+BOND  S4  O4    S4  O18   S4   O43   S4   O44
+BOND  S5  O7    S5  O11   S5   O19   S5   O22
+BOND  S6  O8    S6  O20   S6   O45   S6   O46
+BOND  S7  O9    S7  O23   S7   O47   S7   O48
+BOND  S8  O10   S8  O12   S8   O21   S8   O24
+BOND  O25 H1    O25 H13
+BOND  O26 H2    O26 H14
+BOND  O27 H15   O27 H29
+BOND  O28 H3    O28 H16
+BOND  O29 H4    O29 H17
+BOND  O30 H5    O30 H18
+BOND  O31 H19   O31 H30
+BOND  O32 H6    O32 H20
+BOND  O33 H7    O33 H21
+BOND  O34 H8    O34 H22
+BOND  O35 H9    O35 H23
+BOND  O36 H24   O36 H31
+BOND  O37 H10   O37 H25
+BOND  O38 H11   O38 H26
+BOND  O39 H12   O39 H27
+BOND  O40 H28   O40 H32
+
 
 RESI GS010             0.000 !   (SO4)4 8H2O
 GROUP                        !
-ATOM   O1   IOC11   -0.550 !
-ATOM   O2   IOC11   -0.550 !
-ATOM   O3   IOC11   -0.550 !
-ATOM   O4   IOC11   -0.550 !
-ATOM   O5   IOC11   -0.550 !
-ATOM   O6   IOC11   -0.550 !
-ATOM   O7   IOC11   -0.550 !
-ATOM   O8   IOC11   -0.550 !
-ATOM   O9   IOC11   -0.550 !
-ATOM   O10  IOC11   -0.550 !
-ATOM   O11  IOC11   -0.550 !
-ATOM   O12  IOC11   -0.550 !
-ATOM   O13  IOC11   -0.550 !
-ATOM   O14  IOC11   -0.550 !
-ATOM   O15  IOC11   -0.550 !
-ATOM   O16  IOC11   -0.550 !
-ATOM   O17  IO_SC   -0.820 !
-ATOM   O18  IO_SC   -0.820 !
-ATOM   O19  IO_SC   -0.820 !
-ATOM   O20  IO_SC   -0.820 !
-ATOM   O21  IO_SC   -0.820 !
-ATOM   O22  IO_SC   -0.820 !
-ATOM   O23  IO_SC   -0.820 !
-ATOM   O24  IO_SC   -0.820 !
-ATOM   H1   IH_SC    0.410 !
-ATOM   H2   IH_SC    0.410 !
-ATOM   H3   IH_SC    0.410 !
-ATOM   H4   IH_SC    0.410 !
-ATOM   H5   IH_SC    0.410 !
-ATOM   H6   IH_SC    0.410 !
-ATOM   H7   IH_SC    0.410 !
-ATOM   H8   IH_SC    0.410 !
-ATOM   H9   IH_SC    0.410 !
-ATOM   H10  IH_SC    0.410 !
-ATOM   H11  IH_SC    0.410 !
-ATOM   H12  IH_SC    0.410 !
-ATOM   H13  IH_SC    0.410 !
-ATOM   H14  IH_SC    0.410 !
-ATOM   H15  IH_SC    0.410 !
-ATOM   H16  IH_SC    0.410 !
-ATOM   Ca1  ICA_G    1.700 !
-ATOM   Ca2  ICA_G    1.700 !
-ATOM   Ca3  ICA_G    1.700 !
-ATOM   Ca4  ICA_G    1.700 !
-ATOM   S1   IS_AN    0.500 !
-ATOM   S2   IS_AN    0.500 !
-ATOM   S3   IS_AN    0.500 !
-ATOM   S4   IS_AN    0.500 !
+ATOM   O1   IOCS     -0.550 !
+ATOM   O2   IOCS     -0.550 !
+ATOM   O3   IOCS     -0.550 !
+ATOM   O4   IOCS     -0.550 !
+ATOM   O5   IOCS     -0.550 !
+ATOM   O6   IOCS     -0.550 !
+ATOM   O7   IOCS     -0.550 !
+ATOM   O8   IOCS     -0.550 !
+ATOM   O9   IOCS     -0.550 !
+ATOM   O10  IOCS     -0.550 !
+ATOM   O11  IOCS     -0.550 !
+ATOM   O12  IOCS     -0.550 !
+ATOM   O13  IOCS     -0.550 !
+ATOM   O14  IOCS     -0.550 !
+ATOM   O15  IOCS     -0.550 !
+ATOM   O16  IOCS     -0.550 !
+ATOM   O17  IO_SC    -0.820 !
+ATOM   O18  IO_SC    -0.820 !
+ATOM   O19  IO_SC    -0.820 !
+ATOM   O20  IO_SC    -0.820 !
+ATOM   O21  IO_SC    -0.820 !
+ATOM   O22  IO_SC    -0.820 !
+ATOM   O23  IO_SC    -0.820 !
+ATOM   O24  IO_SC    -0.820 !
+ATOM   H1   IH_SC     0.410 !
+ATOM   H2   IH_SC     0.410 !
+ATOM   H3   IH_SC     0.410 !
+ATOM   H4   IH_SC     0.410 !
+ATOM   H5   IH_SC     0.410 !
+ATOM   H6   IH_SC     0.410 !
+ATOM   H7   IH_SC     0.410 !
+ATOM   H8   IH_SC     0.410 !
+ATOM   H9   IH_SC     0.410 !
+ATOM   H10  IH_SC     0.410 !
+ATOM   H11  IH_SC     0.410 !
+ATOM   H12  IH_SC     0.410 !
+ATOM   H13  IH_SC     0.410 !
+ATOM   H14  IH_SC     0.410 !
+ATOM   H15  IH_SC     0.410 !
+ATOM   H16  IH_SC     0.410 !
+ATOM   Ca1  ICA_G     1.700 !
+ATOM   Ca2  ICA_G     1.700 !
+ATOM   Ca3  ICA_G     1.700 !
+ATOM   Ca4  ICA_G     1.700 !
+ATOM   S1   ISCS      0.500 !
+ATOM   S2   ISCS      0.500 !
+ATOM   S3   ISCS      0.500 !
+ATOM   S4   ISCS      0.500 !
 BOND  S1  O1    S1  O3    S1   O9    S1   O11
 BOND  S2  O2    S2  O4    S2   O10   S2   O12
 BOND  S3  O5    S3  O7    S3   O13   S3   O15
@@ -1947,19 +2687,142 @@ BOND  O19 H3    O19 H11   O20  H4    O20  H12
 BOND  O21 H5    O21 H13   O22  H6    O22  H14
 BOND  O23 H7    O23 H15   O24  H8    O24  H16
 
+RESI GSR010            0.000 !   (SO4)4 8H2O
+GROUP                        !
+ATOM   O1   IOCS     -0.550  !
+ATOM   O2   IOCS     -0.550  !
+ATOM   O3   IOCS     -0.550  !
+ATOM   O4   IOCS     -0.550  !
+ATOM   O5   IOCS     -0.550  !
+ATOM   O6   IOCS     -0.550  !
+ATOM   O7   IOCS     -0.550  !
+ATOM   O8   IOCS     -0.550  !
+ATOM   O9   IOCS     -0.550  !
+ATOM   O10  IOCS     -0.550  !
+ATOM   O11  IOCS     -0.550  !
+ATOM   O12  IOCS     -0.550  !
+ATOM   O13  IOCS     -0.550  !
+ATOM   O14  IOCS     -0.550  !
+ATOM   O15  IOCS     -0.550  !
+ATOM   O16  IOCS     -0.550  !
+ATOM   O17  IOCS     -0.550  !
+ATOM   O18  IOCS     -0.550  !
+ATOM   O19  IOCS     -0.550  !
+ATOM   O20  IOCS     -0.550  !
+ATOM   O21  IOCS     -0.550  !
+ATOM   O22  IOCS     -0.550  !
+ATOM   O23  IOCS     -0.550  !
+ATOM   O24  IOCS     -0.550  !
+ATOM   O25  IO_SC    -0.820  !
+ATOM   O26  IO_SC    -0.820  !
+ATOM   O27  IO_SC    -0.820  !
+ATOM   O28  IO_SC    -0.820  !
+ATOM   O29  IO_SC    -0.820  !
+ATOM   O30  IO_SC    -0.820  !
+ATOM   O31  IO_SC    -0.820  !
+ATOM   O32  IO_SC    -0.820  !
+ATOM   O33  IO_SC    -0.820  !
+ATOM   O34  IO_SC    -0.820  !
+ATOM   O35  IO_SC    -0.820  !
+ATOM   O36  IO_SC    -0.820  !
+ATOM   O37  IO_SC    -0.820  !
+ATOM   O38  IO_SC    -0.820  !
+ATOM   O39  IO_SC    -0.820  !
+ATOM   O40  IO_SC    -0.820  !
+ATOM   H1   IH_SC     0.410  !
+ATOM   H2   IH_SC     0.410  !
+ATOM   H3   IH_SC     0.410  !
+ATOM   H4   IH_SC     0.410  !
+ATOM   H5   IH_SC     0.410  !
+ATOM   H6   IH_SC     0.410  !
+ATOM   H7   IH_SC     0.410  !
+ATOM   H8   IH_SC     0.410  !
+ATOM   H9   IH_SC     0.410  !
+ATOM   H10  IH_SC     0.410  !
+ATOM   H11  IH_SC     0.410  !
+ATOM   H12  IH_SC     0.410  !
+ATOM   H13  IH_SC     0.410  !
+ATOM   H14  IH_SC     0.410  !
+ATOM   H15  IH_SC     0.410  !
+ATOM   H16  IH_SC     0.410  !
+ATOM   H17  IH_SC     0.410  !
+ATOM   H18  IH_SC     0.410  !
+ATOM   H19  IH_SC     0.410  !
+ATOM   H20  IH_SC     0.410  !
+ATOM   H21  IH_SC     0.410  !
+ATOM   H22  IH_SC     0.410  !
+ATOM   H23  IH_SC     0.410  !
+ATOM   H24  IH_SC     0.410  !
+ATOM   H25  IH_SC     0.410  !
+ATOM   H26  IH_SC     0.410  !
+ATOM   H27  IH_SC     0.410  !
+ATOM   H28  IH_SC     0.410  !
+ATOM   CA1  ICA_G     1.700  !
+ATOM   CA2  ICA_G     1.700  !
+ATOM   CA3  ICA_G     1.700  !
+ATOM   CA4  ICA_G     1.700  !
+ATOM   CA5  ICA_G     1.700  !
+ATOM   CA6  ICA_G     1.700  !
+ATOM   CA7  ICA_G     1.700  !
+ATOM   CA8  ICA_G     1.700  !
+ATOM   S1   ISCS      0.500  !
+ATOM   S2   ISCS      0.500  !
+ATOM   S3   ISCS      0.500  !
+ATOM   S4   ISCS      0.500  !
+ATOM   S5   ISCS      0.500  !
+ATOM   S6   ISCS      0.500  !
+ATOM   S7   ISCS      0.500  !
+ATOM   S8   ISCS      0.500  !
+ATOM   H29  IH_SC     0.410  !
+ATOM   H30  IH_SC     0.410  !
+ATOM   H31  IH_SC     0.410  !
+ATOM   H32  IH_SC     0.410  !
+ATOM   O41  IOCS     -0.550  !
+ATOM   O42  IOCS     -0.550  !
+ATOM   O43  IOCS     -0.550  !
+ATOM   O44  IOCS     -0.550  !
+ATOM   O45  IOCS     -0.550  !
+ATOM   O46  IOCS     -0.550  !
+ATOM   O47  IOCS     -0.550  !
+ATOM   O48  IOCS     -0.550  !
+BOND  S1  O1    S1  O13   S1   O41   S1   O42
+BOND  S2  O2    S2  O5    S2   O14   S2   O16
+BOND  S3  O3    S3  O6    S3   O15   S3   O17
+BOND  S4  O4    S4  O18   S4   O43   S4   O44
+BOND  S5  O7    S5  O11   S5   O19   S5   O22
+BOND  S6  O8    S6  O20   S6   O45   S6   O46
+BOND  S7  O9    S7  O23   S7   O47   S7   O48
+BOND  S8  O10   S8  O12   S8   O21   S8   O24
+BOND  O25 H1    O25 H13
+BOND  O26 H2    O26 H14
+BOND  O27 H15   O27 H29
+BOND  O28 H3    O28 H16
+BOND  O29 H4    O29 H17
+BOND  O30 H5    O30 H18
+BOND  O31 H19   O31 H30
+BOND  O32 H6    O32 H20
+BOND  O33 H7    O33 H21
+BOND  O34 H8    O34 H22
+BOND  O35 H9    O35 H23
+BOND  O36 H24   O36 H31
+BOND  O37 H10   O37 H25
+BOND  O38 H11   O38 H26
+BOND  O39 H12   O39 H27
+BOND  O40 H28   O40 H32
+
 RESI GS011             0.000 !   (SO4)4 8H2O
-ATOM  O1   IOC11     -0.500
-ATOM  O2   IOC11     -0.500
-ATOM  O3   IOC11     -0.500
-ATOM  O4   IOC11     -0.500
-ATOM  O5   IOC11     -0.500
-ATOM  O6   IOC11     -0.500
-ATOM  O7   IOC11     -0.500
-ATOM  O8   IOC11     -0.500
-ATOM  O9   IOC11     -0.500
-ATOM  O10  IOC11     -0.500
-ATOM  O11  IOC11     -0.500
-ATOM  O12  IOC11     -0.500
+ATOM  O1   IOCS      -0.550
+ATOM  O2   IOCS      -0.550
+ATOM  O3   IOCS      -0.550
+ATOM  O4   IOCS      -0.550
+ATOM  O5   IOCS      -0.550
+ATOM  O6   IOCS      -0.550
+ATOM  O7   IOCS      -0.550
+ATOM  O8   IOCS      -0.550
+ATOM  O9   IOCS      -0.550
+ATOM  O10  IOCS      -0.550
+ATOM  O11  IOCS      -0.550
+ATOM  O12  IOCS      -0.550
 ATOM  O13  IO_SC     -0.820
 ATOM  O14  IO_SC     -0.820
 ATOM  O15  IO_SC     -0.820
@@ -1972,24 +2835,24 @@ ATOM  H5   IH_SC      0.410
 ATOM  H6   IH_SC      0.410
 ATOM  H7   IH_SC      0.410
 ATOM  H8   IH_SC      0.410
-ATOM  CA1  ICA_G      1.500
-ATOM  CA2  ICA_G      1.500
-ATOM  CA3  ICA_G      1.500
-ATOM  S1   IS_AN      0.500
-ATOM  S2   IS_AN      0.500
-ATOM  S3   IS_AN      0.500
-ATOM  O17  IOC11     -0.500
-ATOM  O18  IOC11     -0.500
-ATOM  O19  IOC11     -0.500
-ATOM  O20  IOC11     -0.500
-ATOM  O21  IOC11     -0.500
-ATOM  O22  IOC11     -0.500
-ATOM  O23  IOC11     -0.500
-ATOM  O24  IOC11     -0.500
-ATOM  O25  IOC11     -0.500
-ATOM  O26  IOC11     -0.500
-ATOM  O27  IOC11     -0.500
-ATOM  O28  IOC11     -0.500
+ATOM  CA1  ICA_G      1.700
+ATOM  CA2  ICA_G      1.700
+ATOM  CA3  ICA_G      1.700
+ATOM  S1   ISCS       0.500
+ATOM  S2   ISCS       0.500
+ATOM  S3   ISCS       0.500
+ATOM  O17  IOCS      -0.550
+ATOM  O18  IOCS      -0.550
+ATOM  O19  IOCS      -0.550
+ATOM  O20  IOCS      -0.550
+ATOM  O21  IOCS      -0.550
+ATOM  O22  IOCS      -0.550
+ATOM  O23  IOCS      -0.550
+ATOM  O24  IOCS      -0.550
+ATOM  O25  IOCS      -0.550
+ATOM  O26  IOCS      -0.550
+ATOM  O27  IOCS      -0.550
+ATOM  O28  IOCS      -0.550
 ATOM  O29  IO_SC     -0.820
 ATOM  O30  IO_SC     -0.820
 ATOM  O31  IO_SC     -0.820
@@ -2002,16 +2865,16 @@ ATOM  H13  IH_SC      0.410
 ATOM  H14  IH_SC      0.410
 ATOM  H15  IH_SC      0.410
 ATOM  H16  IH_SC      0.410
-ATOM  CA4  ICA_G      1.500
-ATOM  CA5  ICA_G      1.500
-ATOM  CA6  ICA_G      1.500
-ATOM  S4   IS_AN      0.500
-ATOM  S5   IS_AN      0.500
-ATOM  S6   IS_AN      0.500
-ATOM  O33  IOC11     -0.500
-ATOM  O34  IOC11     -0.500
-ATOM  O35  IOC11     -0.500
-ATOM  O36  IOC11     -0.500
+ATOM  CA4  ICA_G      1.700
+ATOM  CA5  ICA_G      1.700
+ATOM  CA6  ICA_G      1.700
+ATOM  S4   ISCS       0.500
+ATOM  S5   ISCS       0.500
+ATOM  S6   ISCS       0.500
+ATOM  O33  IOCS      -0.550
+ATOM  O34  IOCS      -0.550
+ATOM  O35  IOCS      -0.550
+ATOM  O36  IOCS      -0.550
 ATOM  O37  IO_SC     -0.820
 ATOM  O38  IO_SC     -0.820
 ATOM  O39  IO_SC     -0.820
@@ -2024,12 +2887,12 @@ ATOM  H21  IH_SC      0.410
 ATOM  H22  IH_SC      0.410
 ATOM  H23  IH_SC      0.410
 ATOM  H24  IH_SC      0.410
-ATOM  CA7  ICA_G      1.500
-ATOM  S7   IS_AN      0.500
-ATOM  O41  IOC11     -0.500
-ATOM  O42  IOC11     -0.500
-ATOM  O43  IOC11     -0.500
-ATOM  O44  IOC11     -0.500
+ATOM  CA7  ICA_G      1.700
+ATOM  S7   ISCS       0.500
+ATOM  O41  IOCS      -0.550
+ATOM  O42  IOCS      -0.550
+ATOM  O43  IOCS      -0.550
+ATOM  O44  IOCS      -0.550
 ATOM  O45  IO_SC     -0.820
 ATOM  O46  IO_SC     -0.820
 ATOM  O47  IO_SC     -0.820
@@ -2042,8 +2905,8 @@ ATOM  H29  IH_SC      0.410
 ATOM  H30  IH_SC      0.410
 ATOM  H31  IH_SC      0.410
 ATOM  H32  IH_SC      0.410
-ATOM  CA8  ICA_G      1.500
-ATOM  S8   IS_AN      0.500
+ATOM  CA8  ICA_G      1.700
+ATOM  S8   ISCS       0.500
 BOND  S1  O1    S1  O3     S1   O7     S1  O9
 BOND  S2  O2    S2  O4     S2   O8     S2  O10
 BOND  S3  O5    S3  O6     S3   O11    S3  O12
@@ -2061,31 +2924,125 @@ BOND  O31 H11   O31  H15   O29  H9     O29 H13
 BOND  O48 H28   O48  H32   O32  H12    O32 H16
 BOND  O47 H27   O47  H31   O30  H10    O30 H14
 
+RESI GSR011            0.000 !   (SO4)4 8H2O
+GROUP                        !
+ATOM   O1   IOCS     -0.550  !
+ATOM   O2   IOCS     -0.550  !
+ATOM   O3   IOCS     -0.550  !
+ATOM   O4   IOCS     -0.550  !
+ATOM   O5   IOCS     -0.550  !
+ATOM   O6   IOCS     -0.550  !
+ATOM   O7   IOCS     -0.550  !
+ATOM   O8   IOCS     -0.550  !
+ATOM   O9   IOCS     -0.550  !
+ATOM   O10  IOCS     -0.550  !
+ATOM   O11  IOCS     -0.550  !
+ATOM   O12  IOCS     -0.550  !
+ATOM   O13  IOCS     -0.550  !
+ATOM   O14  IOCS     -0.550  !
+ATOM   O15  IO_SC    -0.820  !
+ATOM   O16  IO_SC    -0.820  !
+ATOM   O17  IO_SC    -0.820  !
+ATOM   O18  IO_SC    -0.820  !
+ATOM   O19  IO_SC    -0.820  !
+ATOM   O20  IO_SC    -0.820  !
+ATOM   O21  IO_SC    -0.820  !
+ATOM   O22  IO_SC    -0.820  !
+ATOM   O23  IO_SC    -0.820  !
+ATOM   O24  IO_SC    -0.820  !
+ATOM   O25  IO_SC    -0.820  !
+ATOM   O26  IO_SC    -0.820  !
+ATOM   H1   IH_SC     0.410  !
+ATOM   H2   IH_SC     0.410  !
+ATOM   H3   IH_SC     0.410  !
+ATOM   H4   IH_SC     0.410  !
+ATOM   H5   IH_SC     0.410  !
+ATOM   H6   IH_SC     0.410  !
+ATOM   H7   IH_SC     0.410  !
+ATOM   H8   IH_SC     0.410  !
+ATOM   H9   IH_SC     0.410  !
+ATOM   H10  IH_SC     0.410  !
+ATOM   H11  IH_SC     0.410  !
+ATOM   H12  IH_SC     0.410  !
+ATOM   H13  IH_SC     0.410  !
+ATOM   H14  IH_SC     0.410  !
+ATOM   H15  IH_SC     0.410  !
+ATOM   H16  IH_SC     0.410  !
+ATOM   H17  IH_SC     0.410  !
+ATOM   H18  IH_SC     0.410  !
+ATOM   H19  IH_SC     0.410  !
+ATOM   H20  IH_SC     0.410  !
+ATOM   H21  IH_SC     0.410  !
+ATOM   H22  IH_SC     0.410  !
+ATOM   CA1  ICA_G     1.700  !
+ATOM   CA2  ICA_G     1.700  !
+ATOM   CA3  ICA_G     1.700  !
+ATOM   CA4  ICA_G     1.700  !
+ATOM   CA5  ICA_G     1.700  !
+ATOM   CA6  ICA_G     1.700  !
+ATOM   S1   ISCS      0.500  !
+ATOM   S2   ISCS      0.500  !
+ATOM   S3   ISCS      0.500  !
+ATOM   S4   ISCS      0.500  !
+ATOM   S5   ISCS      0.500  !
+ATOM   S6   ISCS      0.500  !
+ATOM   H23  IH_SC     0.410  !
+ATOM   H24  IH_SC     0.410  !
+ATOM   O27  IOCS     -0.550  !
+ATOM   O28  IOCS     -0.550  !
+ATOM   O29  IOCS     -0.550  !
+ATOM   O30  IOCS     -0.550  !
+ATOM   O31  IOCS     -0.550  !
+ATOM   O32  IOCS     -0.550  !
+ATOM   O33  IOCS     -0.550  !
+ATOM   O34  IOCS     -0.550  !
+ATOM   O35  IOCS     -0.550  !
+ATOM   O36  IOCS     -0.550  !
+BOND  S1  O1    S1  O9    S1   O10   S1   O27
+BOND  S2  O2    S2  O11   S2   O28   S2   O29
+BOND  S3  O3    S3  O4    S3   O30   S3   O31
+BOND  S4  O5    S4  O8    S4   O32   S4   O33
+BOND  S5  O6    S5  O13   S5   O34   S5   O35
+BOND  S6  O7    S6  O12   S6   O14   S6   O36
+BOND  O15 H1    O15 H13
+BOND  O16 H2    O16 H14
+BOND  O17 H3    O17 H15
+BOND  O18 H4    O18 H23
+BOND  O19 H5    O19 H16
+BOND  O20 H6    O20 H17
+BOND  O21 H7    O21 H18
+BOND  O22 H8    O22 H19
+BOND  O23 H9    O23 H20
+BOND  O24 H10   O24 H21
+BOND  O25 H11   O25 H22
+BOND  O26 H12   O26 H24
+
+
 RESI GS120             0.000 !   (SO4)4 8H2O
-ATOM  O1    IOC11      -0.500
-ATOM  O2    IOC11      -0.500
-ATOM  O3    IOC11      -0.500
-ATOM  O4    IOC11      -0.500
-ATOM  CA1   ICA_G       1.500
-ATOM  CA2   ICA_G       1.500
-ATOM  S1    IS_AN       0.500
-ATOM  O5    IOC11      -0.500
-ATOM  O6    IOC11      -0.500
-ATOM  O7    IOC11      -0.500
-ATOM  O8    IOC11      -0.500
-ATOM  S2    IS_AN       0.500
-ATOM  O9    IOC11      -0.500
-ATOM  O10   IOC11      -0.500
-ATOM  O11   IOC11      -0.500
-ATOM  O12   IOC11      -0.500
-ATOM  O13   IOC11      -0.500
-ATOM  O14   IOC11      -0.500
-ATOM  O15   IOC11      -0.500
-ATOM  O16   IOC11      -0.500
-ATOM  O17   IOC11      -0.500
-ATOM  O18   IOC11      -0.500
-ATOM  O19   IOC11      -0.500
-ATOM  O20   IOC11      -0.500
+ATOM  O1    IOCS       -0.550
+ATOM  O2    IOCS       -0.550
+ATOM  O3    IOCS       -0.550
+ATOM  O4    IOCS       -0.550
+ATOM  CA1   ICA_G       1.700
+ATOM  CA2   ICA_G       1.700
+ATOM  S1    ISCS        0.500
+ATOM  O5    IOCS       -0.550
+ATOM  O6    IOCS       -0.550
+ATOM  O7    IOCS       -0.550
+ATOM  O8    IOCS       -0.550
+ATOM  S2    ISCS        0.500
+ATOM  O9    IOCS       -0.550
+ATOM  O10   IOCS       -0.550
+ATOM  O11   IOCS       -0.550
+ATOM  O12   IOCS       -0.550
+ATOM  O13   IOCS       -0.550
+ATOM  O14   IOCS       -0.550
+ATOM  O15   IOCS       -0.550
+ATOM  O16   IOCS       -0.550
+ATOM  O17   IOCS       -0.550
+ATOM  O18   IOCS       -0.550
+ATOM  O19   IOCS       -0.550
+ATOM  O20   IOCS       -0.550
 ATOM  O21   IO_SC      -0.820
 ATOM  O22   IO_SC      -0.820
 ATOM  O23   IO_SC      -0.820
@@ -2098,24 +3055,24 @@ ATOM  H5    IH_SC       0.410
 ATOM  H6    IH_SC       0.410
 ATOM  H7    IH_SC       0.410
 ATOM  H8    IH_SC       0.410
-ATOM  CA3   ICA_G       1.500
-ATOM  CA4   ICA_G       1.500
-ATOM  CA5   ICA_G       1.500
-ATOM  S3    IS_AN       0.500
-ATOM  S4    IS_AN       0.500
-ATOM  S5    IS_AN       0.500
-ATOM  O25   IOC11      -0.500
-ATOM  O26   IOC11      -0.500
-ATOM  O27   IOC11      -0.500
-ATOM  O28   IOC11      -0.500
-ATOM  O29   IOC11      -0.500
-ATOM  O30   IOC11      -0.500
-ATOM  O31   IOC11      -0.500
-ATOM  O32   IOC11      -0.500
-ATOM  O33   IOC11      -0.500
-ATOM  O34   IOC11      -0.500
-ATOM  O35   IOC11      -0.500
-ATOM  O36   IOC11      -0.500
+ATOM  CA3   ICA_G       1.700
+ATOM  CA4   ICA_G       1.700
+ATOM  CA5   ICA_G       1.700
+ATOM  S3    ISCS        0.500
+ATOM  S4    ISCS        0.500
+ATOM  S5    ISCS        0.500
+ATOM  O25   IOCS       -0.550
+ATOM  O26   IOCS       -0.550
+ATOM  O27   IOCS       -0.550
+ATOM  O28   IOCS       -0.550
+ATOM  O29   IOCS       -0.550
+ATOM  O30   IOCS       -0.550
+ATOM  O31   IOCS       -0.550
+ATOM  O32   IOCS       -0.550
+ATOM  O33   IOCS       -0.550
+ATOM  O34   IOCS       -0.550
+ATOM  O35   IOCS       -0.550
+ATOM  O36   IOCS       -0.550
 ATOM  O37   IO_SC      -0.820
 ATOM  O38   IO_SC      -0.820
 ATOM  O39   IO_SC      -0.820
@@ -2128,45 +3085,45 @@ ATOM  H13   IH_SC       0.410
 ATOM  H14   IH_SC       0.410
 ATOM  H15   IH_SC       0.410
 ATOM  H16   IH_SC       0.410
-ATOM  CA6   ICA_G       1.500
-ATOM  CA7   ICA_G       1.500
-ATOM  CA8   ICA_G       1.500
-ATOM  S6    IS_AN       0.500
-ATOM  S7    IS_AN       0.500
-ATOM  S8    IS_AN       0.500
-ATOM  O41   IOC11      -0.500
-ATOM  O42   IOC11      -0.500
-ATOM  O43   IOC11      -0.500
-ATOM  O44   IOC11      -0.500
-ATOM  O45   IOC11      -0.500
-ATOM  O46   IOC11      -0.500
-ATOM  O47   IOC11      -0.500
-ATOM  O48   IOC11      -0.500
+ATOM  CA6   ICA_G       1.700
+ATOM  CA7   ICA_G       1.700
+ATOM  CA8   ICA_G       1.700
+ATOM  S6    ISCS        0.500
+ATOM  S7    ISCS        0.500
+ATOM  S8    ISCS        0.500
+ATOM  O41   IOCS       -0.550
+ATOM  O42   IOCS       -0.550
+ATOM  O43   IOCS       -0.550
+ATOM  O44   IOCS       -0.550
+ATOM  O45   IOCS       -0.550
+ATOM  O46   IOCS       -0.550
+ATOM  O47   IOCS       -0.550
+ATOM  O48   IOCS       -0.550
 ATOM  O49   IO_SC      -0.820
 ATOM  O50   IO_SC      -0.820
 ATOM  H17   IH_SC       0.410
 ATOM  H18   IH_SC       0.410
 ATOM  H19   IH_SC       0.410
 ATOM  H20   IH_SC       0.410
-ATOM  CA9   ICA_G       1.500
-ATOM  S9    IS_AN       0.500
-ATOM  S10   IS_AN       0.500
-ATOM  O51   IOC11      -0.500
-ATOM  O52   IOC11      -0.500
-ATOM  O53   IOC11      -0.500
-ATOM  O54   IOC11      -0.500
+ATOM  CA9   ICA_G       1.700
+ATOM  S9    ISCS        0.500
+ATOM  S10   ISCS        0.500
+ATOM  O51   IOCS       -0.550
+ATOM  O52   IOCS       -0.550
+ATOM  O53   IOCS       -0.550
+ATOM  O54   IOCS       -0.550
 ATOM  O55   IO_SC      -0.820
 ATOM  H21   IH_SC       0.410
 ATOM  H22   IH_SC       0.410
-ATOM  S11   IS_AN       0.500
-ATOM  O56   IOC11      -0.500
-ATOM  O57   IOC11      -0.500
-ATOM  O58   IOC11      -0.500
-ATOM  O59   IOC11      -0.500
-ATOM  O60   IOC11      -0.500
-ATOM  O61   IOC11      -0.500
-ATOM  O62   IOC11      -0.500
-ATOM  O63   IOC11      -0.500
+ATOM  S11   ISCS        0.500
+ATOM  O56   IOCS       -0.550
+ATOM  O57   IOCS       -0.550
+ATOM  O58   IOCS       -0.550
+ATOM  O59   IOCS       -0.550
+ATOM  O60   IOCS       -0.550
+ATOM  O61   IOCS       -0.550
+ATOM  O62   IOCS       -0.550
+ATOM  O63   IOCS       -0.550
 ATOM  O64   IO_SC      -0.820
 ATOM  O65   IO_SC      -0.820
 ATOM  O66   IO_SC      -0.820
@@ -2188,21 +3145,21 @@ ATOM  H33   IH_SC       0.410
 ATOM  H34   IH_SC       0.410
 ATOM  H35   IH_SC       0.410
 ATOM  H36   IH_SC       0.410
-ATOM  CA10  ICA_G       1.500
-ATOM  S12   IS_AN       0.500
-ATOM  S13   IS_AN       0.500
-ATOM  O71   IOC11      -0.500
-ATOM  O72   IOC11      -0.500
-ATOM  O73   IOC11      -0.500
-ATOM  O74   IOC11      -0.500
-ATOM  O75   IOC11      -0.500
-ATOM  O76   IOC11      -0.500
-ATOM  O77   IOC11      -0.500
-ATOM  O78   IOC11      -0.500
-ATOM  O79   IOC11      -0.500
-ATOM  O80   IOC11      -0.500
-ATOM  O81   IOC11      -0.500
-ATOM  O82   IOC11      -0.500
+ATOM  CA10  ICA_G       1.700
+ATOM  S12   ISCS        0.500
+ATOM  S13   ISCS        0.500
+ATOM  O71   IOCS       -0.550
+ATOM  O72   IOCS       -0.550
+ATOM  O73   IOCS       -0.550
+ATOM  O74   IOCS       -0.550
+ATOM  O75   IOCS       -0.550
+ATOM  O76   IOCS       -0.550
+ATOM  O77   IOCS       -0.550
+ATOM  O78   IOCS       -0.550
+ATOM  O79   IOCS       -0.550
+ATOM  O80   IOCS       -0.550
+ATOM  O81   IOCS       -0.550
+ATOM  O82   IOCS       -0.550
 ATOM  O83   IO_SC      -0.820
 ATOM  O84   IO_SC      -0.820
 ATOM  O85   IO_SC      -0.820
@@ -2224,25 +3181,25 @@ ATOM  H47   IH_SC       0.410
 ATOM  H48   IH_SC       0.410
 ATOM  H49   IH_SC       0.410
 ATOM  H50   IH_SC       0.410
-ATOM  CA11  ICA_G       1.500
-ATOM  CA12  ICA_G       1.500
-ATOM  CA13  ICA_G       1.500
-ATOM  S14   IS_AN       0.500
-ATOM  S15   IS_AN       0.500
-ATOM  S16   IS_AN       0.500
-ATOM  O90   IOC11      -0.500
-ATOM  O91   IOC11      -0.500
-ATOM  O92   IOC11      -0.500
-ATOM  O93   IOC11      -0.500
+ATOM  CA11  ICA_G       1.700
+ATOM  CA12  ICA_G       1.700
+ATOM  CA13  ICA_G       1.700
+ATOM  S14   ISCS        0.500
+ATOM  S15   ISCS        0.500
+ATOM  S16   ISCS        0.500
+ATOM  O90   IOCS       -0.550
+ATOM  O91   IOCS       -0.550
+ATOM  O92   IOCS       -0.550
+ATOM  O93   IOCS       -0.550
 ATOM  O94   IO_SC      -0.820
 ATOM  H51   IH_SC       0.410
 ATOM  H52   IH_SC       0.410
-ATOM  CA14  ICA_G       1.500
-ATOM  S17   IS_AN       0.500
-ATOM  O95   IOC11      -0.500
-ATOM  O96   IOC11      -0.500
-ATOM  O97   IOC11      -0.500
-ATOM  O98   IOC11      -0.500
+ATOM  CA14  ICA_G       1.700
+ATOM  S17   ISCS        0.500
+ATOM  O95   IOCS       -0.550
+ATOM  O96   IOCS       -0.550
+ATOM  O97   IOCS       -0.550
+ATOM  O98   IOCS       -0.550
 ATOM  O99   IO_SC      -0.820
 ATOM  O101  IO_SC      -0.820
 ATOM  O102  IO_SC      -0.820
@@ -2255,12 +3212,12 @@ ATOM  H57   IH_SC       0.410
 ATOM  H58   IH_SC       0.410
 ATOM  H59   IH_SC       0.410
 ATOM  H60   IH_SC       0.410
-ATOM  CA15  ICA_G       1.500
-ATOM  S18   IS_AN       0.500
-ATOM  O104  IOC11      -0.500
-ATOM  O105  IOC11      -0.500
-ATOM  O106  IOC11      -0.500
-ATOM  O107  IOC11      -0.500
+ATOM  CA15  ICA_G       1.700
+ATOM  S18   ISCS        0.500
+ATOM  O104  IOCS       -0.550
+ATOM  O105  IOCS       -0.550
+ATOM  O106  IOCS       -0.550
+ATOM  O107  IOCS       -0.550
 ATOM  O108  IO_SC      -0.820
 ATOM  O109  IO_SC      -0.820
 ATOM  O110  IO_SC      -0.820
@@ -2273,18 +3230,18 @@ ATOM  H65   IH_SC       0.410
 ATOM  H66   IH_SC       0.410
 ATOM  H67   IH_SC       0.410
 ATOM  H68   IH_SC       0.410
-ATOM  CA16  ICA_G       1.500
-ATOM  CA17  ICA_G       1.500
-ATOM  S19   IS_AN       0.500
-ATOM  O112  IOC11      -0.500
-ATOM  O113  IOC11      -0.500
-ATOM  O114  IOC11      -0.500
-ATOM  O115  IOC11      -0.500
+ATOM  CA16  ICA_G       1.700
+ATOM  CA17  ICA_G       1.700
+ATOM  S19   ISCS        0.500
+ATOM  O112  IOCS       -0.550
+ATOM  O113  IOCS       -0.550
+ATOM  O114  IOCS       -0.550
+ATOM  O115  IOCS       -0.550
 ATOM  O116  IO_SC      -0.820
 ATOM  H69   IH_SC       0.410
 ATOM  H70   IH_SC       0.410
-ATOM  CA18  ICA_G       1.500
-ATOM  S20   IS_AN       0.500
+ATOM  CA18  ICA_G       1.700
+ATOM  S20   ISCS        0.500
 ATOM  O117  IO_SC      -0.820
 ATOM  H71   IH_SC       0.410
 ATOM  H72   IH_SC       0.410
@@ -2297,11 +3254,11 @@ ATOM  H76   IH_SC       0.410
 ATOM  O120  IO_SC      -0.820
 ATOM  H77   IH_SC       0.410
 ATOM  H78   IH_SC       0.410
-ATOM  CA19  ICA_G       1.500
+ATOM  CA19  ICA_G       1.700
 ATOM  O121  IO_SC      -0.820
 ATOM  H79   IH_SC       0.410
 ATOM  H80   IH_SC       0.410
-ATOM  CA20  ICA_G       1.500
+ATOM  CA20  ICA_G       1.700
 BOND  S1   O1    S1   O2    S1   O3    S1   O4
 BOND  S2   O5    S2   O6    S2   O7    S2   O8
 BOND  S3   O9    S3   O11   S3   O15   S3   O17
@@ -2343,26 +3300,389 @@ BOND  O110 H63   O110 H67   O109 H62   O109 H66
 BOND  O68  H27   O68  H34   O70  H29   O70  H36
 BOND  O121 H79   O121 H80   O101 H54   O101 H58
 
-RESI GS111            0.000 !   Gypsum (-111) Surface
+
+RESI GSR120             0.000 !   (SO4)4 8H2O
+ATOM  O1    IOCS       -0.550
+ATOM  O2    IOCS       -0.550
+ATOM  O3    IOCS       -0.550
+ATOM  O4    IOCS       -0.550
+ATOM  O5    IOCS       -0.550
+ATOM  O6    IOCS       -0.550
+ATOM  O7    IOCS       -0.550
+ATOM  O8    IOCS       -0.550
+ATOM  O9    IOCS       -0.550
+ATOM  O10   IOCS       -0.550
+ATOM  O11   IOCS       -0.550
+ATOM  O12   IOCS       -0.550
+ATOM  O13   IOCS       -0.550
+ATOM  O14   IOCS       -0.550
+ATOM  O15   IOCS       -0.550
+ATOM  O16   IOCS       -0.550
+ATOM  O17   IOCS       -0.550
+ATOM  O18   IOCS       -0.550
+ATOM  O19   IOCS       -0.550
+ATOM  O20   IOCS       -0.550
+ATOM  O21   IOCS       -0.550
+ATOM  O22   IOCS       -0.550
+ATOM  O23   IOCS       -0.550
+ATOM  O24   IOCS       -0.550
+ATOM  O25   IOCS       -0.550
+ATOM  O26   IOCS       -0.550
+ATOM  O27   IOCS       -0.550
+ATOM  O28   IOCS       -0.550
+ATOM  O29   IOCS       -0.550
+ATOM  O30   IOCS       -0.550
+ATOM  O31   IOCS       -0.550
+ATOM  O32   IOCS       -0.550
+ATOM  O33   IOCS       -0.550
+ATOM  O34   IOCS       -0.550
+ATOM  O35   IOCS       -0.550
+ATOM  O36   IOCS       -0.550
+ATOM  O37   IOCS       -0.550
+ATOM  O38   IOCS       -0.550
+ATOM  O39   IOCS       -0.550
+ATOM  O40   IOCS       -0.550
+ATOM  O41   IOCS       -0.550
+ATOM  O42   IOCS       -0.550
+ATOM  O43   IOCS       -0.550
+ATOM  O44   IOCS       -0.550
+ATOM  O45   IOCS       -0.550
+ATOM  O46   IOCS       -0.550
+ATOM  O47   IOCS       -0.550
+ATOM  O48   IOCS       -0.550
+ATOM  O49   IOCS       -0.550
+ATOM  O50   IOCS       -0.550
+ATOM  O51   IOCS       -0.550
+ATOM  O52   IOCS       -0.550
+ATOM  O53   IOCS       -0.550
+ATOM  O54   IOCS       -0.550
+ATOM  O55   IOCS       -0.550
+ATOM  O56   IOCS       -0.550
+ATOM  O57   IOCS       -0.550
+ATOM  O58   IOCS       -0.550
+ATOM  O59   IOCS       -0.550
+ATOM  O60   IOCS       -0.550
+ATOM  O61   IOCS       -0.550
+ATOM  O62   IOCS       -0.550
+ATOM  O63   IOCS       -0.550
+ATOM  O64   IOCS       -0.550
+ATOM  O65   IOCS       -0.550
+ATOM  O66   IOCS       -0.550
+ATOM  O67   IOCS       -0.550
+ATOM  O68   IOCS       -0.550
+ATOM  O69   IO_SC      -0.820
+ATOM  O70   IO_SC      -0.820
+ATOM  O71   IO_SC      -0.820
+ATOM  O72   IO_SC      -0.820
+ATOM  O73   IO_SC      -0.820
+ATOM  O74   IO_SC      -0.820
+ATOM  O75   IO_SC      -0.820
+ATOM  O76   IO_SC      -0.820
+ATOM  O77   IO_SC      -0.820
+ATOM  O78   IO_SC      -0.820
+ATOM  O79   IO_SC      -0.820
+ATOM  O80   IO_SC      -0.820
+ATOM  O81   IO_SC      -0.820
+ATOM  O82   IO_SC      -0.820
+ATOM  O83   IO_SC      -0.820
+ATOM  O84   IO_SC      -0.820
+ATOM  O85   IO_SC      -0.820
+ATOM  O86   IO_SC      -0.820
+ATOM  O87   IO_SC      -0.820
+ATOM  O88   IO_SC      -0.820
+ATOM  O89   IO_SC      -0.820
+ATOM  O90   IO_SC      -0.820
+ATOM  O91   IO_SC      -0.820
+ATOM  O92   IO_SC      -0.820
+ATOM  O93   IO_SC      -0.820
+ATOM  O94   IO_SC      -0.820
+ATOM  O95   IO_SC      -0.820
+ATOM  O96   IO_SC      -0.820
+ATOM  O97   IO_SC      -0.820
+ATOM  O98   IO_SC      -0.820
+ATOM  O99   IO_SC      -0.820
+ATOM  O100  IO_SC      -0.820
+ATOM  O101  IO_SC      -0.820
+ATOM  O102  IO_SC      -0.820
+ATOM  O103  IO_SC      -0.820
+ATOM  O104  IO_SC      -0.820
+ATOM  O105  IO_SC      -0.820
+ATOM  O106  IO_SC      -0.820
+ATOM  O107  IO_SC      -0.820
+ATOM  O108  IO_SC      -0.820
+ATOM  O109  IO_SC      -0.820
+ATOM  O110  IO_SC      -0.820
+ATOM  O111  IO_SC      -0.820
+ATOM  O112  IO_SC      -0.820
+ATOM  O113  IO_SC      -0.820
+ATOM  O114  IO_SC      -0.820
+ATOM  O115  IO_SC      -0.820
+ATOM  O116  IO_SC      -0.820
+ATOM  H1    IH_SC       0.410
+ATOM  H2    IH_SC       0.410
+ATOM  H3    IH_SC       0.410
+ATOM  H4    IH_SC       0.410
+ATOM  H5    IH_SC       0.410
+ATOM  H6    IH_SC       0.410
+ATOM  H7    IH_SC       0.410
+ATOM  H8    IH_SC       0.410
+ATOM  H9    IH_SC       0.410
+ATOM  H10   IH_SC       0.410
+ATOM  H11   IH_SC       0.410
+ATOM  H12   IH_SC       0.410
+ATOM  H13   IH_SC       0.410
+ATOM  H14   IH_SC       0.410
+ATOM  H15   IH_SC       0.410
+ATOM  H16   IH_SC       0.410
+ATOM  H17   IH_SC       0.410
+ATOM  H18   IH_SC       0.410
+ATOM  H19   IH_SC       0.410
+ATOM  H20   IH_SC       0.410
+ATOM  H21   IH_SC       0.410
+ATOM  H22   IH_SC       0.410
+ATOM  H23   IH_SC       0.410
+ATOM  H24   IH_SC       0.410
+ATOM  H25   IH_SC       0.410
+ATOM  H26   IH_SC       0.410
+ATOM  H27   IH_SC       0.410
+ATOM  H28   IH_SC       0.410
+ATOM  H29   IH_SC       0.410
+ATOM  H30   IH_SC       0.410
+ATOM  H31   IH_SC       0.410
+ATOM  H32   IH_SC       0.410
+ATOM  H33   IH_SC       0.410
+ATOM  H34   IH_SC       0.410
+ATOM  H35   IH_SC       0.410
+ATOM  H36   IH_SC       0.410
+ATOM  H37   IH_SC       0.410
+ATOM  H38   IH_SC       0.410
+ATOM  H39   IH_SC       0.410
+ATOM  H40   IH_SC       0.410
+ATOM  H41   IH_SC       0.410
+ATOM  H42   IH_SC       0.410
+ATOM  H43   IH_SC       0.410
+ATOM  H44   IH_SC       0.410
+ATOM  H45   IH_SC       0.410
+ATOM  H46   IH_SC       0.410
+ATOM  H47   IH_SC       0.410
+ATOM  H48   IH_SC       0.410
+ATOM  H49   IH_SC       0.410
+ATOM  H50   IH_SC       0.410
+ATOM  H51   IH_SC       0.410
+ATOM  H52   IH_SC       0.410
+ATOM  H53   IH_SC       0.410
+ATOM  H54   IH_SC       0.410
+ATOM  H55   IH_SC       0.410
+ATOM  H56   IH_SC       0.410
+ATOM  H57   IH_SC       0.410
+ATOM  H58   IH_SC       0.410
+ATOM  H59   IH_SC       0.410
+ATOM  H60   IH_SC       0.410
+ATOM  H61   IH_SC       0.410
+ATOM  H62   IH_SC       0.410
+ATOM  H63   IH_SC       0.410
+ATOM  H64   IH_SC       0.410
+ATOM  H65   IH_SC       0.410
+ATOM  H66   IH_SC       0.410
+ATOM  H67   IH_SC       0.410
+ATOM  H68   IH_SC       0.410
+ATOM  H69   IH_SC       0.410
+ATOM  H70   IH_SC       0.410
+ATOM  H71   IH_SC       0.410
+ATOM  H72   IH_SC       0.410
+ATOM  H73   IH_SC       0.410
+ATOM  H74   IH_SC       0.410
+ATOM  H75   IH_SC       0.410
+ATOM  H76   IH_SC       0.410
+ATOM  H77   IH_SC       0.410
+ATOM  H78   IH_SC       0.410
+ATOM  H79   IH_SC       0.410
+ATOM  H80   IH_SC       0.410
+ATOM  H81   IH_SC       0.410
+ATOM  H82   IH_SC       0.410
+ATOM  H83   IH_SC       0.410
+ATOM  H84   IH_SC       0.410
+ATOM  H85   IH_SC       0.410
+ATOM  H86   IH_SC       0.410
+ATOM  H87   IH_SC       0.410
+ATOM  H88   IH_SC       0.410
+ATOM  Ca1   ICA_G       1.700
+ATOM  Ca2   ICA_G       1.700
+ATOM  Ca3   ICA_G       1.700
+ATOM  Ca4   ICA_G       1.700
+ATOM  Ca5   ICA_G       1.700
+ATOM  Ca6   ICA_G       1.700
+ATOM  Ca7   ICA_G       1.700
+ATOM  Ca8   ICA_G       1.700
+ATOM  Ca9   ICA_G       1.700
+ATOM  Ca10  ICA_G       1.700
+ATOM  Ca11  ICA_G       1.700
+ATOM  Ca12  ICA_G       1.700
+ATOM  Ca13  ICA_G       1.700
+ATOM  Ca14  ICA_G       1.700
+ATOM  Ca15  ICA_G       1.700
+ATOM  Ca16  ICA_G       1.700
+ATOM  Ca17  ICA_G       1.700
+ATOM  Ca18  ICA_G       1.700
+ATOM  Ca19  ICA_G       1.700
+ATOM  Ca20  ICA_G       1.700
+ATOM  Ca21  ICA_G       1.700
+ATOM  Ca22  ICA_G       1.700
+ATOM  Ca23  ICA_G       1.700
+ATOM  Ca24  ICA_G       1.700
+ATOM  S1    ISCS        0.500
+ATOM  S2    ISCS        0.500
+ATOM  S3    ISCS        0.500
+ATOM  S4    ISCS        0.500
+ATOM  S5    ISCS        0.500
+ATOM  S6    ISCS        0.500
+ATOM  S7    ISCS        0.500
+ATOM  S8    ISCS        0.500
+ATOM  S9    ISCS        0.500
+ATOM  S10   ISCS        0.500
+ATOM  S11   ISCS        0.500
+ATOM  S12   ISCS        0.500
+ATOM  S13   ISCS        0.500
+ATOM  S14   ISCS        0.500
+ATOM  S15   ISCS        0.500
+ATOM  S16   ISCS        0.500
+ATOM  S17   ISCS        0.500
+ATOM  S18   ISCS        0.500
+ATOM  S19   ISCS        0.500
+ATOM  S20   ISCS        0.500
+ATOM  S21   ISCS        0.500
+ATOM  S22   ISCS        0.500
+ATOM  S23   ISCS        0.500
+ATOM  S24   ISCS        0.500
+ATOM  H89   IH_SC       0.410
+ATOM  H90   IH_SC       0.410
+ATOM  H91   IH_SC       0.410
+ATOM  H92   IH_SC       0.410
+ATOM  H93   IH_SC       0.410
+ATOM  H94   IH_SC       0.410
+ATOM  H95   IH_SC       0.410
+ATOM  H96   IH_SC       0.410
+ATOM  O117  IOCS       -0.550
+ATOM  O118  IOCS       -0.550
+ATOM  O119  IOCS       -0.550
+ATOM  O120  IOCS       -0.550
+ATOM  O121  IOCS       -0.550
+ATOM  O122  IOCS       -0.550
+ATOM  O123  IOCS       -0.550
+ATOM  O124  IOCS       -0.550
+ATOM  O125  IOCS       -0.550
+ATOM  O126  IOCS       -0.550
+ATOM  O127  IOCS       -0.550
+ATOM  O128  IOCS       -0.550
+ATOM  O129  IOCS       -0.550
+ATOM  O130  IOCS       -0.550
+ATOM  O131  IOCS       -0.550
+ATOM  O132  IOCS       -0.550
+ATOM  O133  IOCS       -0.550
+ATOM  O134  IOCS       -0.550
+ATOM  O135  IOCS       -0.550
+ATOM  O136  IOCS       -0.550
+ATOM  O137  IOCS       -0.550
+ATOM  O138  IOCS       -0.550
+ATOM  O139  IOCS       -0.550
+ATOM  O140  IOCS       -0.550
+ATOM  O141  IOCS       -0.550
+ATOM  O142  IOCS       -0.550
+ATOM  O143  IOCS       -0.550
+ATOM  O144  IOCS       -0.550
+BOND  S1   O9    S1   O117  S1   O118  S1   O119
+BOND  S2   O1    S2   O33   S2   O41   S2   O120
+BOND  S3   O10   S3   O34   S3   O42   S3   O2
+BOND  S4   O43   S4   O121  S4   O122  S4   O123
+BOND  S5   O3    S5   O11   S3   O35   S5   O44
+BOND  S6   O4    S6   O12   S6   O36   S6   O45
+BOND  S7   O5    S7   O37   S7   O46   S7   O124
+BOND  S8   O6    S8   O38   S8   O47   S8   O125
+BOND  S9   O13   S9   O126  S9   O127  S9   O128
+BOND  S10  O7    S10  O14   S10  O39   S10  O48
+BOND  S11  O49   S11  O129  S11  O15   S11  O130
+BOND  S12  O8    S12  O16   S12  O40   S12  O50
+BOND  S13  O17   S13  O25   S13  O51   S13  O59
+BOND  S14  O60   S14  O131  S14  O132  S14  O133
+BOND  S15  O18   S15  O52   S15  O26   S15  O61
+BOND  S16  O19   S16  O53   S16  O62   S16  O134
+BOND  S17  O27   S17  O20   S17  O54   S17  O63
+BOND  S18  O28   S18  O135  S18  O136  S18  O137
+BOND  S19  O21   S19  O29   S19  O55   S19  O64
+BOND  S20  O22   S20  O30   S20  O65   S20  O56
+BOND  S21  O31   S21  O138  S21  O139  S21  O66
+BOND  S22  O23   S22  O57   S22  O67   S22  O140
+BOND  S23  O32   S23  O141  S23  O142  S23  O143
+BOND  S24  O68   S24  O144  S24  O24   S24  O58
+BOND  O69  H1    O69  H89
+BOND  O70  H2    O70  H45
+BOND  O71  H3    O71  H46
+BOND  O72  H4    O72  H47
+BOND  O73  H5    O73  H48
+BOND  O74  H6    O74  H49
+BOND  O75  H7    O75  H50
+BOND  O76  H8    O76  H51
+BOND  O77  H9    O77  H90
+BOND  O78  H10   O78  H52
+BOND  O79  H11   O79  H53
+BOND  O80  H12   O80  H54
+BOND  O81  H55   O81  H91
+BOND  O82  H13   O82  H56
+BOND  O83  H14   O83  H57
+BOND  O84  H15   O84  H58
+BOND  O85  H16   O85  H59
+BOND  O86  H17   O86  H60
+BOND  O87  H18   O87  H61
+BOND  O88  H19   O88  H62
+BOND  O89  H63   O89  H92
+BOND  O90  H20   O90  H64
+BOND  O91  H21   O91  H65
+BOND  O92  H22   O92  H66
+BOND  O93  H23   O93  H67
+BOND  O94  H24   O94  H68
+BOND  O95  H25   O95  H69
+BOND  O96  H26   O96  H70
+BOND  O97  H27   O97  H71
+BOND  O98  H28   O98  H93
+BOND  O99  H29   O99  H72
+BOND  O100 H30   O100 H73
+BOND  O101 H31   O101 H74
+BOND  O102 H32   O102 H75
+BOND  O103 H33   O103 H94
+BOND  O104 H34   O104 H76
+BOND  O105 H35   O105 H77
+BOND  O106 H36   O106 H78
+BOND  O107 H37   O107 H79
+BOND  O108 H38   O108 H80
+BOND  O109 H39   O109 H81
+BOND  O110 H82   O110 H95
+BOND  O111 H40   O111 H83
+BOND  O112 H41   O112 H84
+BOND  O113 H42   O113 H85
+BOND  O114 H43   O114 H86
+BOND  O115 H87   O115 H96
+BOND  O116 H44   O116 H88
+
+RESI GS-111            0.000 !   Gypsum (-111) Surface
 GROUP
-ATOM   O1    IOC11     -0.500
-ATOM   O2    IOC11     -0.500
-ATOM   O3    IOC11     -0.500
-ATOM   O4    IOC11     -0.500
+ATOM   O1    IOCS      -0.550
+ATOM   O2    IOCS      -0.550
+ATOM   O3    IOCS      -0.550
+ATOM   O4    IOCS      -0.550
 ATOM   O5    IO_SC     -0.820
 ATOM   H1    IH_SC      0.410
 ATOM   H2    IH_SC      0.410
-ATOM   CA1   ICA_G      1.500
-ATOM   CA2   ICA_G      1.500
-ATOM   S1    IS_AN      0.500
-ATOM   O6    IOC11     -0.500
-ATOM   O7    IOC11     -0.500
-ATOM   O8    IOC11     -0.500
-ATOM   O9    IOC11     -0.500
-ATOM   O10   IOC11     -0.500
-ATOM   O11   IOC11     -0.500
-ATOM   O12   IOC11     -0.500
-ATOM   O13   IOC11     -0.500
+ATOM   CA1   ICA_G      1.700
+ATOM   CA2   ICA_G      1.700
+ATOM   S1    ISCS       0.500
+ATOM   O6    IOCS      -0.550
+ATOM   O7    IOCS      -0.550
+ATOM   O8    IOCS      -0.550
+ATOM   O9    IOCS      -0.550
+ATOM   O10   IOCS      -0.550
+ATOM   O11   IOCS      -0.550
+ATOM   O12   IOCS      -0.550
+ATOM   O13   IOCS      -0.550
 ATOM   O14   IO_SC     -0.820
 ATOM   O15   IO_SC     -0.820
 ATOM   O16   IO_SC     -0.820
@@ -2372,26 +3692,26 @@ ATOM   H5    IH_SC      0.410
 ATOM   H6    IH_SC      0.410
 ATOM   H7    IH_SC      0.410
 ATOM   H8    IH_SC      0.410
-ATOM   CA3   ICA_G      1.500
-ATOM   CA4   ICA_G      1.500
-ATOM   S2    IS_AN      0.500
-ATOM   S3    IS_AN      0.500
-ATOM   O17   IOC11     -0.500
-ATOM   O18   IOC11     -0.500
-ATOM   O19   IOC11     -0.500
-ATOM   O20   IOC11     -0.500
-ATOM   O21   IOC11     -0.500
-ATOM   O22   IOC11     -0.500
-ATOM   O23   IOC11     -0.500
-ATOM   O24   IOC11     -0.500
-ATOM   O25   IOC11     -0.500
-ATOM   O26   IOC11     -0.500
-ATOM   O27   IOC11     -0.500
-ATOM   O28   IOC11     -0.500
-ATOM   O29   IOC11     -0.500
-ATOM   O30   IOC11     -0.500
-ATOM   O31   IOC11     -0.500
-ATOM   O32   IOC11     -0.500
+ATOM   CA3   ICA_G      1.700
+ATOM   CA4   ICA_G      1.700
+ATOM   S2    ISCS       0.500
+ATOM   S3    ISCS       0.500
+ATOM   O17   IOCS      -0.550
+ATOM   O18   IOCS      -0.550
+ATOM   O19   IOCS      -0.550
+ATOM   O20   IOCS      -0.550
+ATOM   O21   IOCS      -0.550
+ATOM   O22   IOCS      -0.550
+ATOM   O23   IOCS      -0.550
+ATOM   O24   IOCS      -0.550
+ATOM   O25   IOCS      -0.550
+ATOM   O26   IOCS      -0.550
+ATOM   O27   IOCS      -0.550
+ATOM   O28   IOCS      -0.550
+ATOM   O29   IOCS      -0.550
+ATOM   O30   IOCS      -0.550
+ATOM   O31   IOCS      -0.550
+ATOM   O32   IOCS      -0.550
 ATOM   O33   IO_SC     -0.820
 ATOM   O34   IO_SC     -0.820
 ATOM   O35   IO_SC     -0.820
@@ -2410,28 +3730,28 @@ ATOM   H17   IH_SC      0.410
 ATOM   H18   IH_SC      0.410
 ATOM   H19   IH_SC      0.410
 ATOM   H20   IH_SC      0.410
-ATOM   CA5   ICA_G      1.500
-ATOM   CA6   ICA_G      1.500
-ATOM   S4    IS_AN      0.500
-ATOM   S5    IS_AN      0.500
-ATOM   S6    IS_AN      0.500
-ATOM   S7    IS_AN      0.500
-ATOM   O39   IOC11     -0.500
-ATOM   O40   IOC11     -0.500
-ATOM   O41   IOC11     -0.500
-ATOM   O42   IOC11     -0.500
+ATOM   CA5   ICA_G      1.700
+ATOM   CA6   ICA_G      1.700
+ATOM   S4    ISCS       0.500
+ATOM   S5    ISCS       0.500
+ATOM   S6    ISCS       0.500
+ATOM   S7    ISCS       0.500
+ATOM   O39   IOCS      -0.550
+ATOM   O40   IOCS      -0.550
+ATOM   O41   IOCS      -0.550
+ATOM   O42   IOCS      -0.550
 ATOM   O43   IO_SC     -0.820
 ATOM   H21   IH_SC      0.410
 ATOM   H22   IH_SC      0.410
-ATOM   S8    IS_AN      0.500
-ATOM   O44   IOC11     -0.500
-ATOM   O45   IOC11     -0.500
-ATOM   O46   IOC11     -0.500
-ATOM   O47   IOC11     -0.500
-ATOM   O48   IOC11     -0.500
-ATOM   O49   IOC11     -0.500
-ATOM   O50   IOC11     -0.500
-ATOM   O51   IOC11     -0.500
+ATOM   S8    ISCS       0.500
+ATOM   O44   IOCS      -0.550
+ATOM   O45   IOCS      -0.550
+ATOM   O46   IOCS      -0.550
+ATOM   O47   IOCS      -0.550
+ATOM   O48   IOCS      -0.550
+ATOM   O49   IOCS      -0.550
+ATOM   O50   IOCS      -0.550
+ATOM   O51   IOCS      -0.550
 ATOM   O52   IO_SC     -0.820
 ATOM   O53   IO_SC     -0.820
 ATOM   O54   IO_SC     -0.820
@@ -2450,24 +3770,24 @@ ATOM   H31   IH_SC      0.410
 ATOM   H32   IH_SC      0.410
 ATOM   H33   IH_SC      0.410
 ATOM   H34   IH_SC      0.410
-ATOM   CA7   ICA_G      1.500
-ATOM   S9    IS_AN      0.500
-ATOM   S10   IS_AN      0.500
-ATOM   O58   IOC11     -0.500
-ATOM   O59   IOC11     -0.500
-ATOM   O60   IOC11     -0.500
-ATOM   O61   IOC11     -0.500
-ATOM   CA8   ICA_G      1.500
-ATOM   S11   IS_AN      0.500
-ATOM   O62   IOC11     -0.500
-ATOM   O63   IOC11     -0.500
-ATOM   O64   IOC11     -0.500
-ATOM   O65   IOC11     -0.500
+ATOM   CA7   ICA_G      1.700
+ATOM   S9    ISCS       0.500
+ATOM   S10   ISCS       0.500
+ATOM   O58   IOCS      -0.550
+ATOM   O59   IOCS      -0.550
+ATOM   O60   IOCS      -0.550
+ATOM   O61   IOCS      -0.550
+ATOM   CA8   ICA_G      1.700
+ATOM   S11   ISCS       0.500
+ATOM   O62   IOCS      -0.550
+ATOM   O63   IOCS      -0.550
+ATOM   O64   IOCS      -0.550
+ATOM   O65   IOCS      -0.550
 ATOM   O66   IO_SC     -0.820
 ATOM   H35   IH_SC      0.410
 ATOM   H36   IH_SC      0.410
-ATOM   CA9   ICA_G      1.500
-ATOM   S12   IS_AN      0.500
+ATOM   CA9   ICA_G      1.700
+ATOM   S12   ISCS       0.500
 ATOM   O67   IO_SC     -0.820
 ATOM   O68   IO_SC     -0.820
 ATOM   O69   IO_SC     -0.820
@@ -2477,18 +3797,18 @@ ATOM   H39   IH_SC      0.410
 ATOM   H40   IH_SC      0.410
 ATOM   H41   IH_SC      0.410
 ATOM   H42   IH_SC      0.410
-ATOM   CA10  ICA_G      1.500
+ATOM   CA10  ICA_G      1.700
 ATOM   O70   IO_SC     -0.820
 ATOM   H43   IH_SC      0.410
 ATOM   H44   IH_SC      0.410
 ATOM   O71   IO_SC     -0.820
 ATOM   H45   IH_SC      0.410
 ATOM   H46   IH_SC      0.410
-ATOM   CA11  ICA_G      1.500
+ATOM   CA11  ICA_G      1.700
 ATOM   O72   IO_SC     -0.820
 ATOM   H47   IH_SC      0.410
 ATOM   H48   IH_SC      0.410
-ATOM   CA12  ICA_G      1.500
+ATOM   CA12  ICA_G      1.700
 BOND  S1   O1    S1   O2    S1   O3    S1   O4
 BOND  S2   O6    S2   O7    S2   O10   S2   O11
 BOND  S3   O8    S3   O9    S3   O12   S3   O13
@@ -2514,101 +3834,225 @@ BOND  O69  H39   O69 H42    O68  H38   O68  H41
 BOND  O38  H14   O38 H20    O37  H13   O37  H19
 BOND  O34  H10   O34 H16    O36  H12   O36  H18
 
+RESI GSR111            0.000 !   Gypsum (-111) Rectangular Surface
+GROUP
+ATOM   O1    IOCS      -0.550
+ATOM   O2    IOCS      -0.550
+ATOM   O3    IOCS      -0.550
+ATOM   O4    IOCS      -0.550
+ATOM   O5    IOCS      -0.550
+ATOM   O6    IOCS      -0.550
+ATOM   O7    IOCS      -0.550
+ATOM   O8    IOCS      -0.550
+ATOM   O9    IOCS      -0.550
+ATOM   O10   IOCS      -0.550
+ATOM   O11   IOCS      -0.550
+ATOM   O12   IOCS      -0.550
+ATOM   O13   IOCS      -0.550
+ATOM   O14   IOCS      -0.550
+ATOM   O15   IOCS      -0.550
+ATOM   O16   IOCS      -0.550
+ATOM   O17   IOCS      -0.550
+ATOM   O18   IOCS      -0.550
+ATOM   O19   IOCS      -0.550
+ATOM   O20   IOCS      -0.550
+ATOM   O21   IO_SC     -0.820
+ATOM   O22   IO_SC     -0.820
+ATOM   O23   IO_SC     -0.820
+ATOM   O24   IO_SC     -0.820
+ATOM   O25   IO_SC     -0.820
+ATOM   O26   IO_SC     -0.820
+ATOM   O27   IO_SC     -0.820
+ATOM   O28   IO_SC     -0.820
+ATOM   O29   IO_SC     -0.820
+ATOM   O30   IO_SC     -0.820
+ATOM   O31   IO_SC     -0.820
+ATOM   O32   IO_SC     -0.820
+ATOM   O33   IO_SC     -0.820
+ATOM   O34   IO_SC     -0.820
+ATOM   O35   IO_SC     -0.820
+ATOM   O36   IO_SC     -0.820
+ATOM   H1    IH_SC      0.410
+ATOM   H2    IH_SC      0.410
+ATOM   H3    IH_SC      0.410
+ATOM   H4    IH_SC      0.410
+ATOM   H5    IH_SC      0.410
+ATOM   H6    IH_SC      0.410
+ATOM   H7    IH_SC      0.410
+ATOM   H8    IH_SC      0.410
+ATOM   H9    IH_SC      0.410
+ATOM   H10   IH_SC      0.410
+ATOM   H11   IH_SC      0.410
+ATOM   H12   IH_SC      0.410
+ATOM   H13   IH_SC      0.410
+ATOM   H14   IH_SC      0.410
+ATOM   H15   IH_SC      0.410
+ATOM   H16   IH_SC      0.410
+ATOM   H17   IH_SC      0.410
+ATOM   H18   IH_SC      0.410
+ATOM   H19   IH_SC      0.410
+ATOM   H20   IH_SC      0.410
+ATOM   H21   IH_SC      0.410
+ATOM   H22   IH_SC      0.410
+ATOM   H23   IH_SC      0.410
+ATOM   H24   IH_SC      0.410
+ATOM   Ca1   ICA_G      1.700
+ATOM   Ca2   ICA_G      1.700
+ATOM   Ca3   ICA_G      1.700
+ATOM   Ca4   ICA_G      1.700
+ATOM   Ca5   ICA_G      1.700
+ATOM   Ca6   ICA_G      1.700
+ATOM   Ca7   ICA_G      1.700
+ATOM   Ca8   ICA_G      1.700
+ATOM   S1    ISCS       0.500
+ATOM   S2    ISCS       0.500
+ATOM   S3    ISCS       0.500
+ATOM   S4    ISCS       0.500
+ATOM   S5    ISCS       0.500
+ATOM   S6    ISCS       0.500
+ATOM   S7    ISCS       0.500
+ATOM   S8    ISCS       0.500
+ATOM   H25   IH_SC      0.410
+ATOM   H26   IH_SC      0.410
+ATOM   H27   IH_SC      0.410
+ATOM   H28   IH_SC      0.410
+ATOM   H29   IH_SC      0.410
+ATOM   H30   IH_SC      0.410
+ATOM   H31   IH_SC      0.410
+ATOM   H32   IH_SC      0.410
+ATOM   O37   IOCS      -0.550
+ATOM   O38   IOCS      -0.550
+ATOM   O39   IOCS      -0.550
+ATOM   O40   IOCS      -0.550
+ATOM   O41   IOCS      -0.550
+ATOM   O42   IOCS      -0.550
+ATOM   O43   IOCS      -0.550
+ATOM   O44   IOCS      -0.550
+ATOM   O45   IOCS      -0.550
+ATOM   O46   IOCS      -0.550
+ATOM   O47   IOCS      -0.550
+ATOM   O48   IOCS      -0.550
+BOND  S1   O1    S1   O3    S1   O13   S1   O16
+BOND  S2   O4    S2   O14   S2   O37   S2   O38
+BOND  S3   O2    S3   O5    S3   O39   S3   O40
+BOND  S4   O6    S4   O15   S4   O41   S4   O42
+BOND  S5   O9    S5   O17   S5   O43   S5   O44
+BOND  S6   O7    S6   O10   S6   O45   S6   O46
+BOND  S7   O11   S7   O18   S7   O47   S7   O48
+BOND  S8   O8    S8   O12   S8   O19   S8   O20
+BOND  O21 H9    O21 H25
+BOND  O22 H10   O22 H26
+BOND  O23 H1    O23 H11
+BOND  O24 H12   O24 H27
+BOND  O25 H13   O25 H28
+BOND  O26 H2    O26 H14
+BOND  O27 H3    O27 H15
+BOND  O28 H4    O28 H16
+BOND  O29 H17   O29 H29
+BOND  O30 H5    O30 H18
+BOND  O31 H19   O31 H30
+BOND  O32 H20   O32 H31
+BOND  O33 H6    O33 H21
+BOND  O34 H7    O34 H22
+BOND  O35 H8    O35 H23
+BOND  O36 H24   O36 H32
+
+
 RESI HH001            0.000 !  (SO4)12 Ca12 6H2O
 GROUP                        !
-ATOM  S1    IS_AN       0.500 !
-ATOM  O1    IOC11      -0.500 !
-ATOM  O2    IOC11      -0.500 !
-ATOM  O3    IOC11      -0.500 !
-ATOM  O4    IOC11      -0.500 !
-ATOM  S2    IS_AN       0.500 !
-ATOM  O5    IOC11      -0.500 !
-ATOM  O6    IOC11      -0.500 !
-ATOM  O7    IOC11      -0.500 !
-ATOM  O8    IOC11      -0.500 !
-ATOM  S3    IS_AN       0.500 !
-ATOM  O9    IOC11      -0.500 !
-ATOM  O10   IOC11      -0.500 !
-ATOM  O11   IOC11      -0.500 !
-ATOM  O12   IOC11      -0.500 !
-ATOM  H1    IH1O        0.410 !
-ATOM  H2    IH1O        0.410 !
-ATOM  O49   IO2_SC     -0.820 !
-ATOM  H3    IH1O        0.410 !
-ATOM  H4    IH1O        0.410 !
-ATOM  O50   IO2_SC     -0.820 !
-ATOM  CA1   ICA_G       1.500 !
-ATOM  CA2   ICA_G       1.500 !
-ATOM  CA3   ICA_G       1.500 !
+ATOM  S1    ISCS        0.500 !
+ATOM  O1    IOCS       -0.550 !
+ATOM  O2    IOCS       -0.550 !
+ATOM  O3    IOCS       -0.550 !
+ATOM  O4    IOCS       -0.550 !
+ATOM  S2    ISCS        0.500 !
+ATOM  O5    IOCS       -0.550 !
+ATOM  O6    IOCS       -0.550 !
+ATOM  O7    IOCS       -0.550 !
+ATOM  O8    IOCS       -0.550 !
+ATOM  S3    ISCS        0.500 !
+ATOM  O9    IOCS       -0.550 !
+ATOM  O10   IOCS       -0.550 !
+ATOM  O11   IOCS       -0.550 !
+ATOM  O12   IOCS       -0.550 !
+ATOM  H1    IH_SC       0.410 !
+ATOM  H2    IH_SC       0.410 !
+ATOM  O49   IO_SC      -0.820 !
+ATOM  H3    IH_SC       0.410 !
+ATOM  H4    IH_SC       0.410 !
+ATOM  O50   IO_SC      -0.820 !
+ATOM  CA1   ICA_G       1.700 !
+ATOM  CA2   ICA_G       1.700 !
+ATOM  CA3   ICA_G       1.700 !
 GROUP                        !
-ATOM  S4    IS_AN       0.500 !
-ATOM  O13   IOC11      -0.500 !
-ATOM  O14   IOC11      -0.500 !
-ATOM  O15   IOC11      -0.500 !
-ATOM  O16   IOC11      -0.500 !
-ATOM  S5    IS_AN       0.500 !
-ATOM  O17   IOC11      -0.500 !
-ATOM  O18   IOC11      -0.500 !
-ATOM  O19   IOC11      -0.500 !
-ATOM  O20   IOC11      -0.500 !
-ATOM  S6    IS_AN       0.500 !
-ATOM  O21   IOC11      -0.500 !
-ATOM  O22   IOC11      -0.500 !
-ATOM  O23   IOC11      -0.500 !
-ATOM  O24   IOC11      -0.500 !
-ATOM  H5    IH1O        0.410 !
-ATOM  H6    IH1O        0.410 !
-ATOM  O51   IO2_SC     -0.820 !
-ATOM  CA4   ICA_G       1.500 !
-ATOM  CA5   ICA_G       1.500 !
-ATOM  CA6   ICA_G       1.500 !
+ATOM  S4    ISCS        0.500 !
+ATOM  O13   IOCS       -0.550 !
+ATOM  O14   IOCS       -0.550 !
+ATOM  O15   IOCS       -0.550 !
+ATOM  O16   IOCS       -0.550 !
+ATOM  S5    ISCS        0.500 !
+ATOM  O17   IOCS       -0.550 !
+ATOM  O18   IOCS       -0.550 !
+ATOM  O19   IOCS       -0.550 !
+ATOM  O20   IOCS       -0.550 !
+ATOM  S6    ISCS        0.500 !
+ATOM  O21   IOCS       -0.550 !
+ATOM  O22   IOCS       -0.550 !
+ATOM  O23   IOCS       -0.550 !
+ATOM  O24   IOCS       -0.550 !
+ATOM  H5    IH_SC       0.410 !
+ATOM  H6    IH_SC       0.410 !
+ATOM  O51   IO_SC      -0.820 !
+ATOM  CA4   ICA_G       1.700 !
+ATOM  CA5   ICA_G       1.700 !
+ATOM  CA6   ICA_G       1.700 !
 GROUP                        !
-ATOM  S7    IS_AN       0.500 !
-ATOM  O25   IOC11      -0.500 !
-ATOM  O26   IOC11      -0.500 !
-ATOM  O27   IOC11      -0.500 !
-ATOM  O28   IOC11      -0.500 !
-ATOM  S8    IS_AN       0.500 !
-ATOM  O29   IOC11      -0.500 !
-ATOM  O30   IOC11      -0.500 !
-ATOM  O31   IOC11      -0.500 !
-ATOM  O32   IOC11      -0.500 !
-ATOM  S9    IS_AN       0.500 !
-ATOM  O33   IOC11      -0.500 !
-ATOM  O34   IOC11      -0.500 !
-ATOM  O35   IOC11      -0.500 !
-ATOM  O36   IOC11      -0.500 !
-ATOM  H7    IH1O        0.410 !
-ATOM  H8    IH1O        0.410 !
-ATOM  O52   IO2_SC     -0.820 !
-ATOM  H9    IH1O        0.410 !
-ATOM  H10   IH1O        0.410 !
-ATOM  O53   IO2_SC     -0.820 !
-ATOM  CA7   ICA_G       1.500 !
-ATOM  CA8   ICA_G       1.500 !
-ATOM  CA9   ICA_G       1.500 !
+ATOM  S7    ISCS        0.500 !
+ATOM  O25   IOCS       -0.550 !
+ATOM  O26   IOCS       -0.550 !
+ATOM  O27   IOCS       -0.550 !
+ATOM  O28   IOCS       -0.550 !
+ATOM  S8    ISCS        0.500 !
+ATOM  O29   IOCS       -0.550 !
+ATOM  O30   IOCS       -0.550 !
+ATOM  O31   IOCS       -0.550 !
+ATOM  O32   IOCS       -0.550 !
+ATOM  S9    ISCS        0.500 !
+ATOM  O33   IOCS       -0.550 !
+ATOM  O34   IOCS       -0.550 !
+ATOM  O35   IOCS       -0.550 !
+ATOM  O36   IOCS       -0.550 !
+ATOM  H7    IH_SC       0.410 !
+ATOM  H8    IH_SC       0.410 !
+ATOM  O52   IO_SC      -0.820 !
+ATOM  H9    IH_SC       0.410 !
+ATOM  H10   IH_SC       0.410 !
+ATOM  O53   IO_SC      -0.820 !
+ATOM  CA7   ICA_G       1.700 !
+ATOM  CA8   ICA_G       1.700 !
+ATOM  CA9   ICA_G       1.700 !
 GROUP                        !
-ATOM  S10   IS_AN       0.500 !
-ATOM  O37   IOC11      -0.500 !
-ATOM  O38   IOC11      -0.500 !
-ATOM  O39   IOC11      -0.500 !
-ATOM  O40   IOC11      -0.500 !
-ATOM  S11   IS_AN       0.500 !
-ATOM  O41   IOC11      -0.500 !
-ATOM  O42   IOC11      -0.500 !
-ATOM  O43   IOC11      -0.500 !
-ATOM  O44   IOC11      -0.500 !
-ATOM  S12   IS_AN       0.500 !
-ATOM  O45   IOC11      -0.500 !
-ATOM  O46   IOC11      -0.500 !
-ATOM  O47   IOC11      -0.500 !
-ATOM  O48   IOC11      -0.500 !
-ATOM  H11   IH1O        0.410 !
-ATOM  H12   IH1O        0.410 !
-ATOM  O54   IO2_SC     -0.820 !
-ATOM  CA10  ICA_G       1.500 !
-ATOM  CA11  ICA_G       1.500 !
-ATOM  CA12  ICA_G       1.500 !
+ATOM  S10   ISCS        0.500 !
+ATOM  O37   IOCS       -0.550 !
+ATOM  O38   IOCS       -0.550 !
+ATOM  O39   IOCS       -0.550 !
+ATOM  O40   IOCS       -0.550 !
+ATOM  S11   ISCS        0.500 !
+ATOM  O41   IOCS       -0.550 !
+ATOM  O42   IOCS       -0.550 !
+ATOM  O43   IOCS       -0.550 !
+ATOM  O44   IOCS       -0.550 !
+ATOM  S12   ISCS        0.500 !
+ATOM  O45   IOCS       -0.550 !
+ATOM  O46   IOCS       -0.550 !
+ATOM  O47   IOCS       -0.550 !
+ATOM  O48   IOCS       -0.550 !
+ATOM  H11   IH_SC       0.410 !
+ATOM  H12   IH_SC       0.410 !
+ATOM  O54   IO_SC      -0.820 !
+ATOM  CA10  ICA_G       1.700 !
+ATOM  CA11  ICA_G       1.700 !
+ATOM  CA12  ICA_G       1.700 !
 BOND  S1  O1    S1  O2    S1   O3    S1   O4
 BOND  S2  O5    S2  O6    S2   O7    S2   O8
 BOND  S3  O9    S3  O10   S3   O11   S3   O12
@@ -2653,99 +4097,99 @@ BOND  O53 H9    O53 H10   O54  H11   O54  H12
 
 RESI HH100              0.000 !  (SO4)12 Ca12 6H2O
 GROUP                        !
-ATOM  S1    IS_AN       0.500 !
-ATOM  O1    IOC11      -0.500 !
-ATOM  O2    IOC11      -0.500 !
-ATOM  O3    IOC11      -0.500 !
-ATOM  O4    IOC11      -0.500 !
-ATOM  S2    IS_AN       0.500 !
-ATOM  O5    IOC11      -0.500 !
-ATOM  O6    IOC11      -0.500 !
-ATOM  O7    IOC11      -0.500 !
-ATOM  O8    IOC11      -0.500 !
-ATOM  S3    IS_AN       0.500 !
-ATOM  O9    IOC11      -0.500 !
-ATOM  O10   IOC11      -0.500 !
-ATOM  O11   IOC11      -0.500 !
-ATOM  O12   IOC11      -0.500 !
-ATOM  H1    IH1O        0.410 !
-ATOM  H2    IH1O        0.410 !
-ATOM  O49   IO2_SC     -0.820 !
-ATOM  H3    IH1O        0.410 !
-ATOM  H4    IH1O        0.410 !
-ATOM  O50   IO2_SC     -0.820 !
-ATOM  CA1   ICA_G       1.500 !
-ATOM  CA2   ICA_G       1.500 !
-ATOM  CA3   ICA_G       1.500 !
+ATOM  S1    ISCS        0.500 !
+ATOM  O1    IOCS       -0.550 !
+ATOM  O2    IOCS       -0.550 !
+ATOM  O3    IOCS       -0.550 !
+ATOM  O4    IOCS       -0.550 !
+ATOM  S2    ISCS        0.500 !
+ATOM  O5    IOCS       -0.550 !
+ATOM  O6    IOCS       -0.550 !
+ATOM  O7    IOCS       -0.550 !
+ATOM  O8    IOCS       -0.550 !
+ATOM  S3    ISCS        0.500 !
+ATOM  O9    IOCS       -0.550 !
+ATOM  O10   IOCS       -0.550 !
+ATOM  O11   IOCS       -0.550 !
+ATOM  O12   IOCS       -0.550 !
+ATOM  H1    IH_SC       0.410 !
+ATOM  H2    IH_SC       0.410 !
+ATOM  O49   IO_SC      -0.820 !
+ATOM  H3    IH_SC       0.410 !
+ATOM  H4    IH_SC       0.410 !
+ATOM  O50   IO_SC      -0.820 !
+ATOM  CA1   ICA_G       1.700 !
+ATOM  CA2   ICA_G       1.700 !
+ATOM  CA3   ICA_G       1.700 !
 GROUP                        !
-ATOM  S4    IS_AN       0.500 !
-ATOM  O13   IOC11      -0.500 !
-ATOM  O14   IOC11      -0.500 !
-ATOM  O15   IOC11      -0.500 !
-ATOM  O16   IOC11      -0.500 !
-ATOM  S5    IS_AN       0.500 !
-ATOM  O17   IOC11      -0.500 !
-ATOM  O18   IOC11      -0.500 !
-ATOM  O19   IOC11      -0.500 !
-ATOM  O20   IOC11      -0.500 !
-ATOM  S6    IS_AN       0.500 !
-ATOM  O21   IOC11      -0.500 !
-ATOM  O22   IOC11      -0.500 !
-ATOM  O23   IOC11      -0.500 !
-ATOM  O24   IOC11      -0.500 !
-ATOM  H5    IH1O        0.410 !
-ATOM  H6    IH1O        0.410 !
-ATOM  O51   IO2_SC     -0.820 !
-ATOM  CA4   ICA_G       1.500 !
-ATOM  CA5   ICA_G       1.500 !
-ATOM  CA6   ICA_G       1.500 !
+ATOM  S4    ISCS        0.500 !
+ATOM  O13   IOCS       -0.550 !
+ATOM  O14   IOCS       -0.550 !
+ATOM  O15   IOCS       -0.550 !
+ATOM  O16   IOCS       -0.550 !
+ATOM  S5    ISCS        0.500 !
+ATOM  O17   IOCS       -0.550 !
+ATOM  O18   IOCS       -0.550 !
+ATOM  O19   IOCS       -0.550 !
+ATOM  O20   IOCS       -0.550 !
+ATOM  S6    ISCS        0.500 !
+ATOM  O21   IOCS       -0.550 !
+ATOM  O22   IOCS       -0.550 !
+ATOM  O23   IOCS       -0.550 !
+ATOM  O24   IOCS       -0.550 !
+ATOM  H5    IH_SC       0.410 !
+ATOM  H6    IH_SC       0.410 !
+ATOM  O51   IO_SC      -0.820 !
+ATOM  CA4   ICA_G       1.700 !
+ATOM  CA5   ICA_G       1.700 !
+ATOM  CA6   ICA_G       1.700 !
 GROUP                        !
-ATOM  S7    IS_AN       0.500 !
-ATOM  O25   IOC11      -0.500 !
-ATOM  O26   IOC11      -0.500 !
-ATOM  O27   IOC11      -0.500 !
-ATOM  O28   IOC11      -0.500 !
-ATOM  S8    IS_AN       0.500 !
-ATOM  O29   IOC11      -0.500 !
-ATOM  O30   IOC11      -0.500 !
-ATOM  O31   IOC11      -0.500 !
-ATOM  O32   IOC11      -0.500 !
-ATOM  S9    IS_AN       0.500 !
-ATOM  O33   IOC11      -0.500 !
-ATOM  O34   IOC11      -0.500 !
-ATOM  O35   IOC11      -0.500 !
-ATOM  O36   IOC11      -0.500 !
-ATOM  H7    IH1O        0.410 !
-ATOM  H8    IH1O        0.410 !
-ATOM  O52   IO2_SC     -0.820 !
-ATOM  H9    IH1O        0.410 !
-ATOM  H10   IH1O        0.410 !
-ATOM  O53   IO2_SC     -0.820 !
-ATOM  CA7   ICA_G       1.500 !
-ATOM  CA8   ICA_G       1.500 !
-ATOM  CA9   ICA_G       1.500 !
+ATOM  S7    ISCS        0.500 !
+ATOM  O25   IOCS       -0.550 !
+ATOM  O26   IOCS       -0.550 !
+ATOM  O27   IOCS       -0.550 !
+ATOM  O28   IOCS       -0.550 !
+ATOM  S8    ISCS        0.500 !
+ATOM  O29   IOCS       -0.550 !
+ATOM  O30   IOCS       -0.550 !
+ATOM  O31   IOCS       -0.550 !
+ATOM  O32   IOCS       -0.550 !
+ATOM  S9    ISCS        0.500 !
+ATOM  O33   IOCS       -0.550 !
+ATOM  O34   IOCS       -0.550 !
+ATOM  O35   IOCS       -0.550 !
+ATOM  O36   IOCS       -0.550 !
+ATOM  H7    IH_SC       0.410 !
+ATOM  H8    IH_SC       0.410 !
+ATOM  O52   IO_SC      -0.820 !
+ATOM  H9    IH_SC       0.410 !
+ATOM  H10   IH_SC       0.410 !
+ATOM  O53   IO_SC      -0.820 !
+ATOM  CA7   ICA_G       1.700 !
+ATOM  CA8   ICA_G       1.700 !
+ATOM  CA9   ICA_G       1.700 !
 GROUP                        !
-ATOM  S10   IS_AN       0.500 !
-ATOM  O37   IOC11      -0.500 !
-ATOM  O38   IOC11      -0.500 !
-ATOM  O39   IOC11      -0.500 !
-ATOM  O40   IOC11      -0.500 !
-ATOM  S11   IS_AN       0.500 !
-ATOM  O41   IOC11      -0.500 !
-ATOM  O42   IOC11      -0.500 !
-ATOM  O43   IOC11      -0.500 !
-ATOM  O44   IOC11      -0.500 !
-ATOM  S12   IS_AN       0.500 !
-ATOM  O45   IOC11      -0.500 !
-ATOM  O46   IOC11      -0.500 !
-ATOM  O47   IOC11      -0.500 !
-ATOM  O48   IOC11      -0.500 !
-ATOM  H11   IH1O        0.410 !
-ATOM  H12   IH1O        0.410 !
-ATOM  O54   IO2_SC     -0.820 !
-ATOM  CA10  ICA_G       1.500 !
-ATOM  CA11  ICA_G       1.500 !
-ATOM  CA12  ICA_G       1.500 !
+ATOM  S10   ISCS        0.500 !
+ATOM  O37   IOCS       -0.550 !
+ATOM  O38   IOCS       -0.550 !
+ATOM  O39   IOCS       -0.550 !
+ATOM  O40   IOCS       -0.550 !
+ATOM  S11   ISCS        0.500 !
+ATOM  O41   IOCS       -0.550 !
+ATOM  O42   IOCS       -0.550 !
+ATOM  O43   IOCS       -0.550 !
+ATOM  O44   IOCS       -0.550 !
+ATOM  S12   ISCS        0.500 !
+ATOM  O45   IOCS       -0.550 !
+ATOM  O46   IOCS       -0.550 !
+ATOM  O47   IOCS       -0.550 !
+ATOM  O48   IOCS       -0.550 !
+ATOM  H11   IH_SC       0.410 !
+ATOM  H12   IH_SC       0.410 !
+ATOM  O54   IO_SC      -0.820 !
+ATOM  CA10  ICA_G       1.700 !
+ATOM  CA11  ICA_G       1.700 !
+ATOM  CA12  ICA_G       1.700 !
 BOND  S1  O1    S1  O5    S1   O9    S1   O13
 BOND  S2  O2    S2  O6    S2   O10   S2   O14
 BOND  S3  O3    S3  O7    S3   O11   S3   O15
@@ -2764,99 +4208,99 @@ BOND  O53 H1    O53 H3    O54  H2    O54  H4
 
 RESI HH010              0.000 !  (SO4)12 Ca12 6H2O
 GROUP                        !
-ATOM  S1    IS_AN       0.500 !
-ATOM  O1    IOC11      -0.500 !
-ATOM  O2    IOC11      -0.500 !
-ATOM  O3    IOC11      -0.500 !
-ATOM  O4    IOC11      -0.500 !
-ATOM  S2    IS_AN       0.500 !
-ATOM  O5    IOC11      -0.500 !
-ATOM  O6    IOC11      -0.500 !
-ATOM  O7    IOC11      -0.500 !
-ATOM  O8    IOC11      -0.500 !
-ATOM  S3    IS_AN       0.500 !
-ATOM  O9    IOC11      -0.500 !
-ATOM  O10   IOC11      -0.500 !
-ATOM  O11   IOC11      -0.500 !
-ATOM  O12   IOC11      -0.500 !
-ATOM  H1    IH1O        0.410 !
-ATOM  H2    IH1O        0.410 !
-ATOM  O49   IO2_SC     -0.820 !
-ATOM  H3    IH1O        0.410 !
-ATOM  H4    IH1O        0.410 !
-ATOM  O50   IO2_SC     -0.820 !
-ATOM  CA1   ICA_G       1.500 !
-ATOM  CA2   ICA_G       1.500 !
-ATOM  CA3   ICA_G       1.500 !
+ATOM  S1    ISCS        0.500 !
+ATOM  O1    IOCS       -0.550 !
+ATOM  O2    IOCS       -0.550 !
+ATOM  O3    IOCS       -0.550 !
+ATOM  O4    IOCS       -0.550 !
+ATOM  S2    ISCS        0.500 !
+ATOM  O5    IOCS       -0.550 !
+ATOM  O6    IOCS       -0.550 !
+ATOM  O7    IOCS       -0.550 !
+ATOM  O8    IOCS       -0.550 !
+ATOM  S3    ISCS        0.500 !
+ATOM  O9    IOCS       -0.550 !
+ATOM  O10   IOCS       -0.550 !
+ATOM  O11   IOCS       -0.550 !
+ATOM  O12   IOCS       -0.550 !
+ATOM  H1    IH_SC       0.410 !
+ATOM  H2    IH_SC       0.410 !
+ATOM  O49   IO_SC      -0.820 !
+ATOM  H3    IH_SC       0.410 !
+ATOM  H4    IH_SC       0.410 !
+ATOM  O50   IO_SC      -0.820 !
+ATOM  CA1   ICA_G       1.700 !
+ATOM  CA2   ICA_G       1.700 !
+ATOM  CA3   ICA_G       1.700 !
 GROUP                        !
-ATOM  S4    IS_AN       0.500 !
-ATOM  O13   IOC11      -0.500 !
-ATOM  O14   IOC11      -0.500 !
-ATOM  O15   IOC11      -0.500 !
-ATOM  O16   IOC11      -0.500 !
-ATOM  S5    IS_AN       0.500 !
-ATOM  O17   IOC11      -0.500 !
-ATOM  O18   IOC11      -0.500 !
-ATOM  O19   IOC11      -0.500 !
-ATOM  O20   IOC11      -0.500 !
-ATOM  S6    IS_AN       0.500 !
-ATOM  O21   IOC11      -0.500 !
-ATOM  O22   IOC11      -0.500 !
-ATOM  O23   IOC11      -0.500 !
-ATOM  O24   IOC11      -0.500 !
-ATOM  H5    IH1O        0.410 !
-ATOM  H6    IH1O        0.410 !
-ATOM  O51   IO2_SC     -0.820 !
-ATOM  CA4   ICA_G       1.500 !
-ATOM  CA5   ICA_G       1.500 !
-ATOM  CA6   ICA_G       1.500 !
+ATOM  S4    ISCS        0.500 !
+ATOM  O13   IOCS       -0.550 !
+ATOM  O14   IOCS       -0.550 !
+ATOM  O15   IOCS       -0.550 !
+ATOM  O16   IOCS       -0.550 !
+ATOM  S5    ISCS        0.500 !
+ATOM  O17   IOCS       -0.550 !
+ATOM  O18   IOCS       -0.550 !
+ATOM  O19   IOCS       -0.550 !
+ATOM  O20   IOCS       -0.550 !
+ATOM  S6    ISCS        0.500 !
+ATOM  O21   IOCS       -0.550 !
+ATOM  O22   IOCS       -0.550 !
+ATOM  O23   IOCS       -0.550 !
+ATOM  O24   IOCS       -0.550 !
+ATOM  H5    IH_SC       0.410 !
+ATOM  H6    IH_SC       0.410 !
+ATOM  O51   IO_SC      -0.820 !
+ATOM  CA4   ICA_G       1.700 !
+ATOM  CA5   ICA_G       1.700 !
+ATOM  CA6   ICA_G       1.700 !
 GROUP                        !
-ATOM  S7    IS_AN       0.500 !
-ATOM  O25   IOC11      -0.500 !
-ATOM  O26   IOC11      -0.500 !
-ATOM  O27   IOC11      -0.500 !
-ATOM  O28   IOC11      -0.500 !
-ATOM  S8    IS_AN       0.500 !
-ATOM  O29   IOC11      -0.500 !
-ATOM  O30   IOC11      -0.500 !
-ATOM  O31   IOC11      -0.500 !
-ATOM  O32   IOC11      -0.500 !
-ATOM  S9    IS_AN       0.500 !
-ATOM  O33   IOC11      -0.500 !
-ATOM  O34   IOC11      -0.500 !
-ATOM  O35   IOC11      -0.500 !
-ATOM  O36   IOC11      -0.500 !
-ATOM  H7    IH1O        0.410 !
-ATOM  H8    IH1O        0.410 !
-ATOM  O52   IO2_SC     -0.820 !
-ATOM  H9    IH1O        0.410 !
-ATOM  H10   IH1O        0.410 !
-ATOM  O53   IO2_SC     -0.820 !
-ATOM  CA7   ICA_G       1.500 !
-ATOM  CA8   ICA_G       1.500 !
-ATOM  CA9   ICA_G       1.500 !
+ATOM  S7    ISCS        0.500 !
+ATOM  O25   IOCS       -0.550 !
+ATOM  O26   IOCS       -0.550 !
+ATOM  O27   IOCS       -0.550 !
+ATOM  O28   IOCS       -0.550 !
+ATOM  S8    ISCS        0.500 !
+ATOM  O29   IOCS       -0.550 !
+ATOM  O30   IOCS       -0.550 !
+ATOM  O31   IOCS       -0.550 !
+ATOM  O32   IOCS       -0.550 !
+ATOM  S9    ISCS        0.500 !
+ATOM  O33   IOCS       -0.550 !
+ATOM  O34   IOCS       -0.550 !
+ATOM  O35   IOCS       -0.550 !
+ATOM  O36   IOCS       -0.550 !
+ATOM  H7    IH_SC       0.410 !
+ATOM  H8    IH_SC       0.410 !
+ATOM  O52   IO_SC      -0.820 !
+ATOM  H9    IH_SC       0.410 !
+ATOM  H10   IH_SC       0.410 !
+ATOM  O53   IO_SC      -0.820 !
+ATOM  CA7   ICA_G       1.700 !
+ATOM  CA8   ICA_G       1.700 !
+ATOM  CA9   ICA_G       1.700 !
 GROUP                        !
-ATOM  S10   IS_AN       0.500 !
-ATOM  O37   IOC11      -0.500 !
-ATOM  O38   IOC11      -0.500 !
-ATOM  O39   IOC11      -0.500 !
-ATOM  O40   IOC11      -0.500 !
-ATOM  S11   IS_AN       0.500 !
-ATOM  O41   IOC11      -0.500 !
-ATOM  O42   IOC11      -0.500 !
-ATOM  O43   IOC11      -0.500 !
-ATOM  O44   IOC11      -0.500 !
-ATOM  S12   IS_AN       0.500 !
-ATOM  O45   IOC11      -0.500 !
-ATOM  O46   IOC11      -0.500 !
-ATOM  O47   IOC11      -0.500 !
-ATOM  O48   IOC11      -0.500 !
-ATOM  H11   IH1O        0.410 !
-ATOM  H12   IH1O        0.410 !
-ATOM  O54   IO2_SC     -0.820 !
-ATOM  CA10  ICA_G       1.500 !
-ATOM  CA11  ICA_G       1.500 !
-ATOM  CA12  ICA_G       1.500 !
+ATOM  S10   ISCS        0.500 !
+ATOM  O37   IOCS       -0.550 !
+ATOM  O38   IOCS       -0.550 !
+ATOM  O39   IOCS       -0.550 !
+ATOM  O40   IOCS       -0.550 !
+ATOM  S11   ISCS        0.500 !
+ATOM  O41   IOCS       -0.550 !
+ATOM  O42   IOCS       -0.550 !
+ATOM  O43   IOCS       -0.550 !
+ATOM  O44   IOCS       -0.550 !
+ATOM  S12   ISCS        0.500 !
+ATOM  O45   IOCS       -0.550 !
+ATOM  O46   IOCS       -0.550 !
+ATOM  O47   IOCS       -0.550 !
+ATOM  O48   IOCS       -0.550 !
+ATOM  H11   IH_SC       0.410 !
+ATOM  H12   IH_SC       0.410 !
+ATOM  O54   IO_SC      -0.820 !
+ATOM  CA10  ICA_G       1.700 !
+ATOM  CA11  ICA_G       1.700 !
+ATOM  CA12  ICA_G       1.700 !
 BOND  S1  O1    S1  O5    S1   O9    S1   O13
 BOND  S2  O2    S2  O6    S2   O10   S2   O14
 BOND  S3  O3    S3  O7    S3   O11   S3   O15
@@ -4062,6 +5506,284 @@ BOND C3B   O3B      O3B  HO3B        C3B   C4B        C4B   H4B        C4B   O4B
 BOND C4B   C5B      C5B   H5B        C5B   C6B        C6B  H61B
 BOND C6B  H62B      C6B   O6B        O6B  HO6B        C5B   O5B
 
+RESI MD001            0.000  ! Molybdenum dusulfide (MoS2)
+GROUP                        !
+ATOM  MO1  IMO1       0.500
+ATOM  MO5  IMO2       0.500
+ATOM  S9   ISM4      -0.250
+ATOM  S3   ISM3      -0.250
+ATOM  S4   ISM1      -0.250
+ATOM  S10  ISM2      -0.250
+ATOM  MO3  IMO2       0.500
+ATOM  MO7  IMO1       0.500
+ATOM  S13  ISM3      -0.250
+ATOM  S7   ISM4      -0.250
+ATOM  S8   ISM2      -0.250
+ATOM  S14  ISM1      -0.250
+ATOM  MO6  IMO2       0.500
+ATOM  S1   ISM3      -0.250
+ATOM  S2   ISM1      -0.250
+ATOM  MO2  IMO2       0.500
+ATOM  MO8  IMO1       0.500
+ATOM  S11  ISM3      -0.250
+ATOM  S5   ISM4      -0.250
+ATOM  S6   ISM2      -0.250
+ATOM  S12  ISM1      -0.250
+ATOM  MO4  IMO1       0.500
+ATOM  S15  ISM4      -0.250
+ATOM  S16  ISM2      -0.250
+BOND MO1  S3     MO1  S4     MO1  S1     MO1  S2
+BOND MO3  S3     MO3  S4     MO3  S7     MO3  S8     MO3  S5     MO3  S6
+BOND MO2  S1     MO2  S2     MO2  S5     MO2  S6
+BOND MO4  S5     MO4  S6
+BOND MO5  S9     MO5  S10    MO5  S13    MO5  S14
+BOND MO7  S13    MO7  S14
+BOND MO6  S9     MO6  S10    MO6  S11    MO6  S12
+BOND MO8  S13    MO8  S14    MO8  S11    MO8  S12    MO8  S15    MO8  S16
+
+RESI AO001           0.000 !Al2O3
+ATOM  Al1    IALO     1.710
+ATOM  Al2    IALO     1.710
+ATOM  Al3    IALO     1.710
+ATOM  Al4    IALO     1.710
+ATOM  O1     IOAL    -1.140
+ATOM  O2     IOAL    -1.140
+ATOM  O3     IOAL    -1.140
+ATOM  O4     IOAL    -1.140
+ATOM  O5     IOAL    -1.140
+ATOM  Al5    IALO     1.710
+ATOM  Al6    IALO     1.710
+ATOM  Al7    IALO     1.710
+ATOM  Al8    IALO     1.710
+ATOM  O6     IOAL    -1.140
+ATOM  O7     IOAL    -1.140
+ATOM  O8     IOAL    -1.140
+ATOM  O9     IOAL    -1.140
+ATOM  Al9    IALO     1.710
+ATOM  O10    IOAL    -1.140
+ATOM  O11    IOAL    -1.140
+ATOM  O12    IOAL    -1.140
+ATOM  Al10   IALO     1.710
+ATOM  Al11   IALO     1.710
+ATOM  Al12   IALO     1.710
+ATOM  Al13   IALO     1.710
+ATOM  Al14   IALO     1.710
+ATOM  Al15   IALO     1.710
+ATOM  Al16   IALO     1.710
+ATOM  O13    IOAL    -1.140
+ATOM  O14    IOAL    -1.140
+ATOM  O15    IOAL    -1.140
+ATOM  O16    IOAL    -1.140
+ATOM  O17    IOAL    -1.140
+ATOM  O18    IOAL    -1.140
+ATOM  O19    IOAL    -1.140
+ATOM  O20    IOAL    -1.140
+ATOM  O21    IOAL    -1.140
+ATOM  O22    IOAL    -1.140
+ATOM  O23    IOAL    -1.140
+ATOM  O24    IOAL    -1.140
+ATOM  O25    IOAL    -1.140
+ATOM  O26    IOAL    -1.140
+ATOM  Al17   IALO     1.710
+ATOM  Al18   IALO     1.710
+ATOM  Al19   IALO     1.710
+ATOM  Al20   IALO     1.710
+ATOM  Al21   IALO     1.710
+ATOM  Al22   IALO     1.710
+ATOM  Al23   IALO     1.710
+ATOM  Al24   IALO     1.710
+ATOM  O27    IOAL    -1.140
+ATOM  O28    IOAL    -1.140
+ATOM  O29    IOAL    -1.140
+ATOM  O30    IOAL    -1.140
+ATOM  O31    IOAL    -1.140
+ATOM  O32    IOAL    -1.140
+ATOM  O33    IOAL    -1.140
+ATOM  O34    IOAL    -1.140
+ATOM  O35    IOAL    -1.140
+ATOM  O36    IOAL    -1.140
+
+RESI         NIO001   0.000 !NiO
+ATOM  Ni1    INIO     1.100
+ATOM  O1     IONI    -1.100
+ATOM  O2     IONI    -1.100
+ATOM  O3     IONI    -1.100
+ATOM  O4     IONI    -1.100
+ATOM  Ni2    INIO     1.100
+ATOM  Ni3    INIO     1.100
+ATOM  Ni4    INIO     1.100
+
+RESI         CAH001   0.000 !CaOH2
+ATOM  Ca1    ICCH     1.700
+ATOM  O1     IOCH    -1.320
+ATOM  H1     IHCH     0.470
+ATOM  O2     IOCH    -1.320
+ATOM  H2     IHCH     0.470
+ATOM  O3     IOCH    -1.320
+ATOM  H3     IHCH     0.470
+ATOM  Ca2    ICCH     1.700
+ATOM  O4     IOCH    -1.320
+ATOM  H4     IHCH     0.470
+BOND O1  H1  O2  H2  O3  H3  O4  H4
+
+RESI         CRO001   0.000 !Cr2O3
+ATOM  Cr1    ICRO     1.680
+ATOM  Cr2    ICRO     1.680
+ATOM  Cr3    ICRO     1.680
+ATOM  Cr4    ICRO     1.680
+ATOM  O1     IOCR    -1.120
+ATOM  O2     IOCR    -1.120
+ATOM  O3     IOCR    -1.120
+ATOM  O4     IOCR    -1.120
+ATOM  O5     IOCR    -1.120
+ATOM  Cr5    ICRO     1.680
+ATOM  Cr6    ICRO     1.680
+ATOM  Cr7    ICRO     1.680
+ATOM  Cr8    ICRO     1.680
+ATOM  O6     IOCR    -1.120
+ATOM  O7     IOCR    -1.120
+ATOM  O8     IOCR    -1.120
+ATOM  O9     IOCR    -1.120
+ATOM  Cr9    ICRO     1.680
+ATOM  O10    IOCR    -1.120
+ATOM  O11    IOCR    -1.120
+ATOM  O12    IOCR    -1.120
+ATOM  Cr10   ICRO     1.680
+ATOM  Cr11   ICRO     1.680
+ATOM  Cr12   ICRO     1.680
+ATOM  Cr13   ICRO     1.680
+ATOM  Cr14   ICRO     1.680
+ATOM  Cr15   ICRO     1.680
+ATOM  Cr16   ICRO     1.680
+ATOM  O13    IOCR    -1.120
+ATOM  O14    IOCR    -1.120
+ATOM  O15    IOCR    -1.120
+ATOM  O16    IOCR    -1.120
+ATOM  O17    IOCR    -1.120
+ATOM  O18    IOCR    -1.120
+ATOM  O19    IOCR    -1.120
+ATOM  O20    IOCR    -1.120
+ATOM  O21    IOCR    -1.120
+ATOM  O22    IOCR    -1.120
+ATOM  O23    IOCR    -1.120
+ATOM  O24    IOCR    -1.120
+ATOM  O25    IOCR    -1.120
+ATOM  O26    IOCR    -1.120
+ATOM  Cr17   ICRO     1.680
+ATOM  Cr18   ICRO     1.680
+ATOM  Cr19   ICRO     1.680
+ATOM  Cr20   ICRO     1.680
+ATOM  Cr21   ICRO     1.680
+ATOM  Cr22   ICRO     1.680
+ATOM  Cr23   ICRO     1.680
+ATOM  Cr24   ICRO     1.680
+ATOM  O27    IOCR    -1.120
+ATOM  O28    IOCR    -1.120
+ATOM  O29    IOCR    -1.120
+ATOM  O30    IOCR    -1.120
+ATOM  O31    IOCR    -1.120
+ATOM  O32    IOCR    -1.120
+ATOM  O33    IOCR    -1.120
+ATOM  O34    IOCR    -1.120
+ATOM  O35    IOCR    -1.120
+ATOM  O36    IOCR    -1.120
+
+RESI         NIH001  0.000 !NiOH2
+ATOM  Ni1    INNH     1.400
+ATOM  O1     IONH    -1.000
+ATOM  H1     IHNH     0.300
+ATOM  O2     IONH    -1.000
+ATOM  H2     IHNH     0.300
+ATOM  O3     IONH    -1.000
+ATOM  H3     IHNH     0.300
+ATOM  Ni2    INNH     1.400
+ATOM  O4     IONH    -1.000
+ATOM  H4     IHNH     0.300
+BOND  O1 H1  O2 H2  O3 H3  O4  H4
+
+RESI         MGO001  0.000 !MgO
+ATOM  Mg1    IMGO     1.150
+ATOM  O1     IOMG    -1.150
+ATOM  O2     IOMG    -1.150
+ATOM  O3     IOMG    -1.150
+ATOM  O4     IOMG    -1.150
+ATOM  Mg2    IMGO     1.150
+ATOM  Mg3    IMGO     1.150
+ATOM  Mg4    IMGO     1.150
+
+RESI         FO001    0.000 !Fe2O3
+ATOM  Fe1    IFEO     1.560
+ATOM  Fe2    IFEO     1.560
+ATOM  Fe3    IFEO     1.560
+ATOM  Fe4    IFEO     1.560
+ATOM  O1     IOFE    -1.040
+ATOM  O2     IOFE    -1.040
+ATOM  O3     IOFE    -1.040
+ATOM  O4     IOFE    -1.040
+ATOM  O5     IOFE    -1.040
+ATOM  Fe5    IFEO     1.560
+ATOM  Fe6    IFEO     1.560
+ATOM  Fe7    IFEO     1.560
+ATOM  Fe8    IFEO     1.560
+ATOM  O6     IOFE    -1.040
+ATOM  O7     IOFE    -1.040
+ATOM  O8     IOFE    -1.040
+ATOM  O9     IOFE    -1.040
+ATOM  Fe9    IFEO     1.560
+ATOM  O10    IOFE    -1.040
+ATOM  O11    IOFE    -1.040
+ATOM  O12    IOFE    -1.040
+ATOM  Fe10   IFEO     1.560
+ATOM  Fe11   IFEO     1.560
+ATOM  Fe12   IFEO     1.560
+ATOM  Fe13   IFEO     1.560
+ATOM  Fe14   IFEO     1.560
+ATOM  Fe15   IFEO     1.560
+ATOM  Fe16   IFEO     1.560
+ATOM  O13    IOFE    -1.040
+ATOM  O14    IOFE    -1.040
+ATOM  O15    IOFE    -1.040
+ATOM  O16    IOFE    -1.040
+ATOM  O17    IOFE    -1.040
+ATOM  O18    IOFE    -1.040
+ATOM  O19    IOFE    -1.040
+ATOM  O20    IOFE    -1.040
+ATOM  O21    IOFE    -1.040
+ATOM  O22    IOFE    -1.040
+ATOM  O23    IOFE    -1.040
+ATOM  O24    IOFE    -1.040
+ATOM  O25    IOFE    -1.040
+ATOM  O26    IOFE    -1.040
+ATOM  Fe17   IFEO     1.560
+ATOM  Fe18   IFEO     1.560
+ATOM  Fe19   IFEO     1.560
+ATOM  Fe20   IFEO     1.560
+ATOM  Fe21   IFEO     1.560
+ATOM  Fe22   IFEO     1.560
+ATOM  Fe23   IFEO     1.560
+ATOM  Fe24   IFEO     1.560
+ATOM  O27    IOFE    -1.040
+ATOM  O28    IOFE    -1.040
+ATOM  O29    IOFE    -1.040
+ATOM  O30    IOFE    -1.040
+ATOM  O31    IOFE    -1.040
+ATOM  O32    IOFE    -1.040
+ATOM  O33    IOFE    -1.040
+ATOM  O34    IOFE    -1.040
+ATOM  O35    IOFE    -1.040
+ATOM  O36    IOFE    -1.040
+
+
+RESI         CAO001   0.000 !CaO
+ATOM  Ca1    ICAO     1.300
+ATOM  O1     IOCA    -1.300
+ATOM  O2     IOCA    -1.300
+ATOM  O3     IOCA    -1.300
+ATOM  O4     IOCA    -1.300
+ATOM  Ca2    ICAO     1.300
+ATOM  Ca3    ICAO     1.300
+ATOM  Ca4    ICAO     1.300
+
 PRES CIB14          0.000
 BOND 1C1A 2O4B
 
@@ -4213,10 +5935,15 @@ BOND C6B  H62B      C6B   O6B        O6B  HO6B        C5B   O5B
 
 RESI AUC       0.00 ! Gold metal
 GROUP
-ATOM AUC   AU   0.00
+ATOM AUC   IAU   0.00
 PATCHING FIRST NONE LAST NONE
 
 RESI AUS       0.00 ! Gold metal
+GROUP
+ATOM AUS   AUS   0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI AUSL       0.00 ! Gold metal
 GROUP
 ATOM AUS   AUS   0.00
 PATCHING FIRST NONE LAST NONE
@@ -4228,7 +5955,7 @@ PATCHING FIRST NONE LAST NONE
 
 RESI AUP       0.00 ! Gold metal
 GROUP
-ATOM AUP   AU   0.00
+ATOM AUP   IAU   0.00
 PATCHING FIRST NONE LAST NONE
 
 RESI AUD       0.00 ! Gold metal
@@ -4241,46 +5968,95 @@ GROUP
 ATOM ST   ST   0.00
 PATCHING FIRST NONE LAST NONE
 
-RESI AGM       0.00 ! Silver metal
+RESI IAGM      0.00 ! Silver metal
 GROUP
-ATOM AG   AG   0.00
+ATOM AG   IAG  0.00
 PATCHING FIRST NONE LAST NONE
 
-RESI ALM       0.00 ! Aluminium metal
+RESI IALM      0.00 ! Aluminium metal
 GROUP
-ATOM AL   AL   0.00
+ATOM AL   IAL  0.00
 PATCHING FIRST NONE LAST NONE
 
-RESI AUM       0.00 ! Gold metal
+RESI IAUM      0.00 ! Gold metal
 GROUP
-ATOM AU   AU   0.00
+ATOM AU   IAU  0.00
 PATCHING FIRST NONE LAST NONE
 
-RESI CUM       0.00 ! Copper metal
+RESI ICUM      0.00 ! Copper metal
 GROUP
-ATOM CU   CU   0.00
+ATOM CU   ICU  0.00
 PATCHING FIRST NONE LAST NONE
 
-RESI NIM       0.00 ! Nickel metal
+RESI INIM      0.00 ! Nickel metal
 GROUP
-ATOM NI   NI   0.00
+ATOM NI   INI  0.00
 PATCHING FIRST NONE LAST NONE
 
-RESI PBM       0.00 ! Lead metal
+RESI IPBM      0.00 ! Lead metal
 GROUP
-ATOM PB   PB   0.00
+ATOM PB   IPB  0.00
 PATCHING FIRST NONE LAST NONE
 
-RESI PDM       0.00 ! Palladium metal
+RESI IPDM      0.00 ! Palladium metal
 GROUP
-ATOM PD   PD   0.00
+ATOM PD   IPD  0.00
 PATCHING FIRST NONE LAST NONE
 
-RESI PTM       0.00 ! Platinum metal
+RESI IPTM      0.00 ! Platinum metal
 GROUP
-ATOM PT   PT   0.00
+ATOM PT   IPT  0.00
 PATCHING FIRST NONE LAST NONE
 
+RESI IACM      0.00 ! Actinium metal
+GROUP
+ATOM AC   IAC  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI ICAM      0.00 ! Calcium metal
+GROUP
+ATOM CA   ICA  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI ICEM      0.00 ! Cerium metal
+GROUP
+ATOM CE   ICE  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI IESM      0.00 ! Einsteinium metal
+GROUP
+ATOM ES   IES  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI IFEM      0.00 ! Iron metal
+GROUP
+ATOM FE   IFE  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI IIRM      0.00 ! Iridium metal
+GROUP
+ATOM IR   IIR  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI IRHM      0.00 ! Rhodium metal
+GROUP
+ATOM RH   IRH  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI ISRM      0.00 ! Strontium metal
+GROUP
+ATOM SR   ISR  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI ITHM      0.00 ! Thorium--iridium metal
+GROUP
+ATOM TH   ITH  0.00
+PATCHING FIRST NONE LAST NONE
+
+RESI IYBM      0.00 ! Ytterbium metal
+GROUP
+ATOM YB   IYB  0.00
+PATCHING FIRST NONE LAST NONE
 
 PRES FAKEAU    0.000
 BOND 1AU 2AU
@@ -9359,7 +11135,7 @@ IC     O48      P12        O46      HD24        1.5430    106.40   -19.60 150.49
 
 PRES DF1MG4         -3.099!
 GROUP
-ATOM  MG4  IAY1      1.100!
+ATOM  MG4  IMY1      1.100!
 ATOM  O12  IOY6     -0.8005!
 ATOM  O13  IOY9     -0.8005!
 ATOM  O14  IOY7     -0.8660!
@@ -9372,7 +11148,7 @@ ATOM  O11  IOY4     -0.8660!
 
 PRES DF1MG1        -2.2985!
 GROUP
-ATOM  MG1  IAY1      1.100!
+ATOM  MG1  IMY1      1.100!
 ATOM  O7   IOY4     -0.8660!
 ATOM  O10  IOY9     -0.8005!
 ATOM  O8   IOY5     -0.8660!
@@ -9437,7 +11213,7 @@ BOND AL1 OC11  OC11 HC11
  IC   O8      AL1      OC11      HC11        1.9274   -89.00   168.09  104.50   0.9287
 
 PRES MMMG1S          0.750 !
-ATOM  MG1   IAY1      1.100 !
+ATOM  MG1   IMY1      1.100 !
 ATOM  OC11  IOY6     -0.550 !
 ATOM  HC11  IHOY      0.200 !
 BOND MG1 OC11  OC11 HC11
@@ -9469,7 +11245,7 @@ BOND AL4 OC41  OC41 HC41
  IC   O12     AL4      OC41      HC41        1.9274    93.00   188.09  104.50   0.9287
 
 PRES MMMG4S          0.750 !
-ATOM  MG4   IAY1      1.100 !
+ATOM  MG4   IMY1      1.100 !
 ATOM  OC41  IOY4     -0.550 !
 ATOM  HC41  IHOY      0.200 !
 BOND MG4 OC41  OC41 HC41
@@ -9492,7 +11268,7 @@ BOND AL1 OQ12  OQ12 HQ12   !
 
 PRES MMMG1D          0.400 !
 GROUP                      !
-ATOM  MG1   IAY1      1.100 !
+ATOM  MG1   IMY1      1.100 !
 ATOM  OQ11  IOY6     -0.550 !
 ATOM  HQ11  IHOY      0.200 !
 ATOM  OQ12  IOY7     -0.550 !
@@ -9648,17 +11424,17 @@ BOND SI8 OS8 OS8 HS8    !     X   X   X          X   X   X
 
 RESI MMDAL4        2.00 ! Magnesium Ion
 GROUP
-ATOM MG4   IAY1     2.00
+ATOM MG4   IMY1     2.00
 PATCHING FIRST NONE LAST NONE
 
 RESI IMGAL4        2.00 ! Magnesium Ion
 GROUP
-ATOM MG4   IAY1     2.00
+ATOM MG4   IMY1     2.00
 PATCHING FIRST NONE LAST NONE
 
 RESI IMGAL1        2.00 ! Magnesium Ion
 GROUP
-ATOM MG1   IAY1     2.00
+ATOM MG1   IMY1     2.00
 PATCHING FIRST NONE LAST NONE
 
 PRES AULSP9      -0.09
@@ -9752,6 +11528,22 @@ PRES TSHO2       -1.050 !    	                       H
 ATOM O2    IOC5   -1.050
 BOND 1O2 2HOXI          !          O2-     >>>>>       O-
 
+PRES TSHO3       -1.050 !    	                       H
+ATOM O3    IOC5   -1.050
+BOND 1O3 2HOXI          !          O2-     >>>>>       O-
+
+PRES TSHO4       -1.050 !    	                       H
+ATOM O4    IOC5   -1.050
+BOND 1O4 2HOXI          !          O2-     >>>>>       O-
+
+PRES TSHO5       -1.050 !    	                       H
+ATOM O5    IOC5   -1.050
+BOND 1O5 2HOXI          !          O2-     >>>>>       O-
+
+PRES TSHO6       -1.050 !    	                       H
+ATOM O6    IOC5   -1.050
+BOND 1O6 2HOXI          !          O2-     >>>>>       O-
+
 PRES TSHO7       -1.050 !    	                       H
 ATOM O7    IOC5   -1.050
 BOND 1O7 2HOXI          !          O2-     >>>>>       O-
@@ -9764,6 +11556,18 @@ PRES TSHO14      -1.050 !    	                       H
 ATOM O14   IOC5   -1.050
 BOND 1O14 2HOXI         !          O2-     >>>>>       O-
 
+PRES TSHO16      -1.050 !    	                       H
+ATOM O16   IOC5   -1.050
+BOND 1O16 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO17      -1.050 !    	                       H
+ATOM O17   IOC5   -1.050
+BOND 1O17 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO18      -1.050 !    	                       H
+ATOM O18   IOC5   -1.050
+BOND 1O18 2HOXI         !          O2-     >>>>>       O-
+
 PRES TSHO19      -1.050 !    	                       H
 ATOM O19   IOC5   -1.050
 BOND 1O19 2HOXI         !          O2-     >>>>>       O-
@@ -9771,6 +11575,10 @@ BOND 1O19 2HOXI         !          O2-     >>>>>       O-
 PRES TSHO20      -1.050 !    	                       H
 ATOM O20   IOC5   -1.050
 BOND 1O20 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO21      -1.050 !    	                       H
+ATOM O21   IOC5   -1.050
+BOND 1O21 2HOXI         !          O2-     >>>>>       O-
 
 PRES TSHO26      -1.050 !    	                       H
 ATOM O26   IOC5   -1.050
@@ -9784,6 +11592,18 @@ PRES TSHO32      -1.050 !    	                       H
 ATOM O32   IOC5   -1.050
 BOND 1O32 2HOXI         !          O2-     >>>>>       O-
 
+PRES TSHO37      -1.050 !    	                       H
+ATOM O37   IOC5   -1.050
+BOND 1O37 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO38      -1.050 !    	                       H
+ATOM O38   IOC5   -1.050
+BOND 1O38 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO39      -1.050 !    	                       H
+ATOM O39   IOC5   -1.050
+BOND 1O39 2HOXI         !          O2-     >>>>>       O-
+
 PRES TSHO41      -1.050 !    	                       H
 ATOM O41   IOC5   -1.050
 BOND 1O41 2HOXI         !          O2-     >>>>>       O-
@@ -9795,6 +11615,30 @@ BOND 1O46 2HOXI         !          O2-     >>>>>       O-
 PRES TSHO47      -1.050 !    	                       H
 ATOM O47   IOC5   -1.050
 BOND 1O47 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO52      -1.050 !    	                       H
+ATOM O52   IOC5   -1.050
+BOND 1O52 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO53      -1.050 !    	                       H
+ATOM O53   IOC5   -1.050
+BOND 1O53 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO54      -1.050 !    	                       H
+ATOM O54   IOC5   -1.050
+BOND 1O54 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO55      -1.050 !    	                       H
+ATOM O55   IOC5   -1.050
+BOND 1O55 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO56      -1.050 !    	                       H
+ATOM O56   IOC5   -1.050
+BOND 1O56 2HOXI         !          O2-     >>>>>       O-
+
+PRES TSHO57      -1.050 !    	                       H
+ATOM O57   IOC5   -1.050
+BOND 1O57 2HOXI         !          O2-     >>>>>       O-
 
 PRES TSHO59      -1.050 !    	                       H
 ATOM O59   IOC5   -1.050
@@ -10245,7 +12089,7 @@ GROUP
 ATOM HYTA  IHOC     0.25
 PATCHING FIRST NONE LAST NONE
 
-PRES IOXTA       -1.00 !    	
+PRES IOXTA       -1.00 !
 ATOM OXTA  IOC5   -1.00                                H
 BOND 1OXTA 2HYTA       !          O2-     >>>>>       O-
 
@@ -10368,7 +12212,6 @@ ATOM OS24 IOC12   -0.760 !        SI1     >>>>>      SI1
 ATOM HS24 IHOY     0.410 !      /  |  \            /  |  \
 BOND SI24 OS24 OS24 HS24!     X   X   X          X   X   X
 
-
 PRES  GIY1        0.000 !
 BOND 1C4  2C1
 BOND 1C4  2C6
@@ -10381,13 +12224,13 @@ BOND 1C12  2C9
 BOND 1C13  2C16
 BOND 1C7   2C2
 
-
 PRES GIXY1       0.000
 BOND 1C8   2C1
 
-
-PRES GIIX1         0.000 !
+PRES GIIX11         0.000 !
 BOND 1C7   2C2
+
+PRES GIIX12         0.000 !
 BOND 1C12   2C9
 BOND 1C13   2C16
 
@@ -10397,10 +12240,12 @@ BOND 1C8   2C1
 PRES GIIX3         0.000 !
 BOND 1C6   2C1
 
-PRES GIIY1         0.000 !
+PRES GIIY11         0.000 !
 BOND 1C4   2C1
 BOND 1C4   2C6
 BOND 1C8   2C6
+
+PRES GIIY12         0.000 !
 BOND 1C16  2C9
 BOND 1C14  2C11
 
@@ -10428,6 +12273,132 @@ BOND  1CE2  1HE2
  IC    1CE2       2C1       2C2    2C7          1.4200   120.0   0.00   120.0    1.420
  IC    1CE2       1C6       1C5    1C7          1.4200   120.0   0.00   120.0    1.420
  IC    1HE2       1CE2      2C1    2C2          1.0100   120.0  180.0   120.0    1.420
+
+PRES HPC1      0.00
+ATOM C1      ICG1  0.200
+ATOM HP1     ICGE -0.100
+ATOM HP2     ICGE -0.100
+BOND C1   HP1
+BOND C1   HP2
+
+PRES HPC2      0.00
+ATOM C2      ICG1  0.200
+ATOM HP3     ICGE -0.100
+ATOM HP4     ICGE -0.100
+BOND C2   HP3
+BOND C2   HP4
+
+PRES HPC3      0.00
+ATOM C3      ICG1  0.200
+ATOM HP5     ICGE -0.100
+ATOM HP6     ICGE -0.100
+BOND C3   HP5
+BOND C3   HP6
+
+PRES HPC4      0.00
+ATOM C4      ICG1  0.200
+ATOM HP7     ICGE -0.100
+ATOM HP8     ICGE -0.100
+BOND C4   HP7
+BOND C4   HP8
+
+PRES HPC5      0.00
+ATOM C5      ICG1  0.200
+ATOM HP9     ICGE -0.100
+ATOM HP10    ICGE -0.100
+BOND C5   HP9
+BOND C5   HP10
+
+PRES HPC6      0.00
+ATOM C6      ICG1  0.200
+ATOM HP11    ICGE -0.100
+ATOM HP12    ICGE -0.100
+BOND C6   HP11
+BOND C6   HP12
+
+PRES HPC7      0.00
+ATOM C7      ICG1  0.200
+ATOM HP13    ICGE -0.100
+ATOM HP14    ICGE -0.100
+BOND C7   HP13
+BOND C7   HP14
+
+PRES HPC8      0.00
+ATOM C8      ICG1  0.200
+ATOM HP15    ICGE -0.100
+ATOM HP16    ICGE -0.100
+BOND C8   HP15
+BOND C8   HP16
+
+PRES HPC9      0.00
+ATOM C9      ICG1  0.200
+ATOM HP17    ICGE -0.100
+ATOM HP18    ICGE -0.100
+BOND C9   HP17
+BOND C9   HP18
+
+PRES HPC10      0.00
+ATOM C10      ICG1  0.200
+ATOM HP19    ICGE -0.100
+ATOM HP20    ICGE -0.100
+BOND C10   HP19
+BOND C10   HP20
+
+PRES HPC11      0.00
+ATOM C11      ICG1  0.200
+ATOM HP21    ICGE -0.100
+ATOM HP22    ICGE -0.100
+BOND C11   HP21
+BOND C11   HP22
+
+PRES HPC12      0.00
+ATOM C12      ICG1  0.200
+ATOM HP23    ICGE -0.100
+ATOM HP24    ICGE -0.100
+BOND C12   HP23
+BOND C12   HP24
+
+PRES HPC13      0.00
+ATOM C13      ICG1  0.200
+ATOM HP25    ICGE -0.100
+ATOM HP26    ICGE -0.100
+BOND C13   HP25
+BOND C13   HP26
+
+PRES HPC14      0.00
+ATOM C14      ICG1  0.200
+ATOM HP27    ICGE -0.100
+ATOM HP28    ICGE -0.100
+BOND C14   HP27
+BOND C14   HP28
+
+PRES HPC15      0.00
+ATOM C15      ICG1  0.200
+ATOM HP29    ICGE -0.100
+ATOM HP30    ICGE -0.100
+BOND C15   HP29
+BOND C15   HP30
+
+PRES HPC16      0.00
+ATOM C16      ICG1  0.200
+ATOM HP31    ICGE -0.100
+ATOM HP32    ICGE -0.100
+BOND C16   HP31
+BOND C16   HP32
+
+PRES HPCE1      0.00
+ATOM CE1     ICG1  0.200
+ATOM HPE1    ICGE -0.100
+ATOM HPE2    ICGE -0.100
+BOND CE1   HPE1
+BOND CE1   HPE2
+
+PRES HPCE2      0.00
+ATOM CE2     ICG1  0.200
+ATOM HPE3    ICGE -0.100
+ATOM HPE4    ICGE -0.100
+BOND CE2   HPE3
+BOND CE2   HPE4
 
 PRES GIPC1          0.000
 ATOM H1      HGR61  0.000
@@ -10509,7 +12480,57 @@ PRES GPIY1         0.000 !
 BOND 1C8   2C1
 BOND 1C6   2C3
 
+PRES MOY1   0.000
+BOND 1S12 2MO5
+BOND 1S11 2MO5
+BOND 1S16 2MO7
+BOND 1S15 2MO7
 
+PRES MOY2   0.000
+BOND 1MO4 2S8
+BOND 1MO4 2S7
+BOND 1MO2 2S4
+BOND 1MO2 2S3
+
+PRES MOY12   0.000
+BOND 1S12 2MO5
+BOND 1S11 2MO5
+BOND 1S16 2MO7
+BOND 1S15 2MO7
+
+PRES MOY21   0.000
+BOND 1MO4 2S8
+BOND 1MO4 2S7
+BOND 1MO2 2S4
+BOND 1MO2 2S3
+
+PRES MOX1   0.000
+BOND 1MO4 2S1
+BOND 1MO4 2S2
+BOND 1MO7 2S9
+BOND 1MO7 2S10
+
+PRES MOX11   0.000
+BOND 1MO4 2S1
+BOND 1MO4 2S2
+
+PRES MOX12   0.000
+BOND 1MO7 2S9
+BOND 1MO7 2S10
+
+PRES MOX2   0.000
+BOND 1S15 2MO6
+BOND 1S16 2MO6
+BOND 1S7  2MO1
+BOND 1S8  2MO1
+
+PRES MOX21   0.000
+BOND 1S7 2MO1
+BOND 1S8 2MO1
+
+PRES MOX22   0.000
+BOND 1S15 2MO6
+BOND 1S16 2MO6
 
 END
 

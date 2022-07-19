@@ -1,6 +1,8 @@
 import os
 import pytest
 import warnings
+
+from transformato.tests.paths import get_test_output_dir
 warnings.filterwarnings("ignore", module="parmed")
 
 
@@ -23,9 +25,9 @@ def test_run_28_1h1q_rbfe_production_with_CHARMM():
     from transformato.utils import run_simulation
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-28_1h1q_rbfe.yaml",
+        config="data/config/test-28_1h1q_rbfe.yaml",
         input_dir="data/",
-        output_dir="/site/raid4/johannes/test",
+        output_dir=get_test_output_dir(),
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -41,6 +43,8 @@ def test_run_28_1h1q_rbfe_production_with_CHARMM():
         system=s1,
         configuration=configuration,
     )
+
+
     perform_mutations(
         configuration=configuration,
         i=i,
@@ -67,9 +71,9 @@ def test_run_28_1h1q_rsfe_analysis_with_CHARMM():
     from transformato.utils import postprocessing
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-28_1h1q_rsfe.yaml",
+        config="data/config/test-28_1h1q_rsfe.yaml",
         input_dir="data/",
-        output_dir="/site/raid4/johannes/test",
+        output_dir=get_test_output_dir(),
     )
 
     ddG_openMM, dddG, f_openMM = postprocessing(
@@ -99,10 +103,10 @@ def test_run_1a0q_1a07_rsfe_production_with_CHARMM(caplog):
     )
     from transformato.mutate import perform_mutations
 
-    workdir = "/site/raid4/johannes/test"
-    conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
+    workdir = get_test_output_dir
+    conf = "data/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+        config=conf, input_dir="data/", output_dir=workdir
     )
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -153,7 +157,7 @@ def test_analyse_1a0q_1a07_rsfe_with_openMM(caplog):
     workdir = "/site/raid4/johannes/test"
     conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+        config=conf, input_dir="data/", output_dir=workdir
     )
 
     ddG_openMM, dddG = postprocessing(

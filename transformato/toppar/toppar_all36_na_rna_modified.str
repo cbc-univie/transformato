@@ -21,7 +21,7 @@ read rtf card append
 *
 36 1
 
-MASS  -1  SEGD1     78.96000 ! selenocarbonyl Se
+!MASS  -1  SEGD1     78.96000 ! selenocarbonyl Se
 
 DECL  +P
 DECL  +O1P
@@ -14374,6 +14374,391 @@ DELE IMPR C17    O17    O18    C15
 IMPR C17    C15    O17    O18
 IC C15  C17  O18   H18O   1.5220  110.50  180.00  115.00  0.9600
 
+!The CGenFF model compounds are now included with
+! top_all36_cgenff.rtf. They are also maintained in this file after the
+! final END return statement.
+!!!!!!!! ######################################## !!!!!!!!
+!!!!!!!! ######## CGenFF model compounds ######## !!!!!!!!
+!!!!!!!! ######################################## !!!!!!!!
+
+END
+
+read param card flex append
+* Additive CHARMM parameters for modified nucleic acids, BETA version
+* You Xu, Karolinska Institutet, 2015.
+*
+
+!ATOMS
+!MASS  -1  SEGD1     78.96000 ! selenocarbonyl Se
+
+BONDS
+!!!!!!!! ############################### !!!!!!!!
+!!!!!!!! ######## Nucleic Acids ######## !!!!!!!!
+!!!!!!!! ############################### !!!!!!!!
+!!***Guanine***
+CC3162 OG301   360.00     1.4150 ! MQG, from CG36
+
+!!***Model compounds***
+CG331  NN2B    400.00     1.4560 ! U & G, from CG36
+CG331  NN2     400.00     1.4560 ! A & C, from CG36
+
+!!***2'-O-substituted ribose***
+CN7B   OG301    334.30     1.4110 ! 2OM, from CG3C51 OG301, yxu
+CN7B   OC301    334.30     1.4110 ! 2OR, from CG3C51 OG301, yxu
+
+!!***glycosyl linkage***
+CN7B   NG2R61   220.00     1.4570 ! U, from NA36
+CN7B   NG2R51   220.00     1.4570 ! G, from NA36
+CG2R62 CN7B     350.00     1.4860 ! PSU, yxu
+CN7B   NG2S0    320.00     1.4340 ! H2U, from CG36
+NG2R52 CN7B     320.00     1.4600 ! 7MG, from NG2R52 CG334, yxu
+CN7B   NG2P1    243.00     1.4530 ! K2C, yxu
+
+!CGenFF model compound parameters moved to end of file after final
+!END/RETURN and after the residues
+
+
+ANGLES
+!!!!!!!! ############################### !!!!!!!!
+!!!!!!!! ######## Nucleic Acids ######## !!!!!!!!
+!!!!!!!! ############################### !!!!!!!!
+!!***Adenine***
+
+!!***Guanine***
+CC3161 CC3162 OG301   115.00    109.70 ! MQG, from CG36
+OG301  CC3162 HCA1     60.00    109.50 ! MQG, from CG36
+CC3162 OG301  CG3C51   65.00    107.00 ! MQG, from CG36
+OG301  CC3162 OC3C61   90.00    112.00 ! MQG, from Carb36
+
+!!***Model compounds***
+CN3    NN2B   CG331    70.00    120.50 ! U, from CG36
+CN1T   NN2B   CG331    70.00    115.40 ! U, from CG36
+NN2B   CG331  HGA3     33.43    110.10   22.53 2.179 ! U & G, from CG36
+CN3    NN2    CG331    70.00    120.50 ! C, from CG36
+CN1    NN2    CG331    70.00    115.40 ! C, from CG36
+NN2    CG331  HGA3     33.43    110.10   22.53 2.179 ! A & C, from CG36
+CN4    NN2    CG331    70.00    127.80 ! A, from CG36
+CN5    NN2    CG331    70.00    125.90 ! A, from CG36
+CN4    NN2B   CG331    70.00    127.80 ! G, from CG36
+CN5    NN2B   CG331    70.00    125.90 ! G, from CG36
+
+!!***2'-O-substituted ribose***
+CN7B   CN7B   OG301    76.00    107.00 ! 2OM, yxu
+CN7    CN7B   OG301    60.00    106.50 ! 2OM, yxu
+OG301  CN7B   HN7      45.90    108.50 ! 2OM, from CG36
+CG331  OG301  CN7B     65.00    107.00 ! 2OM, from CG36
+CN7B   CN7B   OC301    76.00    107.00 ! 2OR, yxu
+CN7    CN7B   OC301    60.00    106.50 ! 2OR, yxu
+OC301  CN7B   HN7      45.90    108.50 ! 2OR, yxu
+CN7B   OC301  CC3152   55.00    107.00 ! 2OR, from rbrb, yxu
+CC3153 CC321  OC30P    75.70    110.10 ! 2OR, from CG3C51 CG321  OG303, yxu
+CC321  OC30P  PC       20.00    120.00   35.00   2.33 ! 2OR, from CG321  OG303  PG1, yxu
+
+!!***glycosyl linkage***
+CG2R62 NG2R61 CN7B     45.00    119.60 ! U, from NA36
+CG2R63 NG2R61 CN7B     45.00    118.40 ! U, from NA36
+NG2R61 CN7B   ON6B    110.00    112.00 ! U, from NA36
+NG2R61 CN7B   HN7      43.00    111.00 ! U, from NA36
+NG2R61 CN7B   CN7B    110.00    111.00 ! U, from NA36
+CG2RC0 NG2R51 CN7B     45.00    126.30 ! G, from NA36
+CG2R53 NG2R51 CN7B     45.00    126.90 ! G, from NA36
+ON6B   CN7B   NG2R51  110.00    112.00 ! G, from NA36
+CN7B   CN7B   NG2R51  110.00    111.00 ! G, from NA36
+HN7    CN7B   NG2R51   43.00    111.00 ! G, from NA36
+CG2R62 CG2R62 CN7B     36.00    121.00 ! PSU, yxu
+CG2R63 CG2R62 CN7B     43.00    122.30 ! PSU, yxu
+CG2R62 CN7B   CN7B     54.00    109.30 ! PSU, yxu
+CG2R62 CN7B   ON6B     74.00    107.50 ! PSU, yxu
+CG2R62 CN7B   HN7      48.00    111.00 ! PSU, yxu
+NG2S0  CN7B   CN7B     45.00    110.80 ! H2U, yxu
+NG2S0  CN7B   ON6B     85.00    108.00 ! H2U, yxu
+CG2O6  NG2S0  CN7B     38.00    116.00 ! H2U, yxu, 1/12/14
+CG321  NG2S0  CN7B     40.00    120.00 ! H2U, yxu, 1/12/14
+NG2S0  CN7B   HN7      48.00    112.00 ! H2U, from CG36
+CG2R61 NG2R61 CN7B     45.00    119.60 ! 2SC, from C
+CG2R53 NG2R52 CN7B    100.00    112.00 ! 7MG, yxu
+CG2RC0 NG2R52 CN7B     72.00    112.90 ! 7MG, from CG2RC0 NG2R52 CG334, yxu
+NG2R52 CN7B   HN7      54.00    106.00 ! 7MG, yxu
+NG2R52 CN7B   CN7B     90.00    105.50 ! 7MG, yxu
+NG2R52 CN7B   ON6B     75.00    102.00 ! 7MG, yxu
+NG2P1  CN7B   ON6B     85.00    108.00 ! K2C, yxu
+NG2P1  CN7B   CN7B     55.00    109.30 ! K2C, yxu
+NG2P1  CN7B   HN7      52.00    107.70 ! K2C, yxu
+CG2R64 NG2P1  CN7B     60.00    118.10 ! K2C, yxu
+CG2R61 NG2P1  CN7B     53.00    120.00 ! K2C, yxu
+CG2R64 NG2R61 CN7B     50.00    115.40 ! K2Cn, yxu
+CG2R51 NG2R51 CN7B     45.00    126.90 ! DCG, from NA36
+!!@@Deoxyribose
+CG2R62 CN7B   CN8      54.00    109.30 ! PSU, from CG2R62 CN7B CN7B, yxu
+CG2R62 CN7B   ON6      74.00    107.50 ! PSU, from CG2R62 CN7B ON6B, yxu
+NG2R61 CN7B   ON6     110.00    108.00 ! C/U, from NA36
+NG2R61 CN7B   CN8     110.00    113.70 ! C/U, from NA36
+NG2R51 CN7B   ON6     110.0     108.0  ! A/G, from NA36
+NG2R51 CN7B   CN8     110.0     113.7  ! A/G, from NA36
+
+!CGenFF model compound parameters moved to end of file after final
+!END/RETURN and after the residues
+
+DIHEDRALS                        
+!!!!!!!! ############################### !!!!!!!!
+!!!!!!!! ######## Nucleic Acids ######## !!!!!!!!
+!!!!!!!! ############################### !!!!!!!!
+!!***Cytosines***
+NG2P1  CG2R63 NG2R61 CN7B      11.000  2   180.0 ! CYTp, from NA36
+CG2R61 CG2R61 NG2R61 CN7B      11.000  2   180.0 ! 2SC, from C
+HGR62  CG2R61 NG2R61 CN7B       0.300  2   180.0 ! 2SC, from C
+
+!!***Guanine***
+OG301  CC3162 CC3161 CC3161     0.200  3     0.0 ! MQG, from Carb36
+OG301  CC3162 CC3161 OC311      2.650  1   180.0 ! MQG, from Carb36
+OG301  CC3162 CC3161 OC311      0.000  2     0.0 ! MQG, from Carb36
+OG301  CC3162 CC3161 OC311      0.130  3   180.0 ! MQG, from Carb36
+OG301  CC3162 CC3161 HCA1       0.200  3     0.0 ! MQG, from Carb36
+OG301  CC3162 OC3C61 CC3163     0.200  3     0.0 ! MQG, from Carb36
+CC3161 CC3162 OG301  CG3C51     0.450  3     0.0 ! MQG, from pepr, yxu
+OC3C61 CC3162 OG301  CG3C51     0.820  1     0.0 ! MQG, from pepr, yxu
+OC3C61 CC3162 OG301  CG3C51     0.810  2     0.0 ! MQG, from pepr, yxu
+OC3C61 CC3162 OG301  CG3C51     0.350  3     0.0 ! MQG, from pepr, yxu
+HCA1   CC3162 OG301  CG3C51     0.350  3     0.0 ! MQG, from pepr, yxu
+CG3C51 CG3C51 OG301  CC3162     0.200  1   180.0 ! MQG, from pepr, yxu
+CG3C51 CG3C51 OG301  CC3162     0.300  3     0.0 ! MQG, from pepr, yxu
+CG3C53 CG3C51 OG301  CC3162     0.200  1   180.0 ! MQG, from pepr, yxu
+CG3C53 CG3C51 OG301  CC3162     0.300  3     0.0 ! MQG, from pepr, yxu
+HGA1   CG3C51 OG301  CC3162     0.500  1     0.0 ! MQG, from pepr, yxu
+HGA1   CG3C51 OG301  CC3162     0.600  3   180.0 ! MQG, from pepr, yxu
+
+!!***Model compounds***
+CN3    NN2B   CG331  HGA3       0.000  3     0.0 ! U, from CG36
+CN1T   NN2B   CG331  HGA3       0.190  3     0.0 ! U, from CG36
+CN3    NN2    CG331  HGA3       0.000  3     0.0 ! C, from CG36
+CN1    NN2    CG331  HGA3       0.190  3     0.0 ! C, from CG36
+CN4    NN2    CG331  HGA3       0.000  3     0.0 ! A, from CG36A
+CN5    NN2    CG331  HGA3       0.190  3     0.0 ! A, from CG36
+CN4    NN2B   CG331  HGA3       0.000  3     0.0 ! G, from CG36A
+CN5    NN2B   CG331  HGA3       0.190  3     0.0 ! G, from CG36
+
+!!***2'-O-substituted ribose***
+OG301  CN7B   CN7    ON2        0.000  3     0.0 ! 2OM, yxu
+OG301  CN7B   CN7    ON5        0.000  3     0.0 ! 2OM, yxu
+OG301  CN7B   CN7B   ON6B       0.000  3     0.0 ! 2OM, yxu
+OG301  CN7B   CN7    CN7        0.000  3     0.0 ! 2OM, yxu
+CG331  OG301  CN7B   CN7B       1.300  2   180.0 ! 2OM, yxu lower to increase base-orientation
+CG331  OG301  CN7B   CN7B       0.400  3     0.0 ! 2OM, yxu
+CG331  OG301  CN7B   CN7        1.600  2   180.0 ! 2OM, yxu
+CG331  OG301  CN7B   CN7        0.300  3     0.0 ! 2OM, yxu
+CG331  OG301  CN7B   HN7        1.000  1     0.0 ! 2OM, yxu
+CG331  OG301  CN7B   HN7        1.600  2   180.0 ! 2OM, yxu
+CG331  OG301  CN7B   HN7        0.400  3     0.0 ! 2OM, yxu
+OG301  CN7B   CN7B   HN7        0.195  3     0.0 ! 2OM, yxu
+OG301  CN7B   CN7    HN7        0.195  3     0.0 ! 2OM, from NA36
+CN9    CN7B   CN7B   OG301      0.000  3   180.0 ! 2OM, from NA36
+HGA3   CG331  OG301  CN7B       0.200  1   180.0 ! 2OM, from CG36
+HGA3   CG331  OG301  CN7B       1.200  2   180.0 ! 2OM, from CG36
+NN2    CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(A/C), yxu 0.2 180 pyrimidine: doesn't change pucker but enlarge 2OM torsion effect
+NN2B   CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(G/U), yxu         purine: increase C3'endo a little
+NG2R61 CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(U), yxu
+NG2R51 CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(G), yxu
+CG2R62 CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(P), yxu
+NG2R52 CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(G+), yxu
+OC301  CN7B   CN7    ON2        0.000  3     0.0 ! 2OR, yxu
+OC301  CN7B   CN7    ON5        0.000  3     0.0 ! 2OR, yxu
+OC301  CN7B   CN7B   ON6B       0.000  3     0.0 ! 2OR, yxu
+OC301  CN7B   CN7    CN7        0.000  3     0.0 ! 2OR, yxu
+OC301  CN7B   CN7B   HN7        0.195  3     0.0 ! 2OR, yxu
+OC301  CN7B   CN7    HN7        0.195  3     0.0 ! 2OR, from NA36
+NN2    CN7B   CN7B   OC301      0.000  3     0.0 ! 2OR(A), yxu
+NN2B   CN7B   CN7B   OC301      0.000  3     0.0 ! 2OR(G), yxu
+CN7    CN7B   OC301  CC3152     0.300  1   180.0 ! 2OR, from rbrb, yxu
+CN7    CN7B   OC301  CC3152     0.800  2   180.0 ! 2OR, from rbrb, yxu
+CN7B   CN7B   OC301  CC3152     0.300  1   180.0 ! 2OR, from rbrb, yxu
+CN7B   CN7B   OC301  CC3152     0.800  2   180.0 ! 2OR, from rbrb, yxu
+HN7    CN7B   OC301  CC3152     0.300  1     0.0 ! 2OR, from rbrb, yxu
+HN7    CN7B   OC301  CC3152     0.800  2   180.0 ! 2OR, from rbrb, yxu
+CC3151 CC3152 OC301  CN7B       0.300  1   180.0 ! 2OR, from rbrb, yxu
+CC3151 CC3152 OC301  CN7B       0.800  2   180.0 ! 2OR, from rbrb, yxu
+OC3C51 CC3152 OC301  CN7B       0.600  2     0.0 ! 2OR, from rbrb, yxu
+OC3C51 CC3152 OC301  CN7B       0.200  3     0.0 ! 2OR, from rbrb, yxu
+HCA1   CC3152 OC301  CN7B       0.300  1     0.0 ! 2OR, from rbrb, yxu
+HCA1   CC3152 OC301  CN7B       0.800  2   180.0 ! 2OR, from rbrb, yxu
+CC3153 CC321  OC30P  PC         0.600  1   180.0 ! 2OR, from CG3C51 CG321  OG303  PG1, yxu
+CC3153 CC321  OC30P  PC         0.650  2     0.0 ! 2OR, from CG3C51 CG321  OG303  PG1, yxu
+CC3153 CC321  OC30P  PC         0.050  3     0.0 ! 2OR, from CG3C51 CG321  OG303  PG1, yxu
+CC321  OC30P  PC     OC2DP      0.100  3     0.0 ! 2OR, from CG321  OG303  PG1    OG2P1, yxu
+OC3C51 CC3153 CC321  OC30P      3.400  1   180.0 ! 2OR, from OG303  CG321  CG3C51 OG3C51 , yxu
+HCA1   CC3153 CC321  OC30P      0.195  3     0.0 ! 2OR, from OG303  CG321  CG3C51 HGA1, yxu
+CC3151 CC3153 CC321  OC30P      2.500  1   180.0 ! 2OR, from OG303  CG321  CG3C51 CG3C51, yxu
+CC3151 CC3153 CC321  OC30P      0.400  2     0.0 ! 2OR, from OG303  CG321  CG3C51 CG3C51, yxu
+CC3151 CC3153 CC321  OC30P      0.800  3   180.0 ! 2OR, from OG303  CG321  CG3C51 CG3C51, yxu
+CC3151 CC3153 CC321  OC30P      0.200  4   180.0 ! 2OR, from OG303  CG321  CG3C51 CG3C51, yxu
+CC321  OC30P  PC     OC312      0.950  2     0.0 ! 2OR, from CG321  OG303  PG1    OG311, yxu
+CC321  OC30P  PC     OC312      0.500  3     0.0 ! 2OR, from CG321  OG303  PG1    OG311, yxu
+HCA2   CC321  OC30P  PC         0.000  3     0.0 ! 2OR, from HGA2   CG321  OG303  PG1, yxu
+
+!!***glycosyl linkage***
+!!@@general
+NG2R61 CN7B   CN7B   ON5        0.000  3     0.0 ! U, from NA36
+NG2R61 CN7B   CN7B   HN7        0.000  3     0.0 ! U, from NA36
+NG2R61 CN7B   ON6B   CN7        0.000  3     0.0 ! U, from NA36
+NG2R61 CN7B   CN7B   CN7        0.000  3     0.0 ! U, from NA36
+NG2R51 CN7B   CN7B   ON5        0.000  3     0.0 ! G, from NA36
+NG2R51 CN7B   CN7B   HN7        0.000  3     0.0 ! G, from NA36
+NG2R51 CN7B   ON6B   CN7        0.000  3     0.0 ! G, from NA36
+NG2R51 CN7B   CN7B   CN7        0.000  3     0.0 ! G, from NA36
+HGR62  CG2R62 NG2R61 CN7B       0.300  2   180.0 ! U, from NA36
+OG2D4  CG2R63 NG2R61 CN7B      11.000  2   180.0 ! U, from NA36
+CG2R62 CG2R62 NG2R61 CN7B      11.000  2   180.0 ! U, from NA36
+NG2R61 CG2R63 NG2R61 CN7B      11.000  2   180.0 ! U, from NA36
+NG2R62 CG2R63 NG2R61 CN7B      11.000  2   180.0 ! C, from NA36
+HGR52  CG2R53 NG2R51 CN7B       0.300  2   180.0 ! G, from NA36
+NG2R50 CG2R53 NG2R51 CN7B      11.000  2   180.0 ! G, from NA36
+CG2RC0 CG2RC0 NG2R51 CN7B      11.000  2   180.0 ! G, from NA36
+NG2R62 CG2RC0 NG2R51 CN7B      11.000  2   180.0 ! G, from NA36
+CG2R62 NG2R61 CN7B   CN7B       0.000  3   180.0 ! U & C, chi, from CG36
+CG2R63 NG2R61 CN7B   CN7B       1.000  3     0.0 ! U & C, chi, from CG36
+CG2R62 NG2R61 CN7B   ON6B       1.000  1     0.0 ! U & C, chi, from CG36
+CG2R63 NG2R61 CN7B   ON6B       0.000  3     0.0 ! U & C, chi, from CG36
+CG2R62 NG2R61 CN7B   HN7        0.195  3     0.0 ! U & C, chi, from CG36
+CG2R63 NG2R61 CN7B   HN7        0.195  3     0.0 ! U & C, chi, from CG36
+CG2R53 NG2R51 CN7B   CN7B       0.000  3   180.0 ! A & G, chi, from CG36
+CG2RC0 NG2R51 CN7B   CN7B       0.000  3     0.0 ! A & G, chi, from CG36
+CG2R53 NG2R51 CN7B   ON6B       1.100  1     0.0 ! A & G, chi, from CG36
+CG2RC0 NG2R51 CN7B   ON6B       1.100  1   180.0 ! A & G, chi, from CG36
+CG2RC0 NG2R51 CN7B   ON6B       0.200  3     0.0 ! A & G, chi, from CG36
+CG2R53 NG2R51 CN7B   HN7        0.250  2   180.0 ! A & G, chi, from CG36
+CG2R53 NG2R51 CN7B   HN7        0.195  3     0.0 ! A & G, chi, from CG36
+CG2RC0 NG2R51 CN7B   HN7        0.250  2   180.0 ! A & G, chi, from CG36
+!!@@pseudouridine
+CG2R62 CN7B   CN7B   CN7        0.000  3     0.0 ! PSU, yxu
+CG2R62 CN7B   CN7B   ON5        0.000  3     0.0 ! PSU, yxu
+CG2R62 CN7B   CN7B   HN7        0.000  3   180.0 ! PSU, yxu  enhance C3'endo
+CG2R62 CN7B   ON6B   CN7        0.000  3     0.0 ! PSU, yxu
+NG2R61 CG2R62 CG2R62 CN7B      11.000  2   180.0 ! PSU, from NA36
+HGR62  CG2R62 CG2R62 CN7B       4.000  2   180.0 ! PSU, yxu
+NG2R61 CG2R63 CG2R62 CN7B      11.000  2   180.0 ! PSU, from NA36
+OG2D4  CG2R63 CG2R62 CN7B      11.000  2   180.0 ! PSU, from NA36
+CG2R63 CG2R62 CN7B   ON6B       0.300  1   180.0 ! PSU, chi, yxu, higher, more syn
+CG2R62 CG2R62 CN7B   ON6B       0.700  3   180.0 ! PSU, chi, yxu 
+CG2R63 CG2R62 CN7B   CN7B       1.300  1   180.0 ! PSU, chi, yxu 
+CG2R62 CG2R62 CN7B   CN7B       0.800  3   180.0 ! PSU, chi, yxu 
+CG2R63 CG2R62 CN7B   HN7        0.000  3     0.0 ! PSU, chi, yxu 
+CG2R62 CG2R62 CN7B   HN7        0.000  3   180.0 ! PSU, chi, yxu 
+!!@@dihydrouridine
+NG2S0  CN7B   CN7B   CN7        0.200  3     0.0 ! H2U, enhance C2'endo, yxu
+NG2S0  CN7B   CN7B   ON5        0.200  3     0.0 ! H2U, enhance C2'endo, yxu
+NG2S0  CN7B   CN7B   HN7        0.200  3     0.0 ! H2U, enhance C2'endo, yxu
+NG2S0  CN7B   ON6B   CN7        0.000  3     0.0 ! H2U, yxu
+NG2S1  CG2O6  NG2S0  CN7B       3.200  2   180.0 ! H2U, yxu
+OG2D1  CG2O6  NG2S0  CN7B       4.700  2   180.0 ! H2U, yxu
+CG321  CG321  NG2S0  CN7B       0.100  1     0.0 ! H2U, yxu
+CG311  CG321  NG2S0  CN7B       0.100  1     0.0 ! MDU, from H2U, yxu
+HGA2   CG321  NG2S0  CN7B       0.320  3     0.0 ! H2U, yxu
+CG2O6  NG2S0  CN7B   ON6B       2.000  1   180.0 ! H2U, chi, yxu
+CG2O6  NG2S0  CN7B   ON6B       0.900  2     0.0 ! H2U, chi, yxu
+CG321  NG2S0  CN7B   ON6B       1.700  1     0.0 ! H2U, chi, yxu
+CG321  NG2S0  CN7B   ON6B       0.400  2     0.0 ! H2U, chi, yxu
+CG2O6  NG2S0  CN7B   CN7B       1.000  1   180.0 ! H2U, chi, yxu
+CG321  NG2S0  CN7B   CN7B       0.000  3     0.0 ! H2U, chi, yxu
+CG2O6  NG2S0  CN7B    HN7       0.000  3     0.0 ! H2U, chi, yxu
+CG321  NG2S0  CN7B    HN7       0.000  3     0.0 ! H2U, chi, yxu
+!!@@2-thiocytidine
+CG2R61 NG2R61 CN7B   CN7B       0.000  3   180.0 ! 2SC, from C
+CG2R61 NG2R61 CN7B   ON6B       1.000  1     0.0 ! 2SC, from C
+CG2R61 NG2R61 CN7B   HN7        0.195  3     0.0 ! 2SC, from C
+!!@@2-thiouridine
+SG2D1  CG2R63 NG2R61 CN7B      11.000  2   180.0 ! 2SU, yxu
+CG2R64 NG2R61 CN7B   ON6B       0.800  1   180.0 ! GAU, from U, yxu
+CG2R64 NG2R61 CN7B   ON6B       0.700  3     0.0 ! GAU, from U, yxu
+CG2R64 NG2R61 CN7B   HN7        0.000  3     0.0 ! GAU, from U, yxu
+CG2R64 NG2R61 CN7B   CN7B       0.200  3   180.0 ! GAU, from U, yxu
+SG311  CG2R64 NG2R61 CN7B       6.000  2   180.0 ! GAU, yxu
+NG2R62 CG2R64 NG2R61 CN7B      11.000  2   180.0 ! GAU, from u, yxu
+!!@@7-methylguanosine
+NG2R52 CN7B   CN7B   CN7        0.000  3     0.0 ! 7MG, yxu
+NG2R52 CN7B   CN7B   ON5        0.000  3     0.0 ! 7MG, yxu
+NG2R52 CN7B   CN7B   HN7        0.000  3     0.0 ! 7MG, yxu
+NG2R52 CN7B   ON6B   CN7        0.000  3     0.0 ! 7MG, yxu
+NG2R52 CG2R53 NG2R52 CN7B       7.700  2   180.0 ! 7MG, from NG2R52 CG2R53 NG2R52 CG334 , yxu
+HGR53  CG2R53 NG2R52 CN7B       6.300  2   180.0 ! 7MG, from HGR53  CG2R53 NG2R52 CG334, yxu
+CG2RC0 CG2RC0 NG2R52 CN7B       5.500  2   180.0 ! 7MG, yxu
+NG2R62 CG2RC0 NG2R52 CN7B      11.000  2   180.0 ! 7MG, from NA36
+CG2R53 NG2R52 CN7B   CN7B       0.850  3   180.0 ! 7MG, chi, yxu
+CG2RC0 NG2R52 CN7B   CN7B       1.100  1   180.0 ! 7MG, chi, yxu
+CG2R53 NG2R52 CN7B   ON6B       0.700  1     0.0 ! 7MG, chi, yxu
+CG2RC0 NG2R52 CN7B   ON6B       0.400  1   180.0 ! 7MG, chi, yxu
+CG2R53 NG2R52 CN7B   HN7        0.000  3   180.0 ! 7MG, chi, yxu
+CG2RC0 NG2R52 CN7B   HN7        0.100  3     0.0 ! 7MG, chi, yxu
+!!@@7-deazaguanosine
+CG2R51 NG2R51 CN7B   CN7B       0.000  3   180.0 ! DCG, from G
+CG2R51 NG2R51 CN7B   ON6B       1.100  1     0.0 ! DCG, from G
+CG2R51 NG2R51 CN7B   HN7        0.250  2   180.0 ! DCG, from G
+CG2R51 NG2R51 CN7B   HN7        0.195  3     0.0 ! DCG, from G
+CG2R51 CG2R51 NG2R51 CN7B      11.000  2   180.0 ! DCG, from G
+HGR52  CG2R51 NG2R51 CN7B       0.300  2   180.0 ! DCG, from G
+!!@@lysidine
+NG2P1  CN7B   ON6B   CN7        0.000  3     0.0 ! K2C, from NA36
+NG2P1  CN7B   CN7B   CN7        0.000  3     0.0 ! K2C, from NA36
+NG2P1  CN7B   CN7B   ON5        0.000  3     0.0 ! K2C, from NA36
+NG2P1  CN7B   CN7B   HN7        0.000  3     0.0 ! K2C, from NA36
+CG2R61 CG2R61 NG2P1  CN7B       0.750  2   180.0 ! K2C, yxu
+HGR62  CG2R61 NG2P1  CN7B       2.700  2   180.0 ! K2C, yxu
+NG2P1  CG2R64 NG2P1  CN7B       1.520  2   180.0 ! K2C, yxu
+NG311  CG2R64 NG2R61 CN7B       3.500  2   180.0 ! 34HC, yxu
+CG2R61 NG2P1  CN7B   CN7B       0.000  1     0.0 ! K2C, chi, yxu
+CG2R64 NG2P1  CN7B   CN7B       0.000  1   180.0 ! K2C, chi, yxu
+CG2R61 NG2P1  CN7B   ON6B       1.300  1   180.0 ! K2C, chi, yxu
+CG2R61 NG2P1  CN7B   ON6B       0.000  2     0.0 ! K2C, chi, yxu
+CG2R64 NG2P1  CN7B   ON6B       1.300  1     0.0 ! K2C, chi, yxu
+CG2R64 NG2P1  CN7B   ON6B       0.000  2     0.0 ! K2C, chi, yxu
+CG2R61 NG2P1  CN7B   HN7        0.000  3   180.0 ! K2C, chi, yxu
+CG2R64 NG2P1  CN7B   HN7        0.000  3     0.0 ! K2C, chi, yxu
+!!@@others
+SEGD1  CG2R63 NG2R61 CN7B      11.000  2   180.0 ! SEU, yxu
+NG2R61 CG2RC0 NG2R51 CN7B       7.500  2   180.0 ! DWG, yxu
+CG331  CG2R53 NG2R51 CN7B       3.000  2   180.0 ! 8MA, yxu
+NG2R62 CG2R63 CG2R62 CN7B       9.000  2   180.0 ! 1PC, yxu, 21/2/14
+NG2R62 CG2R62 CG2R62 CN7B       9.000  2   180.0 ! 3PC, yxu, 21/2/14
+!!@@Deoxyribose
+CG2R62 CN7B   CN8    CN7        0.000  3     0.0 ! PSU, yxu
+CG2R62 CN7B   CN8    HN8        0.000  3     0.0 ! PSU, yxu
+CG2R62 CN7B   ON6    CN7        0.000  3     0.0 ! PSU, yxu
+CG2R63 CG2R62 CN7B   ON6        0.300  1   180.0 ! PSU, yxu
+CG2R62 CG2R62 CN7B   ON6        0.700  3   180.0 ! PSU, yxu
+CG2R63 CG2R62 CN7B   CN8        1.000  1   180.0 ! PSU, yxu
+CG2R62 CG2R62 CN7B   CN8        0.800  3   180.0 ! PSU, yxu
+NG2R61 CN7B   ON6    CN7        0.000  3     0.0 ! C/U, from NA36
+NG2R61 CN7B   CN8    HN8        0.000  3     0.0 ! C/U, from NA36
+NG2R61 CN7B   CN8    CN7        0.000  3     0.0 ! C/U, from NA36
+NG2R51 CN7B   ON6    CN7        0.000  3     0.0 ! A/G, from NA36
+NG2R51 CN7B   CN8    CN7        0.000  3     0.0 ! A/G, from NA36
+NG2R51 CN7B   CN8    HN8        0.000  3     0.0 ! A/G, from NA36
+CG2R62 NG2R61 CN7B   CN8        0.000  3   180.0 ! U & C, chi, from CG36
+CG2R63 NG2R61 CN7B   CN8        1.000  3     0.0 ! U & C, chi, from CG36
+CG2R62 NG2R61 CN7B   ON6        1.000  1     0.0 ! U & C, chi, from CG36
+CG2R63 NG2R61 CN7B   ON6        0.000  3     0.0 ! U & C, chi, from CG36
+CG2R53 NG2R51 CN7B   CN8        0.000  3   180.0 ! A & G, chi, from CG36
+CG2RC0 NG2R51 CN7B   CN8        0.000  3     0.0 ! A & G, chi, from CG36
+CG2R53 NG2R51 CN7B   ON6        1.100  1     0.0 ! A & G, chi, from CG36
+CG2RC0 NG2R51 CN7B   ON6        1.100  1   180.0 ! A & G, chi, from CG36
+CG2RC0 NG2R51 CN7B   ON6        0.200  3     0.0 ! A & G, chi, from CG36
+
+!CGenFF model compound parameters moved to end of file after final
+!END/RETURN and after the residues
+
+IMPROPER                                    
+
+!CGenFF model compound parameters moved to end of file after final
+!END/RETURN and after the residues
+
+NONBONDED  NBXMOD 5  ATOM CDIEL FSHIFT VATOM VDISTANCE VFSWITCH -
+     CUTNB 14.0  CTOFNB 12.0  CTONNB 10.0  EPS 1.0  E14FAC 1.0  WMIN 1.5
+!SEGD1    0.0       -0.6230     2.1750 ! Se, starting from SG2D1 -0.5650  2.0500, TO BE OPTIMIZED, yxu
+
+END
+RETURN
+
+!residues
+goto skip_cgenff_model_compounds
+
 !!!!!!!! ######################################## !!!!!!!!
 !!!!!!!! ######## CGenFF model compounds ######## !!!!!!!!
 !!!!!!!! ######################################## !!!!!!!!
@@ -23071,38 +23456,10 @@ IC C4   N9   CM    HM1 	  1.3842  125.02  179.92  111.34  1.1124
 IC HM1  N9   *CM   HM2 	  1.1124  111.34  120.77  108.90  1.1127
 IC HM1  N9   *CM   HM3 	  1.1124  111.34 -120.58  108.79  1.1137
 
-END
+label skip_cgenff_model_compounds
 
-read param card flex append
-* Additive CHARMM parameters for modified nucleic acids, BETA version
-* You Xu, Karolinska Institutet, 2015.
-*
-
-ATOMS
-MASS  -1  SEGD1     78.96000 ! selenocarbonyl Se
-
-BONDS
-!!!!!!!! ############################### !!!!!!!!
-!!!!!!!! ######## Nucleic Acids ######## !!!!!!!!
-!!!!!!!! ############################### !!!!!!!!
-!!***Guanine***
-CC3162 OG301   360.00     1.4150 ! MQG, from CG36
-
-!!***Model compounds***
-CG331  NN2B    400.00     1.4560 ! U & G, from CG36
-CG331  NN2     400.00     1.4560 ! A & C, from CG36
-
-!!***2'-O-substituted ribose***
-CN7B   OG301    334.30     1.4110 ! 2OM, from CG3C51 OG301, yxu
-CN7B   OC301    334.30     1.4110 ! 2OR, from CG3C51 OG301, yxu
-
-!!***glycosyl linkage***
-CN7B   NG2R61   220.00     1.4570 ! U, from NA36
-CN7B   NG2R51   220.00     1.4570 ! G, from NA36
-CG2R62 CN7B     350.00     1.4860 ! PSU, yxu
-CN7B   NG2S0    320.00     1.4340 ! H2U, from CG36
-NG2R52 CN7B     320.00     1.4600 ! 7MG, from NG2R52 CG334, yxu
-CN7B   NG2P1    243.00     1.4530 ! K2C, yxu
+!parameters
+goto skip_cgenff_bonds
 
 !!!!!!!! ######################################## !!!!!!!!
 !!!!!!!! ######## CGenFF model compounds ######## !!!!!!!!
@@ -23156,84 +23513,9 @@ CG3C53 NG3P3   320.00     1.4850 ! cpoa, not optimized, yxu
 CG2R61 NG2S0   305.00     1.4140 ! dmpu, not optimized, yxu
 CG3C51 NG311   220.00     1.4560 ! 7GNM, from CG3C51 NG301, not optimized, yxu
 
-ANGLES
-!!!!!!!! ############################### !!!!!!!!
-!!!!!!!! ######## Nucleic Acids ######## !!!!!!!!
-!!!!!!!! ############################### !!!!!!!!
-!!***Adenine***
+label skip_cgenff_bonds
 
-!!***Guanine***
-CC3161 CC3162 OG301   115.00    109.70 ! MQG, from CG36
-OG301  CC3162 HCA1     60.00    109.50 ! MQG, from CG36
-CC3162 OG301  CG3C51   65.00    107.00 ! MQG, from CG36
-OG301  CC3162 OC3C61   90.00    112.00 ! MQG, from Carb36
-
-!!***Model compounds***
-CN3    NN2B   CG331    70.00    120.50 ! U, from CG36
-CN1T   NN2B   CG331    70.00    115.40 ! U, from CG36
-NN2B   CG331  HGA3     33.43    110.10   22.53 2.179 ! U & G, from CG36
-CN3    NN2    CG331    70.00    120.50 ! C, from CG36
-CN1    NN2    CG331    70.00    115.40 ! C, from CG36
-NN2    CG331  HGA3     33.43    110.10   22.53 2.179 ! A & C, from CG36
-CN4    NN2    CG331    70.00    127.80 ! A, from CG36
-CN5    NN2    CG331    70.00    125.90 ! A, from CG36
-CN4    NN2B   CG331    70.00    127.80 ! G, from CG36
-CN5    NN2B   CG331    70.00    125.90 ! G, from CG36
-
-!!***2'-O-substituted ribose***
-CN7B   CN7B   OG301    76.00    107.00 ! 2OM, yxu
-CN7    CN7B   OG301    60.00    106.50 ! 2OM, yxu
-OG301  CN7B   HN7      45.90    108.50 ! 2OM, from CG36
-CG331  OG301  CN7B     65.00    107.00 ! 2OM, from CG36
-CN7B   CN7B   OC301    76.00    107.00 ! 2OR, yxu
-CN7    CN7B   OC301    60.00    106.50 ! 2OR, yxu
-OC301  CN7B   HN7      45.90    108.50 ! 2OR, yxu
-CN7B   OC301  CC3152   55.00    107.00 ! 2OR, from rbrb, yxu
-CC3153 CC321  OC30P    75.70    110.10 ! 2OR, from CG3C51 CG321  OG303, yxu
-CC321  OC30P  PC       20.00    120.00   35.00   2.33 ! 2OR, from CG321  OG303  PG1, yxu
-
-!!***glycosyl linkage***
-CG2R62 NG2R61 CN7B     45.00    119.60 ! U, from NA36
-CG2R63 NG2R61 CN7B     45.00    118.40 ! U, from NA36
-NG2R61 CN7B   ON6B    110.00    112.00 ! U, from NA36
-NG2R61 CN7B   HN7      43.00    111.00 ! U, from NA36
-NG2R61 CN7B   CN7B    110.00    111.00 ! U, from NA36
-CG2RC0 NG2R51 CN7B     45.00    126.30 ! G, from NA36
-CG2R53 NG2R51 CN7B     45.00    126.90 ! G, from NA36
-ON6B   CN7B   NG2R51  110.00    112.00 ! G, from NA36
-CN7B   CN7B   NG2R51  110.00    111.00 ! G, from NA36
-HN7    CN7B   NG2R51   43.00    111.00 ! G, from NA36
-CG2R62 CG2R62 CN7B     36.00    121.00 ! PSU, yxu
-CG2R63 CG2R62 CN7B     43.00    122.30 ! PSU, yxu
-CG2R62 CN7B   CN7B     54.00    109.30 ! PSU, yxu
-CG2R62 CN7B   ON6B     74.00    107.50 ! PSU, yxu
-CG2R62 CN7B   HN7      48.00    111.00 ! PSU, yxu
-NG2S0  CN7B   CN7B     45.00    110.80 ! H2U, yxu
-NG2S0  CN7B   ON6B     85.00    108.00 ! H2U, yxu
-CG2O6  NG2S0  CN7B     38.00    116.00 ! H2U, yxu, 1/12/14
-CG321  NG2S0  CN7B     40.00    120.00 ! H2U, yxu, 1/12/14
-NG2S0  CN7B   HN7      48.00    112.00 ! H2U, from CG36
-CG2R61 NG2R61 CN7B     45.00    119.60 ! 2SC, from C
-CG2R53 NG2R52 CN7B    100.00    112.00 ! 7MG, yxu
-CG2RC0 NG2R52 CN7B     72.00    112.90 ! 7MG, from CG2RC0 NG2R52 CG334, yxu
-NG2R52 CN7B   HN7      54.00    106.00 ! 7MG, yxu
-NG2R52 CN7B   CN7B     90.00    105.50 ! 7MG, yxu
-NG2R52 CN7B   ON6B     75.00    102.00 ! 7MG, yxu
-NG2P1  CN7B   ON6B     85.00    108.00 ! K2C, yxu
-NG2P1  CN7B   CN7B     55.00    109.30 ! K2C, yxu
-NG2P1  CN7B   HN7      52.00    107.70 ! K2C, yxu
-CG2R64 NG2P1  CN7B     60.00    118.10 ! K2C, yxu
-CG2R61 NG2P1  CN7B     53.00    120.00 ! K2C, yxu
-CG2R64 NG2R61 CN7B     50.00    115.40 ! K2Cn, yxu
-CG2R51 NG2R51 CN7B     45.00    126.90 ! DCG, from NA36
-!!@@Deoxyribose
-CG2R62 CN7B   CN8      54.00    109.30 ! PSU, from CG2R62 CN7B CN7B, yxu
-CG2R62 CN7B   ON6      74.00    107.50 ! PSU, from CG2R62 CN7B ON6B, yxu
-NG2R61 CN7B   ON6     110.00    108.00 ! C/U, from NA36
-NG2R61 CN7B   CN8     110.00    113.70 ! C/U, from NA36
-NG2R51 CN7B   ON6     110.0     108.0  ! A/G, from NA36
-NG2R51 CN7B   CN8     110.0     113.7  ! A/G, from NA36
-
+goto skip_cgenff_angles
 
 !!!!!!!! ######################################## !!!!!!!!
 !!!!!!!! ######## CGenFF model compounds ######## !!!!!!!!
@@ -23512,247 +23794,9 @@ CG311  OG301  CG3C51   65.00    107.00 ! pepr, from CG331 OG301 CG3C51, not opti
 CG311  OG3C61 CG321    95.00    109.70 ! pepr, from CG321 OG3C61 CG321, not optimized, yxu
 CG2O2  CG311  CG331    52.00    108.00 ! hpme, from CG2O2 CG311 CG321, not optimized, yxu
 
-DIHEDRALS                        
-!!!!!!!! ############################### !!!!!!!!
-!!!!!!!! ######## Nucleic Acids ######## !!!!!!!!
-!!!!!!!! ############################### !!!!!!!!
-!!***Cytosines***
-NG2P1  CG2R63 NG2R61 CN7B      11.000  2   180.0 ! CYTp, from NA36
-CG2R61 CG2R61 NG2R61 CN7B      11.000  2   180.0 ! 2SC, from C
-HGR62  CG2R61 NG2R61 CN7B       0.300  2   180.0 ! 2SC, from C
+label skip_cgenff_angles
 
-!!***Guanine***
-OG301  CC3162 CC3161 CC3161     0.200  3     0.0 ! MQG, from Carb36
-OG301  CC3162 CC3161 OC311      2.650  1   180.0 ! MQG, from Carb36
-OG301  CC3162 CC3161 OC311      0.000  2     0.0 ! MQG, from Carb36
-OG301  CC3162 CC3161 OC311      0.130  3   180.0 ! MQG, from Carb36
-OG301  CC3162 CC3161 HCA1       0.200  3     0.0 ! MQG, from Carb36
-OG301  CC3162 OC3C61 CC3163     0.200  3     0.0 ! MQG, from Carb36
-CC3161 CC3162 OG301  CG3C51     0.450  3     0.0 ! MQG, from pepr, yxu
-OC3C61 CC3162 OG301  CG3C51     0.820  1     0.0 ! MQG, from pepr, yxu
-OC3C61 CC3162 OG301  CG3C51     0.810  2     0.0 ! MQG, from pepr, yxu
-OC3C61 CC3162 OG301  CG3C51     0.350  3     0.0 ! MQG, from pepr, yxu
-HCA1   CC3162 OG301  CG3C51     0.350  3     0.0 ! MQG, from pepr, yxu
-CG3C51 CG3C51 OG301  CC3162     0.200  1   180.0 ! MQG, from pepr, yxu
-CG3C51 CG3C51 OG301  CC3162     0.300  3     0.0 ! MQG, from pepr, yxu
-CG3C53 CG3C51 OG301  CC3162     0.200  1   180.0 ! MQG, from pepr, yxu
-CG3C53 CG3C51 OG301  CC3162     0.300  3     0.0 ! MQG, from pepr, yxu
-HGA1   CG3C51 OG301  CC3162     0.500  1     0.0 ! MQG, from pepr, yxu
-HGA1   CG3C51 OG301  CC3162     0.600  3   180.0 ! MQG, from pepr, yxu
-
-!!***Model compounds***
-CN3    NN2B   CG331  HGA3       0.000  3     0.0 ! U, from CG36
-CN1T   NN2B   CG331  HGA3       0.190  3     0.0 ! U, from CG36
-CN3    NN2    CG331  HGA3       0.000  3     0.0 ! C, from CG36
-CN1    NN2    CG331  HGA3       0.190  3     0.0 ! C, from CG36
-CN4    NN2    CG331  HGA3       0.000  3     0.0 ! A, from CG36A
-CN5    NN2    CG331  HGA3       0.190  3     0.0 ! A, from CG36
-CN4    NN2B   CG331  HGA3       0.000  3     0.0 ! G, from CG36A
-CN5    NN2B   CG331  HGA3       0.190  3     0.0 ! G, from CG36
-
-!!***2'-O-substituted ribose***
-OG301  CN7B   CN7    ON2        0.000  3     0.0 ! 2OM, yxu
-OG301  CN7B   CN7    ON5        0.000  3     0.0 ! 2OM, yxu
-OG301  CN7B   CN7B   ON6B       0.000  3     0.0 ! 2OM, yxu
-OG301  CN7B   CN7    CN7        0.000  3     0.0 ! 2OM, yxu
-CG331  OG301  CN7B   CN7B       1.300  2   180.0 ! 2OM, yxu lower to increase base-orientation
-CG331  OG301  CN7B   CN7B       0.400  3     0.0 ! 2OM, yxu
-CG331  OG301  CN7B   CN7        1.600  2   180.0 ! 2OM, yxu
-CG331  OG301  CN7B   CN7        0.300  3     0.0 ! 2OM, yxu
-CG331  OG301  CN7B   HN7        1.000  1     0.0 ! 2OM, yxu
-CG331  OG301  CN7B   HN7        1.600  2   180.0 ! 2OM, yxu
-CG331  OG301  CN7B   HN7        0.400  3     0.0 ! 2OM, yxu
-OG301  CN7B   CN7B   HN7        0.195  3     0.0 ! 2OM, yxu
-OG301  CN7B   CN7    HN7        0.195  3     0.0 ! 2OM, from NA36
-CN9    CN7B   CN7B   OG301      0.000  3   180.0 ! 2OM, from NA36
-HGA3   CG331  OG301  CN7B       0.200  1   180.0 ! 2OM, from CG36
-HGA3   CG331  OG301  CN7B       1.200  2   180.0 ! 2OM, from CG36
-NN2    CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(A/C), yxu 0.2 180 pyrimidine: doesn't change pucker but enlarge 2OM torsion effect
-NN2B   CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(G/U), yxu         purine: increase C3'endo a little
-NG2R61 CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(U), yxu
-NG2R51 CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(G), yxu
-CG2R62 CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(P), yxu
-NG2R52 CN7B   CN7B   OG301      0.000  3     0.0 ! 2OM(G+), yxu
-OC301  CN7B   CN7    ON2        0.000  3     0.0 ! 2OR, yxu
-OC301  CN7B   CN7    ON5        0.000  3     0.0 ! 2OR, yxu
-OC301  CN7B   CN7B   ON6B       0.000  3     0.0 ! 2OR, yxu
-OC301  CN7B   CN7    CN7        0.000  3     0.0 ! 2OR, yxu
-OC301  CN7B   CN7B   HN7        0.195  3     0.0 ! 2OR, yxu
-OC301  CN7B   CN7    HN7        0.195  3     0.0 ! 2OR, from NA36
-NN2    CN7B   CN7B   OC301      0.000  3     0.0 ! 2OR(A), yxu
-NN2B   CN7B   CN7B   OC301      0.000  3     0.0 ! 2OR(G), yxu
-CN7    CN7B   OC301  CC3152     0.300  1   180.0 ! 2OR, from rbrb, yxu
-CN7    CN7B   OC301  CC3152     0.800  2   180.0 ! 2OR, from rbrb, yxu
-CN7B   CN7B   OC301  CC3152     0.300  1   180.0 ! 2OR, from rbrb, yxu
-CN7B   CN7B   OC301  CC3152     0.800  2   180.0 ! 2OR, from rbrb, yxu
-HN7    CN7B   OC301  CC3152     0.300  1     0.0 ! 2OR, from rbrb, yxu
-HN7    CN7B   OC301  CC3152     0.800  2   180.0 ! 2OR, from rbrb, yxu
-CC3151 CC3152 OC301  CN7B       0.300  1   180.0 ! 2OR, from rbrb, yxu
-CC3151 CC3152 OC301  CN7B       0.800  2   180.0 ! 2OR, from rbrb, yxu
-OC3C51 CC3152 OC301  CN7B       0.600  2     0.0 ! 2OR, from rbrb, yxu
-OC3C51 CC3152 OC301  CN7B       0.200  3     0.0 ! 2OR, from rbrb, yxu
-HCA1   CC3152 OC301  CN7B       0.300  1     0.0 ! 2OR, from rbrb, yxu
-HCA1   CC3152 OC301  CN7B       0.800  2   180.0 ! 2OR, from rbrb, yxu
-CC3153 CC321  OC30P  PC         0.600  1   180.0 ! 2OR, from CG3C51 CG321  OG303  PG1, yxu
-CC3153 CC321  OC30P  PC         0.650  2     0.0 ! 2OR, from CG3C51 CG321  OG303  PG1, yxu
-CC3153 CC321  OC30P  PC         0.050  3     0.0 ! 2OR, from CG3C51 CG321  OG303  PG1, yxu
-CC321  OC30P  PC     OC2DP      0.100  3     0.0 ! 2OR, from CG321  OG303  PG1    OG2P1, yxu
-OC3C51 CC3153 CC321  OC30P      3.400  1   180.0 ! 2OR, from OG303  CG321  CG3C51 OG3C51 , yxu
-HCA1   CC3153 CC321  OC30P      0.195  3     0.0 ! 2OR, from OG303  CG321  CG3C51 HGA1, yxu
-CC3151 CC3153 CC321  OC30P      2.500  1   180.0 ! 2OR, from OG303  CG321  CG3C51 CG3C51, yxu
-CC3151 CC3153 CC321  OC30P      0.400  2     0.0 ! 2OR, from OG303  CG321  CG3C51 CG3C51, yxu
-CC3151 CC3153 CC321  OC30P      0.800  3   180.0 ! 2OR, from OG303  CG321  CG3C51 CG3C51, yxu
-CC3151 CC3153 CC321  OC30P      0.200  4   180.0 ! 2OR, from OG303  CG321  CG3C51 CG3C51, yxu
-CC321  OC30P  PC     OC312      0.950  2     0.0 ! 2OR, from CG321  OG303  PG1    OG311, yxu
-CC321  OC30P  PC     OC312      0.500  3     0.0 ! 2OR, from CG321  OG303  PG1    OG311, yxu
-HCA2   CC321  OC30P  PC         0.000  3     0.0 ! 2OR, from HGA2   CG321  OG303  PG1, yxu
-
-!!***glycosyl linkage***
-!!@@general
-NG2R61 CN7B   CN7B   ON5        0.000  3     0.0 ! U, from NA36
-NG2R61 CN7B   CN7B   HN7        0.000  3     0.0 ! U, from NA36
-NG2R61 CN7B   ON6B   CN7        0.000  3     0.0 ! U, from NA36
-NG2R61 CN7B   CN7B   CN7        0.000  3     0.0 ! U, from NA36
-NG2R51 CN7B   CN7B   ON5        0.000  3     0.0 ! G, from NA36
-NG2R51 CN7B   CN7B   HN7        0.000  3     0.0 ! G, from NA36
-NG2R51 CN7B   ON6B   CN7        0.000  3     0.0 ! G, from NA36
-NG2R51 CN7B   CN7B   CN7        0.000  3     0.0 ! G, from NA36
-HGR62  CG2R62 NG2R61 CN7B       0.300  2   180.0 ! U, from NA36
-OG2D4  CG2R63 NG2R61 CN7B      11.000  2   180.0 ! U, from NA36
-CG2R62 CG2R62 NG2R61 CN7B      11.000  2   180.0 ! U, from NA36
-NG2R61 CG2R63 NG2R61 CN7B      11.000  2   180.0 ! U, from NA36
-NG2R62 CG2R63 NG2R61 CN7B      11.000  2   180.0 ! C, from NA36
-HGR52  CG2R53 NG2R51 CN7B       0.300  2   180.0 ! G, from NA36
-NG2R50 CG2R53 NG2R51 CN7B      11.000  2   180.0 ! G, from NA36
-CG2RC0 CG2RC0 NG2R51 CN7B      11.000  2   180.0 ! G, from NA36
-NG2R62 CG2RC0 NG2R51 CN7B      11.000  2   180.0 ! G, from NA36
-CG2R62 NG2R61 CN7B   CN7B       0.000  3   180.0 ! U & C, chi, from CG36
-CG2R63 NG2R61 CN7B   CN7B       1.000  3     0.0 ! U & C, chi, from CG36
-CG2R62 NG2R61 CN7B   ON6B       1.000  1     0.0 ! U & C, chi, from CG36
-CG2R63 NG2R61 CN7B   ON6B       0.000  3     0.0 ! U & C, chi, from CG36
-CG2R62 NG2R61 CN7B   HN7        0.195  3     0.0 ! U & C, chi, from CG36
-CG2R63 NG2R61 CN7B   HN7        0.195  3     0.0 ! U & C, chi, from CG36
-CG2R53 NG2R51 CN7B   CN7B       0.000  3   180.0 ! A & G, chi, from CG36
-CG2RC0 NG2R51 CN7B   CN7B       0.000  3     0.0 ! A & G, chi, from CG36
-CG2R53 NG2R51 CN7B   ON6B       1.100  1     0.0 ! A & G, chi, from CG36
-CG2RC0 NG2R51 CN7B   ON6B       1.100  1   180.0 ! A & G, chi, from CG36
-CG2RC0 NG2R51 CN7B   ON6B       0.200  3     0.0 ! A & G, chi, from CG36
-CG2R53 NG2R51 CN7B   HN7        0.250  2   180.0 ! A & G, chi, from CG36
-CG2R53 NG2R51 CN7B   HN7        0.195  3     0.0 ! A & G, chi, from CG36
-CG2RC0 NG2R51 CN7B   HN7        0.250  2   180.0 ! A & G, chi, from CG36
-!!@@pseudouridine
-CG2R62 CN7B   CN7B   CN7        0.000  3     0.0 ! PSU, yxu
-CG2R62 CN7B   CN7B   ON5        0.000  3     0.0 ! PSU, yxu
-CG2R62 CN7B   CN7B   HN7        0.000  3   180.0 ! PSU, yxu  enhance C3'endo
-CG2R62 CN7B   ON6B   CN7        0.000  3     0.0 ! PSU, yxu
-NG2R61 CG2R62 CG2R62 CN7B      11.000  2   180.0 ! PSU, from NA36
-HGR62  CG2R62 CG2R62 CN7B       4.000  2   180.0 ! PSU, yxu
-NG2R61 CG2R63 CG2R62 CN7B      11.000  2   180.0 ! PSU, from NA36
-OG2D4  CG2R63 CG2R62 CN7B      11.000  2   180.0 ! PSU, from NA36
-CG2R63 CG2R62 CN7B   ON6B       0.300  1   180.0 ! PSU, chi, yxu, higher, more syn
-CG2R62 CG2R62 CN7B   ON6B       0.700  3   180.0 ! PSU, chi, yxu 
-CG2R63 CG2R62 CN7B   CN7B       1.300  1   180.0 ! PSU, chi, yxu 
-CG2R62 CG2R62 CN7B   CN7B       0.800  3   180.0 ! PSU, chi, yxu 
-CG2R63 CG2R62 CN7B   HN7        0.000  3     0.0 ! PSU, chi, yxu 
-CG2R62 CG2R62 CN7B   HN7        0.000  3   180.0 ! PSU, chi, yxu 
-!!@@dihydrouridine
-NG2S0  CN7B   CN7B   CN7        0.200  3     0.0 ! H2U, enhance C2'endo, yxu
-NG2S0  CN7B   CN7B   ON5        0.200  3     0.0 ! H2U, enhance C2'endo, yxu
-NG2S0  CN7B   CN7B   HN7        0.200  3     0.0 ! H2U, enhance C2'endo, yxu
-NG2S0  CN7B   ON6B   CN7        0.000  3     0.0 ! H2U, yxu
-NG2S1  CG2O6  NG2S0  CN7B       3.200  2   180.0 ! H2U, yxu
-OG2D1  CG2O6  NG2S0  CN7B       4.700  2   180.0 ! H2U, yxu
-CG321  CG321  NG2S0  CN7B       0.100  1     0.0 ! H2U, yxu
-CG311  CG321  NG2S0  CN7B       0.100  1     0.0 ! MDU, from H2U, yxu
-HGA2   CG321  NG2S0  CN7B       0.320  3     0.0 ! H2U, yxu
-CG2O6  NG2S0  CN7B   ON6B       2.000  1   180.0 ! H2U, chi, yxu
-CG2O6  NG2S0  CN7B   ON6B       0.900  2     0.0 ! H2U, chi, yxu
-CG321  NG2S0  CN7B   ON6B       1.700  1     0.0 ! H2U, chi, yxu
-CG321  NG2S0  CN7B   ON6B       0.400  2     0.0 ! H2U, chi, yxu
-CG2O6  NG2S0  CN7B   CN7B       1.000  1   180.0 ! H2U, chi, yxu
-CG321  NG2S0  CN7B   CN7B       0.000  3     0.0 ! H2U, chi, yxu
-CG2O6  NG2S0  CN7B    HN7       0.000  3     0.0 ! H2U, chi, yxu
-CG321  NG2S0  CN7B    HN7       0.000  3     0.0 ! H2U, chi, yxu
-!!@@2-thiocytidine
-CG2R61 NG2R61 CN7B   CN7B       0.000  3   180.0 ! 2SC, from C
-CG2R61 NG2R61 CN7B   ON6B       1.000  1     0.0 ! 2SC, from C
-CG2R61 NG2R61 CN7B   HN7        0.195  3     0.0 ! 2SC, from C
-!!@@2-thiouridine
-SG2D1  CG2R63 NG2R61 CN7B      11.000  2   180.0 ! 2SU, yxu
-CG2R64 NG2R61 CN7B   ON6B       0.800  1   180.0 ! GAU, from U, yxu
-CG2R64 NG2R61 CN7B   ON6B       0.700  3     0.0 ! GAU, from U, yxu
-CG2R64 NG2R61 CN7B   HN7        0.000  3     0.0 ! GAU, from U, yxu
-CG2R64 NG2R61 CN7B   CN7B       0.200  3   180.0 ! GAU, from U, yxu
-SG311  CG2R64 NG2R61 CN7B       6.000  2   180.0 ! GAU, yxu
-NG2R62 CG2R64 NG2R61 CN7B      11.000  2   180.0 ! GAU, from u, yxu
-!!@@7-methylguanosine
-NG2R52 CN7B   CN7B   CN7        0.000  3     0.0 ! 7MG, yxu
-NG2R52 CN7B   CN7B   ON5        0.000  3     0.0 ! 7MG, yxu
-NG2R52 CN7B   CN7B   HN7        0.000  3     0.0 ! 7MG, yxu
-NG2R52 CN7B   ON6B   CN7        0.000  3     0.0 ! 7MG, yxu
-NG2R52 CG2R53 NG2R52 CN7B       7.700  2   180.0 ! 7MG, from NG2R52 CG2R53 NG2R52 CG334 , yxu
-HGR53  CG2R53 NG2R52 CN7B       6.300  2   180.0 ! 7MG, from HGR53  CG2R53 NG2R52 CG334, yxu
-CG2RC0 CG2RC0 NG2R52 CN7B       5.500  2   180.0 ! 7MG, yxu
-NG2R62 CG2RC0 NG2R52 CN7B      11.000  2   180.0 ! 7MG, from NA36
-CG2R53 NG2R52 CN7B   CN7B       0.850  3   180.0 ! 7MG, chi, yxu
-CG2RC0 NG2R52 CN7B   CN7B       1.100  1   180.0 ! 7MG, chi, yxu
-CG2R53 NG2R52 CN7B   ON6B       0.700  1     0.0 ! 7MG, chi, yxu
-CG2RC0 NG2R52 CN7B   ON6B       0.400  1   180.0 ! 7MG, chi, yxu
-CG2R53 NG2R52 CN7B   HN7        0.000  3   180.0 ! 7MG, chi, yxu
-CG2RC0 NG2R52 CN7B   HN7        0.100  3     0.0 ! 7MG, chi, yxu
-!!@@7-deazaguanosine
-CG2R51 NG2R51 CN7B   CN7B       0.000  3   180.0 ! DCG, from G
-CG2R51 NG2R51 CN7B   ON6B       1.100  1     0.0 ! DCG, from G
-CG2R51 NG2R51 CN7B   HN7        0.250  2   180.0 ! DCG, from G
-CG2R51 NG2R51 CN7B   HN7        0.195  3     0.0 ! DCG, from G
-CG2R51 CG2R51 NG2R51 CN7B      11.000  2   180.0 ! DCG, from G
-HGR52  CG2R51 NG2R51 CN7B       0.300  2   180.0 ! DCG, from G
-!!@@lysidine
-NG2P1  CN7B   ON6B   CN7        0.000  3     0.0 ! K2C, from NA36
-NG2P1  CN7B   CN7B   CN7        0.000  3     0.0 ! K2C, from NA36
-NG2P1  CN7B   CN7B   ON5        0.000  3     0.0 ! K2C, from NA36
-NG2P1  CN7B   CN7B   HN7        0.000  3     0.0 ! K2C, from NA36
-CG2R61 CG2R61 NG2P1  CN7B       0.750  2   180.0 ! K2C, yxu
-HGR62  CG2R61 NG2P1  CN7B       2.700  2   180.0 ! K2C, yxu
-NG2P1  CG2R64 NG2P1  CN7B       1.520  2   180.0 ! K2C, yxu
-NG311  CG2R64 NG2R61 CN7B       3.500  2   180.0 ! 34HC, yxu
-CG2R61 NG2P1  CN7B   CN7B       0.000  1     0.0 ! K2C, chi, yxu
-CG2R64 NG2P1  CN7B   CN7B       0.000  1   180.0 ! K2C, chi, yxu
-CG2R61 NG2P1  CN7B   ON6B       1.300  1   180.0 ! K2C, chi, yxu
-CG2R61 NG2P1  CN7B   ON6B       0.000  2     0.0 ! K2C, chi, yxu
-CG2R64 NG2P1  CN7B   ON6B       1.300  1     0.0 ! K2C, chi, yxu
-CG2R64 NG2P1  CN7B   ON6B       0.000  2     0.0 ! K2C, chi, yxu
-CG2R61 NG2P1  CN7B   HN7        0.000  3   180.0 ! K2C, chi, yxu
-CG2R64 NG2P1  CN7B   HN7        0.000  3     0.0 ! K2C, chi, yxu
-!!@@others
-SEGD1  CG2R63 NG2R61 CN7B      11.000  2   180.0 ! SEU, yxu
-NG2R61 CG2RC0 NG2R51 CN7B       7.500  2   180.0 ! DWG, yxu
-CG331  CG2R53 NG2R51 CN7B       3.000  2   180.0 ! 8MA, yxu
-NG2R62 CG2R63 CG2R62 CN7B       9.000  2   180.0 ! 1PC, yxu, 21/2/14
-NG2R62 CG2R62 CG2R62 CN7B       9.000  2   180.0 ! 3PC, yxu, 21/2/14
-!!@@Deoxyribose
-CG2R62 CN7B   CN8    CN7        0.000  3     0.0 ! PSU, yxu
-CG2R62 CN7B   CN8    HN8        0.000  3     0.0 ! PSU, yxu
-CG2R62 CN7B   ON6    CN7        0.000  3     0.0 ! PSU, yxu
-CG2R63 CG2R62 CN7B   ON6        0.300  1   180.0 ! PSU, yxu
-CG2R62 CG2R62 CN7B   ON6        0.700  3   180.0 ! PSU, yxu
-CG2R63 CG2R62 CN7B   CN8        1.000  1   180.0 ! PSU, yxu
-CG2R62 CG2R62 CN7B   CN8        0.800  3   180.0 ! PSU, yxu
-NG2R61 CN7B   ON6    CN7        0.000  3     0.0 ! C/U, from NA36
-NG2R61 CN7B   CN8    HN8        0.000  3     0.0 ! C/U, from NA36
-NG2R61 CN7B   CN8    CN7        0.000  3     0.0 ! C/U, from NA36
-NG2R51 CN7B   ON6    CN7        0.000  3     0.0 ! A/G, from NA36
-NG2R51 CN7B   CN8    CN7        0.000  3     0.0 ! A/G, from NA36
-NG2R51 CN7B   CN8    HN8        0.000  3     0.0 ! A/G, from NA36
-CG2R62 NG2R61 CN7B   CN8        0.000  3   180.0 ! U & C, chi, from CG36
-CG2R63 NG2R61 CN7B   CN8        1.000  3     0.0 ! U & C, chi, from CG36
-CG2R62 NG2R61 CN7B   ON6        1.000  1     0.0 ! U & C, chi, from CG36
-CG2R63 NG2R61 CN7B   ON6        0.000  3     0.0 ! U & C, chi, from CG36
-CG2R53 NG2R51 CN7B   CN8        0.000  3   180.0 ! A & G, chi, from CG36
-CG2RC0 NG2R51 CN7B   CN8        0.000  3     0.0 ! A & G, chi, from CG36
-CG2R53 NG2R51 CN7B   ON6        1.100  1     0.0 ! A & G, chi, from CG36
-CG2RC0 NG2R51 CN7B   ON6        1.100  1   180.0 ! A & G, chi, from CG36
-CG2RC0 NG2R51 CN7B   ON6        0.200  3     0.0 ! A & G, chi, from CG36
+goto skip_cgenff_dihedrals
 
 !!!!!!!! ######################################## !!!!!!!!
 !!!!!!!! ######## CGenFF model compounds ######## !!!!!!!!
@@ -24266,9 +24310,6 @@ CG2RC0 CG2R51 CG324  NG3P3      0.6000  2     0.00 ! DAG, yxu
 CG2RC0 CG2R51 CG324  NG3P3      0.1500  3     0.00 ! DAG, yxu
 CG2R51 CG324  NG3P3  HGP2       0.0400  3     0.00 ! DAG, from CG2R61 CG324 NG3P1 HGP2, yxu
 CG2R51 CG2R51 CG324  NG3P2      0.6000  2     0.00 ! QUG, from DAG, yxu
-CG2RC0 CG2R51 CG324  NG3P2      0.7000  1   180.00 ! QUG, from DAG, yxu
-CG2RC0 CG2R51 CG324  NG3P2      0.6000  2     0.00 ! QUG, from DAG, yxu
-CG2RC0 CG2R51 CG324  NG3P2      0.1500  3     0.00 ! QUG, from DAG, yxu
 CG3C51 CG2R51 CG2R51 CG3C53    12.0000  2   180.00 ! QUG, from CG3C52 CG2R51 CG2R51 CG3C52, yxu
 CG3C51 CG2R51 CG2R51 HGR51      2.9000  2   180.00 ! QUG, from CG3C52 CG2R51 CG2R51 HGR51, yxu
 CG3C53 CG2R51 CG2R51 HGR51      4.2500  2   180.00 ! QUG, from CG3C54 CG2R51 CG2R51 HGR51, yxu
@@ -24793,7 +24834,10 @@ NG2R61 CG2R64 SG311  CG321      1.4500  1     0.00 ! BGAU BGCU GAU GCU; from NG2
 NG2R62 CG2R64 SG311  CG321      2.1200  2   180.00 ! BGAU BGCU GAU GCU; from NG2R62 CG2R64 SG311 CG331, 2SMPYR; yxu & kevo
 NG2R62 CG2R64 SG311  CG321      0.1900  4   180.00 ! BGAU BGCU GAU GCU; from NG2R62 CG2R64 SG311 CG331, 2SMPYR; yxu & kevo
 
-IMPROPER                                    
+label skip_cgenff_dihedrals
+
+goto skip_cgenff_impropers
+
 !!!!!!!! ######################################## !!!!!!!!
 !!!!!!!! ######## CGenFF model compounds ######## !!!!!!!!
 !!!!!!!! ######################################## !!!!!!!!
@@ -24840,10 +24884,8 @@ CG2R64 CG2RC0 NG2R62 NG2S0     22.0000  0     0.00 ! m6pa, yxu  ##check!!
 CG2O1  NG2S1  OG2D1  HGR52     66.0000  0     0.00 ! amba, from CG2O1 NG2S2 OG2D1 HGR52, yxu
 CG2O4  CG311  OG2D1  HGR52     50.0000  0     0.00 ! amba, from CG2O4 CG321 OG2D1 HGR52, yxu
 
-NONBONDED  NBXMOD 5  ATOM CDIEL FSHIFT VATOM VDISTANCE VFSWITCH -
-     CUTNB 14.0  CTOFNB 12.0  CTONNB 10.0  EPS 1.0  E14FAC 1.0  WMIN 1.5
-SEGD1    0.0       -0.6230     2.1750 ! Se, starting from SG2D1 -0.5650  2.0500, TO BE OPTIMIZED, yxu
+CG2RC0 CG2R51 CG324  NG3P2      0.7000  1   180.00 ! QUG, from DAG, yxu
+CG2RC0 CG2R51 CG324  NG3P2      0.6000  2     0.00 ! QUG, from DAG, yxu
+CG2RC0 CG2R51 CG324  NG3P2      0.1500  3     0.00 ! QUG, from DAG, yxu
 
-END
-RETURN
-
+label skip_cgenff_impropers

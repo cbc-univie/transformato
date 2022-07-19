@@ -11581,6 +11581,131 @@ IC   H62  C7   *C6  C5     1.0967  107.88 -123.50  112.05   1.5048
 IC   H62  C6   C7   O7     1.0967  107.88   60.50  111.96   1.4627
 PATC FIRS NONE LAST NONE
 
+RESI A6TAL           0.000  ! 4C1 6-Deoxy-alpha-D-Talose
+                           !
+GROU                       !
+ATOM C1   CC3162    0.340  !                  H63
+ATOM H1   HCA1      0.090  !                  |
+ATOM O1   OC311    -0.650  !              H61-C6-H62
+ATOM HO1  HCP1      0.420  !                  |
+ATOM C5   CC3163    0.110  !               H5-C5---O5
+ATOM H5   HCA1      0.090  !        HO4-O4   /       \    H1
+ATOM O5   OC3C61   -0.400  !              \ / HO3 HO2 \  /
+GROU                       !               C4 |    |   C1
+ATOM C2   CC3161    0.140  !              / \ O3   O2 /  \
+ATOM H2   HCA1      0.090  !            H4   \|    | /    O1-HO1
+ATOM O2   OC311    -0.650  !                  C3---C2
+ATOM HO2  HCP1      0.420  !                  |    |
+GROU                       !                  H3   H2
+ATOM C3   CC3161    0.140  !
+ATOM H3   HCA1      0.090  !
+ATOM O3   OC311    -0.650  !
+ATOM HO3  HCP1      0.420  !
+GROU
+ATOM C4   CC3161    0.140
+ATOM H4   HCA1      0.090
+ATOM O4   OC311    -0.650
+ATOM HO4  HCP1      0.420
+GROU
+ATOM C6   CC331    -0.270
+ATOM H61  HCA3      0.090
+ATOM H62  HCA3      0.090
+ATOM H63  HCA3      0.090
+!
+BOND C1   O1        C1   H1        O1   HO1       C1   O5        C1   C2
+BOND C2   H2        C2   O2        O2   HO2       C2   C3        C3   H3
+BOND C3   O3        O3   HO3       C3   C4        C4   H4        C4   O4
+BOND O4   HO4       C4   C5        C5   H5        C5   C6        C6   H61
+BOND C6   H62       C6   H63       C5   O5
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC   O1   C2  *C1   H1     1.4221  107.55 -121.04  103.18   1.1260
+IC   O1   O5  *C1   C2     1.4221  108.10 -120.96  116.21   1.5424
+IC   O2   C3  *C2   H2     1.4492  108.99  111.12  111.71   1.1130
+IC   O2   C1  *C2   C3     1.4492  110.19  121.38  111.84   1.4843
+IC   O3   C4  *C3   H3     1.4110  114.05  118.54  103.93   1.1185
+IC   O3   C2  *C3   C4     1.4110  111.20  126.43  108.81   1.5416
+IC   O4   C5  *C4   H4     1.3621  111.29  117.93  107.00   1.0823
+IC   O4   C3  *C4   C5     1.3621  110.03  125.60  113.70   1.5072
+IC   C6   O5  *C5   H5     1.5017  109.27  111.35  106.33   1.1114
+IC   C6   C4  *C5   O5     1.5017  116.34  129.67  115.09   1.4356
+IC   O5   C1   C2   C3     1.4303  116.21   51.66  111.84   1.4843
+IC   C1   C2   C3   C4     1.5424  111.84  -50.94  108.81   1.5416
+IC   C2   C3   C4   C5     1.4843  108.81   51.41  113.70   1.5072
+IC   C3   C4   C5   O5     1.5416  113.70  -49.51  115.09   1.4356
+IC   C4   C5   O5   C1     1.5072  115.09   46.15  113.29   1.4303
+IC   C5   O5   C1   C2     1.4356  113.29  -47.30  116.21   1.5424
+IC   C4   C5   C6  H61     1.5072  116.34   63.06  110.98   1.4386
+IC  H61   C5  *C6  H62     1.4386  110.98 -119.80  114.03   1.1369
+IC  H62   C5  *C6  H63     1.4386  106.14 -124.99  106.59   1.1207
+IC   O5   C1   O1  HO1     1.4303  108.10   62.34  103.18   0.9787
+IC   C1   C2   O2  HO2     1.5424  110.19   97.32  103.39   0.9815
+IC   C2   C3   O3  HO3     1.4843  111.20   60.87  105.69   0.9861
+IC   C3   C4   O4  HO4     1.5416  110.03  150.82  103.42   0.9772
+PATC FIRS NONE LAST NONE
+
+
+RESI B6TAL           0.000  ! 4C1 6-Deoxy-beta-D-Talose
+                           !
+GROU                       !
+ATOM C1   CC3162    0.340  !                  H63
+ATOM H1   HCA1      0.090  !                  |
+ATOM O1   OC311    -0.650  !              H61-C6-H62
+ATOM HO1  HCP1      0.420  !                  |
+ATOM C5   CC3163    0.110  !               H5-C5---O5
+ATOM H5   HCA1      0.090  !        HO4-O4   /       \    O1-HO1
+ATOM O5   OC3C61   -0.400  !              \ / HO3 HO2 \  /
+GROU                       !               C4 |    |   C1
+ATOM C2   CC3161    0.140  !              / \ O3   O2 /  \
+ATOM H2   HCA1      0.090  !            H4   \|    | /    H1
+ATOM O2   OC311    -0.650  !                  C3---C2
+ATOM HO2  HCP1      0.420  !                  |    |
+GROU                       !                  H3   H2
+ATOM C3   CC3161    0.140  !
+ATOM H3   HCA1      0.090  !
+ATOM O3   OC311    -0.650  !
+ATOM HO3  HCP1      0.420  !
+GROU
+ATOM C4   CC3161    0.140
+ATOM H4   HCA1      0.090
+ATOM O4   OC311    -0.650
+ATOM HO4  HCP1      0.420
+GROU
+ATOM C6   CC331    -0.270
+ATOM H61  HCA3      0.090
+ATOM H62  HCA3      0.090
+ATOM H63  HCA3      0.090
+!
+BOND C1   O1        C1   H1        O1   HO1       C1   O5        C1   C2
+BOND C2   H2        C2   O2        O2   HO2       C2   C3        C3   H3
+BOND C3   O3        O3   HO3       C3   C4        C4   H4        C4   O4
+BOND O4   HO4       C4   C5        C5   H5        C5   C6        C6   H61
+BOND C6   H62       C6   H63       C5   O5
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC   O1   C2  *C1   H1     1.3889  106.87  117.83  101.80   1.1309
+IC   O1   O5  *C1   C2     1.3889  112.84  124.25  116.58   1.5618
+IC   O2   C3  *C2   H2     1.4489  109.20  113.88  114.91   1.1114
+IC   O2   C1  *C2   C3     1.4489  112.96  121.77  109.28   1.5591
+IC   O3   C4  *C3   H3     1.4529  113.77  116.04  109.93   1.1125
+IC   O3   C2  *C3   C4     1.4529  112.93  125.64  106.60   1.5550
+IC   O4   C5  *C4   H4     1.4470  115.26  126.65  112.14   1.0859
+IC   O4   C3  *C4   C5     1.4470  108.47  129.11  113.03   1.6431
+IC   C6   O5  *C5   H5     1.5283  109.17  120.52  109.23   1.1154
+IC   C6   C4  *C5   O5     1.5283  113.70  121.95  108.88   1.4584
+IC   O5   C1   C2   C3     1.4104  116.58   57.36  109.28   1.5591
+IC   C1   C2   C3   C4     1.5618  109.28  -53.96  106.60   1.5550
+IC   C2   C3   C4   C5     1.5591  106.60   55.67  113.03   1.6431
+IC   C3   C4   C5   O5     1.5550  113.03  -54.67  108.88   1.4584
+IC   C4   C5   O5   C1     1.6431  108.88   52.47  113.48   1.4104
+IC   C5   O5   C1   C2     1.4584  113.48  -57.26  116.58   1.5618
+IC   C4   C5   C6   H61    1.6431  113.70   53.91  113.18   1.4345
+IC   H61  C5  *C6   H62    1.4345  107.01 -118.66  112.81   1.1184
+IC   H62  C5  *C6   H63    1.4345  113.18 -117.75  107.19   1.0553
+IC   O5   C1   O1   HO1    1.4104  112.84   72.22  102.95   0.9977
+IC   C1   C2   O2   HO2    1.5618  112.96   75.45  111.93   0.9813
+IC   C2   C3   O3   HO3    1.5591  112.93   50.13  113.60   0.9452
+IC   C3   C4   O4   HO4    1.5550  108.47  171.51  110.20   0.9652
+PATC  FIRS NONE LAST NONE
+
 
 RESI AL6TAL         0.000  ! 6-Deoxy-alpha-L-Talose
                            !
@@ -14282,6 +14407,20 @@ IC   1C6  1O6  2C1  2O5    1.4492  111.56   71.24  109.48   1.4270 ! PHI
 IC   1O6  2O5 *2C1  2C2    1.4037  109.46 -123.59  112.51   1.5061
 IC   2O5  1O6 *2C1  2H1    1.4270  109.48 -116.57  107.58   1.1054
 
+PRES 16AB           0.02 ! (i)1->6(i-1) axial at C1 and equatorial at C6
+dele atom 1HO6
+dele atom 2HO1
+dele atom 2O1
+ATOM 1C6   CC312    0.09 !
+ATOM 1O6   OC301   -0.36 !
+ATOM 2C1   CC3162   0.29 !
+BOND 1O6 2C1
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC   1C5  1C6  1O6  2C1    1.5266  104.41  169.58  111.56   1.4036 ! PSI
+IC   1C6  1O6  2C1  2O5    1.4492  111.56   97.71  109.48   1.4270 ! PHI
+IC   1O6  2O5 *2C1  2C2    1.4037  109.46 -123.59  112.51   1.5061
+IC   2O5  1O6 *2C1  2H1    1.4270  109.48 -116.57  107.58   1.1054
+
 ! equatorial-equatorial 1->6 linkage
 PRES 16BA          0.02  ! (i)1->6(i-1) equatorial at C1 and equatorial at C6
 dele atom 1HO6
@@ -14520,6 +14659,33 @@ IC  OX3    O3    *CX3   CY3    1.2241  125.04 -161.99  109.25   1.5107
 IC  O3     CX3   CY3    HY31   1.3238  109.25  165.16  109.03   1.1100
 IC  HY31   CX3   *CY3   HY32   1.1100  109.03  119.36  109.65   1.1086
 IC  HY31   CX3   *CY3   HY33   1.1100  109.03 -119.79  110.48   1.1087
+
+PRES 3AACF        -0.09 ! axial Acetylation at C3 BFRU
+dele atom HO3           !
+GROUP                   ! use in generate statement
+ATOM O3   OC301   -0.49 ! charge smilar to C--O--C linkage
+ATOM C3   CC3151   0.17 ! readjusted
+GROUP                   !
+ATOM CY3   CC331  -0.31 !
+ATOM HY31  HCA3    0.09 ! HY31 HY32 HY33
+ATOM HY32  HCA3    0.09 !    \ | /
+ATOM HY33  HCA3    0.09 !     CY3
+GROUP                   !      |
+ATOM CX3   CC2O5   0.90 !     CX3=OX3
+ATOM OX3   OC2D1  -0.63 !      |
+
+BOND C3 O3   CX3 O3
+BOND CX3 CY3    CY3 HY31   CY3 HY32    CY3 HY33
+DOUBLE OX3 CX3
+!IMPR CX3 CY3 O3 OX3
+
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC  C2     C3    O3     CX3    1.4953  108.74 -150.34  122.74   1.3254
+IC  C3     O3    CX3    CY3    1.4357  122.74 -180.00  124.98   1.2189
+IC  CY3    O3    *CX3   OX3    1.2189  124.98  179.27  117.94   1.5154
+IC  O3     CX3   CY3    HY31   1.3254  117.94 -179.78  104.69   1.1095
+IC  HY31   CX3   *CY3   HY32   1.1095  104.69 -117.58  112.61   1.0701
+IC  HY32   CX3   *CY3   HY33   1.1095  104.69 -111.63  104.93   1.1317
 
 PRES 4AAC        -0.09  ! axial Acetylation at C4
 dele atom HO4           !
@@ -19942,6 +20108,20 @@ IC  2O5  1O6  *2C1 2H1   1.4265  115.55  121.34  105.62   1.1479
 IC  1O6  2C1  2O5  2C5   1.3966  115.55  171.44  109.53   1.4349
 IC  1O6  2C1  2C2  2C3   1.3966  106.83 -167.84  106.95   1.5746
 
+PRES PF13AA           0.02 ! (i)1->3(i-1) axial at AGALNA C1 and axial C3 of BGALF or B6HEP C1 and C3 of BDFUCF
+dele atom 1HO3
+dele atom 2HO1
+dele atom 2O1
+ATOM 1C3   CC3151   0.09 !
+ATOM 1O3   OC303   -0.36 !
+ATOM 2C1   CC3162   0.29 !
+BOND 1O3 2C1
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC   1C4  1C3  1O3  2C1    1.5469  107.31   95.35  127.80   1.4193
+IC   1C3  1O3  2C1  2O5    1.4457  127.85  120.00  113.78   1.4365
+IC   1O3  2O5 *2C1  2C2    1.4195  113.78 -140.87  116.47   1.5443
+IC   2O5  1O3 *2C1  2H1    1.4365  113.78 -108.51  101.84   1.1163
+
 PRES PF13AB           0.02 ! (i)1->3(i-1) axial at AGALNA C1 and axial C3 of BGALF or B6HEP C1 and C3 of BDFUCF
 dele atom 1HO3
 dele atom 2HO1
@@ -20079,6 +20259,34 @@ BOND 1O2  2C2
 IC   1C1  1C2  1O2  2C2    1.5274  110.49  115.68  126.44   1.4248  ! psi
 IC   1C2  1O2  2C2  2O5    1.4412  126.44 -171.24  107.33   1.4389  ! phi
 IC   1O2  2O5 *2C2  2C1    1.4248  107.33 -122.50  105.58   1.5211
+
+PRES XF23BB         0.11 ! (i)1->2(i-1) equatorial at BXULF C2 and axial at ADFUC C3
+dele atom 1HO3
+dele atom 2HO2
+dele atom 2O2
+!dele atom 2O1
+ATOM 1C3  CC3161    0.29 !
+ATOM 1O3  OC301    -0.36 !
+ATOM 2C2  CC3051    0.18 !
+BOND 1O3  2C2
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC   1C2  1C3  1O3  2C2    1.5274  110.49 -120.00  126.44   1.4248  ! psi
+IC   1C3  1O3  2C2  2O5    1.4412  126.44  -60.00  107.33   1.4389  ! phi
+IC   1O3  2O5 *2C2  2C1    1.4248  107.33 -122.50  105.58   1.5211
+
+PRES FP12BA           0.02 ! (i)1->2(i-1) equatorial at C1 BGALF and equatorial at C2 AMAN
+dele atom 1HO2
+dele atom 2HO1
+dele atom 2O1
+ATOM 1C2  CC3161    0.09 !
+ATOM 1O2  OC301    -0.36 !
+ATOM 2C1  CC3152    0.29 !
+BOND 1O2  2C1
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC  1C1   1C2  1O2   2C1   1.5094  111.37 -139.68  114.03   1.4048
+IC  1C2   1O2  2C1   2O4   1.4344  114.03 -135.40  111.67   1.4287
+IC  1O2   2O4 *2C1   2C2   1.4047  111.63  116.75  106.42   1.5383
+IC  2O4   1O2 *2C1   2H1   1.4287  111.67  119.60  112.85   1.1133
 
 PRES FP13AA           0.02 ! (i)1->3(i-1) axial at C1 AGALF and axial at C3 ARHM
 dele atom 1HO3
@@ -20271,6 +20479,19 @@ IC   1O5  1C1 1O1  2C2     1.4398  108.39  103.13  123.17   1.4495
 IC   1C1  1O1 2C2  2O5     1.3833  123.17  -33.88  109.58   1.4129
 IC   1O1  2C2 2O5  2C5     1.4495  109.58  105.83  111.92   1.4332
 IC   2O5  1O1 *2C2 2C1     1.4129  109.58 -120.93  113.20   1.5733
+
+PRES FP23BB           0.11 ! (i)2->3(i-1) equatorial at C2 BFRU and equatorial at C3 BGLC
+dele atom 1HO3
+dele atom 2HO2
+dele atom 2O2
+ATOM 1C3  CC3161    0.29 ! charge from XF23BB
+ATOM 1O3  OC301    -0.36 ! charge from XF23BB
+ATOM 2C2  CC3051    0.18 ! charge from XF23BB
+BOND 1O3  2C2
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC  1C2   1C3  1O3   2C2   1.5131  106.76 -148.49  122.73   1.4150
+IC  1C3   1O3  2C2   2O5   1.4392  122.73  -69.88  112.84   1.4329
+IC  2C3   2O5  *2C2  1O3   1.5514  105.74 -117.40  112.84   1.4150
 
 PRES FP26BT          0.02 ! (i)2->6(i-1) equatorial at C1 BFRU and equatorial at C6 AGLC
 dele atom 1HO6
@@ -20514,6 +20735,27 @@ IC  2O1   2OP1   *2P1   1O6         1.7506  109.58 -115.28  107.64   1.6401
 IC  2C1   2O1    2P1    1O6         1.4274  107.80  -55.79  106.37   1.6401
 IC  2O1   2P1    1O6    1C6         1.7506  106.37  162.19  112.53   1.4893
 IC  2P1   1O6    1C6    1C5         1.6401  112.53 -166.38  100.73   1.5705
+
+PRES 2P3GB       -1.00 ! MGLYOL (i)2->PO4->3(i-1) at C2 and equatorial at C3
+dele atom 2HO2
+dele atom 1HO3
+ATOM 2C2   CC312   0.01 !
+ATOM 2H2   HCA1    0.09 !
+ATOM 2O2   OC30P  -0.57 !
+ATOM 2OP21 OC2DP  -0.78 !
+ATOM 2OP22 OC2DP  -0.78 !
+ATOM 2P2    PC     1.50 !
+ATOM 1O3   OC30P  -0.57 !
+ATOM 1C3   CC3161  0.01 !
+ATOM 1H3   HCA1    0.09 !
+BOND 2O2 2P2
+BOND 2P2 2OP21  2P2 2OP22  2P2 1O3
+IC  2C1   2C2    2O2    2P2         1.5240  110.38 -120.00  120.20   1.6514
+IC  2C2   2O2    2P2    1O3         1.4241  120.20  180.00  101.22   1.6546
+IC  1O3   2O2    *2P2   2OP21       1.7127  109.63 -121.62  111.21   1.6363
+IC  2OP21 2O2    *2P2   2OP22       1.7127  109.63 -119.12  118.53   1.5503
+IC  2O2   2P2    1O3    1C3         1.7127  109.80 -159.06  124.85   1.4507
+IC  2P2   1O3    1C3    1C2         1.6363  124.85  160.57  100.10   1.5216
 
 PRES 2P4GB       -1.00 ! MGLYOL (i)2->PO4->4(i-1) axial at C1 and equatorial at C4
 dele atom 2HO2
@@ -21100,6 +21342,20 @@ IC   1C2  1C1  1O1  2C2    1.4777  107.87  179.88  117.21   1.4349
 IC   1C1  1O1  2C2  2O5    1.4427  117.21  -39.67  121.12   1.4697
 IC   1O1  2O5 *2C2  2C1    1.4345  121.09 -125.72  111.31   1.5690
 
+PRES FF23BA         0.11 !
+! KES, top_all36_carb.rtf
+dele atom 1HO3
+dele atom 2O2
+dele atom 2HO2
+ATOM 1C3  CC3151    0.29 ! charge from XF23BB
+ATOM 1O3  OC301    -0.36 ! charge from XF23BB
+ATOM 2C2  CC3051    0.18 ! charge from XF23BB
+BOND 1O3 2C2
+!    I    J    K    L      R(IK)   T(IKJ)    PHI   T(JKL)   R(KL)
+IC   1C2  1C3  1O3  2C2    1.5406  114.29 -165.42  120.56   1.4132
+IC   1C3  1O3  2C2  2O5    1.4499  120.56  -59.36  112.89   1.4357
+IC   1O3  2O5 *2C2  2C1    1.4132  112.89 -122.69  108.93   1.5204
+
 PRES FF26BT         0.02 ! pram; make 6-Kestose, apply to BFRU,BFRU
 ! 6KES, top_all36_carb.rtf
 dele atom 1HO6
@@ -21377,7 +21633,6 @@ IC  C3     C4    O4     P4A      1.5111  110.90   80.73  122.12   1.6173
 IC  C4     O4    P4A    O4C      1.4713  122.12  -45.94  111.30   1.5172
 IC  O4     O4A   *P4A   O4C      1.6173  110.24 -126.47  114.59   1.5172
 IC  O4     O4A   *P4A   O4B      1.6173  110.24  115.70  106.36   1.5661
-
 
 PRES 1APHR        -1.80 ! Phosphate at alpha C1 position for ribose, refer to PHOS, toppar_all36_carb_chemmod.str
 DELE ATOM HO1
@@ -25688,7 +25943,6 @@ CC3163  NC2D1    320.00    1.430   ! par22 NH1 CT1
 !!PAM4A
 CC3161  NG3P3   320.00      1.430  ! NC2D1   CC3161   320.00  1.430   !
 !!sace9
-C        OC301   150.00    1.3340  ! from, OS   CD, ALLOW POL PEP
 CC2O1    NC2     450.00    1.3650 !
 CC3151   OC301   360.00    1.425   ! CC312C  OC303 - model compound 3 (raman et. al.)
 !!peptide link
@@ -25712,8 +25966,6 @@ CC3161  OC3C61   360.00    1.425   !from, CC3161  OC3C61
 OC3C61  CC301    360.00    1.425   ! from CC3162 OC3C61
 CC321   CC3162   222.50    1.490   ! from CC321  CC3163
 CC321   CEL1     365.000   1.502   ! from CEL1  CTL2, for KDA
-CEL1    HEL1     360.500   1.100   ! from HEL1  CEL1, for KDA
-CEL2    HEL2     365.000   1.100   ! from HEL2  CEL2, for KDA
 CC2O2   OC301    150.00    1.3340  ! from CG2O2  OG302
 !FPP
 CC3152  OC30P    360.00    1.425   !  CC3162  OC30P
@@ -25744,7 +25996,7 @@ CC2O1    CC322   200.000   1.5220  ! CC2O1    CC321
 CC311    CT3     222.50    1.538   ! par22 CT3 CT1
 !NOPR
 CC2O1    CP1     250.000   1.4900! CT1  C
-CP2      OH1     428.000   1.4300 ! toppar_all36_prot_modify_res.str
+!CP2      OH1     428.000   1.4300 ! toppar_all36_prot_modify_res.str
 CP2      CT3     222.500   1.5380 ! CT3  CT1
 CP2      CC      250.000     1.52   ! These three done to MP2 geom.
 CC       NH1     370.000     1.38   ! New bond, to optimise
@@ -25758,7 +26010,7 @@ CC3261   CC321   222.50  1.490 ! CC321   CC3163
 !DNPPEG
 CC321    NG2S3   322.00     1.4400 !CG321  NG2S3
 !!
-C       NG2S1   370.0       1.3450 ! NH1   C      370.0       1.3450 ! ALLOW   PEP POL ARO
+!C       NG2S1   370.0       1.3450 ! NH1   C      370.0       1.3450 ! ALLOW   PEP POL ARO
 !======================= ahaile ==========================
 OC2DP    CC331  350.0 1.5
 
@@ -25927,8 +26179,8 @@ OC3C61  CC3163  CC3261   45.00   110.00                ! CC3161  CC3163  OC3C61 
 CC3261  CC3163  CC321    58.35   113.50  11.16  2.561  ! CC3161  CC3163  CC321    58.35   113.50  11.16  2.561
 CC3163  CC3261  HCA2     34.50   110.10  22.53  2.179  ! CC3163  CC3161  HCA1     34.50   110.10  22.53  2.179
 !PHOS
-CC3153  CC321   OC30P    75.70   107.50                ! OC30P   CC321   CC3163   75.700  107.50
-CC321   OC30P   PC       20.0    120.0   35.0   2.33   ! CC311D  OC30P      PC    20.0    120.0   35.0   2.33
+!CC3153  CC321   OC30P    75.70   107.50                ! in toppar_all36_na_rna_modified.str
+!CC321   OC30P   PC       20.0    120.0   35.0   2.33   ! in toppar_all36_na_rna_modified.str
 !OME
 CC3161  OC301   CC331    95.00   109.70                ! CC3162  OC301   CC331    95.00   109.70
 !SCF
@@ -26190,8 +26442,8 @@ NH1      CP1      CC2O1     50.000   107.0000 ! NH1  CT1  C
 HB1      CP1      CC2O1     33.000    109.50   30.00   2.16300 ! from, HA1  CT1  C, ALLOW   ALI PEP POL ARO
 CP2      CP1      CC2O1     52.000   108.0000 ! from, CT2  CT1  CC
 CP1      CP2      OH1       50.000   112.5000 ! CP2    CP2    OH1, from toppar_all36_prot_modify_res.str
-OH1      CP2      CP2       50.000   112.5000 ! from toppar_all36_prot_modify_res.str
-CP2      OH1      H         65.900   109.5000 ! from toppar_all36_prot_modify_res.str
+!OH1      CP2      CP2       50.000   112.5000 ! from toppar_all36_prot_modify_res.str
+!CP2      OH1      H         65.900   109.5000 ! from toppar_all36_prot_modify_res.str
 CP1      CP2      CT3       53.350    108.50    8.00   2.56100 ! CT3  CT1  CT1
 OH1      CP2      CT3       75.700   110.1000 ! OH1  CT1  CT3
 CT3      CP2      CP2       45.80    120.00   ! CG2R61 CG2R61 CG331
@@ -26261,17 +26513,21 @@ HCA2     CC321    NG2S3   38.30    105.20 ! from, NG2S3  CG321  HGA2
 CC321    NG2S3    CG2R61  40.50    112.20    5.00   2.4217 ! from, CG3AM1 NG311  CG3AM1
 CC321    NG2S3    HGP4    42.10    108.90    5.00   2.0292 ! from, CG3AM1 NG311  HGPAM1
 !!gpi-link
-HGP1    NG2S1    C      34.000   123.00                  ! based on "H    NH1  C"
-CG321   NG2S1    C      50.000   120.00                  ! based on "CT3  NH1  C"
-NG2S1   C        CT1    80.000   116.50                  ! based on "NH1  C    CT1"
-NG2S1   C        CT2    80.000   116.50                  ! based on "NH1  C    CT2"
-NG2S1   C        O      80.000   122.50                  ! based on "O    C    NH1"
+!HGP1    NG2S1    C      34.000   123.00                  ! based on "H    NH1  C"
+!CG321   NG2S1    C      50.000   120.00                  ! based on "CT3  NH1  C", 2021
+!NG2S1   C        CT1    80.000   116.50                  ! based on "NH1  C    CT1"
+!NG2S1   C        O      80.000   122.50                  ! based on "O    C    NH1"
 CG321   CG321    OC30P  75.70    110.10                  ! OSLP CTL2 CTL2   75.700    110.10   ! acetic acid
 !FP17BT
 CC3152   OC301    CC322  95.00   111.00  ! from CC3152  OC301   CC321
-!======================= ahaile ==========================
+
+! =============================ahaile=============================================
+!CC321    OC30P    PC       20.0    120.0   35.0   2.33   !
 PC       OC2DP    CC331    45.0    109.5
 OC2DP    CC331    HCA3     45.0    109.5
+! ADDED
+OC301    CC3151   CC3051   45.00   110.50  ! OC303   CC3151  CC3051
+CC3151   OC301    CC3051   50.00   111.50  ! CC3162  OC302   CC3051
 
 ! ******** V(dihedral) = Kchi(1 + cos(n(chi) - delta))
 DIHEDRALS
@@ -26735,16 +26991,16 @@ HCP1    OC311   CC3162  CC3261   0.62  2    0.0        ! CC3161  CC3162  OC311  
 HCP1    OC311   CC3162  CC3261   0.05  3    0.0        ! CC3161  CC3162  OC311   HCP1     0.05  3    0.0
 
 !PHOS
-CC3162  CC3161  OC30P   PC       0.02  3  180.0        ! CC3161  CC3162  OC30P   PC       0.02  3  180.0
+!CC3162  CC3161  OC30P   PC       0.02  3  180.0        ! CC3161  CC3162  OC30P   PC       0.02  3  180.0
 !CC3163  CC321   OC30P   PC       0.02  3  180.0        ! CC311D  CC311D  OC30P   PC       0.02  3  180.0
-CC321   OC30P   PC      OC2DP    0.33  3    0.0        ! CC311D  OC30P   PC      OC2DP    0.33  3    0.0
-HCA2    CC321   OC30P   PC       0.284 3    0.0        ! HCA1    CC311D  OC30P   PC       0.284 3    0.0
-CC3153  CC321   OC30P   PC       0.02  3  180.0        ! CC311D  CC311D  OC30P   PC       0.02  3  180.0
-HCA1    CC3153  CC321   OC30P    0.00  6  180.00       ! HCA1    CC3163  CC321   OC30P    0.00  6  180.00
-OC30P   CC321   CC3153  CC3151   0.43  3    0.0        ! CC3161  CC3163  CC321   OC30P    0.43  3    0.0
-OC3C51  CC3153  CC321   OC30P    0.06  1    0.0        ! OC3C61  CC3163  CC321   OC30P    0.06  1    0.0
-OC3C51  CC3153  CC321   OC30P    0.78  2    0.0        ! OC3C61  CC3163  CC321   OC30P    0.78  2    0.0
-OC3C51  CC3153  CC321   OC30P    0.74  3  180.0        ! OC3C61  CC3163  CC321   OC30P    0.74  3  180.0
+!CC321   OC30P   PC      OC2DP    0.33  3    0.0        ! CC311D  OC30P   PC      OC2DP    0.33  3    0.0
+!HCA2    CC321   OC30P   PC       0.284 3    0.0        ! HCA1    CC311D  OC30P   PC       0.284 3    0.0
+!CC3153  CC321   OC30P   PC       0.02  3  180.0        ! CC311D  CC311D  OC30P   PC       0.02  3  180.0
+!HCA1    CC3153  CC321   OC30P    0.00  6  180.00       ! HCA1    CC3163  CC321   OC30P    0.00  6  180.00
+!OC30P   CC321   CC3153  CC3151   0.43  3    0.0        ! CC3161  CC3163  CC321   OC30P    0.43  3    0.0
+!OC3C51  CC3153  CC321   OC30P    0.06  1    0.0        ! OC3C61  CC3163  CC321   OC30P    0.06  1    0.0
+!OC3C51  CC3153  CC321   OC30P    0.78  2    0.0        ! OC3C61  CC3163  CC321   OC30P    0.78  2    0.0
+!OC3C51  CC3153  CC321   OC30P    0.74  3  180.0        ! OC3C61  CC3163  CC321   OC30P    0.74  3  180.0
 !OME
 CC3162  CC3161  OC301   CC331    0.22  1    0.0        ! CC3161  CC3162  OC301   CC331    0.22  1    0.0
 CC3162  CC3161  OC301   CC331    0.28  2  180.0        ! CC3161  CC3162  OC301   CC331    0.28  2  180.0
@@ -27100,8 +27356,8 @@ CC3161   CC3161   OC301    CC3051   0.14  3    0.0 !
 
 !!16ABP
 !OC2DP    PC       OC30P    CC321    0.10    3     0.00 ! from, O2L  PL   OSLP CTL2, phosphate, new NA, 4/98, adm jr.
-PC       OC30P    CC321    CC3163   0.407   2     0.00 ! Phos-gly, 8/05
-PC       OC30P    CC321    CC3163   0.241   1   180.00 ! Phos-gly, 8/05
+!PC       OC30P    CC321    CC3163   0.407   2     0.00 ! Phos-gly, 8/05
+!PC       OC30P    CC321    CC3163   0.241   1   180.00 ! Phos-gly, 8/05
 !PC       OC30P    CC321    HCA2     0.00    3     0.00 ! phosphate, new NA, 4/98, adm jr.
 
 !!14GBP
@@ -27609,9 +27865,9 @@ CP2      CP1      CC2O1    OC2D1    0.6000  2     0.00
 CP1      CP2      OH1      H        1.0200  1     0.00 ! CP2    CP2    OH1    H, toppar_all36_prot_modify_res.str
 CP1      CP2      OH1      H        0.4300  2   180.00 !
 CP1      CP2      OH1      H        0.8500  3     0.00 !
-CP2      CP2      OH1      H        1.0200  1     0.00 ! CP2    CP2    OH1    H, toppar_all36_prot_modify_res.str
-CP2      CP2      OH1      H        0.4300  2   180.00 !
-CP2      CP2      OH1      H        0.8500  3     0.00 !
+!CP2      CP2      OH1      H        1.0200  1     0.00 ! CP2    CP2    OH1    H, toppar_all36_prot_modify_res.str
+!CP2      CP2      OH1      H        0.4300  2   180.00 !
+!CP2      CP2      OH1      H        0.8500  3     0.00 !
 OH1      CP2      CT3      HA3      0.2000  3     0.00 ! OH1  CT1  CT3  HA3
 H        OH1      CP2      CT3      1.3300  1     0.00 ! H    OH1  CT1  CT3
 H        OH1      CP2      CT3      0.1800  2     0.00 !
@@ -27904,27 +28160,21 @@ OC311M   CC321    CC321    NG2S3   0.1900  3     0.00 ! X    CT2  CT2  X
 OC301    CC3151   CC3153   CC312    0.20  3    0.0 ! par27 X CTL1 CTL1 X
 !!gpi-linkage
 NG2S1    CG321    CG321    OC30P   0.700   1   180.00    ! based on "OG311  CG321  CG324  NG3P3" 
-NG2S1    C        CT1      NH1     0.6000   1    0.00    ! based on "NH1  C    CT1  NH1
-NG2S1    C        CT2      NH1     0.6000   1    0.00    ! based on "NH1  C    CT2  NH1
-NG2S1    C        CT1      HB1     0.0000   1    0.00    ! based on "NH1  C    CT1  HB"
-NG2S1    C        CT2      HB2     0.0000   1    0.00    ! based on "NH1  C    CT2  HB2"
-NG2S1    C        CT1      CT1     0.0000   1    0.00    ! based on "NH1  C    CT1  CT1 "
-NG2S1    C        CT1      CT2     0.0000   1    0.00    ! based on "NH1  C    CT1  CT2 "
-NG2S1    C        CT1      CT3     0.0000   1    0.00    ! based on "NH1  C    CT1  CT3 "
-HGP1     NG2S1    C        CT1     2.5000   2  180.00    ! based on "H    NH1  C    CT1"
-HGP1     NG2S1    C        CT2     2.5000   2  180.00    ! based on "H    NH1  C    CT1"
-HGP1     NG2S1    C        O       2.5000   2  180.00    ! based on "O    C    NH1  H"
-CG321    NG2S1    C        CT1     1.6000   1    0.00    ! based on "CT3  NH1  C    CT1"
-CG321    NG2S1    C        CT1     2.5000   2  180.00    ! based on "CT3  NH1  C    CT1"
-CG321    NG2S1    C        CT2     1.6000   1    0.00    ! based on "CT3  NH1  C    CT1"
-CG321    NG2S1    C        CT2     2.5000   2  180.00    ! based on "CT3  NH1  C    CT1"
-CG321    NG2S1    C        O       2.5000   2  180.00    ! based on "O    C    NH1  CT3"
 CG321    CG321    OC30P    PC      0.407   2     0.00    !PL   OSLP CTL2 CTL2
 CG321    CG321    OC30P    PC      0.241   1   180.00    !
-HGA2     CG321    NG2S1    C       0.1000   3    0.00    ! based on "HGA2   CG324  NG3P3  HGP2"
 HGA2     CG321    CG321    OC30P   0.1900  3     0.00    !X    CTL2 CTL2 X 
 CG321    CG321    NG2S1    C       0.1000   3    0.00    ! based on "CG321  CG324  NG3P3  HGP2" 
-CT2A     CT1      C        NG2S1   0.0000  1     0.00 ! NH1  C    CT1  CT2
+!NG2S1    C        CT1      NH1     0.6000   1    0.00    ! based on "NH1  C    CT1  NH1
+!NG2S1    C        CT1      HB1     0.0000   1    0.00    ! based on "NH1  C    CT1  HB"
+!NG2S1    C        CT1      CT1     0.0000   1    0.00    ! based on "NH1  C    CT1  CT1 "
+!NG2S1    C        CT1      CT2     0.0000   1    0.00    ! based on "NH1  C    CT1  CT2 "
+!NG2S1    C        CT1      CT3     0.0000   1    0.00    ! based on "NH1  C    CT1  CT3 "
+!HGP1     NG2S1    C        CT1     2.5000   2  180.00    ! based on "H    NH1  C    CT1"
+!HGP1     NG2S1    C        O       2.5000   2  180.00    ! based on "O    C    NH1  H"
+!CG321    NG2S1    C        CT1     2.5000   2  180.00    ! based on "CT3  NH1  C    CT1"
+!CG321    NG2S1    C        O       2.5000   2  180.00    ! based on "O    C    NH1  CT3"
+!HGA2     CG321    NG2S1    C       0.1000   3    0.00    ! based on "HGA2   CG324  NG3P3  HGP2"
+!CT2A     CT1      C        NG2S1   0.0000  1     0.00 ! NH1  C    CT1  CT2
 !FP17BT
 CC312    CC322    OC301    CC3152  0.64    1   180.00 ! from CC312   CC322   OC301   CC3162
 CC312    CC322    OC301    CC3152  0.03    2   180.00 ! from CC312   CC322   OC301   CC3162
@@ -27936,6 +28186,13 @@ CC322    OC301    CC3152   CC3151  0.97    1   180.00 ! from CC321   OC301   CC3
 CC322    OC301    CC3152   CC3151  0.44    3   180.00 ! from CC321   OC301   CC3152  CC3151
 HCA1     CC3152   OC301    CC322   0.284   3     0.00 ! from HCA1    CC3152  OC301   CC321
 !======================= ahaile ==========================
+CC3162   CC3161   OC30P     PC     0.02    3   180.0        !
+CC3163   CC321    OC30P     PC     0.02    3   180.0        ! CC311D  CC311D  OC30P   PC       0.02  3  180.0
+!CC321    OC30P    PC        OC2DP  0.33    3     0.0        ! CC311D  OC30P   PC      OC2DP    0.33  3    0.0
+!HCA2     CC321    OC30P     PC     0.284   3     0.0        ! HCA1    CC311D  OC30P   PC       0.284 3    0.0  
+!CC3153   CC321    OC30P     PC     0.02    3   180.0        ! CC311D  CC311D  OC30P   PC       0.02  3  180.0
+!CC3163   CC3161   OC30P     PC     0.029   3   180.0        !
+!CC321    OC30P    PC        OC312  0.029   3   180.0
 OC30P    PC       OC2DP      CC331    0.33    3     0.0
 PC       OC2DP    CC331      HCA3     0.33    3     0.0
 OC2DP    PC       OC2DP      CC331    0.33    3     0.0
@@ -27944,6 +28201,45 @@ CC322    OC30P    PC         OC312    0.9500  2     0.00 ! from CC321 OC30P PC O
 CC322    OC30P    PC         OC312    0.5000  3     0.00 ! from CC321 OC30P PC OC312
 CC312    OC30P    PC         OC312    0.9500  2     0.00 ! from CC321 OC30P PC OC312
 CC312    OC30P    PC         OC312    0.5000  3     0.00 ! from CC321 OC30P PC OC312
+! ADDED
+OC30P    CC3162   CC3161   OC301     2.50  1    180.0 ! from OC30P   CC3161  CC3161  OC301
+OC30P    CC3162   CC3161   OC301     2.00  2      0.0 ! from OC30P   CC3161  CC3161  OC301
+OC30P    CC3162   CC3161   OC301     2.50  3      0.0 ! from OC30P   CC3161  CC3161  OC301
+OC3C51   CC3051   CC3151   OC301     0.32  1    180.0 ! from OC3C51  CC3051  CC3151  OC303
+OC3C51   CC3051   CC3151   OC301     0.65  2    180.0 ! from OC3C51  CC3051  CC3151  OC303
+OC3C51   CC3051   CC3151   OC301     2.62  3      0.0 ! from OC3C51  CC3051  CC3151  OC303
+OC311    CC3051   CC3151   OC301     2.87  1    180.0 ! from OC303   CC3151  CC3151  OC311
+OC311    CC3051   CC3151   OC301     0.03  2      0.0 ! from OC303   CC3151  CC3151  OC311
+OC311    CC3051   CC3151   OC301     0.23  3      0.0 ! from OC303   CC3151  CC3151  OC311
+CC321    CC3051   CC3151   OC301     0.94  1      0.0 ! from CC321   CC3051  CC3151  OC303
+CC321    CC3051   CC3151   OC301     1.59  2    180.0 ! from CC321   CC3051  CC3151  OC303
+CC321    CC3051   CC3151   OC301     0.84  3      0.0 ! from CC321   CC3051  CC3151  OC303
+CC2O5    OC301    CC3151   CC3051    0.07  1    180.0 ! from CC3162  OC303   CC3151  CC3051
+CC2O5    OC301    CC3151   CC3051    0.04  2      0.0 ! from CC3162  OC303   CC3151  CC3051
+CC2O5    OC301    CC3151   CC3051    0.14  3      0.0 ! from CC3162  OC303   CC3151  CC3051
+CC3251   CC3151   CC3151   OC303     0.20  3      0.0 ! from CC3263  CC3161  CC3161  OC311
+OC301    CC3051   CC3151   OC303     0.12  1    180.0 ! from OC311   CC3051  CC3151  OC311
+OC301    CC3051   CC3151   OC303     1.87  2    180.0 ! from OC311   CC3051  CC3151  OC311
+OC301    CC3051   CC3151   OC303     1.64  3    180.0 ! from OC311   CC3051  CC3151  OC311
+CC3151   OC301    CC3051   OC3C51    0.52  1    180.0 ! from CC3161  OC301   CC3051  OC3C51
+CC3151   OC301    CC3051   OC3C51    1.50  2      0.0 ! from CC3161  OC301   CC3051  OC3C51
+CC3151   OC301    CC3051   OC3C51    0.98  3      0.0 ! from CC3161  OC301   CC3051  OC3C51
+CC3151   OC301    CC3051   CC321     0.07  1    180.0 ! from CC3161  OC301   CC3051  CC321
+CC3151   OC301    CC3051   CC321     0.04  2      0.0 ! from CC3161  OC301   CC3051  CC321
+CC3151   OC301    CC3051   CC321     0.14  3      0.0 ! from CC3161  OC301   CC3051  CC321
+CC3151   OC301    CC3051   CC3151    0.07  1    180.0 ! from CC3161  OC301   CC3051  CC3151
+CC3151   OC301    CC3051   CC3151    0.04  2      0.0 ! from CC3161  OC301   CC3051  CC3151
+CC3151   OC301    CC3051   CC3151    0.14  3      0.0 ! from CC3161  OC301   CC3051  CC3151
+HCA1     CC3151   OC301    CC3051    0.284 3      0.0 ! from HCA1    CC3161  OC301   CC3051
+CC3151   CC3151   OC301    CC3051    0.12  1    180.0 ! from CC3161  CC3161  OC301   CC3051
+CC3151   CC3151   OC301    CC3051    0.03  2    180.0 ! from CC3161  CC3161  OC301   CC3051
+CC3151   CC3151   OC301    CC3051    0.14  3      0.0 ! from CC3161  CC3161  OC301   CC3051
+CC3051   CC3151   OC301    CC3051    0.12  1    180.0 ! from CC3161  CC3161  OC301   CC3051
+CC3051   CC3151   OC301    CC3051    0.03  2    180.0 ! from CC3161  CC3161  OC301   CC3051
+CC3051   CC3151   OC301    CC3051    0.14  3      0.0 ! from CC3161  CC3161  OC301   CC3051
+OC301    CC3051   CC3151   OC301     0.12  1    180.0 ! from OC311   CC3051  CC3151  OC311
+OC301    CC3051   CC3151   OC301     1.87  2    180.0 ! from OC311   CC3051  CC3151  OC311
+OC301    CC3051   CC3151   OC301     1.64  3    180.0 ! from OC311   CC3051  CC3151  OC311
 
 IMPROPER
 !
