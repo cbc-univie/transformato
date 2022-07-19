@@ -26,10 +26,9 @@ import logging
 import MDAnalysis
 import numpy as np
 import yaml
-from simtk.openmm import *
-from simtk.openmm.app import *
 # Load necessary openmm facilities
-from simtk.unit import *
+from openmm.app import CustomCentroidBondForce
+from openmm.unit import angstrom
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
