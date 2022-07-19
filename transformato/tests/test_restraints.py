@@ -248,13 +248,16 @@ def test_integration():
     for i,f in enumerate(system.getForces()):
         if isinstance(f,CustomCentroidBondForce):
             logger.debug(f.getBondParameters(0))
-            if f.getNumPerBondParameters()==2: # harmonic shape
+            if f.getPerBondParameterName(0)=="k": # harmonic shape. openmmTools calls theirs "K"
                 f.setBondParameters(0,[0,1],[25,5])
             else: # flatbottom shape:
-                f.setBondParameters(0,[0,1],[25,5,0.1])
+                f.setBondParameters(0,[0,1],[250,0.01])
             f.updateParametersInContext(simulation.context)
     
-   
+    for i,f in enumerate(system.getForces()):
+        if isinstance(f,CustomCentroidBondForce):
+            logger.debug(f.getBondParameters(0))
+
     temp_results=[]
     simulation.step(10)
     for i,f in enumerate(system.getForces()):
