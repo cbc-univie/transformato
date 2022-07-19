@@ -10,6 +10,7 @@ Uses the following markers:
 
 Tests are mainly based on 2OJ9
 """
+from cgi import test
 import pytest
 import transformato.restraints as tfrs
 import transformato.utils as tfut
@@ -61,9 +62,13 @@ def test_Restraints():
 
     testrestraint=tfrs.Restraint("resname BMI and type C","protein and name CA",PATH_2OJ9,14)
 
+    testrestraint_fb=tfrs.Restraint("resname BMI and type C","protein and name CA",PATH_2OJ9,14,shape="flatbottom",wellsize=0.12)
     assert isinstance(testrestraint, tfrs.Restraint)
 
+    assert isinstance(testrestraint,tfrs.Restraint)
+
     testrestraint.createForce(["C14","C12","C11","C9"]) # intentionally wrong CC
+    testrestraint_fb.createForce(["C14","C12","C11","C9"])
     print(testrestraint.g1_openmm)
     assert [comp  in testrestraint.g1_openmm for comp in [4822,4825,4826,2828]] #Test proper selection and translation
     
@@ -71,6 +76,10 @@ def test_Restraints():
     assert isinstance(testrestraint.force, simtk.openmm.CustomCentroidBondForce)
 
     assert isinstance(testrestraint.get_force(), simtk.openmm.CustomCentroidBondForce)
+
+    assert isinstance(testrestraint_fb.force, simtk.openmm.CustomCentroidBondForce)
+
+    assert isinstance(testrestraint_fb.get_force(), simtk.openmm.CustomCentroidBondForce)
 
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest

@@ -128,11 +128,11 @@ class Restraint():
         elif self.shape=="flatbottom":
             # create force with flat-bottom potential
 
-            self.stepfunction=self._generate_continuous_1D_step_function(self.wellsize)
+            
 
-            self.force=CustomCentroidBondForce(2,"stepfunction((abs(distance(g1,g2)-r0)))*k*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
+            self.force=CustomCentroidBondForce(2,"step((abs(distance(g1,g2))-r0))*k*(distance(g1,g2)-r0)^2")
 
-            self.force.addTabulatedFunction(name="stepfunction",function=self.stepfunction)
+            # Native openMM step function. Should be 0 for x<0 and 1 for x>=0.
             self.force.addPerBondParameter("k")
             self.force.addPerBondParameter("r0")
             self.force.addGroup(self.g1_openmm)
@@ -152,29 +152,6 @@ class Restraint():
         del self.topology # delete the enormous no longer needed universe asap
         return self.force
 
-    def _generate_continuous_1D_step_function(self,permitted_distance:float):
-        """Creates and returns a openMM continous1DStepFunction
-        
-        Very simply, this creates a TabulatedFunction that takes the distance of the atom group COM to its origin, and if greater, returns 1. Otherwise, it returns 0. This function does not need to be called directly.
-        It is called by the restraint generator if a flat-bottom restraint is requested.
-
-        Args:
-            
-
-            permitted_distance: How large the well size is (meaning the 3D radius). Give in nanometers.
-
-        Returns:
-            An openMM Continuous1DFunction object representing the StepForce
-        """
-
-        # OpenMM docs: Function is assumed to be zero for x < min. Values inside range are interpolated using spline.
-
-        
-        value_table=[1,1]
-
-        return openmm.Continuous1DFunction(value_table,min=permitted_distance,max=1500) # If there is a system larger than 1500 nm, I'm scared
-
-        
     
     def get_force(self):
         return self.force
@@ -359,10 +336,12 @@ def create_restraints_from_config(configuration,pdbpath):
         manual_restraint_list=configuration["simulation"]["manualrestraints"].keys()
         logger.debug(f"Manual restraints defined: {manual_restraint_list}")
         for key in manual_restraint_list:
+            
             restraint=configuration["simulation"]["manualrestraints"][key]
             restraint_kw={}
             for key in restraint.keys():
                 restraint_kw[key]=restraint[key]
+            logger.debug(f"Keywords for {restraint}: {restraint_kw}")
             restraints.append(Restraint(restraint["group1"],restraint["group2"],pdbpath,**restraint_kw))
     
 
