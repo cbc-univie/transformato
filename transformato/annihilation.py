@@ -20,6 +20,7 @@ from transformato.system import SystemStructure
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class DummyRegion:
     mol_name: str
@@ -55,7 +56,8 @@ class MutationDefinition:
         print(f"Mutated on common core: {self.common_core}")
         if self.vdw_atom_idx:
             print(f"VDW atoms to be decoupled: {self.vdw_atom_idx}")
-            
+
+
 class ProposeMutationRouteASFE(object):
     def __init__(
         self,
@@ -170,7 +172,6 @@ class ProposeMutationRouteASFE(object):
         Returns the common core of mol1.
         """
         return self._get_common_core("m1")
-
 
     def _get_common_core(self, name: str) -> list:
         """
@@ -303,7 +304,7 @@ class ProposeMutationRouteASFE(object):
 
             for atom_idx in dummy_region.connected_dummy_regions[0]:
                 if atom_idx in hydrogens:
-                    #is already mutated in the previouse step
+                    # is already mutated in the previouse step
                     continue
                 else:
                     # normal lj mutation
@@ -322,3 +323,50 @@ class ProposeMutationRouteASFE(object):
 
         return mutations
 
+    def show_common_core_on_mol1(self, show_atom_types: bool = False):
+        """
+        Shows common core on mol1
+        """
+        return self._show_common_core(
+            self.mols["m1"], self.get_common_core_idx_mol1(), show_atom_types
+        )
+
+    def show_common_core_on_mol2(self, show_atom_types: bool = False):
+        """
+        Shows common core on mol2
+        """
+        return self._show_common_core(
+            self.mols["m2"], self.get_common_core_idx_mol2(), show_atom_types
+        )
+
+    def _show_common_core(self, mol, highlight: list, show_atom_type: bool):
+        """
+        Helper function - do not call directly.
+        Show common core.
+        """
+        # https://rdkit.blogspot.com/2015/02/new-drawing-code.html
+
+        mol = deepcopy(mol)
+        AllChem.Compute2DCoords(mol)
+
+        drawer = rdMolDraw2D.MolDraw2DSVG(800, 800)
+        drawer.SetFontSize(6)
+
+        opts = drawer.drawOptions()
+
+        if show_atom_type:
+            for i in mol.GetAtoms():
+                opts.atomLabels[i.GetIdx()] = (
+                    str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
+                )
+        else:
+            for i in mol.GetAtoms():
+                opts.atomLabels[i.GetIdx()] = (
+                    str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_name")
+                )
+
+        drawer.DrawMolecule(mol, highlightAtoms=highlight)
+        Draw.DrawingOptions.includeAtomNumbers = False
+        drawer.FinishDrawing()
+        svg = drawer.GetDrawingText().replace("svg:", "")
+        return svg
