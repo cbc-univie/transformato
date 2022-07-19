@@ -1,4 +1,3 @@
-from ast import Raise
 import logging
 import os
 import re
@@ -9,7 +8,7 @@ import networkx as nx
 import parmed as pm
 from rdkit import Chem
 
-from .utils import get_toppar_dir
+from transformato.utils import get_toppar_dir
 
 logger = logging.getLogger(__name__)
 
