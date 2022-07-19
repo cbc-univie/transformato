@@ -839,7 +839,10 @@ class FreeEnergyCalculator(object):
     @property
     def end_state_free_energy_difference(self):
         """DeltaF[lambda=1 --> lambda=0]"""
-        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
+        if (
+            self.configuration["simulation"]["free-energy-type"] == "rsfe"
+            or self.configuration["simulation"]["free-energy-type"] == "asfe"
+        ):
             return (
                 self.waterbox_free_energy_differences[0, -1]
                 - self.vacuum_free_energy_differences[0, -1],
@@ -860,7 +863,10 @@ class FreeEnergyCalculator(object):
     def show_summary(self):
         from transformato.utils import isnotebook
 
-        if self.configuration["simulation"]["free-energy-type"] == "rsfe":
+        if (
+            self.configuration["simulation"]["free-energy-type"] == "rsfe"
+            or self.configuration["simulation"]["free-energy-type"] == "asfe"
+        ):
             if isnotebook:
                 # only show this if we are in a notebook
                 self.plot_vacuum_free_energy_overlap()
