@@ -76,7 +76,10 @@ class FreeEnergyCalculator(object):
         # decide if the name of the system corresponds to structure1 or structure2
         structure = get_structure_name(configuration, structure_name)
 
-        if configuration["simulation"]["free-energy-type"] == "rsfe":
+        if (
+            configuration["simulation"]["free-energy-type"] == "rsfe"
+            or configuration["simulation"]["free-energy-type"] == "asfe"
+        ):
             self.envs = ("vacuum", "waterbox")
             self.mbar_results = {"waterbox": None, "vacuum": None}
 
