@@ -130,17 +130,18 @@ class Restraint():
 
             
 
-            self.force=CustomCentroidBondForce(2,"step((abs(distance(g1,g2))-r0))*k*(distance(g1,g2)-r0)^2")
+            self.force=CustomCentroidBondForce(2,"step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2")
 
             # Native openMM step function. Should be 0 for x<0 and 1 for x>=0.
             self.force.addPerBondParameter("k")
             self.force.addPerBondParameter("r0")
+            self.force.addPerBondParameter("w")
             self.force.addGroup(self.g1_openmm)
             self.force.addGroup(self.g2_openmm)
                 
-            self.force.addBond([0,1],[self.force_constant,self.initial_distance/10])
+            self.force.addBond([0,1],[self.force_constant,self.initial_distance/10,self.wellsize])
 
-            logger.info(f"Force created: Flat-bottom potential. Initial distance: {self.initial_distance}. k: {self.force_constant}. Well-size: {self.wellsize}")
+            logger.info(f"Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant} wellsize={self.wellsize}")
 
         else:
             raise NotImplementedError(f"Cannot create potential of shape {self.shape}")
