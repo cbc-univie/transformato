@@ -26,8 +26,9 @@ import logging
 import MDAnalysis
 import numpy as np
 import yaml
+
 # Load necessary openmm facilities
-from openmm.app import CustomCentroidBondForce
+from openmm import CustomCentroidBondForce
 from openmm.unit import angstrom
 
 logger = logging.getLogger(__name__)
