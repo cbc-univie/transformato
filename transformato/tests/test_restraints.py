@@ -10,46 +10,27 @@ Uses the following markers:
 
 Tests are mainly based on 2OJ9
 """
+import glob
+import logging
+import os
+import sys
+import warnings
+
+import numpy as np
 import pytest
+import simtk.openmm
 import transformato.restraints as tfrs
 import transformato.utils as tfut
 import yaml
-import simtk.openmm
-import numpy as np
-import os
-import sys
-import glob
+from transformato_testsystems.testsystems import get_testsystems_dir
 
-from simtk.unit import *
-from simtk.openmm import *
-from simtk.openmm.app import *
-
-TRAFO_DIR = "./transformato/"
-PATH_2OJ9 = f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/step3_input.pdb"
-PATH_2OJ9_DIR = f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/"
-
-
-sys.path.append(
-    f"{TRAFO_DIR}/../data/2OJ9-original/complex/openmm/"
-)  # Enables module lookup in 2OJ9 for omm_ files
-
-from omm_readinputs import *
-from omm_readparams import *
-from omm_vfswitch import *
-from omm_barostat import *
-from omm_restraints import *
-from omm_rewrap import *
-
-from pytest import approx
-
+PATH_2OJ9 = f"{get_testsystems_dir()}/2OJ9-original/complex/openmm/step3_input.pdb"
+PATH_2OJ9_DIR = f"{get_testsystems_dir()}/2OJ9-original/complex/openmm/"
 
 # Disable useless parmed warnings for structure generation
-import warnings
 
 warnings.filterwarnings("ignore", module="parmed")
 
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +39,9 @@ logger = logging.getLogger(__name__)
 @pytest.mark.restraints_unittest
 def test_createRestraintsFromConfig():
 
-    with open(f"{TRAFO_DIR}/tests/config/test-2oj9-restraints.yaml", "r") as stream:
+    with open(
+        f"{get_testsystems_dir()}/tests/config/test-2oj9-restraints.yaml", "r"
+    ) as stream:
         config = yaml.safe_load(stream)
 
     assert type(config) == dict  # checks if config yaml is properly loaded
