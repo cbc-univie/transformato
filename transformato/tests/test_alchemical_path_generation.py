@@ -196,16 +196,30 @@ def test_generate_alchemical_path_for_neopentane_common_core():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_methanol_common_core():
-    from transformato_testsystems.testsystems import perform_generic_mutation_for_mol1
+    from transformato_testsystems.testsystems import perform_generic_mutation
 
     configuration = load_config_yaml(
         config="data/config/test-methanol-methane-rsfe.yaml",
         input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
 
-    output_files = perform_generic_mutation_for_mol1(configuration=configuration)
-    assert len(output_files) == 9
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=3,
+    )
+    assert len(i.output_files) == 11
 
 
 @pytest.mark.rsfe
