@@ -19,7 +19,7 @@ from simtk.openmm import *
 from simtk.openmm.app import *
 
 logger=logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+#logger.setLevel(logging.DEBUG)
 
 class Restraint():
     """Class representing a restraint to apply to the system
@@ -120,7 +120,7 @@ class Restraint():
 
             self.stepfunction=self.GenerateContinuous1DStepFunction(self.wellsize)
 
-            self.force=CustomCentroidBondForce(2,"stepfunction((distance(g1,g2)-r0))*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
+            self.force=CustomCentroidBondForce(2,"stepfunction((abs(distance(g1,g2)-r0)))*(distance(g1,g2)-r0)^2") # = 0 or 1 and the the harmonic potential if above the limits
 
             self.force.addTabulatedFunction(name="stepfunction",function=self.stepfunction)
             self.force.addPerBondParameter("k")
@@ -301,7 +301,7 @@ def CreateRestraintsFromConfig(configuration,pdbpath):
     tlc=configuration["system"]["structure"]["tlc"]
     
     restraints=[]
-    # parse config arguments:
+    # parse config arguments and pass to restraint generation:
     restraint_command_string=configuration["simulation"]["restraints"].split()
     # Define default values
     restraint_args={"kval":3,"mode":"simle","shape":"harmonic","wellsize":0.1}
