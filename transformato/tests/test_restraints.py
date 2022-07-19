@@ -30,33 +30,28 @@ PATH_2OJ9_DIR = f"{get_testsystems_dir()}/2OJ9-original/complex/openmm/"
 # Disable useless parmed warnings for structure generation
 
 warnings.filterwarnings("ignore", module="parmed")
-
-
 logger = logging.getLogger(__name__)
 
 
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
-def test_createRestraintsFromConfig():
+def test_create_restraints_from_config():
 
     with open(
-        f"{get_testsystems_dir()}/tests/config/test-2oj9-restraints.yaml", "r"
+        f"{get_testsystems_dir()}/config/test-2oj9-restraints.yaml", "r"
     ) as stream:
         config = yaml.safe_load(stream)
 
     assert type(config) == dict  # checks if config yaml is properly loaded
-
     restraints = tfrs.create_restraints_from_config(config, PATH_2OJ9)
-
     assert type(restraints) == list
-
     for restraint in restraints:
         assert isinstance(restraint, tfrs.Restraint)
 
 
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
-def test_Restraints():
+def test_restraints():
 
     testrestraint = tfrs.Restraint(
         "resname BMI and type C", "protein and name CA", PATH_2OJ9, 14
@@ -71,7 +66,6 @@ def test_Restraints():
         wellsize=0.12,
     )
     assert isinstance(testrestraint, tfrs.Restraint)
-
     assert isinstance(testrestraint, tfrs.Restraint)
 
     testrestraint.createForce(["C14", "C12", "C11", "C9"])  # intentionally wrong CC
@@ -82,11 +76,8 @@ def test_Restraints():
     ]  # Test proper selection and translation
 
     assert isinstance(testrestraint.force, simtk.openmm.CustomCentroidBondForce)
-
     assert isinstance(testrestraint.get_force(), simtk.openmm.CustomCentroidBondForce)
-
     assert isinstance(testrestraint_fb.force, simtk.openmm.CustomCentroidBondForce)
-
     assert isinstance(
         testrestraint_fb.get_force(), simtk.openmm.CustomCentroidBondForce
     )
@@ -94,13 +85,14 @@ def test_Restraints():
 
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
-def test_3DDistance():
+def test_3D_distance():
     assert (tfrs.get3DDistance(np.asarray([1, 0, 0]), np.asarray([0, 0, 0]))) == 1
 
 
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
 def test_write_yaml(tmp_path):
+    
     class MockSystem:
         def __init__(self):
             self.tlc = "LIG"
@@ -110,7 +102,7 @@ def test_write_yaml(tmp_path):
     sys.modules["transformato.mutate"].cc_names_struc2 = ["C1", "C2"]
     path = tmp_path / "test-config.yaml"
     config = tfut.load_config_yaml(
-        f"{TRAFO_DIR}/tests/config/test-2oj9-rsfe-restraints.yaml", ".", "./tmp/"
+        f"{get_testsystems_dir()}/config/test-2oj9-rsfe-restraints.yaml", ".", "./tmp/"
     )
     system = MockSystem()
     current_step = 4
@@ -124,9 +116,7 @@ def test_write_yaml(tmp_path):
 def test_integration():
     """
     Full scale integration test of automatic and manual restraints, including an openMM test system.
-
     Essentially a modified openmm_run.py
-
     """
 
     inputs = read_inputs(f"{PATH_2OJ9_DIR}step5_production.inp")
