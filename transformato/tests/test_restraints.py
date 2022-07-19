@@ -35,6 +35,9 @@ from .omm_barostat import *
 from .omm_restraints import *
 from .omm_rewrap import *
 
+import logging
+logger=logging.getLogger(__name__)
+
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
 def test_createRestraintsFromConfig():
@@ -96,7 +99,9 @@ def test_write_yaml(tmp_path):
 @pytest.mark.restraints_integrationtests
 def test_integration():
     """
-    Full scale integration test of automatic and manual restraints, including an openMM test system
+    Full scale integration test of automatic and manual restraints, including an openMM test system.
+
+    Essentially a modified openmm_run.py
 
     """
     
@@ -131,7 +136,9 @@ def test_integration():
     )
 
     # Set platform
+    
     platform = Platform.getPlatformByName("CPU")
+    
     prop = dict()
     pdbpath=PATH_2OJ9
     with open(f"{TRAFO_DIR}/tests/config/test-2oj9-restraints.yaml","r") as stream:
@@ -150,8 +157,27 @@ def test_integration():
     
     restraintList=tfrs.create_restraints_from_config(configuration,pdbpath)
 
+    logger.debug("****************** ALL RESTRAINTS CREATED SUCCESSFULLY ***************************")
+    num_standard_forces=len(system.getForces())
     for restraint in restraintList:
         restraint.createForce(cc_names)
+    logger.debug("FORCES CREATED")
+    for restraint in restraintList:
         restraint.applyForce(system)
-
+    logger.debug("FORCES APPLIED")
+    forcesinsystem=system.getForces()
     
+    assert len(restraintList)==5 # 3 from ex3 auto, 2 manual
+    assert len(forcesinsystem)==num_standard_forces+len(restraintList)
+
+    logger.debug(f"Number of forces in system: {len(forcesinsystem)}")
+    simulation = Simulation(top.topology, system, integrator, platform, prop)
+    simulation.context.setPositions(crd.positions)
+
+    logger.info(f"Potential energy {simulation.context.getState(getEnergy=True).getPotentialEnergy()}")
+
+    simulation.minimizeEnergy(tolerance=inputs.mini_Tol*kilojoule/mole, maxIterations=1)
+    logger.info(f"Potential energy after 1-iter minimization {simulation.context.getState(getEnergy=True).getPotentialEnergy()}")
+    logger.info("Simulation stepping")
+    simulation.step(1)
+    logger.info("Test complete")
