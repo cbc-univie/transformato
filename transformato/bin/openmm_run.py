@@ -132,6 +132,40 @@ integrator = LangevinIntegrator(
 platform = Platform.getPlatformByName("CUDA")
 prop = dict()
 
+# Check if restraints.yaml exists - if it does, system uses restraints
+
+if os.path.exists("./restraints.yaml"):
+    import transformato.restraints as tfrs
+    print("Found restraints.yaml - applying restraints")
+    # Load tiny restraints config
+    with open("./restraints.yaml","r") as stream:
+        try:
+            configuration=yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+                print(exc)
+
+    cc_idxs=configuration["simulation"]["ccs"]
+
+    print(configuration["system"]["structure"]["tlc"])
+
+
+
+    # Add forces via transformato.restraints
+    pdbpath=args.inpfile.replace(".inp",".pdb")
+    if not os.path.exists(pdbpath):
+        raise FileNotFoundError(f"Couldnt find {pdbpath} necessary for Restraint Analysis")
+
+    if "complex" in pdbpath: # Only apply forces to complex-ligand systems
+        restraintList=tfrs.CreateRestraintsFromConfig(configuration,pdbpath)
+
+    for restraint in restraintList:
+        restraint.createForce(cc_idxs)
+        restraint.applyForce(system)
+        
+
+
+
+
 # Build simulation context
 simulation = Simulation(psf.topology, system, integrator, platform, prop)
 simulation.context.setPositions(crd.positions)

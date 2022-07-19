@@ -740,7 +740,6 @@ class ProposeMutationRoute(object):
         logger.info(
             f" Atom idx of the new common core: {self.get_common_core_idx_mol2()}"
         )
-
     def _add_common_core_atom(self, name: str, idx: int):
         if idx in self.added_indeces[name] or idx in self._get_common_core(name):
             print(f"Idx: {idx} already in common core.")
