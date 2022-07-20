@@ -2,7 +2,7 @@
 Unit and regression test for the transformato package.
 """
 from transformato.constants import temperature as T
-from simtk import unit
+from openmm import unit
 import numpy as np
 import mdtraj as md
 from transformato.utils import load_config_yaml

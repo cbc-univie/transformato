@@ -40,7 +40,7 @@ def test_read_yaml():
 
 
 def test_io_psf_files():
-    from simtk.openmm.app import CharmmPsfFile
+    from openmm.app import CharmmPsfFile
     from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
@@ -209,7 +209,7 @@ def generate_openMM_system_using_cgui_scripts(base: str):
     # imports
     from omm_readinputs import read_inputs
     from omm_readparams import read_params, read_psf, read_crd, gen_box
-    from simtk.openmm import unit
+    from openmm import unit
 
     # Load parameters
     print("Loading parameters")
