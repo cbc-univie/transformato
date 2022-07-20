@@ -13,9 +13,16 @@ import pytest
 
 # read in specific topology with parameters
 # read in specific topology with parameters
-from transformato import SystemStructure, load_config_yaml, psf_correction
-from transformato.constants import loeffler_testsystems_dir
+from transformato import (
+    SystemStructure,
+    IntermediateStateFactory,
+    ProposeMutationRoute,
+    load_config_yaml,
+    psf_correction,
+)
+from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
+from transformato_testsystems.testsystems import get_testsystems_dir
 
 warnings.filterwarnings("ignore", module="parmed")
 
@@ -23,7 +30,7 @@ warnings.filterwarnings("ignore", module="parmed")
 def test_read_yaml():
     """Sample test, will check ability to read yaml files"""
     settingsMap = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
+        config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
         input_dir=".",
         output_dir="data/",
     )
@@ -33,14 +40,12 @@ def test_read_yaml():
 
 
 def test_io_psf_files():
-    from simtk.openmm.app import CharmmPsfFile
-    from transformato.testsystems import mutate_toluene_to_methane_cc
-
-    from .test_run_production import run_simulation
+    from openmm.app import CharmmPsfFile
+    from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
-        input_dir="data/",
+        config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -52,7 +57,9 @@ def test_io_psf_files():
 
 
 def test_psf_files():
-    test_psf = pm.charmm.psf.CharmmPsfFile("transformato/tests/config/test_input.psf")
+    test_psf = pm.charmm.psf.CharmmPsfFile(
+        f"{get_testsystems_dir()}/config/test_input.psf"
+    )
     output = StringIO()
     test_psf.write_psf(output)
     corrected_psf = psf_correction(output)
@@ -80,8 +87,8 @@ def test_initialize_systems(caplog):
     caplog.set_level(logging.DEBUG)
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
-        input_dir="data/",
+        config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -97,8 +104,8 @@ def test_initialize_systems(caplog):
     assert "waterbox" in s1.envs and "waterbox" in s2.envs
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-2oj9-tautomer-pair-rsfe.yaml",
-        input_dir="data/",
+        config=f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rsfe.yaml",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -112,36 +119,33 @@ def test_initialize_systems(caplog):
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_setup_system_for_methane_common_core():
-    from transformato.testsystems import mutate_methane_to_methane_cc
+    from transformato_testsystems.testsystems import perform_generic_mutation
+
+    print(get_testsystems_dir())
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe.yaml",
-        input_dir=loeffler_testsystems_dir,
+        config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
-    output_files = mutate_methane_to_methane_cc(configuration=configuration)
+    print(configuration)
+    output_files = perform_generic_mutation(configuration=configuration)
 
     assert len(output_files) == 3
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_setup_system_for_toluene_common_core_with_HMR():
-    from transformato.testsystems import mutate_toluene_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe-HMR.yaml",
-        input_dir=loeffler_testsystems_dir,
+        config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe-HMR.yaml",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
     output_files = mutate_toluene_to_methane_cc(configuration=configuration)
@@ -166,20 +170,15 @@ def test_setup_system_for_toluene_common_core_with_HMR():
 
 
 @pytest.mark.rsfe
-@pytest.mark.requires_loeffler_systems
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_setup_system_for_methane_common_core_with_HMR():
-    from transformato.testsystems import mutate_methane_to_methane_cc
+    from transformato_testsystems.testsystems import perform_generic_mutation
 
     configuration = load_config_yaml(
-        config="transformato/tests/config/test-toluene-methane-rsfe-HMR.yaml",
-        input_dir=loeffler_testsystems_dir,
+        config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe-HMR.yaml",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
-    output_files = mutate_methane_to_methane_cc(configuration=configuration)
+    output_files = perform_generic_mutation(configuration=configuration)
 
     assert len(output_files) == 3
 
@@ -210,7 +209,7 @@ def generate_openMM_system_using_cgui_scripts(base: str):
     # imports
     from omm_readinputs import read_inputs
     from omm_readparams import read_params, read_psf, read_crd, gen_box
-    from simtk.openmm import unit
+    from openmm import unit
 
     # Load parameters
     print("Loading parameters")
@@ -242,19 +241,9 @@ def generate_openMM_system_using_cgui_scripts(base: str):
 )
 def test_lonepairs_in_dummy_region():
 
-    from transformato import (
-        load_config_yaml,
-        SystemStructure,
-        IntermediateStateFactory,
-        ProposeMutationRoute,
-    )
-    from transformato.mutate import perform_mutations
-    import warnings
-    warnings.filterwarnings("ignore", module="parmed")
-
     configuration = load_config_yaml(
-        config="transformato/tests/config/jnk1-17124-18631.yaml",
-        input_dir="data/",
+        config=f"{get_testsystems_dir()}/config/jnk1-17124-18631.yaml",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -266,12 +255,19 @@ def test_lonepairs_in_dummy_region():
     s1_to_s2.finish_common_core()
 
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-    print(mutation_list.keys())
     i = IntermediateStateFactory(
         system=s1,
         configuration=configuration,
     )
+
+    assert s1_to_s2.dummy_region_cc1.connected_dummy_regions == [
+        [46, 22],
+        [45, 44, 43, 26, 25],
+    ]
     perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    assert s1_to_s2.dummy_region_cc2.connected_dummy_regions == [[39], [40]]
+
 
 @pytest.mark.rbfe
 @pytest.mark.requires_parmed_supporting_lp
@@ -281,24 +277,12 @@ def test_lonepairs_in_dummy_region():
 )
 def test_lonepairs_in_common_core():
 
-    from transformato import (
-        load_config_yaml,
-        SystemStructure,
-        IntermediateStateFactory,
-        ProposeMutationRoute,
+    configuration = load_config_yaml(
+        config=f"{get_testsystems_dir()}/config/tyk2-ejm_45_ejm_42.yaml",
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
     )
-    from transformato.mutate import perform_mutations
-    import warnings
-    warnings.filterwarnings("ignore", module="parmed")
-    
-    molecule = 'ejm_45_ejm_42'
-    folder = 'run_1'
-    input_dir = '/site/raid3/johannes/rbfe-data/tyk2/'
-    config = '/site/raid3/johannes/rbfe-data/config/tyk2/{}.yaml'.format(molecule)
 
-    configuration = load_config_yaml(config=config,
-                       input_dir=input_dir, output_dir=folder)
-    
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
@@ -306,9 +290,15 @@ def test_lonepairs_in_common_core():
     s1_to_s2.finish_common_core()
 
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-    print(mutation_list.keys())
     i = IntermediateStateFactory(
         system=s1,
         configuration=configuration,
     )
+
+    # check for ligand 1
+    cc_region = s1_to_s2.get_common_core_idx_mol1()
+    assert (39 in cc_region and 40 in cc_region) == True
     perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
+    # check for ligand 2
+    cc_region2 = s1_to_s2.get_common_core_idx_mol2()
+    assert (35 in cc_region2 and 36 in cc_region2) == True

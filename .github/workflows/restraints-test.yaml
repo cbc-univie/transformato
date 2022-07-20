@@ -42,4 +42,4 @@ jobs:
     - name: Test with pytest
       run: |
         
-        pytest -v -m restraints --cov=transformato.restraints
+        pytest -v -m restraints --cov=transformato.restraints --cov-report term-missing --log-cli-level INFO --disable-warnings

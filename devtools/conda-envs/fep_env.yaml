@@ -1,0 +1,27 @@
+name: fep
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Base depends
+  - openmm
+  - openmmtools
+  - numpy
+  - ipython
+  - pymbar
+  - rdkit
+  - parmed
+  - pyyaml
+  - mdtraj
+  - mdanalysis
+  - matplotlib
+  - networkx
+  - tqdm
+  - seaborn
+    # Testing
+  - pytest
+  - pytest-cov
+  - codecov
+  - pip:
+    - git+https://github.com/wiederm/tf_routes.git
+    - git+https://github.com/wiederm/transformato_testsystems.git

@@ -2,7 +2,6 @@ import logging
 from collections import namedtuple, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field
-from mmap import MADV_UNMERGEABLE
 from typing import List, Tuple
 
 import numpy as np
@@ -321,9 +320,6 @@ class ProposeMutationRoute(object):
         self.dummy_region_cc1: DummyRegion
         self.dummy_region_cc2: DummyRegion
 
-        self.manually_added_m1_idx: list =[]
-        self.manually_added_m2_idx: list =[]
-
         self._check_cgenff_versions()
 
     def _check_cgenff_versions(self):
@@ -486,34 +482,48 @@ class ProposeMutationRoute(object):
 
     @staticmethod
     def _calculate_order_of_LJ_mutations(
-        connected_dummy_regions: list, match_terminal_atoms: dict, G: nx.Graph
+        connected_dummy_regions: list,
+        match_terminal_atoms: dict,
+        G: nx.Graph,
     ) -> list:
 
-        ordered_LJ_mutations = []
-        for real_atom in match_terminal_atoms:
-            for dummy_atom in match_terminal_atoms[real_atom]:
-                for connected_dummy_region in connected_dummy_regions:
-                    # stop at connected dummy region with specific dummy_atom in it
-                    if dummy_atom not in connected_dummy_region:
-                        continue
+        try:
+            from tf_routes.routes import (
+                _calculate_order_of_LJ_mutations_new as _calculate_order_of_LJ_mutations_with_bfs,
+            )
 
-                    G_dummy = G.copy()
-                    # delete all nodes not in dummy region
-                    remove_nodes = [
-                        node for node in G.nodes() if node not in connected_dummy_region
-                    ]
-                    for remove_node in remove_nodes:
-                        G_dummy.remove_node(remove_node)
+            return _calculate_order_of_LJ_mutations_with_bfs(
+                connected_dummy_regions, match_terminal_atoms, G
+            )
 
-                    # root is the dummy atom that connects the real region with the dummy region
-                    root = dummy_atom
+        except ModuleNotFoundError:
+            ordered_LJ_mutations = []
+            for real_atom in match_terminal_atoms:
+                for dummy_atom in match_terminal_atoms[real_atom]:
+                    for connected_dummy_region in connected_dummy_regions:
+                        # stop at connected dummy region with specific dummy_atom in it
+                        if dummy_atom not in connected_dummy_region:
+                            continue
 
-                    edges = list(nx.dfs_edges(G_dummy, source=root))
-                    nodes = [root] + [v for u, v in edges]
-                    nodes.reverse()  # NOTE: reverse the mutation
-                    ordered_LJ_mutations.append(nodes)
+                        G_dummy = G.copy()
+                        # delete all nodes not in dummy region
+                        remove_nodes = [
+                            node
+                            for node in G.nodes()
+                            if node not in connected_dummy_region
+                        ]
+                        for remove_node in remove_nodes:
+                            G_dummy.remove_node(remove_node)
 
-        return ordered_LJ_mutations
+                        # root is the dummy atom that connects the real region with the dummy region
+                        root = dummy_atom
+
+                        edges = list(nx.dfs_edges(G_dummy, source=root))
+                        nodes = [root] + [v for u, v in edges]
+                        nodes.reverse()  # NOTE: reverse the mutation
+                        ordered_LJ_mutations.append(nodes)
+
+            return ordered_LJ_mutations
 
     def _check_for_lp(
         self,
@@ -569,27 +579,12 @@ class ProposeMutationRoute(object):
         return mcs
 
     def finish_common_core(
-
-        
         self,
         connected_dummy_regions_cc1: list = [],
         connected_dummy_regions_cc2: list = [],
         odered_connected_dummy_regions_cc1: list = [],
         odered_connected_dummy_regions_cc2: list = [],
     ):
-        # Add sorted manually added idxs to common core. Sorting prevents error looking up mutation parameters.
-
-        if self.manually_added_m1_idx!=[]:
-            self.manually_added_m1_idx.sort()
-            print("Adding idx to common core: %s"%self.manually_added_m1_idx)
-            for idx in self.manually_added_m1_idx:
-                self._add_common_core_atom("m1",idx)
-        if self.manually_added_m2_idx!=[]:
-            self.manually_added_m2_idx.sort()
-            print("Adding idx to common core: %s"%self.manually_added_m2_idx)
-            for idx in self.manually_added_m2_idx:
-                self._add_common_core_atom("m2",idx)
-                  
         # set the teriminal real/dummy atom indices
         self._set_common_core_parameters()
         # match the real/dummy atoms
@@ -741,17 +736,44 @@ class ProposeMutationRoute(object):
             print(f"Idx: {idx} not in common core.")
 
     def add_idx_to_common_core_of_mol1(self, idx_list: list):
+        """Adds a list of atoms to the common core of molecule 1
 
+        .. caution::
+            Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2
+
+        Args:
+            idx_list: Array of atom idxs to add
+
+
+        """
         for idx in idx_list:
-            self.manually_added_m1_idx.append(idx)
-            
-        print("Staged IDX for addition to common core m1: %s"%self.manually_added_m1_idx)
+            self._add_common_core_atom("m1", idx)
+        logger.warning(
+            f"ATTENTION: Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2"
+        )
+        logger.info(
+            f"Atom idx of the new common core: {self.get_common_core_idx_mol1()}"
+        )
 
     def add_idx_to_common_core_of_mol2(self, idx_list: list):
+        """Adds a list of atoms to the common core of molecule 1
+
+        .. caution::
+            Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 2
+
+        Args:
+            idx_list: Array of atom idxs to add
+
+
+        """
         for idx in idx_list:
-            self.manually_added_m2_idx.append(idx)
-            
-        print("Staged IDX for addition to common core m2: %s"%self.manually_added_m2_idx)
+            self._add_common_core_atom("m2", idx)
+        logger.warning(
+            f"ATTENTION: Be aware of the ordering! Atom idx need to be added to match the ordering of the atom idx of common core 1"
+        )
+        logger.info(
+            f" Atom idx of the new common core: {self.get_common_core_idx_mol2()}"
+        )
 
     def _add_common_core_atom(self, name: str, idx: int):
         if idx in self.added_indeces[name] or idx in self._get_common_core(name):
@@ -912,19 +934,23 @@ class ProposeMutationRoute(object):
         AllChem.Compute2DCoords(mol)
         display(mol)
 
-    def show_common_core_on_mol1(self):
+    def show_common_core_on_mol1(self, show_atom_types: bool = False):
         """
         Shows common core on mol1
         """
-        return self._show_common_core(self.mols["m1"], self.get_common_core_idx_mol1())
+        return self._show_common_core(
+            self.mols["m1"], self.get_common_core_idx_mol1(), show_atom_types
+        )
 
-    def show_common_core_on_mol2(self):
+    def show_common_core_on_mol2(self, show_atom_types: bool = False):
         """
         Shows common core on mol2
         """
-        return self._show_common_core(self.mols["m2"], self.get_common_core_idx_mol2())
+        return self._show_common_core(
+            self.mols["m2"], self.get_common_core_idx_mol2(), show_atom_types
+        )
 
-    def _show_common_core(self, mol, highlight):
+    def _show_common_core(self, mol, highlight: list, show_atom_type: bool):
         """
         Helper function - do not call directly.
         Show common core.
@@ -935,14 +961,20 @@ class ProposeMutationRoute(object):
         AllChem.Compute2DCoords(mol)
 
         drawer = rdMolDraw2D.MolDraw2DSVG(800, 800)
-        drawer.SetFontSize(0.3)
+        drawer.SetFontSize(6)
 
         opts = drawer.drawOptions()
 
-        for i in mol.GetAtoms():
-            opts.atomLabels[i.GetIdx()] = (
-                str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
-            )
+        if show_atom_type:
+            for i in mol.GetAtoms():
+                opts.atomLabels[i.GetIdx()] = (
+                    str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
+                )
+        else:
+            for i in mol.GetAtoms():
+                opts.atomLabels[i.GetIdx()] = (
+                    str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_name")
+                )
 
         drawer.DrawMolecule(mol, highlightAtoms=highlight)
         Draw.DrawingOptions.includeAtomNumbers = False
@@ -1256,9 +1288,8 @@ class CommonCoreTransformation(object):
         """
         # Prepare Variables to use for restraint cc checks
         global cc_names_struc1, cc_names_struc2
-        cc_names_struc1=[]
-        cc_names_struc2=[]
-
+        cc_names_struc1 = []
+        cc_names_struc2 = []
 
         # match atomes in common cores
         match_atom_names_cc1_to_cc2 = {}
@@ -1270,12 +1301,10 @@ class CommonCoreTransformation(object):
             cc_names_struc1.append(ligand1_atom.name)
             cc_names_struc2.append(ligand2_atom.name)
 
-
         print(f"CC Struc1: {cc_names_struc1}")
         print(f"CC Struc2: {cc_names_struc2}")
         return match_atom_names_cc1_to_cc2
 
-        
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
 
         # common core of psf 1 is transformed to psf 2

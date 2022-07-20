@@ -25,8 +25,8 @@ echo ${current_state}
 python  - ${config_file} ${output_dir} ${structure} ${conformations} ${current_state} <<END
 
 import transformato
-from simtk.openmm import XmlSerializer
-from simtk.openmm.app import *
+from openmm import XmlSerializer
+from openmm.app import *
 import mdtraj
 import json
 import sys, os

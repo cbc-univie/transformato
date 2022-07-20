@@ -2,9 +2,9 @@ import argparse
 
 from omm_readinputs import *
 from omm_readparams import *
-from simtk.unit import *
-from simtk.openmm import *
-from simtk.openmm.app import *
+from openmm.unit import *
+from openmm import *
+from openmm.app import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", dest="inpfile", help="Input parameter file", required=True)

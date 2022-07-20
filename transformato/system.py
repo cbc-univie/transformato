@@ -1,4 +1,3 @@
-from ast import Raise
 import logging
 import os
 import re
@@ -9,7 +8,7 @@ import networkx as nx
 import parmed as pm
 from rdkit import Chem
 
-from .utils import get_toppar_dir
+from transformato.utils import get_toppar_dir
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +55,7 @@ class SystemStructure(object):
             self.mol: Chem.Mol = self._generate_rdkit_mol(
                 "complex", self.psfs["complex"][f":{self.tlc}"]
             )
-            self.graph: nx.Graph = self._mol_to_nx(self.mol)
+            self.graph: nx.Graph = self.mol_to_nx(self.mol)
 
         elif configuration["simulation"]["free-energy-type"] == "rsfe":
             self.envs = set(["waterbox", "vacuum"])
@@ -77,7 +76,7 @@ class SystemStructure(object):
             self.mol: Chem.Mol = self._generate_rdkit_mol(
                 "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
             )
-            self.graph: nx.Graph = self._mol_to_nx(self.mol)
+            self.graph: nx.Graph = self.mol_to_nx(self.mol)
         else:
             raise NotImplementedError(
                 "only binding and solvation free energy implemented."
@@ -109,27 +108,34 @@ class SystemStructure(object):
                     atom2.mass = new_mass2
 
     @staticmethod
-    def _mol_to_nx(mol: Chem.Mol):
-        G = nx.Graph()
+    def mol_to_nx(mol: Chem.Mol):
+        try:
+            from tf_routes import preprocessing
 
-        for atom in mol.GetAtoms():
-            G.add_node(
-                atom.GetIdx(),
-                atomic_num=atom.GetAtomicNum(),
-                formal_charge=atom.GetFormalCharge(),
-                chiral_tag=atom.GetChiralTag(),
-                hybridization=atom.GetHybridization(),
-                num_explicit_hs=atom.GetNumExplicitHs(),
-                is_aromatic=atom.GetIsAromatic(),
-            )
+            return preprocessing._mol_to_nx_full_weight(mol)
+        except ModuleNotFoundError:
 
-        for bond in mol.GetBonds():
-            G.add_edge(
-                bond.GetBeginAtomIdx(),
-                bond.GetEndAtomIdx(),
-                bond_type=bond.GetBondType(),
-            )
-        return G
+            G = nx.Graph()
+
+            for atom in mol.GetAtoms():
+                G.add_node(
+                    atom.GetIdx(),
+                    atomic_num=atom.GetAtomicNum(),
+                    formal_charge=atom.GetFormalCharge(),
+                    chiral_tag=atom.GetChiralTag(),
+                    hybridization=atom.GetHybridization(),
+                    num_explicit_hs=atom.GetNumExplicitHs(),
+                    is_aromatic=atom.GetIsAromatic(),
+                )
+
+            for bond in mol.GetBonds():
+                G.add_edge(
+                    bond.GetBeginAtomIdx(),
+                    bond.GetEndAtomIdx(),
+                    bond_type=bond.GetBondType(),
+                )
+
+            return G
 
     def _read_parameters(self, env: str) -> pm.charmm.CharmmParameterSet:
         """
@@ -192,7 +198,8 @@ class SystemStructure(object):
         parameter_files += (
             f"{toppar_dir}/toppar_all36_prot_na_combined.str",
         )  # if modified aminoacids are needed
-
+        if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
+            parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
         # set up parameter objec
         parameter = pm.charmm.CharmmParameterSet(*parameter_files)
         return parameter
