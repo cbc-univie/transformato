@@ -930,7 +930,7 @@ def test_postprocessing_thinning():
 
     conf = f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="data"
+        config=conf, input_dir=get_testsystems_dir(), output_dir=get_testsystems_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
 
     f = FreeEnergyCalculator(configuration, "methane")
