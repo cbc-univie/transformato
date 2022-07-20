@@ -15,9 +15,9 @@ import mdtraj
 import numpy as np
 import seaborn as sns
 from pymbar import mbar
-from simtk import unit
-from simtk.openmm import Platform, XmlSerializer, vec3
-from simtk.openmm.app import CharmmPsfFile, Simulation
+from openmm import unit
+from openmm import Platform, XmlSerializer, vec3
+from openmm.app import CharmmPsfFile, Simulation
 from tqdm import tqdm
 
 from transformato.constants import temperature
@@ -46,7 +46,7 @@ def return_reduced_potential(
     equilibrium states. J Chem Phys 129:124105, 2008.
     Parameters
     ----------
-    potential_energy : simtk.unit of float
+    potential_energy : openmm.unit of float
     context
     ensamble: NVT or NPT
     """

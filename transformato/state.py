@@ -2,15 +2,15 @@ import logging
 import os
 import shutil
 from io import StringIO
+from typing import List
 
 import parmed as pm
-import transformato
 
-from .utils import get_toppar_dir, psf_correction
-from .mutate import Mutation
+import transformato
 from transformato.charmm_factory import CharmmFactory
-from typing import List
-from .restraints import write_restraints_yaml
+from transformato.mutate import Mutation
+from transformato.restraints import write_restraints_yaml
+from transformato.utils import get_toppar_dir, psf_correction
 
 logger = logging.getLogger(__name__)
 

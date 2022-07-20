@@ -1,0 +1,58 @@
+---
+################
+system:
+  ################
+  structure1:
+    name: "tyk2-ejm_45"
+    tlc: "UNK"
+    waterbox:
+      dirname: "waterbox"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_waterbox"
+    complex:
+      dirname: "complex"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_complex"
+
+  structure2:
+    name: "tyk2-ejm_42"
+    tlc: "UNK"
+    waterbox:
+      dirname: "waterbox"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_waterbox"
+    complex:
+      dirname: "complex"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_complex"
+
+################
+simulation:
+  ################
+  parameters:
+    nstep: 1250000
+    nstdcd: 250
+    nstout: 1000
+    cons: HBonds
+    dt: 0.004
+    mini_nstep: 5000
+
+  GPU: OpenCL
+
+  free-energy-type: "rbfe"
+################
+solvation:
+  ################
+  steps_for_equilibration: 10000
