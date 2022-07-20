@@ -62,8 +62,8 @@ def generate_crd(output_file_base, env):
 
 
 def generate_sim(output_file_base, env):
-    import simtk.openmm as mm
-    import simtk.openmm.app as app
+    import openmm as mm
+    import openmm.app as app
 
     # ParmEd Imports
     from parmed import unit as u
@@ -87,8 +87,8 @@ def generate_sim(output_file_base, env):
 
 
 def generate_system(output_file_base, env):
-    import simtk.openmm as mm
-    import simtk.openmm.app as app
+    import openmm as mm
+    import openmm.app as app
 
     # ParmEd Imports
     from parmed import unit as u
@@ -1036,8 +1036,8 @@ def test_bonded_mutation():
 def test_equivalent_endstates_vacuum():
     workdir = get_test_output_dir()
 
-    import simtk.openmm as mm
-    import simtk.openmm.app as app
+    import openmm as mm
+    import openmm.app as app
 
     # ParmEd Imports
     from parmed import unit as u
@@ -1120,8 +1120,8 @@ def test_equivalent_endstates_vacuum():
 
 def test_equivalent_endstates_waterbox():
 
-    import simtk.openmm as mm
-    import simtk.openmm.app as app
+    import openmm as mm
+    import openmm.app as app
 
     # ParmEd Imports
     from parmed import unit as u

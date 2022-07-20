@@ -1,5 +1,5 @@
 import logging, sys
-from simtk import unit
+from openmm import unit
 
 logger = logging.getLogger(__name__)
 

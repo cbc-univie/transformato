@@ -603,7 +603,7 @@ def test_acetylacetone_postprocessing_different_engines():
 )
 def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
     from ..constants import kT
-    from simtk import unit
+    from openmm import unit
 
     conf = f"{get_testsystems_dir()}/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
