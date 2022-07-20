@@ -108,10 +108,6 @@ def test_write_yaml(tmp_path):
     assert os.path.exists(path)
 
 
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="For now skipping.",
-)  # FIXME: this should be fixed
 @pytest.mark.restraints
 @pytest.mark.restraints_integrationtests
 def test_integration():
