@@ -17,8 +17,8 @@ import sys
 import warnings
 
 import numpy as np
+import openmm
 import pytest
-import simtk.openmm
 import transformato.restraints as tfrs
 import transformato.utils as tfut
 import yaml
@@ -75,12 +75,10 @@ def test_restraints():
         comp in testrestraint.g1_openmm for comp in [4822, 4825, 4826, 2828]
     ]  # Test proper selection and translation
 
-    assert isinstance(testrestraint.force, simtk.openmm.CustomCentroidBondForce)
-    assert isinstance(testrestraint.get_force(), simtk.openmm.CustomCentroidBondForce)
-    assert isinstance(testrestraint_fb.force, simtk.openmm.CustomCentroidBondForce)
-    assert isinstance(
-        testrestraint_fb.get_force(), simtk.openmm.CustomCentroidBondForce
-    )
+    assert isinstance(testrestraint.force, openmm.CustomCentroidBondForce)
+    assert isinstance(testrestraint.get_force(), openmm.CustomCentroidBondForce)
+    assert isinstance(testrestraint_fb.force, openmm.CustomCentroidBondForce)
+    assert isinstance(testrestraint_fb.get_force(), openmm.CustomCentroidBondForce)
 
 
 @pytest.mark.restraints
@@ -117,13 +115,15 @@ def test_integration():
     Full scale integration test of automatic and manual restraints, including an openMM test system.
     Essentially a modified openmm_run.py
     """
-    from openmm.unit import nanometers, kelvin, kilojoule, mole, picoseconds
-    from openmm.app import (
-        CharmmParameterSet,
-        CharmmPsfFile,
-        CharmmCrdFile,
-        LangevinIntegrator,
-        Platform,
+    from openmm import LangevinIntegrator, Platform
+    from openmm.app import CharmmCrdFile, CharmmParameterSet, CharmmPsfFile, Simulation
+    from openmm.unit import kelvin, mole, nanometers, picoseconds
+    from .restraint_helper_functions import (
+        read_inputs,
+        gen_box,
+        vfswitch,
+        barostat,
+        restraints,
     )
 
     inputs = read_inputs(f"{PATH_2OJ9_DIR}step5_production.inp")
@@ -167,7 +167,9 @@ def test_integration():
 
     prop = dict()
     pdbpath = PATH_2OJ9
-    with open(f"{TRAFO_DIR}/tests/config/test-2oj9-restraints.yaml", "r") as stream:
+    with open(
+        f"{get_testsystems_dir()}/config/test-2oj9-restraints.yaml", "r"
+    ) as stream:
         try:
             configuration = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
