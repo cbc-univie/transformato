@@ -26,7 +26,7 @@ def test_run_28_1h1q_rbfe_production_with_CHARMM():
     from transformato.mutate import perform_mutations
 
     configuration = load_config_yaml(
-        config="data/config/test-28_1h1q_rbfe.yaml",
+        config=f"{get_testsystems_dir()}/config/test-28_1h1q_rbfe.yaml",
         input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
@@ -73,7 +73,7 @@ def test_run_28_1h1q_rsfe_analysis_with_CHARMM():
     configuration = load_config_yaml(
         input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
-        config="data/config/test-28_1h1q_rbfe.yaml",
+        config=f"{get_testsystems_dir()}/config/test-28_1h1q_rbfe.yaml",
     )
 
     ddG_openMM, dddG, f_openMM = postprocessing(
@@ -104,7 +104,7 @@ def test_run_1a0q_1a07_rsfe_production_with_CHARMM(caplog):
     from transformato.mutate import perform_mutations
 
     workdir = get_test_output_dir
-    conf = "data/config/test-1a0q-1a07-rsfe.yaml"
+    conf = f"{get_testsystems_dir()}/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
