@@ -3,17 +3,15 @@ Unit and regression test for the transformato package.
 """
 
 import copy
-import os
 import shutil
 import logging
 
 import numpy as np
 import parmed as pm
-import pytest
 
 # Import package, test suite, and other packages as needed
 import transformato
-from simtk import unit
+from openmm import unit
 
 # read in specific topology with parameters
 from parmed.charmm.parameters import CharmmParameterSet
