@@ -81,7 +81,7 @@ def test_compare_energies_2OJ9_original_vacuum(caplog):
 def test_lazy_eval():
     import mdtraj as md
 
-    base_path = f"data/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/intst1/"
+    base_path = f"{get_testsystems_dir()}/2OJ9-original-2OJ9-tautomer-rsfe/2OJ9-original/intst1/"
     dcd_path = f"{base_path}/lig_in_waterbox.dcd"
     psf_file = f"{base_path}/lig_in_waterbox.psf"
     traj = md.load(
