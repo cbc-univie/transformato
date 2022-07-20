@@ -47,14 +47,14 @@ def test_convert_to_kT():
 
 
 def test_change_platform():
-    from ..constants import (
+    from transformato.constants import (
         change_platform_to_test_platform,
         test_platform_openMM,
         test_platform_CHARMM,
     )
 
     configuration = load_config_yaml(
-        config="data/config/test-toluene-methane-rsfe.yaml",
+        config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
         input_dir=".",
         output_dir=get_test_output_dir(),
     )
@@ -107,7 +107,7 @@ def test_reading_of_coords():
     env = "vacuum"
     output_files_t1, _ = get_output_files_2oj9_tautomer_pair()
 
-    conf = "data/config/test-2oj9-tautomer-pair-rsfe.yaml"
+    conf = f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rsfe.yaml"
 
     configuration = load_config_yaml(
         config=conf, input_dir=get_testsystems_dir(), output_dir=get_test_output_dir()

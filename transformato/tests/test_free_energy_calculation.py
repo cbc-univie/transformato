@@ -29,7 +29,7 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
 
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.DEBUG)
-    conf = "data/config/test-1a0q-1a07-rsfe.yaml"
+    conf = f"{get_testsystems_dir()}/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir=get_testsystems_dir(), output_dir=get_test_output_dir()
     )
@@ -74,7 +74,6 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
     assert np.isclose(dddG_mda, dddG_mda, rtol=0.2)
 
 
-
 @pytest.mark.rbfe
 @pytest.mark.full_workflow
 @pytest.mark.skipif(
@@ -85,7 +84,7 @@ def test_run_28_1h1q_rbfe_with_openMM():
     # Generating output for a run of the CDK2 Ligand System
 
     configuration = load_config_yaml(
-        config="data/config/test-28_1h1q_rbfe.yaml",
+        config=f"{get_testsystems_dir()}/config/test-28_1h1q_rbfe.yaml",
         input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
