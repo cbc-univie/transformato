@@ -1,6 +1,6 @@
 import datetime
 from transformato.constants import temperature, charmm_gpu
-from simtk import unit
+from openmm import unit
 
 
 class CharmmFactory:

@@ -3,6 +3,8 @@ import pytest
 import warnings
 
 from transformato.tests.paths import get_test_output_dir
+from transformato_testsystems.testsystems import get_testsystems_dir
+
 warnings.filterwarnings("ignore", module="parmed")
 
 
@@ -22,11 +24,10 @@ def test_run_28_1h1q_rbfe_production_with_CHARMM():
     )
 
     from transformato.mutate import perform_mutations
-    from transformato.utils import run_simulation
 
     configuration = load_config_yaml(
-        config="data/config/test-28_1h1q_rbfe.yaml",
-        input_dir="data/",
+        config=f"{get_testsystems_dir()}/config/test-28_1h1q_rbfe.yaml",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
 
@@ -43,7 +44,6 @@ def test_run_28_1h1q_rbfe_production_with_CHARMM():
         system=s1,
         configuration=configuration,
     )
-
 
     perform_mutations(
         configuration=configuration,
@@ -71,9 +71,9 @@ def test_run_28_1h1q_rsfe_analysis_with_CHARMM():
     from transformato.utils import postprocessing
 
     configuration = load_config_yaml(
-        config="data/config/test-28_1h1q_rsfe.yaml",
-        input_dir="data/",
+        input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
+        config=f"{get_testsystems_dir()}/config/test-28_1h1q_rbfe.yaml",
     )
 
     ddG_openMM, dddG, f_openMM = postprocessing(
@@ -104,10 +104,8 @@ def test_run_1a0q_1a07_rsfe_production_with_CHARMM(caplog):
     from transformato.mutate import perform_mutations
 
     workdir = get_test_output_dir
-    conf = "data/config/test-1a0q-1a07-rsfe.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir=workdir
-    )
+    conf = f"{get_testsystems_dir()}/config/test-1a0q-1a07-rsfe.yaml"
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
@@ -128,15 +126,6 @@ def test_run_1a0q_1a07_rsfe_production_with_CHARMM(caplog):
         i=i,
         mutation_list=mutation_list,
     )
-    # run_simulation(i.output_files, engine="CHARMM")
-
-    # ddG_openMM, dddG = postprocessing(
-    #     configuration,
-    #     name="1a0q",
-    #     engine="openMM",
-    #     max_snapshots=5000,
-    # )
-    # print(ddG_openMM, dddG)
 
 
 @pytest.mark.rsfe
@@ -156,9 +145,7 @@ def test_analyse_1a0q_1a07_rsfe_with_openMM(caplog):
 
     workdir = "/site/raid4/johannes/test"
     conf = "transformato/tests/config/test-1a0q-1a07-rsfe.yaml"
-    configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir=workdir
-    )
+    configuration = load_config_yaml(config=conf, input_dir="data/", output_dir=workdir)
 
     ddG_openMM, dddG = postprocessing(
         configuration,

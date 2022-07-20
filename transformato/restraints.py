@@ -21,16 +21,15 @@ Define your restraints in the config.yaml.
 
 """
 
-import numpy as np
-
-import MDAnalysis
-import yaml
 import logging
 
+import MDAnalysis
+import numpy as np
+import yaml
+
 # Load necessary openmm facilities
-from simtk.unit import *
-from simtk.openmm import *
-from simtk.openmm.app import *
+from openmm import CustomCentroidBondForce
+from openmm.unit import angstrom
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
@@ -45,7 +44,7 @@ class Restraint:
         k: float = 3,
         shape: str = "harmonic",
         wellsize: float = 0.05,
-        **kwargs,
+        **kwargs, # NOTE: WHY is this necessary?
     ):
         """Class representing a restraint to apply to the system.
 
@@ -121,7 +120,7 @@ class Restraint:
             self.force.addBond(
                 [0, 1], [self.force_constant, self.initial_distance / 10]
             )
-            
+
             logger.info(
                 f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}"""
             )
@@ -135,7 +134,7 @@ class Restraint:
                 restrained_atom_indices1=self.g1_openmm,
                 restrained_atom_indices2=self.g2_openmm,
             )
-            
+
             self.force.setUsesPeriodicBoundaryConditions(periodic=True)
 
             logger.info(
@@ -193,7 +192,6 @@ def generate_simple_selection(configuration, pdbpath):
         str: An MDAnalysis selection string, representing the carbon-alphas surrounding the cores.
     """
 
-    ligand_topology = MDAnalysis.Universe(pdbpath)
     tlc = configuration["system"]["structure"]["tlc"]
     ccs = configuration["system"]["structure"]["ccs"]
     cc_names_selection = ""

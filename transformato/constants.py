@@ -1,5 +1,5 @@
 import logging, sys
-from simtk import unit
+from openmm import unit
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,6 @@ charmm_gpu = ""
 this = sys.modules[__name__]
 # we can explicitly make assignments on it
 this.NUM_PROC = 1
-loeffler_testsystems_dir = "/home/mwieder/Work/Projects/transformato-systems/"
 
 #####################################
 # config for tets

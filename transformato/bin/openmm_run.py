@@ -21,9 +21,9 @@ from omm_barostat import *
 from omm_restraints import *
 from omm_rewrap import *
 
-from simtk.unit import *
-from simtk.openmm import *
-from simtk.openmm.app import *
+from openmm.unit import *
+from openmm import *
+from openmm.app import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", dest="inpfile", help="Input parameter file", required=True)
@@ -134,7 +134,7 @@ prop = dict()
 
 # Check if restraints.yaml exists - if it does, system uses restraints
 
-pdbpath=args.inpfile.replace(".inp",".pdb")
+pdbpath = args.inpfile.replace(".inp", ".pdb")
 
 if os.path.exists("./restraints.yaml") and "complex" in pdbpath:
     import transformato.restraints as tfrs
@@ -142,28 +142,26 @@ if os.path.exists("./restraints.yaml") and "complex" in pdbpath:
 
     print("Found restraints.yaml - applying restraints")
     # Load tiny restraints config
-    with open("./restraints.yaml","r") as stream:
+    with open("./restraints.yaml", "r") as stream:
         try:
-            configuration=yaml.safe_load(stream)
+            configuration = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
-                print(exc)
+            print(exc)
 
-    cc_names=configuration["system"]["structure"]["ccs"]
+    cc_names = configuration["system"]["structure"]["ccs"]
 
     # Add forces via transformato.restraints
-    
-    if not os.path.exists(pdbpath):
-        raise FileNotFoundError(f"Couldnt find {pdbpath} necessary for Restraint Analysis")
 
-    
-    restraintList=tfrs.create_restraints_from_config(configuration,pdbpath)
+    if not os.path.exists(pdbpath):
+        raise FileNotFoundError(
+            f"Couldnt find {pdbpath} necessary for Restraint Analysis"
+        )
+
+    restraintList = tfrs.create_restraints_from_config(configuration, pdbpath)
 
     for restraint in restraintList:
         restraint.createForce(cc_names)
         restraint.applyForce(system)
-        
-
-
 
 
 # Build simulation context
@@ -253,4 +251,3 @@ if args.ochk:
 if args.opdb:
     crd = simulation.context.getState(getPositions=True).getPositions()
     PDBFile.writeFile(psf.topology, crd, open(args.opdb, "w"))
-
