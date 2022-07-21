@@ -44,6 +44,7 @@ class Restraint:
         k: float = 3,
         shape: str = "harmonic",
         wellsize: float = 0.05,
+        r0 = "initial",
         **kwargs, # NOTE: WHY is this necessary?
     ):
         """Class representing a restraint to apply to the system.
@@ -65,7 +66,7 @@ class Restraint:
 
         self.shape = shape
 
-        if self.shape not in ["harmonic", "flatbottom"]:
+        if self.shape not in ["harmonic","flatbottom", "flatbottom-oneside-sharp","flatbottom-oneside","flatbottom-twoside"]:
             raise AttributeError(
                 f"Invalid potential shape specified for restraint: {self.shape}"
             )
@@ -76,7 +77,8 @@ class Restraint:
 
         self.force_constant = k
         self.shape = shape
-        self.wellsize = wellsize
+        self.wellsize = wellsize * angstrom
+        self.r0 = r0
 
     def createForce(self, common_core_names):
         """Actually creates the force, after dismissing all idxs not in the common core from the molecule.
@@ -109,6 +111,11 @@ class Restraint:
 
         self.initial_distance = np.linalg.norm(self.g1pos - self.g2pos)
 
+        if self.r0 == "initial": # default value - equilibrium distance is the initial distance. Otherwise, overriden with the r0 specified
+            self.r0 = self.initial_distance * angstrom
+        else:
+            self.r0 = self.r0 * angstrom
+        
         if self.shape == "harmonic":
             # create force with harmonic potential
             self.force = CustomCentroidBondForce(2, "0.5*k*(distance(g1,g2)-r0)^2")
@@ -118,29 +125,40 @@ class Restraint:
             self.force.addGroup(self.g2_openmm)
 
             self.force.addBond(
-                [0, 1], [self.force_constant, self.initial_distance / 10]
+                [0, 1], [self.force_constant, self.r0]
             )
 
             logger.info(
                 f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}"""
             )
-        elif self.shape == "flatbottom":
-            # create force with flat-bottom potential using openmmtools
-            from openmmtools.forces import FlatBottomRestraintForce
+        elif self.shape == "flatbottom" or self.shape == "flatbottom-oneside":
+            # create force with flat-bottom potential identical to the one used in openmmtools
 
-            self.force = FlatBottomRestraintForce(
-                spring_constant=self.force_constant,
-                well_radius=self.initial_distance * angstrom,
-                restrained_atom_indices1=self.g1_openmm,
-                restrained_atom_indices2=self.g2_openmm,
+            self.force = CustomCentroidBondForce(
+                2, "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2)-r0)^2"
             )
 
-            self.force.setUsesPeriodicBoundaryConditions(periodic=True)
+            self._add_flatbottom_parameters()
 
-            logger.info(
-                f"Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant} the finall parameters are: {self.force.getBondParameters(0)}"
+        elif self.shape == "flatbottom-oneside-sharp":
+            # create force with flat-bottom potential
+
+            self.force = CustomCentroidBondForce(
+                2, "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2))^2"
             )
 
+            self._add_flatbottom_parameters()
+        
+        elif self.shape == "flatbottom-twoside":
+            # create force with flat-bottom potential
+
+            self.force = CustomCentroidBondForce(
+                2, "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2"
+            )
+
+            self._add_flatbottom_parameters()
+        
+        
         else:
             raise NotImplementedError(f"Cannot create potential of shape {self.shape}")
 
@@ -155,6 +173,32 @@ class Restraint:
 
     def get_force(self):
         return self.force
+
+    def _add_flatbottom_parameters(self):
+        """Takes care of the initial setup of an openMM CustomCentroidBondForce with a flatbottom shape
+        
+        Args:
+            force: An openMM CustomCentroidBondForce object
+        """
+
+        self.force.addPerBondParameter("k")
+        self.force.addPerBondParameter("r0")
+
+        self.force.addGroup(self.g1_openmm)
+        self.force.addGroup(self.g2_openmm)
+
+        if "twoside" in self.shape:     # two - sided flatbottoms gain an additional parameter for the wellsize
+            self.force.addPerBondParameter("w")
+            self.force.addBond(
+                [0, 1], [self.force_constant, self.initial_distance * angstrom, self.wellsize]
+            )
+        else:
+
+            self.force.addBond(
+                [0, 1], [self.force_constant, self.initial_distance * angstrom]
+            )
+        
+        logger.info(f"Restraint force (centroid/bonded), shape is {self.shape}, Parameters: {[[self.force.getPerBondParameterName(i),self.force.getBondParameters(0)[i]] for i in range(self.force.getNumPerBondParameters())]} ")
 
     def applyForce(self, system):
         """Applies the force to the openMM system
