@@ -44,8 +44,8 @@ class Restraint:
         k: float = 3,
         shape: str = "harmonic",
         wellsize: float = 0.05,
-        r0 = "initial",
-        **kwargs, # NOTE: WHY is this necessary?
+        
+        **kwargs
     ):
         """Class representing a restraint to apply to the system.
 
@@ -58,9 +58,9 @@ class Restraint:
             selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings
             k: the force (=spring) constant applied to the potential energy formula. See the 'System Setup' section for details.
             pdbpath: the path to the pdbfile underlying the topology analysis
-            shape: 'harmonic' or 'flatbottom'. Defines the shape of the harmonic energy potential.
-            wellsize: Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.
-            kwargs: Catcher for unneeded restraint_args entry
+            shape: one of 'harmonic', 'flatbottom', 'flatbottom-oneside-sharp' or 'flatbottom-twoside'. Defines the shape of the harmonic energy potential.
+            wellsize: Defines the well-size in a two-sided flat-bottom potential. Defaults to 0.05 nanometers.
+            kwargs: Catcher for additional restraint_args
 
         """
 
@@ -78,7 +78,7 @@ class Restraint:
         self.force_constant = k
         self.shape = shape
         self.wellsize = wellsize * angstrom
-        self.r0 = r0
+        self.kwargs=kwargs
 
     def createForce(self, common_core_names):
         """Actually creates the force, after dismissing all idxs not in the common core from the molecule.
@@ -111,10 +111,10 @@ class Restraint:
 
         self.initial_distance = np.linalg.norm(self.g1pos - self.g2pos)
 
-        if self.r0 == "initial": # default value - equilibrium distance is the initial distance. Otherwise, overriden with the r0 specified
+        if not "r0" in self.kwargs.keys(): # default value - equilibrium distance is the initial distance. Otherwise, overriden with the r0 specified
             self.r0 = self.initial_distance * angstrom
         else:
-            self.r0 = self.r0 * angstrom
+            self.r0 = self.kwargs["r0"] * angstrom
         
         if self.shape == "harmonic":
             # create force with harmonic potential
@@ -131,9 +131,9 @@ class Restraint:
             logger.info(
                 f"""Restraint force (centroid/bonded, shape is {self.shape}, initial distance: {self.initial_distance}, k={self.force_constant}"""
             )
-        elif self.shape == "flatbottom" or self.shape == "flatbottom-oneside":
+        elif self.shape in ["flatbottom","flatbottom-oneside"]:
             # create force with flat-bottom potential identical to the one used in openmmtools
-
+            logger.debug("creating flatbottom-1side-soft")
             self.force = CustomCentroidBondForce(
                 2, "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2)-r0)^2"
             )
@@ -142,7 +142,7 @@ class Restraint:
 
         elif self.shape == "flatbottom-oneside-sharp":
             # create force with flat-bottom potential
-
+            logger.debug("creating flatbottom-1side-sharp")
             self.force = CustomCentroidBondForce(
                 2, "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2))^2"
             )
@@ -151,7 +151,7 @@ class Restraint:
         
         elif self.shape == "flatbottom-twoside":
             # create force with flat-bottom potential
-
+            logger.debug("creating flatbottom-2side-sharp")
             self.force = CustomCentroidBondForce(
                 2, "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2"
             )
@@ -190,15 +190,14 @@ class Restraint:
         if "twoside" in self.shape:     # two - sided flatbottoms gain an additional parameter for the wellsize
             self.force.addPerBondParameter("w")
             self.force.addBond(
-                [0, 1], [self.force_constant, self.initial_distance * angstrom, self.wellsize]
+                [0, 1], [self.force_constant, self.r0, self.wellsize]
             )
         else:
-
             self.force.addBond(
-                [0, 1], [self.force_constant, self.initial_distance * angstrom]
+                [0, 1], [self.force_constant, self.r0]
             )
         
-        logger.info(f"Restraint force (centroid/bonded), shape is {self.shape}, Parameters: {[[self.force.getPerBondParameterName(i),self.force.getBondParameters(0)[i]] for i in range(self.force.getNumPerBondParameters())]} ")
+        logger.info(f"Restraint force (centroid/bonded), shape is {self.shape}, Parameters: {self.force.getBondParameters(0)} ")
 
     def applyForce(self, system):
         """Applies the force to the openMM system
