@@ -515,6 +515,15 @@ with open(file_name + '_system.xml','w') as outfile:
         toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
         shutil.copyfile(ligand_prm, toppar_target)
 
+    def _copy_ligand_specific_str(
+        self, basedir: str, intermediate_state_file_path: str
+    ):
+
+        # copy ligand rtf file
+        ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
+        toppar_target = (f"{intermediate_state_file_path}/{self.system.tlc.lower()}.str")
+        shutil.copyfile(ligand_rtf, toppar_target)
+
     def _copy_crd_file(self, intermediate_state_file_path: str):
 
         basedir = self.system.charmm_gui_base
@@ -538,7 +547,12 @@ with open(file_name + '_system.xml','w') as outfile:
 
         basedir = self.system.charmm_gui_base
 
-        self._copy_ligand_specific_top_and_par(basedir, intermediate_state_file_path)
+        try:
+            self._copy_ligand_specific_top_and_par(basedir, intermediate_state_file_path)
+        except:
+            self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
+
+
 
         # copy crd file
         self._copy_crd_file((intermediate_state_file_path))
@@ -964,8 +978,15 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 ../../toppar/toppar_all36_lipid_model.str
 ../../toppar/toppar_all36_lipid_prot.str
 ../../toppar/toppar_all36_lipid_sphingo.str
-{self.system.tlc.lower()}_g.rtf
+"""
+        if os.path.isfile(f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"):
+            toppar_format += f"""{self.system.tlc.lower()}_g.rtf
 {self.system.tlc.lower()}.prm
+dummy_atom_definitions.rtf
+dummy_parameters.prm
+"""
+        else:
+            toppar_format += f"""{self.system.tlc.lower()}.str
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
@@ -976,7 +997,7 @@ dummy_parameters.prm
 
         # write charmm_toppar.str
         charmm_toppar = self.charmm_factory.build_reduced_toppar(
-            self.system.tlc.lower()
+            self.system.tlc.lower(), self.system.charmm_gui_base
         )
 
         f = open(f"{output_file_base}/charmm_toppar.str", "w+")

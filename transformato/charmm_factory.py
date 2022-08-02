@@ -1,6 +1,7 @@
 import datetime
 from transformato.constants import temperature, charmm_gpu
 from openmm import unit
+import os
 
 
 class CharmmFactory:
@@ -65,7 +66,7 @@ class CharmmFactory:
         return charmm_production_script
 
     @staticmethod
-    def build_reduced_toppar(tlc: str) -> str:
+    def build_reduced_toppar(tlc: str, charmm_gui_base :str) -> str:
         date = datetime.date.today()
         toppar = f"""* Simplified toppar script
 * Version from {date}
@@ -168,8 +169,11 @@ stream ../../toppar/toppar_all36_prot_na_combined.str
 ! Additional topologies and parameters for spin/fluorophore labels
 stream ../../toppar/toppar_all36_label_spin.str
 stream ../../toppar/toppar_all36_label_fluorophore.str
+"""
 
 
+        if os.path.isfile(f"{charmm_gui_base}/waterbox/{tlc.lower()}/{tlc.lower()}_g.rtf"):
+            toppar += f"""
 ! Read {tlc} RTF
 open read unit 10 card name {tlc}_g.rtf
 read rtf card unit 10 append
@@ -185,8 +189,22 @@ read rtf card unit 10 append
 ! Read dummy_atom prm
 open read unit 10 card name dummy_parameters.prm
 read para card unit 10 append flex
-
 """
+        else:
+            toppar += f"""
+! Read {tlc} STR
+stream {tlc}.str
+read para card unit 10 append flex
+
+! Read dummy_atom RTF
+open read unit 10 card name dummy_atom_definitions.rtf
+read rtf card unit 10 append
+
+! Read dummy_atom prm
+open read unit 10 card name dummy_parameters.prm
+read para card unit 10 append flex
+"""
+
         return toppar
 
     def _get_CHARMM_production_header(self, env: str) -> str:
