@@ -12,6 +12,8 @@ from transformato.tests.paths import get_test_output_dir
 from transformato.utils import run_simulation
 from transformato.constants import change_platform_to_test_platform
 
+from transformato_testsystems.testsystems import get_testsystems_dir
+
 
 @pytest.mark.rsfe
 @pytest.mark.skipif(
@@ -37,7 +39,7 @@ def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
     workdir = get_test_output_dir()
     conf = f"{get_testsystems_dir()}/config/test-1a0q-1a07-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/test_systems_mutation", output_dir=workdir
+        config=conf, input_dir=get_testsystems_dir(), output_dir=workdir
     )
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
