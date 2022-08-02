@@ -864,6 +864,8 @@ class FreeEnergyCalculator(object):
                 self.plot_waterbox_free_energy_overlap()
             self.plot_vacuum_free_energy()
             self.plot_waterbox_free_energy()
+            self.detailed_overlap("waterbox")
+            self.detailed_overlap("vacuum")
         else:
             if isnotebook:
                 # only show this if we are in a notebook
@@ -871,8 +873,27 @@ class FreeEnergyCalculator(object):
                 self.plot_waterbox_free_energy_overlap()
             self.plot_complex_free_energy()
             self.plot_waterbox_free_energy()
+            self.detailed_overlap("complex")
+            self.detailed_overlap("waterbox")
 
         energy_estimate, uncertainty = self.end_state_free_energy_difference
         print(
             f"Free energy to common core: {energy_estimate} [kT] with uncertainty: {uncertainty} [kT]."
         )
+
+
+    def detailed_overlap(self, env):
+        
+        mbar_matrix = self.free_energy_overlap(env=env)
+        upper = np.diagonal(mbar_matrix, offset = 1)
+        lower = np.diagonal(mbar_matrix, offset = -1)
+        av_upper = sum(upper/(len(mbar_matrix)-1))
+        av_lower = sum(lower/(len(mbar_matrix)-1))
+
+        print(f"The average overlap in {env} between the states is {round(av_upper,3)} and {round(av_lower,3)}")
+
+        all = np.concatenate((upper,lower))
+        for state, i in enumerate(all):
+            if i < 0.02:
+                print(f" WARNINING: In state {state}, the overlap is {round(i,3)}")
+
