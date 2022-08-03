@@ -736,35 +736,28 @@ class FreeEnergyCalculator(object):
 
     def plot_free_energy_overlap(self, env: str):
         plt.figure(figsize=[8, 8], dpi=300)
-        if env == "vacuum":
-            ax = sns.heatmap(
-                self.vacuum_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        elif env == "waterbox":
-            ax = sns.heatmap(
-                self.waterbox_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        elif env == "complex":
-            ax = sns.heatmap(
-                self.complex_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        else:
-            raise RuntimeError()
+
+        overlap_matrix = self.free_energy_overlap(env)
+        ax = sns.heatmap(
+            overlap_matrix,
+            cmap="Reds",
+            cbar = False,
+            linewidth=0.5,
+            annot=True,
+            fmt="0.2f",
+            annot_kws={"size": "small"},
+        )
+
+        ax = sns.heatmap(
+            overlap_matrix,
+            mask = overlap_matrix < 0.009,
+            cmap="Blues",
+            linewidth=0.5,
+            annot=True,
+            fmt="0.2f",
+            annot_kws={"size": "small"},
+        )
+
         plt.title(f"Overlap of lambda states for ligand in {env}", fontsize=15)
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
         plt.ylabel("lambda state (0 to 1)", fontsize=15)
@@ -894,6 +887,6 @@ class FreeEnergyCalculator(object):
 
         all = np.concatenate((upper,lower))
         for state, i in enumerate(all):
-            if i < 0.02:
+            if i < 0.01:
                 print(f" WARNINING: In state {state}, the overlap is {round(i,3)}")
 
