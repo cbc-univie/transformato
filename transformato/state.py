@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class IntermediateStateFactory(object):
     def __init__(
-        self, system: transformato.system.SystemStructure, configuration: dict
+        self, system: transformato.system.SystemStructure, configuration: dict, consecutive_runs = False
     ):
         """
         Generate the intermediate directories with for the provided systems with the provided mutations.
@@ -39,6 +39,7 @@ class IntermediateStateFactory(object):
         self.charmm_factory = CharmmFactory(configuration, self.system.structure)
         self.output_files = []
         self.current_step = 1
+        self.consecutive_runs = consecutive_runs
 
     def write_state(
         self,
@@ -100,6 +101,15 @@ class IntermediateStateFactory(object):
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_toppar_str(output_file_base)
         self._copy_files(output_file_base)
+
+        # Create run folder for dcd output for each intst state
+        if self.consecutive_runs:
+            if type(self.consecutive_runs) == str:
+                os.makedirs(f"{output_file_base}/{self.consecutive_runs}")
+            else:
+                for i in range(1,self.consecutive_runs + 1):
+                    os.makedirs(f"{output_file_base}/run_{i}")
+                
         self.output_files.append(output_file_base)
 
         # Used for restraints:
