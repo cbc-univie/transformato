@@ -838,7 +838,7 @@ def test_compare_energies_toluene_waterbox(caplog):
     conf = f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml"
 
     configuration = load_config_yaml(
-        config=conf, input_dir=get_testsystems_dir(), output_dir="data"
+        config=conf, input_dir=get_testsystems_dir(), output_dir=get_testsystems_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
 
 
@@ -850,7 +850,7 @@ def test_compare_energies_toluene_waterbox(caplog):
         )
         # used load_dcd for CHARMM
         traj.save_dcd(f"{base}/traj.dcd", force_overwrite=True)
-        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        # l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
