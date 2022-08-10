@@ -318,6 +318,27 @@ with open(file_name + '_system.xml','w') as outfile:
                     f"No restart file found for {env} -- starting simulation from crd file."
                 )
 
+    def _modify_submit_script(self, shFile):
+        # submit script is modified to loop over all runs depending on the number defined in the consecutive
+        # runs 
+        logger.info(f"We will manipulate the submit script for use with multiple runs")
+
+        fout = open(f"{shFile}.tmp", "wt")
+        with open (f"{shFile}", "r+") as f:
+            for line in f:
+                if line.startswith(f"input=lig_in_"):
+                    fout.write("for i in {1.." + f"{self.consecutive_runs}" + "};\n")
+                    fout.write("do \n")
+                    fout.write(line)
+                elif line.startswith("python -u openmm"):
+                    line = line.replace("${istep}.dcd","run_${i}/${istep}.dcd")
+                    fout.write(line.replace(line.split()[-1],"run_${i}/"+f"{line.split()[-1]}"))  
+                    fout.write(f"done \n")    
+                else:
+                    fout.write(line)
+        fout.close()
+        shutil.move(fout.name,shFile)
+
     def _copy_omm_files(self, intermediate_state_file_path: str):
         """
         _copy_omm_files Copyies the files needed for the production runs with openMM in the intst* directories
@@ -364,6 +385,8 @@ with open(file_name + '_system.xml','w') as outfile:
             shutil.copyfile(
                 omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
+            if self.consecutive_runs:
+                self._modify_submit_script(omm_simulation_submit_script_target)
 
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
