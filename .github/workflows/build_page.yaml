@@ -2,14 +2,20 @@ name: GH Pages build
 
 on:
   push:
-    branches:
-      - "master"
-      - "main"
-  pull_request:
-    branches:
-      - "master"
-      - "main"
+    branches:    
+      - master
   workflow_dispatch:
+  
+# on:
+#   push:
+#     branches:
+#       - "master"
+#       - "main"
+#   pull_request:
+#     branches:
+#       - "master"
+#       - "main"
+#   workflow_dispatch:
 
 jobs:
   build:
