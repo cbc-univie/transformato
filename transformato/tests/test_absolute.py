@@ -28,7 +28,7 @@ def create_asfe_system(configuration):
     return s1, mutation_list
 
 
-def test_run_asfe_system():
+def run_asfe_system():
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
@@ -38,7 +38,7 @@ def test_run_asfe_system():
 
     s1, mutation_list = create_asfe_system(configuration)
 
-    i = IntermediateStateFactory(system=s1, configuration=configuration)
+    i = IntermediateStateFactory(system=s1, consecutive_runs=3, configuration=configuration)
 
     perform_mutations(
         configuration=configuration,
@@ -52,31 +52,7 @@ def test_run_asfe_system():
 
     run_simulation(i.output_files, engine="openMM")
 
-def analyse_asfe_with_mda():
-
-    configuration = load_config_yaml(
-        config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
-        input_dir=get_testsystems_dir(),
-        output_dir=get_test_output_dir(),
-    )
-
-    final_dg = []
-    # runs = 1
-    # for run in range(1,runs + 1):
-    ddG_openMM, dddG, f_openMM = postprocessing(
-        configuration,
-        name="methanol",
-        engine="openMM",
-        max_snapshots=50,
-        num_proc=2,
-        analyze_traj_with="mda",
-        show_summary=True,
-    )
-    print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")
-    final_dg.append(ddG_openMM)
-    # print(f"Final free energy is {round(np.average(final_dg),2)} +- {round(np.std(final_dg))} of the {runs} individual runs {final_dg}")
-
-def analyse_asfe_with_mdtraj():
+def analyse_asfe_with_module(module):
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
@@ -91,11 +67,23 @@ def analyse_asfe_with_mdtraj():
             configuration,
             name="methanol",
             engine="openMM",
-            max_snapshots=100,
-            analyze_traj_with="mdtraj",
-            show_summary=True,
+            max_snapshots=50,
+            num_proc=2,
+            analyze_traj_with=module,
             consecutive_runs=run,
+            show_summary=True,
         )
         print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")
         final_dg.append(ddG_openMM)
     print(f"Final free energy is {round(np.average(final_dg),2)} +- {round(np.std(final_dg))} of the {runs} individual runs {final_dg}")
+
+    return final_dg
+
+
+def test_compare_mda_and_mdtraj():
+
+    run_asfe_system()
+
+    mda_results = analyse_asfe_with_module(module="mda")
+    mdtraj_results = analyse_asfe_with_module(module="mdtraj")
+    assert np.isclose(np.average(mda_results), np.average(mdtraj_results))
