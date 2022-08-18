@@ -29,6 +29,8 @@ class IntermediateStateFactory(object):
             list of mutations defined by the transformato.ProposeMutationRoute object
         configuration : dict
             configuration dictionary
+        consecutive_runs : bool or int
+            defines how many runs should be performed per intst state, if not used it is False else give an integer number
         """
 
         self.system = system

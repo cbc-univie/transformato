@@ -17,6 +17,7 @@ def postprocessing(
     different_path_for_dcd: str = "",
     only_single_state: str = "",
     analyze_traj_with: str = "mdtraj",
+    consecutive_runs: int = 0,
 ):
     """Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.
 
@@ -53,7 +54,7 @@ def postprocessing(
         f.load_trajs(nr_of_max_snapshots=max_snapshots)
         f.base_path = path
     elif analyze_traj_with == "mdtraj":
-        f.load_trajs(nr_of_max_snapshots=max_snapshots)
+        f.load_trajs(nr_of_max_snapshots=max_snapshots, consecutive_runs = consecutive_runs)
     else:
         logger.info(f"using {analyze_traj_with} for analysis")
 
@@ -62,6 +63,7 @@ def postprocessing(
         analyze_traj_with=analyze_traj_with,
         num_proc=num_proc,
         nr_of_max_snapshots=max_snapshots,
+        consecutive_runs=consecutive_runs,
     )
 
     if only_single_state:
@@ -69,9 +71,9 @@ def postprocessing(
     else:
         ddG, dddG = f.end_state_free_energy_difference
         print("######################################")
-        print("Free energy to common core in kT")
+        print(f"Free energy to common core for {configuration['system']['structure1']['name']} in kT")
         print("######################################")
-        print(f"Free energy difference: {ddG} [kT]")
+        print(f"Free energy difference from {configuration['system']['structure1']['name']} to CC: {ddG} [kT]")
         print(f"Uncertanty: {dddG} [kT]")
         print("######################################")
         print("######################################")

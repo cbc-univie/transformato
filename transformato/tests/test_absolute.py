@@ -1,19 +1,17 @@
-from venv import create
+
 from transformato import (
     load_config_yaml,
     SystemStructure,
     IntermediateStateFactory,
 )
 
-import logging
-import pytest
-import sys, os
-
+from transformato.utils import run_simulation, postprocessing
 from transformato.annihilation import ProposeMutationRouteASFE
 from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
+import numpy as np
 import warnings
 
 warnings.filterwarnings("ignore", module="parmed")
@@ -30,7 +28,7 @@ def create_asfe_system(configuration):
     return s1, mutation_list
 
 
-def test_create_asfe_system():
+def test_run_asfe_system():
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
@@ -52,13 +50,52 @@ def test_create_asfe_system():
     assert len(i.output_files) == 7
     assert len((mutation_list)["charge"][0].atoms_to_be_mutated) == 6
 
-    # ddG_openMM, dddG, f_openMM = postprocessing(
-    #     configuration,
-    #     name="methanol",
-    #     engine="openMM",
-    #     max_snapshots=10000,
-    #     num_proc=5,
-    #     analyze_traj_with="mda",
-    #     show_summary=True,
-    # )
-    # print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")
+    run_simulation(i.output_files, engine="openMM")
+
+def analyse_asfe_with_mda():
+
+    configuration = load_config_yaml(
+        config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
+    )
+
+    final_dg = []
+    # runs = 1
+    # for run in range(1,runs + 1):
+    ddG_openMM, dddG, f_openMM = postprocessing(
+        configuration,
+        name="methanol",
+        engine="openMM",
+        max_snapshots=50,
+        num_proc=2,
+        analyze_traj_with="mda",
+        show_summary=True,
+    )
+    print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")
+    final_dg.append(ddG_openMM)
+    # print(f"Final free energy is {round(np.average(final_dg),2)} +- {round(np.std(final_dg))} of the {runs} individual runs {final_dg}")
+
+def analyse_asfe_with_mdtraj():
+
+    configuration = load_config_yaml(
+        config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
+    )
+
+    final_dg = []
+    runs = 3
+    for run in range(1,runs + 1):
+        ddG_openMM, dddG, f_openMM = postprocessing(
+            configuration,
+            name="methanol",
+            engine="openMM",
+            max_snapshots=100,
+            analyze_traj_with="mdtraj",
+            show_summary=True,
+            consecutive_runs=run,
+        )
+        print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")
+        final_dg.append(ddG_openMM)
+    print(f"Final free energy is {round(np.average(final_dg),2)} +- {round(np.std(final_dg))} of the {runs} individual runs {final_dg}")
