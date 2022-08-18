@@ -872,7 +872,7 @@ class FreeEnergyCalculator(object):
             self.plot_complex_free_energy()
             self.plot_waterbox_free_energy()
 
-        energy_estimate, uncertanty = self.end_state_free_energy_difference
+        energy_estimate, uncertainty = self.end_state_free_energy_difference
         print(
-            f"Free energy to common core: {energy_estimate} [kT] with uncertanty: {uncertanty} [kT]."
+            f"Free energy to common core: {energy_estimate} [kT] with uncertainty: {uncertainty} [kT]."
         )

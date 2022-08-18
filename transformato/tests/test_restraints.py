@@ -173,9 +173,11 @@ def test_integration():
     pdbpath = PATH_2OJ9
     with open(
         f"{get_testsystems_dir()}/config/test-2oj9-restraints.yaml", "r"
+        
     ) as stream:
         try:
             configuration = yaml.safe_load(stream)
+            logger.debug(configuration)
         except yaml.YAMLError as exc:
             print(exc)
 
@@ -232,6 +234,9 @@ def test_integration():
             state = simulation.context.getState(getEnergy=True, groups={i})
             logger.info("Force contributions before steps:")
             logger.info(f"{f}::{state.getPotentialEnergy()}")
+            if f.getEnergyFunction() == "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2":  # flatbottom-twosided, has set r0
+                assert 0.9 in f.getBondParameters(0)[1] # assert the manually set r0 value is found in the bond parameters
+
     logger.info("Simulation stepping")
     simulation.step(9)
     temp_results = []
@@ -264,11 +269,27 @@ def test_integration():
         if isinstance(f, CustomCentroidBondForce):
             logger.debug(f.getBondParameters(0))
             if (
-                f.getPerBondParameterName(0) == "k"
-            ):  # harmonic shape. openmmTools calls theirs "K"
+                f.getEnergyFunction() == "0.5*k*(distance(g1,g2)-r0)^2"
+            ):  # harmonic shape.
                 f.setBondParameters(0, [0, 1], [25, 5])
-            else:  # flatbottom shape:
+
+            elif (
+            f.getEnergyFunction() == "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2)-r0)^2"
+            ):  # flatbottom-oneside-soft shape:
                 f.setBondParameters(0, [0, 1], [250, 0.01])
+
+            elif (
+            f.getEnergyFunction() == "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2))^2"
+            ):  # flatbottom-oneside-sharp:
+                f.setBondParameters(0, [0, 1], [250, 0.01])
+
+            elif (
+                f.getEnergyFunction() == "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2"
+                ):  # flatbottom-twosided, has an additional wellsize parameter:
+                f.setBondParameters(0, [0, 1], [250, 12,1])
+
+
+
             f.updateParametersInContext(simulation.context)
 
     for i, f in enumerate(system.getForces()):
