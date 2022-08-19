@@ -27,6 +27,27 @@ def create_asfe_system(configuration):
 
     return s1, mutation_list
 
+def test_create_asfe_system():
+
+    configuration = load_config_yaml(
+        config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
+    )
+
+    s1, mutation_list = create_asfe_system(configuration)
+
+    i = IntermediateStateFactory(system=s1, consecutive_runs=3, configuration=configuration)
+
+    perform_mutations(
+        configuration=configuration,
+        nr_of_mutation_steps_charge=2,
+        i=i,
+        mutation_list=mutation_list,
+    )
+
+    assert len(i.output_files) == 7
+    assert len((mutation_list)["charge"][0].atoms_to_be_mutated) == 6
 
 def run_asfe_system():
 
