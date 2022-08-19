@@ -1,4 +1,3 @@
-
 from transformato import (
     load_config_yaml,
     SystemStructure,
@@ -13,7 +12,8 @@ from transformato_testsystems.testsystems import get_testsystems_dir
 
 import numpy as np
 import warnings
-
+import os
+import pytest
 warnings.filterwarnings("ignore", module="parmed")
 
 
@@ -79,7 +79,11 @@ def analyse_asfe_with_module(module):
 
     return final_dg
 
-
+@pytest.mark.asfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_compare_mda_and_mdtraj():
 
     run_asfe_system()
