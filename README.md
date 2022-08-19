@@ -33,7 +33,7 @@ In addition, you will need openMM or CHARMM/domdec (CHARMM/openMM) installed, de
 
 Transformato is a python script, that generates input for MD simulations to calculated free energies between two ligands usign the CC/SAI method based on CHARMM-GUI generated folders. The CHARMM-GUI generated folders need to be structured as mentioned in point 5 later on. The **Transformato** package uses this files to create directories containing the necessary information for running an openMM or CHARMM/domdec (CHARMM/openMM) MD simulation the so called intermediate states (*intst1*,*intst2*,...). After sampling of the different intermediate states, once of the ligand solvated in water (files called *lig_in_waterbox.* and once of the protein-ligand solvated in water (corresponding files called *lig_in_complex.*), **Transformato** analyses the trajectories with the help of the python package [pymbar](https://github.com/choderalab/pymbar). A scheme of the different steps used to perform a free energy calculation with **Transformato** is shown in the folowing Figure:
 
-<center><img src="https://user-images.githubusercontent.com/72743318/166959443-cddda959-8432-4fd9-a836-c9271b4cd2c9.svg" width="300">
+<center><img src="https://user-images.githubusercontent.com/72743318/180748930-857e378b-34c0-459a-a0a0-391f3065fae8.jpg" width="500">
 
 
 For calculating relative binding free energies between two (or more ligands) one has to obtain starting structures which can be obtained from CHARMM-GUI the following way:

@@ -171,8 +171,9 @@ class SystemStructure(object):
         parameter_files = tuple()
         l1 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.rtf"
         l2 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.prm"
+        l3 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.str"
 
-        for file_path in [l1, l2]:
+        for file_path in [l1, l2, l3]:
             if os.path.isfile(file_path):
                 parameter_files += (file_path,)
             else:
