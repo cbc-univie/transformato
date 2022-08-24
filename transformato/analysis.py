@@ -2,7 +2,7 @@ import copy
 import gc
 import logging
 import multiprocessing as mp
-import os
+import os,sys
 import pickle
 import subprocess
 from collections import defaultdict
@@ -512,6 +512,8 @@ class FreeEnergyCalculator(object):
     ):
 
         logger.info(f"Evaluating with {engine}, using {num_proc} CPUs")
+        if not os.path.isdir(self.base_path):
+            sys.exit(f"{self.base_path} does not exist")
         self.nr_of_states = len(next(os.walk(f"{self.base_path}"))[1])
 
         if engine == "openMM":
