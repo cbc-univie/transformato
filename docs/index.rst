@@ -18,9 +18,6 @@ or **relative binding free energies** (RBFE) [3]_ can be calculated. For the pro
 If you'd like to take a look at the code,
 head over to our `github repository <https://github.com/wiederm/transformato>`_\ .
  
- Hallo das ist ein Test
- und noch ein weitere Zeile
- 
 .. toctree::
   :maxdepth: 2
   :caption: Contents:
@@ -35,7 +32,7 @@ head over to our `github repository <https://github.com/wiederm/transformato>`_\
   Troubleshooting
   api
  
- 
+ Noch ein letzter Test
  
  
  
