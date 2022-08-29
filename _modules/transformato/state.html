@@ -92,7 +92,7 @@
 
 <div class="viewcode-block" id="IntermediateStateFactory"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory">[docs]</a><span class="k">class</span> <span class="nc">IntermediateStateFactory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <div class="viewcode-block" id="IntermediateStateFactory.__init__"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">transformato</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">SystemStructure</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">transformato</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">SystemStructure</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">multiple_runs</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the intermediate directories with for the provided systems with the provided mutations.</span>
@@ -104,6 +104,8 @@
 <span class="sd">            list of mutations defined by the transformato.ProposeMutationRoute object</span>
 <span class="sd">        configuration : dict</span>
 <span class="sd">            configuration dictionary</span>
+<span class="sd">        multiple_runs : bool or int</span>
+<span class="sd">            defines how many runs should be performed per intst state, if not used it is 0 (=False) else give an integer number</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="n">system</span>
@@ -113,7 +115,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="p">:</span> <span class="nb">str</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charmm_factory</span> <span class="o">=</span> <span class="n">CharmmFactory</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_files</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="mi">1</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span> <span class="o">=</span> <span class="n">multiple_runs</span></div>
 
 <div class="viewcode-block" id="IntermediateStateFactory.write_state"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory.write_state">[docs]</a>    <span class="k">def</span> <span class="nf">write_state</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -175,6 +178,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_prm_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_toppar_str</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_copy_files</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
+
+        <span class="c1"># Create run folder for dcd output for each intst state</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/run_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                
         <span class="bp">self</span><span class="o">.</span><span class="n">output_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
 
         <span class="c1"># Used for restraints:</span>
@@ -247,7 +259,10 @@
 
         <span class="n">basedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">charmm_gui_base</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span>
+        <span class="p">):</span>
             <span class="c1"># copy simulation bash script</span>
             <span class="n">charmm_simulation_submit_script_source</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/simulation-rsfe_charmm.sh&quot;</span>
@@ -380,6 +395,27 @@
                     <span class="sa">f</span><span class="s2">&quot;No restart file found for </span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2"> -- starting simulation from crd file.&quot;</span>
                 <span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">_modify_submit_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shFile</span><span class="p">):</span>
+        <span class="c1"># submit script is modified to loop over all runs depending on the number defined in the consecutive</span>
+        <span class="c1"># runs </span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;We will manipulate the submit script for use with multiple runs&quot;</span><span class="p">)</span>
+
+        <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shFile</span><span class="si">}</span><span class="s2">.tmp&quot;</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shFile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;r+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input=lig_in_&quot;</span><span class="p">):</span>
+                    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;for i in {1..&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;};</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;do </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;python -u openmm&quot;</span><span class="p">):</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{istep}</span><span class="s2">.dcd&quot;</span><span class="p">,</span><span class="s2">&quot;run_$</span><span class="si">{i}</span><span class="s2">/$</span><span class="si">{istep}</span><span class="s2">.dcd&quot;</span><span class="p">)</span>
+                    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;run_$</span><span class="si">{i}</span><span class="s2">/&quot;</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>  
+                    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;done </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>    
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">fout</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">shFile</span><span class="p">)</span>
+
 <div class="viewcode-block" id="IntermediateStateFactory._copy_omm_files"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_omm_files">[docs]</a>    <span class="k">def</span> <span class="nf">_copy_omm_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _copy_omm_files Copyies the files needed for the production runs with openMM in the intst* directories</span>
@@ -396,7 +432,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">basedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">charmm_gui_base</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span>
+        <span class="p">):</span>
             <span class="c1"># parse omm simulation paramter</span>
             <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;waterbox&quot;</span><span class="p">:</span>
@@ -423,6 +462,8 @@
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span>
                 <span class="n">omm_simulation_submit_script_source</span><span class="p">,</span> <span class="n">omm_simulation_submit_script_target</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_modify_submit_script</span><span class="p">(</span><span class="n">omm_simulation_submit_script_target</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rbfe&quot;</span><span class="p">:</span>
             <span class="c1"># parse omm simulation paramter</span>
@@ -489,7 +530,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_switching_function</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span>
+        <span class="p">):</span>
             <span class="c1"># add vacuum scripts</span>
             <span class="n">omm_simulation_script_source</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/openmm_run_vacuum.py&quot;</span>

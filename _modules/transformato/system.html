@@ -132,7 +132,10 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_to_nx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span>
+            <span class="ow">or</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;waterbox&quot;</span><span class="p">,</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
                 <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
