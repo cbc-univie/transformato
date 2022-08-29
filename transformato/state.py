@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class IntermediateStateFactory(object):
     def __init__(
-        self, system: transformato.system.SystemStructure, configuration: dict, consecutive_runs = False
+        self, system: transformato.system.SystemStructure, configuration: dict, multiple_runs = False
     ):
         """
         Generate the intermediate directories with for the provided systems with the provided mutations.
@@ -29,8 +29,8 @@ class IntermediateStateFactory(object):
             list of mutations defined by the transformato.ProposeMutationRoute object
         configuration : dict
             configuration dictionary
-        consecutive_runs : bool or int
-            defines how many runs should be performed per intst state, if not used it is False else give an integer number
+        multiple_runs : bool or int
+            defines how many runs should be performed per intst state, if not used it is 0 (=False) else give an integer number
         """
 
         self.system = system
@@ -41,7 +41,7 @@ class IntermediateStateFactory(object):
         self.charmm_factory = CharmmFactory(configuration, self.system.structure)
         self.output_files = []
         self.current_step = 1
-        self.consecutive_runs = consecutive_runs
+        self.multiple_runs = multiple_runs
 
     def write_state(
         self,
@@ -105,11 +105,11 @@ class IntermediateStateFactory(object):
         self._copy_files(output_file_base)
 
         # Create run folder for dcd output for each intst state
-        if self.consecutive_runs:
-            if type(self.consecutive_runs) == str:
-                os.makedirs(f"{output_file_base}/{self.consecutive_runs}")
+        if self.multiple_runs:
+            if type(self.multiple_runs) == str:
+                os.makedirs(f"{output_file_base}/{self.multiple_runs}")
             else:
-                for i in range(1,self.consecutive_runs + 1):
+                for i in range(1,self.multiple_runs + 1):
                     os.makedirs(f"{output_file_base}/run_{i}")
                 
         self.output_files.append(output_file_base)
@@ -329,7 +329,7 @@ with open(file_name + '_system.xml','w') as outfile:
         with open (f"{shFile}", "r+") as f:
             for line in f:
                 if line.startswith(f"input=lig_in_"):
-                    fout.write("for i in {1.." + f"{self.consecutive_runs}" + "};\n")
+                    fout.write("for i in {1.." + f"{self.multiple_runs}" + "};\n")
                     fout.write("do \n")
                     fout.write(line)
                 elif line.startswith("python -u openmm"):
@@ -387,7 +387,7 @@ with open(file_name + '_system.xml','w') as outfile:
             shutil.copyfile(
                 omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
-            if self.consecutive_runs:
+            if self.multiple_runs:
                 self._modify_submit_script(omm_simulation_submit_script_target)
 
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":

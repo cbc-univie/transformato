@@ -32,12 +32,12 @@ def test_create_asfe_system():
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
         input_dir=get_testsystems_dir(),
-        output_dir=get_test_output_dir(),
+        output_dir="/site/raid3/johannes/free_solv_test/charmm/",
     )
 
     s1, mutation_list = create_asfe_system(configuration)
 
-    i = IntermediateStateFactory(system=s1, consecutive_runs=3, configuration=configuration)
+    i = IntermediateStateFactory(system=s1, multiple_runs= 3, configuration=configuration)
 
     perform_mutations(
         configuration=configuration,
@@ -59,7 +59,7 @@ def run_asfe_system():
 
     s1, mutation_list = create_asfe_system(configuration)
 
-    i = IntermediateStateFactory(system=s1, consecutive_runs=3, configuration=configuration)
+    i = IntermediateStateFactory(system=s1, multiple_runs=3, configuration=configuration)
 
     perform_mutations(
         configuration=configuration,
@@ -91,7 +91,7 @@ def analyse_asfe_with_module(module):
             max_snapshots=50,
             num_proc=2,
             analyze_traj_with=module,
-            consecutive_runs=run,
+            multiple_runs=run,
             show_summary=True,
         )
         print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")
