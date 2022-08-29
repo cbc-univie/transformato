@@ -10,10 +10,12 @@ from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
+from random import randint
 import numpy as np
 import warnings
-import os
+import os, sys
 import pytest
+
 warnings.filterwarnings("ignore", module="parmed")
 
 
@@ -27,17 +29,19 @@ def create_asfe_system(configuration):
 
     return s1, mutation_list
 
+@pytest.mark.asfe
 def test_create_asfe_system():
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
         input_dir=get_testsystems_dir(),
-        output_dir="/site/raid3/johannes/free_solv_test/charmm/",
+        output_dir=get_test_output_dir(),
     )
 
     s1, mutation_list = create_asfe_system(configuration)
 
-    i = IntermediateStateFactory(system=s1, multiple_runs= 3, configuration=configuration)
+    multiple_runs = 3
+    i = IntermediateStateFactory(system=s1, multiple_runs= multiple_runs, configuration=configuration)
 
     perform_mutations(
         configuration=configuration,
@@ -46,8 +50,12 @@ def test_create_asfe_system():
         mutation_list=mutation_list,
     )
 
+    # some checks for asfe
     assert len(i.output_files) == 7
     assert len((mutation_list)["charge"][0].atoms_to_be_mutated) == 6
+    name = f"{configuration['system']['structure1']['name']}"
+    if not os.path.exists(f"{get_test_output_dir()}/{name}-asfe/{name}/intst{randint(1,len(i.output_files))}/run_{randint(1,multiple_runs)}/"):
+        sys.exit(f"File does not exist")
 
 def run_asfe_system():
 
