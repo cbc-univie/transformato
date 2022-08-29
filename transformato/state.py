@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import glob
 from io import StringIO
 from typing import List
 
@@ -42,6 +43,24 @@ class IntermediateStateFactory(object):
         self.output_files = []
         self.current_step = 1
         self.consecutive_runs = consecutive_runs
+
+    def endstate_correction(self):
+        
+        try:
+            os.makedirs(f"{self.path}/../endstate_correction")
+        except:
+            logger.info(f"Folder for endstate correction exist already")
+
+        # copyt perform_correction.py and the corresponding submit script to the newly created folder
+        endstate_correction_script_source = f"{self.configuration['bin_dir']}/perform_correction.py"
+        endstate_correction_script_target = f"{self.path}/../endstate_correction/perform_correction.py"
+        shutil.copyfile(endstate_correction_script_source, endstate_correction_script_target)
+
+        endstate_correction_script_source = f"{self.configuration['bin_dir']}/submit_switching_slurm.sh"
+        endstate_correction_script_target = f"{self.path}/../endstate_correction/submit_switching_slurm.sh"
+        shutil.copyfile(endstate_correction_script_source, endstate_correction_script_target)
+
+        self.configuration["simulation"]
 
     def write_state(
         self,
