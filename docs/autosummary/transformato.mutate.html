@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>transformato.mutate &mdash; transformato  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="transformato.restraints" href="transformato.restraints.html" />
+    <link rel="prev" title="API Documentation" href="../api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo_transformato.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../whatistransformato.html">Theoretical background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../System_Setup.html">System Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Additional_Settings.html">Additional Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Running_Simulation.html">Running Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Analysis.html">Trajectory Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">transformato.mutate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformato.restraints.html">transformato.restraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformato.state.html">transformato.state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformato.system.html">transformato.system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformato.utils.html">transformato.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">transformato</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../api.html">API Documentation</a> &raquo;</li>
+      <li>transformato.mutate</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/autosummary/transformato.mutate.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="transformato-mutate">
+<h1>transformato.mutate<a class="headerlink" href="#transformato-mutate" title="Permalink to this heading"></a></h1>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-transformato.mutate"></span><span class="target" id="module-0"></span></div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="transformato.mutate.CommonCoreTransformation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">CommonCoreTransformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc1_indicies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cc2_indicies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ligand1_psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ligand2_psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc_cc1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc_cc2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge_compensated_ligand2_psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge_mutation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bonded_terms_mutation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#CommonCoreTransformation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.CommonCoreTransformation" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cc1_indicies</strong> (<em>list</em>) – </p></li>
+<li><p><strong>cc2_indicies</strong> (<em>list</em>) – </p></li>
+<li><p><strong>ligand1_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>ligand2_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>tlc_cc1</strong> (<em>str</em>) – </p></li>
+<li><p><strong>tlc_cc2</strong> (<em>str</em>) – </p></li>
+<li><p><strong>charge_compensated_ligand2_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>charge_mutation</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>bonded_terms_mutation</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.CommonCoreTransformation.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc1_indicies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cc2_indicies</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ligand1_psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ligand2_psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc_cc1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc_cc2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge_compensated_ligand2_psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge_mutation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bonded_terms_mutation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#CommonCoreTransformation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.CommonCoreTransformation.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Scale the bonded parameters inside the common core.
+:param cc1_indicies: indices of cc1
+:type cc1_indicies: list
+:param cc2_indicies: indices of cc2 (in the same order as cc1)
+:type cc2_indicies: list
+:param ligand1_psf:
+:type ligand1_psf: pm.charmm.CharmmPsfFile (copy of only ligand)
+:param ligand2_psf: the target psf that is used to generate the new bonded parmaeters
+:type ligand2_psf: pm.charmm.CharmmPsfFile (copy of only ligand)
+:param tlc_cc1: three letter code of ligand in cc1
+:type tlc_cc1: str
+:param tlc_cc2: three letter code of ligand in cc2
+:type tlc_cc2: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cc1_indicies</strong> (<em>list</em>) – </p></li>
+<li><p><strong>cc2_indicies</strong> (<em>list</em>) – </p></li>
+<li><p><strong>ligand1_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>ligand2_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>tlc_cc1</strong> (<em>str</em>) – </p></li>
+<li><p><strong>tlc_cc2</strong> (<em>str</em>) – </p></li>
+<li><p><strong>charge_compensated_ligand2_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>charge_mutation</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>bonded_terms_mutation</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformato.mutate.CommonCoreTransformation.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#transformato.mutate.CommonCoreTransformation.__weakref__" title="Permalink to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.CommonCoreTransformation._get_atom_mapping">
+<span class="sig-name descname"><span class="pre">_get_atom_mapping</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#CommonCoreTransformation._get_atom_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.CommonCoreTransformation._get_atom_mapping" title="Permalink to this definition"></a></dt>
+<dd><p>_get_atom_mapping – match the atom names of the common cores</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>matched common core atom names</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.CommonCoreTransformation._mutate_atoms">
+<span class="sig-name descname"><span class="pre">_mutate_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#CommonCoreTransformation._mutate_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.CommonCoreTransformation._mutate_atoms" title="Permalink to this definition"></a></dt>
+<dd><p>mutate atom types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – if common core atoms can not be matched</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>lambda_value</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.CommonCoreTransformation.mutate">
+<span class="sig-name descname"><span class="pre">mutate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#CommonCoreTransformation.mutate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.CommonCoreTransformation.mutate" title="Permalink to this definition"></a></dt>
+<dd><p>Mutates the bonded parameters of cc1 to cc2.
+:param psf: psf that gets mutated
+:type psf: pm.charmm.CharmmPsfFile
+:param lambda_value: lambda_value
+:type lambda_value: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>lambda_value</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="transformato.mutate.DummyRegion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">DummyRegion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_termin_real_and_dummy_atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connected_dummy_regions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lj_default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#DummyRegion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.DummyRegion" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>match_termin_real_and_dummy_atoms</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>connected_dummy_regions</strong> (<em>list</em>) – </p></li>
+<li><p><strong>tlc</strong> (<em>str</em>) – </p></li>
+<li><p><strong>lj_default</strong> (<em>list</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.DummyRegion.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.mutate.DummyRegion.__eq__" title="Permalink to this definition"></a></dt>
+<dd><p>Return self==value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformato.mutate.DummyRegion.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#transformato.mutate.DummyRegion.__hash__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.DummyRegion.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_termin_real_and_dummy_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connected_dummy_regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lj_default</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.mutate.DummyRegion.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>match_termin_real_and_dummy_atoms</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>connected_dummy_regions</strong> (<em>list</em>) – </p></li>
+<li><p><strong>tlc</strong> (<em>str</em>) – </p></li>
+<li><p><strong>lj_default</strong> (<em>list</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.DummyRegion.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#transformato.mutate.DummyRegion.__repr__" title="Permalink to this definition"></a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformato.mutate.DummyRegion.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#transformato.mutate.DummyRegion.__weakref__" title="Permalink to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="transformato.mutate.Mutation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">Mutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_to_be_mutated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_region</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#Mutation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.Mutation" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms_to_be_mutated</strong> (<em>list</em>) – </p></li>
+<li><p><strong>dummy_region</strong> (<a class="reference internal" href="#transformato.mutate.DummyRegion" title="transformato.mutate.DummyRegion"><em>DummyRegion</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.Mutation.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_to_be_mutated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_region</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#Mutation.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.Mutation.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms_to_be_mutated</strong> (<em>list</em>) – </p></li>
+<li><p><strong>dummy_region</strong> (<a class="reference internal" href="#transformato.mutate.DummyRegion" title="transformato.mutate.DummyRegion"><em>DummyRegion</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformato.mutate.Mutation.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#transformato.mutate.Mutation.__weakref__" title="Permalink to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.Mutation._compensate_charge">
+<span class="sig-name descname"><span class="pre">_compensate_charge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_charge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#Mutation._compensate_charge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.Mutation._compensate_charge" title="Permalink to this definition"></a></dt>
+<dd><p>_compensate_charge This function compensates the charge changes of a dummy region on the terminal real atom
+that connects the specific dummy group to the real region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psf</strong> (<em>pm.charmm.CharmmPsfFile</em>) – [description]</p></li>
+<li><p><strong>total_charge</strong> (<em>int</em>) – [description]</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.Mutation.mutate">
+<span class="sig-name descname"><span class="pre">mutate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value_electrostatic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value_vdw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vdw_atom_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steric_mutation_to_default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#Mutation.mutate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.Mutation.mutate" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the mutation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>lambda_value_electrostatic</strong> (<em>float</em>) – </p></li>
+<li><p><strong>lambda_value_vdw</strong> (<em>float</em>) – </p></li>
+<li><p><strong>vdw_atom_idx</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+<li><p><strong>steric_mutation_to_default</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="transformato.mutate.MutationDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">MutationDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">atoms_to_be_mutated:</span> <span class="pre">List[int],</span> <span class="pre">common_core:</span> <span class="pre">List[int],</span> <span class="pre">dummy_region:</span> <span class="pre">transformato.mutate.DummyRegion,</span> <span class="pre">vdw_atom_idx:</span> <span class="pre">List[int]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">steric_mutation_to_default:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#MutationDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.MutationDefinition" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms_to_be_mutated</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+<li><p><strong>common_core</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+<li><p><strong>dummy_region</strong> (<a class="reference internal" href="#transformato.mutate.DummyRegion" title="transformato.mutate.DummyRegion"><em>DummyRegion</em></a>) – </p></li>
+<li><p><strong>vdw_atom_idx</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+<li><p><strong>steric_mutation_to_default</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.MutationDefinition.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.mutate.MutationDefinition.__eq__" title="Permalink to this definition"></a></dt>
+<dd><p>Return self==value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformato.mutate.MutationDefinition.__hash__">
+<span class="sig-name descname"><span class="pre">__hash__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#transformato.mutate.MutationDefinition.__hash__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.MutationDefinition.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atoms_to_be_mutated</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">common_core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vdw_atom_idx=&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steric_mutation_to_default=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.mutate.MutationDefinition.__init__" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms_to_be_mutated</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+<li><p><strong>common_core</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+<li><p><strong>dummy_region</strong> (<a class="reference internal" href="#transformato.mutate.DummyRegion" title="transformato.mutate.DummyRegion"><em>DummyRegion</em></a>) – </p></li>
+<li><p><strong>vdw_atom_idx</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – </p></li>
+<li><p><strong>steric_mutation_to_default</strong> (<em>bool</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.MutationDefinition.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#transformato.mutate.MutationDefinition.__repr__" title="Permalink to this definition"></a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformato.mutate.MutationDefinition.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#transformato.mutate.MutationDefinition.__weakref__" title="Permalink to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">ProposeMutationRoute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s1</strong> (<a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a>) – </p></li>
+<li><p><strong>s2</strong> (<a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>A class that proposes the mutation route between two molecules with a
+common core (same atom types) based on two mols and generates the mutation
+objects to perform the mutation on the psf objects.
+:param mol1:
+:type mol1: Chem.Mol
+:param mol2:
+:type mol2: Chem.Mol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s1</strong> (<a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a>) – </p></li>
+<li><p><strong>s2</strong> (<a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.__weakref__" title="Permalink to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._check_for_lp">
+<span class="sig-name descname"><span class="pre">_check_for_lp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">odered_connected_dummy_regions_cc_with_lp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._check_for_lp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._check_for_lp" title="Permalink to this definition"></a></dt>
+<dd><p>With the help of parmed this function will look in the ordered_connected_dummy_regions list if
+there is a atom which has lonepairs. It will check wheather the lp belongs to the common core or
+to the dummy region and assign it into the sorted list accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>odered_connected_dummy_regions_cc_with_lp</strong> (<em>list</em>) – </p></li>
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>tlc</strong> (<em>str</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._display_mol">
+<span class="sig-name descname"><span class="pre">_display_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._display_mol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._display_mol" title="Permalink to this definition"></a></dt>
+<dd><p>Gets mol as input and displays its 2D Structure using IPythonConsole.
+:param mol: a rdkit mol object
+:type mol: Chem.Mol</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mol</strong> (<em>Mol</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._find_mcs">
+<span class="sig-name descname"><span class="pre">_find_mcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol1_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol2_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._find_mcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._find_mcs" title="Permalink to this definition"></a></dt>
+<dd><p>A class that proposes the mutation route between two molecules with a
+common core (same atom types) based on two mols and generates the mutation
+objects to perform the mutation on the psf objects.
+:param mol1_name:
+:type mol1_name: str
+:param mol2_name:
+:type mol2_name: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol1_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>mol2_name</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._find_terminal_atom">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_find_terminal_atom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._find_terminal_atom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._find_terminal_atom" title="Permalink to this definition"></a></dt>
+<dd><p>Find atoms that connect the molecule to the common core.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cc_idx</strong> (<em>list</em>) – common core index atoms</p></li>
+<li><p><strong>mol</strong> (<em>[</em><em>type</em><em>]</em>) – rdkit mol object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>Tuple</em>[list, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._get_common_core">
+<span class="sig-name descname"><span class="pre">_get_common_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._get_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._get_common_core" title="Permalink to this definition"></a></dt>
+<dd><p>Helper Function - should not be called directly.
+Returns the common core.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – </p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_match_terminal_real_and_dummy_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_atoms_cc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dummy_atoms_cc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._match_terminal_real_and_dummy_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms" title="Permalink to this definition"></a></dt>
+<dd><p>Matches the terminal real and dummy atoms and returns a dict with real atom idx as key and a set of dummy atoms that connect
+to this real atom as a set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mol</strong> (<em>[</em><em>Chem.Mol</em><em>]</em>) – The mol object with the real and dummy atoms</p></li>
+<li><p><strong>real_atoms_cc</strong> (<em>list</em>) – list of real atom idx</p></li>
+<li><p><strong>dummy_atoms_cc</strong> (<em>list</em>) – list of dummy atom idx</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[description]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[type]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol1">
+<span class="sig-name descname"><span class="pre">_match_terminal_real_and_dummy_atoms_for_mol1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol1" title="Permalink to this definition"></a></dt>
+<dd><p>Matches the terminal real and dummy atoms and returns a dict with real atom idx as key and a set of dummy atoms that connect
+to this real atom as a set</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol2">
+<span class="sig-name descname"><span class="pre">_match_terminal_real_and_dummy_atoms_for_mol2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._match_terminal_real_and_dummy_atoms_for_mol2" title="Permalink to this definition"></a></dt>
+<dd><p>Matches the terminal real and dummy atoms and returns a dict with real atom idx as key and a set of dummy atoms that connect
+to this real atom as a set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._mutate_to_common_core">
+<span class="sig-name descname"><span class="pre">_mutate_to_common_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dummy_region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cc_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._mutate_to_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._mutate_to_common_core" title="Permalink to this definition"></a></dt>
+<dd><p>Helper function - do not call directly.
+Generates the mutation route to the common fore for mol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dummy_region</strong> (<a class="reference internal" href="#transformato.mutate.DummyRegion" title="transformato.mutate.DummyRegion"><em>DummyRegion</em></a>) – </p></li>
+<li><p><strong>cc_idx</strong> (<em>list</em>) – </p></li>
+<li><p><strong>mol_name</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._show_common_core">
+<span class="sig-name descname"><span class="pre">_show_common_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._show_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._show_common_core" title="Permalink to this definition"></a></dt>
+<dd><p>Helper function - do not call directly.
+Show common core.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._transform_common_core">
+<span class="sig-name descname"><span class="pre">_transform_common_core</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._transform_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._transform_common_core" title="Permalink to this definition"></a></dt>
+<dd><p>Common Core 1 is transformed to Common core 2. Bonded parameters and charges are adjusted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol1">
+<span class="sig-name descname"><span class="pre">generate_mutations_to_common_core_for_mol1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.generate_mutations_to_common_core_for_mol1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol1" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>mutations: list</dt><dd><p>list of mutations</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol2">
+<span class="sig-name descname"><span class="pre">generate_mutations_to_common_core_for_mol2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.generate_mutations_to_common_core_for_mol2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol2" title="Permalink to this definition"></a></dt>
+<dd><p>Generates the mutation route to the common fore for mol2.
+:returns: <strong>mutations</strong> – list of mutations
+:rtype: list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.get_common_core_idx_mol1">
+<span class="sig-name descname"><span class="pre">get_common_core_idx_mol1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.get_common_core_idx_mol1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.get_common_core_idx_mol1" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the common core of mol1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.get_common_core_idx_mol2">
+<span class="sig-name descname"><span class="pre">get_common_core_idx_mol2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.get_common_core_idx_mol2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.get_common_core_idx_mol2" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the common core of mol2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.show_common_core_on_mol1">
+<span class="sig-name descname"><span class="pre">show_common_core_on_mol1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.show_common_core_on_mol1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.show_common_core_on_mol1" title="Permalink to this definition"></a></dt>
+<dd><p>Shows common core on mol1</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.show_common_core_on_mol2">
+<span class="sig-name descname"><span class="pre">show_common_core_on_mol2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.show_common_core_on_mol2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.show_common_core_on_mol2" title="Permalink to this definition"></a></dt>
+<dd><p>Shows common core on mol2</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.mutate_pure_tautomers">
+<span class="sig-prename descclassname"><span class="pre">mutate.</span></span><span class="sig-name descname"><span class="pre">mutate_pure_tautomers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">system2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">single_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_bonded_windows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.mutate.mutate_pure_tautomers" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s1_to_s2</strong> (<a class="reference internal" href="#transformato.mutate.ProposeMutationRoute" title="transformato.mutate.ProposeMutationRoute"><em>ProposeMutationRoute</em></a>) – </p></li>
+<li><p><strong>system1</strong> (<a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a>) – </p></li>
+<li><p><strong>system2</strong> (<a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a>) – </p></li>
+<li><p><strong>nr_of_bonded_windows</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.perform_mutations">
+<span class="sig-prename descclassname"><span class="pre">mutate.</span></span><span class="sig-name descname"><span class="pre">perform_mutations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mutation_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_of_heavy_atoms_to_be_mutated</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_lj_of_hydrogens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_lj_of_heavy_atoms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nr_of_mutation_steps_cc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.mutate.perform_mutations" title="Permalink to this definition"></a></dt>
+<dd><p>Performs the mutations necessary to mutate the physical endstate to the defined common core.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> (<em>dict</em>) – A configuration dictionary.</p></li>
+<li><p><strong>i</strong> (<em>[</em><em>type</em><em>]</em>) – IntermediateState instance</p></li>
+<li><p><strong>mutation_list</strong> (<em>list</em>) – list of mutation objects</p></li>
+<li><p><strong>list_of_heavy_atoms_to_be_mutated</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of atom indices that define the order in which the vdw parameters of the heavy atoms are turned off. Defaults to [].</p></li>
+<li><p><strong>nr_of_mutation_steps_charge</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of the charges. Defaults to 5.</p></li>
+<li><p><strong>nr_of_mutation_steps_lj_of_hydrogens</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of lj of hydrogens. Only needed for systems with many hydrogens in dummy region</p></li>
+<li><p><strong>nr_of_mutation_steps_lj_of_heavy_atoms</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to turne of the lj of heavy atoms</p></li>
+<li><p><strong>nr_of_mutation_steps_cc</strong> (<em>int</em><em>, </em><em>optional</em>) – Nr of steps to interpolate between the common core parameters. Defaults to 5.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of directories with the parameter and topology files</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../api.html" class="btn btn-neutral float-left" title="API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transformato.restraints.html" class="btn btn-neutral float-right" title="transformato.restraints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
