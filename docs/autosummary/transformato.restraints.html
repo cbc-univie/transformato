@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>transformato.restraints &mdash; transformato  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="transformato.state" href="transformato.state.html" />
+    <link rel="prev" title="transformato.mutate" href="transformato.mutate.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html">
+            <img src="../_static/logo_transformato.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../whatistransformato.html">Theoretical background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../System_Setup.html">System Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Additional_Settings.html">Additional Settings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Running_Simulation.html">Running Simulations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Analysis.html">Trajectory Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="transformato.mutate.html">transformato.mutate</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">transformato.restraints</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basic-function">Basic function:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usage">Usage:</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformato.state.html">transformato.state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformato.system.html">transformato.system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformato.utils.html">transformato.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">transformato</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../api.html">API Documentation</a> &raquo;</li>
+      <li>transformato.restraints</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/autosummary/transformato.restraints.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="transformato-restraints">
+<h1>transformato.restraints<a class="headerlink" href="#transformato-restraints" title="Permalink to this heading"></a></h1>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-transformato.restraints"></span><span class="target" id="module-0"></span><p>Manages restraints and the forces created from them.</p>
+<div class="section" id="basic-function">
+<h3>Basic function:<a class="headerlink" href="#basic-function" title="Permalink to this heading"></a></h3>
+<p>From the ‘restraints’ section in the config.yaml, the intermediate state factory creates an appropriate restraints.yaml in the
+intermediate state directories.</p>
+<p>When the simulation is run, openMM_run.py checks for the existence of these restraints.yaml. If it finds one, a number of Restraint() instances commensurate
+to the number of desired restraints is created. These each create an appropriate openMM force as defined by their parameters. That force ist then applied to the openMM simulation.</p>
+</div>
+<div class="section" id="usage">
+<h3>Usage:<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h3>
+<p>Unless you directly want to modify functionality, you should not need to call here directly.
+Define your restraints in the config.yaml.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>For further usage instructions, see the ‘System Setup’ section of the main documentation.</p>
+</div>
+</div>
+</div>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="transformato.restraints.Restraint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">Restraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selligand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selprotein</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'harmonic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_extremities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selligand</strong> (<em>str</em>) – </p></li>
+<li><p><strong>selprotein</strong> (<em>str</em>) – </p></li>
+<li><p><strong>pdbpath</strong> (<em>str</em>) – </p></li>
+<li><p><strong>k</strong> (<em>float</em>) – </p></li>
+<li><p><strong>shape</strong> (<em>str</em>) – </p></li>
+<li><p><strong>wellsize</strong> (<em>float</em>) – </p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – </p></li>
+<li><p><strong>n_extremities</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.restraints.Restraint.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selligand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selprotein</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'harmonic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_extremities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Class representing a restraint to apply to the system.</p>
+<p>Intermediary step - openMM force objects are generated directly from this class and applied to the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>AttributeError</strong> – If the potential shape requested is not implemented.</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>selligand</strong> (<em>MDAnalysis selection string</em>) – MDAnalysis selection strings</p></li>
+<li><p><strong>selprotein</strong> (<em>MDAnalysis selection string</em>) – MDAnalysis selection strings</p></li>
+<li><p><strong>k</strong> (<em>float</em>) – the force (=spring) constant applied to the potential energy formula. See the ‘System Setup’ section for details.</p></li>
+<li><p><strong>pdbpath</strong> (<em>str</em>) – the path to the pdbfile underlying the topology analysis</p></li>
+<li><p><strong>shape</strong> (<em>str</em>) – ‘harmonic’ or ‘flatbottom’. Defines the shape of the harmonic energy potential.</p></li>
+<li><p><strong>wellsize</strong> (<em>float</em>) – Defines the well-size in a flat-bottom potential. Defaults to 0.1 nanometers.</p></li>
+<li><p><strong>mode</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Catcher for unneeded restraint_args entry</p></li>
+<li><p><strong>n_extremities</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Catcher for unneeded restraint_args entry</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformato.restraints.Restraint.__weakref__">
+<span class="sig-name descname"><span class="pre">__weakref__</span></span><a class="headerlink" href="#transformato.restraints.Restraint.__weakref__" title="Permalink to this definition"></a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.restraints.Restraint._generate_continuous_1D_step_function">
+<span class="sig-name descname"><span class="pre">_generate_continuous_1D_step_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permitted_distance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint._generate_continuous_1D_step_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint._generate_continuous_1D_step_function" title="Permalink to this definition"></a></dt>
+<dd><p>Creates and returns a openMM continous1DStepFunction</p>
+<p>Very simply, this creates a TabulatedFunction that takes the distance of the atom group COM to its origin, and if greater, returns 1. Otherwise, it returns 0. This function does not need to be called directly.
+It is called by the restraint generator if a flat-bottom restraint is requested.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>permitted_distance</strong> (<em>float</em>) – How large the well size is (meaning the 3D radius). Give in nanometers.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An openMM Continuous1DFunction object representing the StepForce</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.restraints.Restraint.applyForce">
+<span class="sig-name descname"><span class="pre">applyForce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint.applyForce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint.applyForce" title="Permalink to this definition"></a></dt>
+<dd><p>Applies the force to the openMM system</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>system</strong> (<em>openMM.system</em>) – The openMM system to which to apply the Force</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.restraints.Restraint.createForce">
+<span class="sig-name descname"><span class="pre">createForce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">common_core_names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint.createForce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint.createForce" title="Permalink to this definition"></a></dt>
+<dd><p>Actually creates the force, after dismissing all idxs not in the common core from the molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>common_core_names</strong> (<em>array</em><em>[</em><em>str</em><em>]</em>) – <ul class="simple">
+<li><p>Array with strings of the common core names. Usually provided by the restraint.yaml file.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An openMM force object representing the restraint bond.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>openMM.CustomCentroidBondForce</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.restraints.create_restraints_from_config">
+<span class="sig-prename descclassname"><span class="pre">restraints.</span></span><span class="sig-name descname"><span class="pre">create_restraints_from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.restraints.create_restraints_from_config" title="Permalink to this definition"></a></dt>
+<dd><p>Takes the restraints.yaml config and returns the specified restraints.</p>
+<p>This is the function that should be invoked by openmm_run.py.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> (<em>dict</em>) – the loaded yaml config (as returned by yaml.safe_load() or similar</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of Restraint instances</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.restraints.generate_extremities">
+<span class="sig-prename descclassname"><span class="pre">restraints.</span></span><span class="sig-name descname"><span class="pre">generate_extremities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_extremities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphinner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphouter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.restraints.generate_extremities" title="Permalink to this definition"></a></dt>
+<dd><p>Takes the common core and generates n extremities at the furthest point</p>
+<blockquote>
+<div><p>Returns a selection string of the extremities with a sphlayer (see MDAnalysis docs) selecting type C from sphinner to sphouter.
+The algorithm works as follows:</p>
+<p>(<strong>All of these operations only operate on carbons in the common core</strong>)</p>
+<ol class="arabic">
+<li><p>Take the furthest C from the center of Mass.</p></li>
+<li><p>Take the furthest C from that C.</p></li>
+<li><p>Until len(extremity_cores)==n_extremities:</p>
+<blockquote>
+<div><p>Pick the C where the sum distance from all previous cores is greatest.</p>
+<p>Add it to the extremity_cores.</p>
+</div></blockquote>
+</li>
+<li><p>Generate selection strings for all extremity cores and return.</p></li>
+</ol>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configuration</strong> (<em>dict</em>) – the read-in restraints.yaml</p></li>
+<li><p><strong>pdbpath</strong> (<em>str</em>) – path to local pdb used as base for the restraints</p></li>
+<li><p><strong>n_extremities</strong> (<em>int</em>) – how many extremities to generate. Cannot exceed number of carbons in the ligand</p></li>
+<li><p><strong>sphinner</strong> (<em>float</em>) – Distance to start of the sphlayer, default 0</p></li>
+<li><p><strong>sphouter</strong> (<em>float</em>) – Distance to end of the sphlayer, default 5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If an invalid amount of extremities is specified.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.restraints.get3DDistance">
+<span class="sig-prename descclassname"><span class="pre">restraints.</span></span><span class="sig-name descname"><span class="pre">get3DDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.restraints.get3DDistance" title="Permalink to this definition"></a></dt>
+<dd><p>Takes two 3d positions as array and calculates the distance between them</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos1</strong> (<em>3D-Array</em>) – The positions of which to calculate the distances</p></li>
+<li><p><strong>pos2</strong> (<em>3D-Array</em>) – The positions of which to calculate the distances</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distance between the two positions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.restraints.write_restraints_yaml">
+<span class="sig-prename descclassname"><span class="pre">restraints.</span></span><span class="sig-name descname"><span class="pre">write_restraints_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_step</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.restraints.write_restraints_yaml" title="Permalink to this definition"></a></dt>
+<dd><p>Takes the full config as read in in utils.py, the information for the intstate and writes the restraints.yaml.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path to write to (e.g. ./combinedstructure/structure/intst2/restraints.yaml</p></li>
+<li><p><strong>system</strong> – the system object from state.py</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="transformato.mutate.html" class="btn btn-neutral float-left" title="transformato.mutate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transformato.state.html" class="btn btn-neutral float-right" title="transformato.state" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
