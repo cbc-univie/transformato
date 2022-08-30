@@ -45,22 +45,33 @@ class IntermediateStateFactory(object):
         self.consecutive_runs = consecutive_runs
 
     def endstate_correction(self):
-        
+
+        logger.info(f"Will create script for endstate correction")              
         try:
             os.makedirs(f"{self.path}/../endstate_correction")
         except:
             logger.info(f"Folder for endstate correction exist already")
 
-        # copyt perform_correction.py and the corresponding submit script to the newly created folder
+        # copy submit script to the newly created folder
+        submit_switching_script_source = f"{self.configuration['bin_dir']}/submit_switching_slurm.sh"
+        submit_switchting_script_target = f"{self.path}/../endstate_correction/submit_switching_slurm.sh"
+        shutil.copyfile(submit_switching_script_source, submit_switchting_script_target)
+
+        # modify the perform_correction file from transformato bin and save it in the endstate_correcition folder
         endstate_correction_script_source = f"{self.configuration['bin_dir']}/perform_correction.py"
         endstate_correction_script_target = f"{self.path}/../endstate_correction/perform_correction.py"
-        shutil.copyfile(endstate_correction_script_source, endstate_correction_script_target)
+        fin = open(endstate_correction_script_source,"rt")
+        fout = open(endstate_correction_script_target,"wt")
 
-        endstate_correction_script_source = f"{self.configuration['bin_dir']}/submit_switching_slurm.sh"
-        endstate_correction_script_target = f"{self.path}/../endstate_correction/submit_switching_slurm.sh"
-        shutil.copyfile(endstate_correction_script_source, endstate_correction_script_target)
-
-        self.configuration["simulation"]
+        for line in fin:
+            if "NAMEofSYSTEM" in line:
+                fout.write(line.replace("NAMEofSYSTEM",f'"{self.configuration["system"]["structure1"]["name"]}"'))
+            elif "TLC" in line:
+                fout.write(line.replace("TLC",f'"{self.configuration["system"]["structure1"]["tlc"]}"'))
+            else:
+                fout.write(line)
+        fin.close()
+        fout.close()
 
     def write_state(
         self,
