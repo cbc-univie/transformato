@@ -8,7 +8,7 @@ dependencies:
   - openmmtools
   - numpy
   - ipython
-  - pymbar
+  - pymbar=3
   - rdkit
   - parmed
   - pyyaml
