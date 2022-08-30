@@ -17,6 +17,7 @@ def postprocessing(
     different_path_for_dcd: str = "",
     only_single_state: str = "",
     analyze_traj_with: str = "mdtraj",
+    multiple_runs: int = 0,
 ):
     """Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.
 
@@ -53,7 +54,7 @@ def postprocessing(
         f.load_trajs(nr_of_max_snapshots=max_snapshots)
         f.base_path = path
     elif analyze_traj_with == "mdtraj":
-        f.load_trajs(nr_of_max_snapshots=max_snapshots)
+        f.load_trajs(nr_of_max_snapshots=max_snapshots, multiple_runs = multiple_runs)
     else:
         logger.info(f"using {analyze_traj_with} for analysis")
 
@@ -62,6 +63,7 @@ def postprocessing(
         analyze_traj_with=analyze_traj_with,
         num_proc=num_proc,
         nr_of_max_snapshots=max_snapshots,
+        multiple_runs=multiple_runs,
     )
 
     if only_single_state:
@@ -69,9 +71,9 @@ def postprocessing(
     else:
         ddG, dddG = f.end_state_free_energy_difference
         print("######################################")
-        print("Free energy to common core in kT")
+        print(f"Free energy to common core for {configuration['system']['structure1']['name']} in kT")
         print("######################################")
-        print(f"Free energy difference: {ddG} [kT]")
+        print(f"Free energy difference from {configuration['system']['structure1']['name']} to CC: {ddG} [kT]")
         print(f"Uncertanty: {dddG} [kT]")
         print("######################################")
         print("######################################")
@@ -178,39 +180,51 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
             raise RuntimeError(
                 "nsteps size and nstdcd size in config file does not match"
             )
-    # making tlc caps always uppercase
-    settingsMap["system"]["structure1"]["tlc"] = settingsMap["system"]["structure1"][
-        "tlc"
-    ].upper()
-    settingsMap["system"]["structure2"]["tlc"] = settingsMap["system"]["structure2"][
-        "tlc"
-    ].upper()
-
-    # read workload manager from yaml
-    if settingsMap["simulation"].get("workload-manager")==None:
-        settingsMap["simulation"]["workload-manager"]="SGE"
-        print("No workload-manager found in yaml config. Defaulting to SGE")
-    elif (settingsMap["simulation"]["workload-manager"]=="SGE"
-        or settingsMap["simulation"]["workload-manager"]=="slurm"):
-        print("Workload-Manager for output files set to %s"%settingsMap["simulation"]["workload-manager"])
-    else:
-        raise KeyError("Unsupported workload manager specified in yaml: %s. Valid options are SGE or slurm."%settingsMap["simulation"]["workload-manager"])
 
     # set the bin, data and analysis dir
     settingsMap["bin_dir"] = get_bin_dir()
     settingsMap["analysis_dir_base"] = os.path.abspath(f"{output_dir}")
     settingsMap["data_dir_base"] = os.path.abspath(f"{input_dir}")
-    system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}-{settingsMap['simulation']['free-energy-type']}"
+
+    # making tlc caps always uppercase
+    settingsMap["system"]["structure1"]["tlc"] = settingsMap["system"]["structure1"][
+        "tlc"
+    ].upper()
+
+    # read workload manager from yaml
+    if settingsMap["simulation"].get("workload-manager") == None:
+        settingsMap["simulation"]["workload-manager"] = "SGE"
+        print("No workload-manager found in yaml config. Defaulting to SGE")
+    elif (
+        settingsMap["simulation"]["workload-manager"] == "SGE"
+        or settingsMap["simulation"]["workload-manager"] == "slurm"
+    ):
+        print(
+            "Workload-Manager for output files set to %s"
+            % settingsMap["simulation"]["workload-manager"]
+        )
+
+    # for absolute solvation only one ligand is necessaryy
+    if settingsMap["simulation"]["free-energy-type"] == "asfe":
+
+        system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['simulation']['free-energy-type']}"
+
+    else:
+        settingsMap["system"]["structure2"]["tlc"] = settingsMap["system"][
+            "structure2"
+        ]["tlc"].upper()
+        settingsMap["system"]["structure2"][
+            "charmm_gui_dir"
+        ] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure2']['name']}/"
+        system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['system']['structure2']['name']}-{settingsMap['simulation']['free-energy-type']}"
+
     settingsMap["system_dir"] = f"{settingsMap['analysis_dir_base']}/{system_name}"
     settingsMap["cluster_dir"] = f"/data/local/{system_name}"
-
     settingsMap["system"]["structure1"][
         "charmm_gui_dir"
     ] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure1']['name']}/"
-    settingsMap["system"]["structure2"][
-        "charmm_gui_dir"
-    ] = f"{settingsMap['data_dir_base']}/{settingsMap['system']['structure2']['name']}/"
     settingsMap["system"]["name"] = system_name
+
     return settingsMap
 
 

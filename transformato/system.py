@@ -57,7 +57,10 @@ class SystemStructure(object):
             )
             self.graph: nx.Graph = self.mol_to_nx(self.mol)
 
-        elif configuration["simulation"]["free-energy-type"] == "rsfe":
+        elif (
+            configuration["simulation"]["free-energy-type"] == "rsfe"
+            or configuration["simulation"]["free-energy-type"] == "asfe"
+        ):
             self.envs = set(["waterbox", "vacuum"])
             for env in self.envs:
                 parameter = self._read_parameters(env)

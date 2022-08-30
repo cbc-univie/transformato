@@ -1,7 +1,6 @@
 """
 Unit and regression test for the transformato package.
 """
-
 import os
 
 import numpy as np
@@ -21,7 +20,7 @@ from transformato_testsystems.testsystems import (
     get_output_files_acetylaceton_tautomer_pair,
     get_output_files_toluene_methane_pair,
 )
-
+from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
 # rbfe_test_systemes_generated = os.path.isdir("data/2OJ9-original-2OJ9-tautomer-rbfe")
@@ -826,7 +825,11 @@ def test_compare_energies_toluene_waterbox(caplog):
     import mdtraj as md
 
     env = "waterbox"
-    base = "data/toluene-methane-rsfe/toluene/"
+    base = f"{get_test_output_dir()}/toluene-methane-rsfe/toluene/"
+    try:
+        os.makedirs(base)
+    except:
+        pass
     (
         output_files_methane,
         output_files_toluene,
@@ -835,8 +838,9 @@ def test_compare_energies_toluene_waterbox(caplog):
     conf = f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml"
 
     configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="data"
+        config=conf, input_dir=get_testsystems_dir(), output_dir=get_testsystems_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
+
 
     f = FreeEnergyCalculator(configuration, "toluene")
     for idx, b in enumerate(output_files_toluene):
@@ -846,7 +850,7 @@ def test_compare_energies_toluene_waterbox(caplog):
         )
         # used load_dcd for CHARMM
         traj.save_dcd(f"{base}/traj.dcd", force_overwrite=True)
-        l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
+        # l_charmm = f._evaluate_e_on_all_snapshots_CHARMM(traj, idx + 1, env)
         # load dcd with openMM
         traj = md.open(f"{b}/lig_in_{env}.dcd")
         xyz, unitcell_lengths, _ = traj.read()
@@ -972,7 +976,7 @@ def test_postprocessing_toluene_methane_rsfe_with_mda():
 
     conf = f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml"
     configuration = load_config_yaml(
-        config=conf, input_dir="data/", output_dir="data"
+        config=conf, input_dir=get_testsystems_dir(), output_dir=get_testsystems_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
     # methane
     ddG_openMM_mda, dddG, f_openMM = postprocessing(
