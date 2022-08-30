@@ -93,7 +93,6 @@
 
 <span class="kn">from</span> <span class="nn">transformato.system</span> <span class="kn">import</span> <span class="n">SystemStructure</span>
 
-
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
@@ -146,7 +145,6 @@
     <span class="n">nr_of_mutation_steps_lj_of_hydrogens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">nr_of_mutation_steps_lj_of_heavy_atoms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">nr_of_mutation_steps_cc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="n">endstate_correction</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Performs the mutations necessary to mutate the physical endstate to the defined common core.</span>
 
@@ -340,11 +338,6 @@
             <span class="n">intermediate_factory</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
             <span class="n">mutation</span><span class="o">=</span><span class="n">mutation_list</span><span class="p">[</span><span class="s2">&quot;transform&quot;</span><span class="p">],</span>
         <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">endstate_correction</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HI sind hier&quot;</span><span class="p">)</span>
-        <span class="n">i</span><span class="o">.</span><span class="n">endstate_correction</span><span class="p">()</span>
-
 
 
 <div class="viewcode-block" id="DummyRegion"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.DummyRegion">[docs]</a><span class="nd">@dataclass</span>
