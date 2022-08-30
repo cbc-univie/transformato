@@ -134,7 +134,7 @@ def test_perform_enstate_correction_asfe_system():
 
     s1, mutation_list = create_asfe_system(configuration)
 
-    i = IntermediateStateFactory(system=s1, consecutive_runs=3, configuration=configuration)
+    i = IntermediateStateFactory(system=s1, configuration=configuration)
 
     perform_mutations(
         configuration=configuration,
