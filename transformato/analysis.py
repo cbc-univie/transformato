@@ -99,7 +99,7 @@ class FreeEnergyCalculator(object):
         self.save_results_to_path: str = f"{self.configuration['system_dir']}/results/"
         self.traj_files = defaultdict(list)
 
-    def load_trajs(self, nr_of_max_snapshots: int = 300, consecutive_runs: int = 0):
+    def load_trajs(self, nr_of_max_snapshots: int = 300, multiple_runs: int = 0):
         """
         load trajectories, thin trajs and merge themn.
         Also calculate N_k for mbar.
@@ -107,7 +107,7 @@ class FreeEnergyCalculator(object):
 
         assert type(nr_of_max_snapshots) == int
         self.nr_of_max_snapshots = nr_of_max_snapshots
-        self.snapshots, self.unitcell, self.nr_of_states, self.N_k = self._merge_trajs(consecutive_runs)
+        self.snapshots, self.unitcell, self.nr_of_states, self.N_k = self._merge_trajs(multiple_runs)
 
     def _generate_openMM_system(self, env: str, lambda_state: int) -> Simulation:
         # read in necessary files
@@ -159,7 +159,7 @@ class FreeEnergyCalculator(object):
             further_thinning,
         )
 
-    def _merge_trajs(self, consecutive_runs) -> Tuple[dict, dict, int, dict]:
+    def _merge_trajs(self, multiple_runs: int) -> Tuple[dict, dict, int, dict]:
         """
         load trajectories, thin trajs and merge themn.
         Also calculate N_k for mbar.
@@ -182,8 +182,8 @@ class FreeEnergyCalculator(object):
             unitcell_ = []
             conf_sub = self.configuration["system"][self.structure][env]
             for lambda_state in tqdm(range(1, nr_of_states + 1)):
-                if consecutive_runs:
-                    dcd_path = f"{self.base_path}/intst{lambda_state}/run_{consecutive_runs}/{conf_sub['intermediate-filename']}.dcd"
+                if multiple_runs:
+                    dcd_path = f"{self.base_path}/intst{lambda_state}/run_{multiple_runs}/{conf_sub['intermediate-filename']}.dcd"
                 else:
                     dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
                 
@@ -432,7 +432,7 @@ class FreeEnergyCalculator(object):
         return energies
 
     def energy_at_lambda(
-        self, lambda_state: int, env: str, nr_of_max_snapshots: int, in_memory: bool, consecutive_runs: int,
+        self, lambda_state: int, env: str, nr_of_max_snapshots: int, in_memory: bool, multiple_runs: int,
     ) -> Tuple:
         gc.enable()
         logger.info(f"Analysing lambda state {lambda_state} of {self.nr_of_states}")
@@ -446,10 +446,10 @@ class FreeEnergyCalculator(object):
 
         for lambda_state in range(1, self.nr_of_states + 1):
 
-            if not consecutive_runs:
+            if not multiple_runs:
                 dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
             else:
-                dcd_path = f"{self.base_path}/intst{lambda_state}/run_{consecutive_runs}/{conf_sub['intermediate-filename']}.dcd"
+                dcd_path = f"{self.base_path}/intst{lambda_state}/run_{multiple_runs}/{conf_sub['intermediate-filename']}.dcd"
 
             if not os.path.isfile(dcd_path):
                 raise RuntimeError(f"{dcd_path} does not exist.")
@@ -507,7 +507,7 @@ class FreeEnergyCalculator(object):
         engine: str,
         num_proc: int,
         nr_of_max_snapshots: int,
-        consecutive_runs: int,
+        multiple_runs: int,
         in_memory: bool = False,
     ):
 
@@ -533,7 +533,7 @@ class FreeEnergyCalculator(object):
                         repeat(env),
                         repeat(nr_of_max_snapshots),
                         repeat(in_memory),
-                        repeat(consecutive_runs),
+                        repeat(multiple_runs),
                     ),
                 )
             )
@@ -548,22 +548,18 @@ class FreeEnergyCalculator(object):
                 f"Currently only openMM is supported for the use with MDAnalysis, not {engine}"
             )
 
-        if save_results and consecutive_runs == False:
-            file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
+        if save_results:
+            if multiple_runs:
+                file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}_run_{multiple_runs}.pickle"
+            else:
+                file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}.pickle"
+
             logger.info(f"Saving results: {file}")
             results = {"u_kn": u_kn, "N_k": N_k}
             pickle.dump(results, open(file, "wb+"))
             
             return self.calculate_dG_using_mbar(u_kn, N_k, env)
         
-        elif save_results == True:
-            file = f"{self.save_results_to_path}/mbar_data_for_{self.structure_name}_in_{env}_run_{consecutive_runs}.pickle"
-            logger.info(f"Saving results: {file}")
-            results = {"u_kn": u_kn, "N_k": N_k}
-            pickle.dump(results, open(file, "wb+"))
-
-            return self.calculate_dG_using_mbar(u_kn, N_k, env)
-
         else:
             return self.calculate_dG_using_mbar(u_kn, N_k, env)
 
@@ -636,7 +632,7 @@ class FreeEnergyCalculator(object):
         num_proc: int = 1,
         in_memory: bool = False,
         nr_of_max_snapshots: int = -1,
-        consecutive_runs: int = 0,
+        multiple_runs: int = 0,
     ):
         """
         Calculate mbar results using either the python package mdtraj
@@ -662,7 +658,7 @@ class FreeEnergyCalculator(object):
                     engine,
                     num_proc,
                     nr_of_max_snapshots,
-                    consecutive_runs,
+                    multiple_runs,
                 )
             elif analyze_traj_with == "mdtraj":
                 self.mbar_results[env] = self._analyse_results_using_mdtraj(
@@ -763,35 +759,28 @@ class FreeEnergyCalculator(object):
 
     def plot_free_energy_overlap(self, env: str):
         plt.figure(figsize=[8, 8], dpi=300)
-        if env == "vacuum":
-            ax = sns.heatmap(
-                self.vacuum_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        elif env == "waterbox":
-            ax = sns.heatmap(
-                self.waterbox_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        elif env == "complex":
-            ax = sns.heatmap(
-                self.complex_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        else:
-            raise RuntimeError()
+
+        overlap_matrix = self.free_energy_overlap(env)
+        ax = sns.heatmap(
+            overlap_matrix,
+            cmap="Reds",
+            cbar = False,
+            linewidth=0.5,
+            annot=True,
+            fmt="0.2f",
+            annot_kws={"size": "small"},
+        )
+
+        ax = sns.heatmap(
+            overlap_matrix,
+            mask = overlap_matrix < 0.009,
+            cmap="Blues",
+            linewidth=0.5,
+            annot=True,
+            fmt="0.2f",
+            annot_kws={"size": "small"},
+        )
+
         plt.title(f"Overlap of lambda states for ligand in {env}", fontsize=15)
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
         plt.ylabel("lambda state (0 to 1)", fontsize=15)
@@ -843,24 +832,6 @@ class FreeEnergyCalculator(object):
             plt.show()
         plt.close()
 
-    # def plot_vacuum_free_energy_overlap(self):
-    #     self.plot_free_energy_overlap("vacuum")
-
-    # def plot_complex_free_energy_overlap(self):
-    #     self.plot_free_energy_overlap("complex")
-
-    # def plot_waterbox_free_energy_overlap(self):
-    #     self.plot_free_energy_overlap("waterbox")
-
-    # def plot_vacuum_free_energy(self):
-    #     self.plot_free_energy("vacuum")
-
-    # def plot_complex_free_energy(self):
-    #     self.plot_free_energy("complex")
-
-    # def plot_waterbox_free_energy(self):
-    #     self.plot_free_energy("waterbox")
-
     @property
     def end_state_free_energy_difference(self):
         """DeltaF[lambda=1 --> lambda=0]"""
@@ -905,3 +876,20 @@ class FreeEnergyCalculator(object):
         print(
             f"Free energy to common core: {energy_estimate} [kT] with uncertainty: {uncertainty} [kT]."
         )
+
+
+    def detailed_overlap(self, env):
+        
+        mbar_matrix = self.free_energy_overlap(env=env)
+        upper = np.diagonal(mbar_matrix, offset = 1)
+        lower = np.diagonal(mbar_matrix, offset = -1)
+        av_upper = sum(upper/(len(mbar_matrix)-1))
+        av_lower = sum(lower/(len(mbar_matrix)-1))
+
+        print(f"The average overlap in {env} between the states is {round(av_upper,3)} and {round(av_lower,3)}")
+
+        all = np.concatenate((upper,lower))
+        for state, i in enumerate(all):
+            if i < 0.01:
+                print(f" WARNINING: In state {state}, the overlap is {round(i,3)}")
+

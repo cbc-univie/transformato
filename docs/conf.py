@@ -23,9 +23,9 @@ import transformato
 # -- Project information -----------------------------------------------------
 
 project = 'transformato'
-copyright = ("2019, Marcus Wieder. Project structure based on the "
+copyright = ("2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the "
              "Computational Molecular Science Python Cookiecutter version 1.1")
-author = 'Marcus Wieder'
+author = 'Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch'
 
 # The short X.Y version
 version = ''
@@ -53,9 +53,12 @@ extensions = [
 ]
 
 autosummary_generate = True
-napoleon_google_docstring = False
-napoleon_use_param = False
+napoleon_google_docstring = True
+napoleon_use_param = True
 napoleon_use_ivar = True
+napoleon_use_keyword = True
+napoleon_use_rtype = True
+autodoc_typehints="description"
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -74,7 +77,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -103,6 +106,11 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+html_logo="assets/images/logo_transformato.png"
+html_theme_options={
+	"logo_only":True,
+    "navigation_depth":4
+}
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
@@ -172,3 +180,4 @@ texinfo_documents = [
 
 
 # -- Extension configuration -------------------------------------------------
+

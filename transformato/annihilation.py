@@ -17,46 +17,8 @@ IPythonConsole.molSize = (900, 900)  # Change image size
 IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
-
+from transformato.mutate import DummyRegion, MutationDefinition
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class DummyRegion:
-    mol_name: str
-    match_termin_real_and_dummy_atoms: dict
-    connected_dummy_regions: list
-    tlc: str
-    lj_default: list
-
-    def return_connecting_real_atom(self, dummy_atoms: list):
-
-        for real_atom in self.match_termin_real_and_dummy_atoms:
-            for dummy_atom in self.match_termin_real_and_dummy_atoms[real_atom]:
-                if dummy_atom in dummy_atoms:
-                    logger.debug(f"Connecting real atom: {real_atom}")
-                    return real_atom
-
-        logger.critical("No connecting real atom was found!")
-        return None
-
-
-@dataclass
-class MutationDefinition:
-    atoms_to_be_mutated: List[int]
-    common_core: List[int]
-    dummy_region: DummyRegion
-    vdw_atom_idx: List[int] = field(default_factory=list)
-    steric_mutation_to_default: bool = False
-
-    def print_details(self):
-
-        print("####################")
-        print(f"Atoms to be mutated: {self.atoms_to_be_mutated}")
-        print(f"Mutated on common core: {self.common_core}")
-        if self.vdw_atom_idx:
-            print(f"VDW atoms to be decoupled: {self.vdw_atom_idx}")
-
 
 class ProposeMutationRouteASFE(object):
     def __init__(

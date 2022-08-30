@@ -1,0 +1,99 @@
+name: GH Pages build
+
+on:
+  push:
+    branches:
+      - "master"
+      - "main"
+  pull_request:
+    branches:
+      - "master"
+      - "main"
+  workflow_dispatch:
+
+env:
+  # Increase this value to reset cache if etc/example-environment.yml has not changed
+  CACHE_NUMBER: 1
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            label: linux-64
+            prefix: /usr/share/miniconda3/envs/fep
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Mambaforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+            miniforge-variant: Mambaforge
+            miniforge-version: latest
+            activate-environment: fep
+            auto-activate-base: false
+            use-mamba: true
+      - name: Set cache date
+        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ matrix.prefix }}
+          key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep_env.yaml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
+        id: cache
+      - name: Update environment
+        run: mamba env update -n fep -f devtools/conda-envs/fep_env.yaml
+        if: steps.cache.outputs.cache-hit != 'true'
+        
+      #- name: Cache conda
+      #  uses: actions/cache@v2
+      #  with:
+      #    path: ~/conda_pkgs_dir
+      #    key:
+      #      ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+      #      hashFiles('docs/requirements.yaml') }}
+      #- name: Create conda env
+      ##    # More info on options: https://github.com/conda-incubator/setup-miniconda 
+       # uses: conda-incubator/setup-miniconda@v2
+       # with:
+       #   python-version: ${{ matrix.python-version }}
+       #   environment-file: docs/requirements.yaml
+       #   channels: conda-forge,defaults
+        #  activate-environment: docs
+        ##  auto-update-conda: false
+       # #  auto-activate-base: false
+      #    show-channel-urls: true
+      #    use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
+      - name: Run sphinx
+        shell: bash -l {0}
+        run: |
+          pip install sphinx sphinx_rtd_theme
+          sphinx-build docs docs/_build/html/
+      # Create an artifact of the html output.
+      - uses: actions/upload-artifact@v1
+        with:
+          name: DocumentationHTML
+          path: docs/_build/html/
+      # Publish built docs to gh-pages branch.
+      # ===============================
+      - name: Commit documentation changes
+        run: |
+          git clone https://github.com/wiederm/transformato.git --branch gh-pages --single-branch gh-pages
+          cp -r docs/_build/html/* gh-pages/
+          cd gh-pages
+          touch .nojekyll
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update documentation" -a || true
+          # The above command will fail if no changes were present, so we ignore
+          # that.
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: gh-pages
+          directory: gh-pages

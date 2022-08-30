@@ -10,10 +10,12 @@ from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
+from random import randint
 import numpy as np
 import warnings
-import os
+import os, sys
 import pytest
+
 warnings.filterwarnings("ignore", module="parmed")
 
 
@@ -27,6 +29,7 @@ def create_asfe_system(configuration):
 
     return s1, mutation_list
 
+@pytest.mark.asfe
 def test_create_asfe_system():
 
     configuration = load_config_yaml(
@@ -37,7 +40,8 @@ def test_create_asfe_system():
 
     s1, mutation_list = create_asfe_system(configuration)
 
-    i = IntermediateStateFactory(system=s1, consecutive_runs=3, configuration=configuration)
+    multiple_runs = 3
+    i = IntermediateStateFactory(system=s1, multiple_runs= multiple_runs, configuration=configuration)
 
     perform_mutations(
         configuration=configuration,
@@ -46,8 +50,12 @@ def test_create_asfe_system():
         mutation_list=mutation_list,
     )
 
+    # some checks for asfe
     assert len(i.output_files) == 7
     assert len((mutation_list)["charge"][0].atoms_to_be_mutated) == 6
+    name = f"{configuration['system']['structure1']['name']}"
+    if not os.path.exists(f"{get_test_output_dir()}/{name}-asfe/{name}/intst{randint(1,len(i.output_files))}/run_{randint(1,multiple_runs)}/"):
+        sys.exit(f"File does not exist")
 
 def run_asfe_system():
 
@@ -59,7 +67,7 @@ def run_asfe_system():
 
     s1, mutation_list = create_asfe_system(configuration)
 
-    i = IntermediateStateFactory(system=s1, consecutive_runs=3, configuration=configuration)
+    i = IntermediateStateFactory(system=s1, multiple_runs=3, configuration=configuration)
 
     perform_mutations(
         configuration=configuration,
@@ -91,7 +99,7 @@ def analyse_asfe_with_module(module):
             max_snapshots=50,
             num_proc=2,
             analyze_traj_with=module,
-            consecutive_runs=run,
+            multiple_runs=run,
             show_summary=True,
         )
         print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")

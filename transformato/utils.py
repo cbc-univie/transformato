@@ -17,7 +17,7 @@ def postprocessing(
     different_path_for_dcd: str = "",
     only_single_state: str = "",
     analyze_traj_with: str = "mdtraj",
-    consecutive_runs: int = 0,
+    multiple_runs: int = 0,
 ):
     """Performs postprocessing using either openMM or CHARMM and calculates the free energy estimate using MBAR.
 
@@ -54,7 +54,7 @@ def postprocessing(
         f.load_trajs(nr_of_max_snapshots=max_snapshots)
         f.base_path = path
     elif analyze_traj_with == "mdtraj":
-        f.load_trajs(nr_of_max_snapshots=max_snapshots, consecutive_runs = consecutive_runs)
+        f.load_trajs(nr_of_max_snapshots=max_snapshots, multiple_runs = multiple_runs)
     else:
         logger.info(f"using {analyze_traj_with} for analysis")
 
@@ -63,7 +63,7 @@ def postprocessing(
         analyze_traj_with=analyze_traj_with,
         num_proc=num_proc,
         nr_of_max_snapshots=max_snapshots,
-        consecutive_runs=consecutive_runs,
+        multiple_runs=multiple_runs,
     )
 
     if only_single_state:
