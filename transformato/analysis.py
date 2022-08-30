@@ -736,35 +736,28 @@ class FreeEnergyCalculator(object):
 
     def plot_free_energy_overlap(self, env: str):
         plt.figure(figsize=[8, 8], dpi=300)
-        if env == "vacuum":
-            ax = sns.heatmap(
-                self.vacuum_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        elif env == "waterbox":
-            ax = sns.heatmap(
-                self.waterbox_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        elif env == "complex":
-            ax = sns.heatmap(
-                self.complex_free_energy_difference_overlap,
-                cmap="Blues",
-                linewidth=0.5,
-                annot=True,
-                fmt="0.2f",
-                annot_kws={"size": "small"},
-            )
-        else:
-            raise RuntimeError()
+
+        overlap_matrix = self.free_energy_overlap(env)
+        ax = sns.heatmap(
+            overlap_matrix,
+            cmap="Reds",
+            cbar = False,
+            linewidth=0.5,
+            annot=True,
+            fmt="0.2f",
+            annot_kws={"size": "small"},
+        )
+
+        ax = sns.heatmap(
+            overlap_matrix,
+            mask = overlap_matrix < 0.009,
+            cmap="Blues",
+            linewidth=0.5,
+            annot=True,
+            fmt="0.2f",
+            annot_kws={"size": "small"},
+        )
+
         plt.title(f"Overlap of lambda states for ligand in {env}", fontsize=15)
         plt.xlabel("lambda state (0 to 1)", fontsize=15)
         plt.ylabel("lambda state (0 to 1)", fontsize=15)
@@ -864,6 +857,8 @@ class FreeEnergyCalculator(object):
                 self.plot_waterbox_free_energy_overlap()
             self.plot_vacuum_free_energy()
             self.plot_waterbox_free_energy()
+            self.detailed_overlap("waterbox")
+            self.detailed_overlap("vacuum")
         else:
             if isnotebook:
                 # only show this if we are in a notebook
@@ -871,8 +866,27 @@ class FreeEnergyCalculator(object):
                 self.plot_waterbox_free_energy_overlap()
             self.plot_complex_free_energy()
             self.plot_waterbox_free_energy()
+            self.detailed_overlap("complex")
+            self.detailed_overlap("waterbox")
 
         energy_estimate, uncertainty = self.end_state_free_energy_difference
         print(
             f"Free energy to common core: {energy_estimate} [kT] with uncertainty: {uncertainty} [kT]."
         )
+
+
+    def detailed_overlap(self, env):
+        
+        mbar_matrix = self.free_energy_overlap(env=env)
+        upper = np.diagonal(mbar_matrix, offset = 1)
+        lower = np.diagonal(mbar_matrix, offset = -1)
+        av_upper = sum(upper/(len(mbar_matrix)-1))
+        av_lower = sum(lower/(len(mbar_matrix)-1))
+
+        print(f"The average overlap in {env} between the states is {round(av_upper,3)} and {round(av_lower,3)}")
+
+        all = np.concatenate((upper,lower))
+        for state, i in enumerate(all):
+            if i < 0.01:
+                print(f" WARNINING: In state {state}, the overlap is {round(i,3)}")
+
