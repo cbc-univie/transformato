@@ -26,7 +26,7 @@ def create_asfe_system(configuration):
     s1_absolute.propose_common_core()
     s1_absolute.finish_common_core()
     mutation_list = s1_absolute.generate_mutations_to_common_core_for_mol1()
-
+    
     return s1, mutation_list
 
 @pytest.mark.asfe
@@ -129,9 +129,9 @@ def test_compare_mda_and_mdtraj():
 def test_create_asfe_system_with_lp():
 
     configuration = load_config_yaml(
-        config=f"{get_testsystems_dir()}/config/jnk1-17124-asfe.yaml",
-        input_dir=get_testsystems_dir(),
-        output_dir=get_test_output_dir(),
+        config=f"/site/raid3/johannes/free_solv_test/data/config/1,3-dichlorobenzene.yaml",
+        input_dir="/site/raid3/johannes/free_solv_test/data/",
+        output_dir="/site/raid3/johannes/free_solv_test/",
     )
 
     s1, mutation_list = create_asfe_system(configuration)
