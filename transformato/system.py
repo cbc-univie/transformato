@@ -247,12 +247,24 @@ class SystemStructure(object):
             psf.coordinates = coord.coordinates
 
             for atom in psf.atoms:
-                if hasattr(atom, "frame"):
-                    raise NotImplementedError(
-                        "Currently lonepairs are not supported for rsfe calculations"
-                    )
-
-            psf = psf[f":{self.tlc}"]
+                if hasattr(atom, "frame_type"):
+                    g = psf.groups # I think g is not really used
+                    frame_idx = []
+                    frame_frame = []
+                    for atom in psf.atoms:
+                        if hasattr(atom, "frame_type"):
+                            frame_idx.append(atom.idx)
+                            frame_frame.append(atom.frame_type)
+                    # this is used for creating the vacuum structure, 
+                    # unfortunatly parmed forgets afterward about the frame_type
+                    # which are necessary for the check_for_lp function
+                    psf = psf[f":{self.tlc}"]
+                    psf.groups = g
+                    for atom in psf.atoms:
+                        if atom.idx in frame_idx:
+                            atom.frame_type = frame_frame[frame_idx.index(atom.idx)]
+                else:
+                    psf = psf[f":{self.tlc}"]
 
         else:
             psf_file_name = configuration["system"][self.structure][env][
