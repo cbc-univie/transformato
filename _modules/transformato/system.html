@@ -322,12 +322,24 @@
             <span class="n">psf</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">coord</span><span class="o">.</span><span class="n">coordinates</span>
 
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;frame&quot;</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                        <span class="s2">&quot;Currently lonepairs are not supported for rsfe calculations&quot;</span>
-                    <span class="p">)</span>
-
-            <span class="n">psf</span> <span class="o">=</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;frame_type&quot;</span><span class="p">):</span>
+                    <span class="n">g</span> <span class="o">=</span> <span class="n">psf</span><span class="o">.</span><span class="n">groups</span> <span class="c1"># I think g is not really used</span>
+                    <span class="n">frame_idx</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">frame_frame</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;frame_type&quot;</span><span class="p">):</span>
+                            <span class="n">frame_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
+                            <span class="n">frame_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="p">)</span>
+                    <span class="c1"># this is used for creating the vacuum structure, </span>
+                    <span class="c1"># unfortunatly parmed forgets afterward about the frame_type</span>
+                    <span class="c1"># which are necessary for the check_for_lp function</span>
+                    <span class="n">psf</span> <span class="o">=</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+                    <span class="n">psf</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="n">g</span>
+                    <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">frame_idx</span><span class="p">:</span>
+                            <span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span> <span class="o">=</span> <span class="n">frame_frame</span><span class="p">[</span><span class="n">frame_idx</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">psf</span> <span class="o">=</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">psf_file_name</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">][</span><span class="n">env</span><span class="p">][</span>
