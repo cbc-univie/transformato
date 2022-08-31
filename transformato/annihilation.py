@@ -17,7 +17,7 @@ IPythonConsole.molSize = (900, 900)  # Change image size
 IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
-from transformato.mutate import DummyRegion, MutationDefinition
+from transformato.mutate import DummyRegion, MutationDefinition, ProposeMutationRoute
 logger = logging.getLogger(__name__)
 
 class ProposeMutationRouteASFE(object):
@@ -93,6 +93,55 @@ class ProposeMutationRouteASFE(object):
 
         return ordered_LJ_mutations
 
+    def _check_for_lp(
+        self,
+        odered_connected_dummy_regions_cc_with_lp: list,
+        psf: pm.charmm.CharmmPsfFile,
+        tlc: str,
+        name: str,
+    ) -> list:
+        """
+        With the help of parmed this function will look in the ordered_connected_dummy_regions list if
+        there is a atom which has lonepairs. It will check wheather the lp belongs to the common core or
+        to the dummy region and assign it into the sorted list accordingly.
+        """
+
+        flat_ordered_connected_dummy_regions = [
+            item
+            for sublist in odered_connected_dummy_regions_cc_with_lp
+            for item in sublist
+        ]
+        lp_dict_dummy_region = defaultdict(list)
+        lp_dict_common_core = defaultdict(list)
+
+        for atom in psf.view[f":{tlc}"].atoms:
+            if atom.name.find("LP") == False:
+                if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
+                    lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
+
+                elif atom.frame_type.atom1.idx not in lp_dict_common_core and name == "m1":
+                    logger.info(f"Adding atom {atom.idx} to the common core of mol1")
+                    self.add_idx_to_common_core_of_mol1([atom.idx])
+
+                elif atom.frame_type.atom1.idx not in lp_dict_common_core and name == "m2":
+                    logger.info(f"Adding atom {atom.idx} to the common core of mol1")
+                    self.add_idx_to_common_core_of_mol2([atom.idx])
+
+        if lp_dict_dummy_region:
+            for i in odered_connected_dummy_regions_cc_with_lp:
+                lp_to_insert = []
+                for atom in i:
+                    if atom in lp_dict_dummy_region.keys():
+                        lp_to_insert.extend(lp_dict_dummy_region[atom])
+                for lp_num in reversed(lp_to_insert):
+                    i.insert(0, lp_num)
+
+        logger.debug(
+            f"Orderd connected dummy atoms containing the lp {odered_connected_dummy_regions_cc_with_lp}"
+        )
+
+        return odered_connected_dummy_regions_cc_with_lp
+
     def propose_common_core(self):
         self._get_idx_of_all_atoms("m1")
 
@@ -119,6 +168,14 @@ class ProposeMutationRouteASFE(object):
             odered_connected_dummy_regions_cc1 = self._calculate_order_of_LJ_mutations(
                 central_atoms,
                 self.graphs["m1"].copy(),
+            )
+
+        if odered_connected_dummy_regions_cc1:
+            odered_connected_dummy_regions_cc1 = self._check_for_lp(
+                odered_connected_dummy_regions_cc1,
+                self.psf1["waterbox"],
+                self.s1_tlc,
+                "m1",
             )
 
         self.dummy_region_cc1 = DummyRegion(
