@@ -93,6 +93,7 @@
 
 <span class="kn">from</span> <span class="nn">transformato.system</span> <span class="kn">import</span> <span class="n">SystemStructure</span>
 
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
@@ -145,6 +146,7 @@
     <span class="n">nr_of_mutation_steps_lj_of_hydrogens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">nr_of_mutation_steps_lj_of_heavy_atoms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">nr_of_mutation_steps_cc</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">endstate_correction</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Performs the mutations necessary to mutate the physical endstate to the defined common core.</span>
 
@@ -338,6 +340,10 @@
             <span class="n">intermediate_factory</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
             <span class="n">mutation</span><span class="o">=</span><span class="n">mutation_list</span><span class="p">[</span><span class="s2">&quot;transform&quot;</span><span class="p">],</span>
         <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">endstate_correction</span><span class="p">:</span>
+        <span class="n">i</span><span class="o">.</span><span class="n">endstate_correction</span><span class="p">()</span>
+
 
 
 <div class="viewcode-block" id="DummyRegion"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.DummyRegion">[docs]</a><span class="nd">@dataclass</span>
@@ -651,18 +657,17 @@
         <span class="p">]</span>
         <span class="n">lp_dict_dummy_region</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="n">lp_dict_common_core</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;die version </span><span class="si">{</span><span class="n">pm</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;die Atome </span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">flat_ordered_connected_dummy_regions</span><span class="p">:</span>
-                    <span class="n">lp_dict_dummy_region</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">flat_ordered_connected_dummy_regions</span><span class="p">:</span>
+                    <span class="n">lp_dict_dummy_region</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
 
-                <span class="k">elif</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lp_dict_common_core</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;m1&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lp_dict_common_core</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;m1&quot;</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding atom </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2"> to the common core of mol1&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_idx_to_common_core_of_mol1</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">])</span>
 
-                <span class="k">elif</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lp_dict_common_core</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;m2&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lp_dict_common_core</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;m2&quot;</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding atom </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2"> to the common core of mol1&quot;</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_idx_to_common_core_of_mol2</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">])</span>
 
@@ -680,7 +685,6 @@
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">odered_connected_dummy_regions_cc_with_lp</span></div>
-
 
     <span class="k">def</span> <span class="nf">propose_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">mcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_mcs</span><span class="p">(</span><span class="s2">&quot;m1&quot;</span><span class="p">,</span> <span class="s2">&quot;m2&quot;</span><span class="p">)</span>
