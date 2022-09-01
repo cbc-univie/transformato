@@ -53,7 +53,7 @@ for env in ["waterbox", "vacuum"]:
 
     # load forcefiled files (ligand.str and toppar files)
     parms = ()
-    file = f"../{system_name}/intst1/{tcl}"
+    file = f"../{system_name}/intst1/{tcl.lower()}"
     if os.path.isfile(f"{file}.str"):
         parms += (f"{file.lower()}.str",)
     else:
