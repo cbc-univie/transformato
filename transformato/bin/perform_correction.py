@@ -1,5 +1,6 @@
 # general imports
 import os
+import glob
 from endstate_correction.system import create_charmm_system, read_box
 from openmm.app import (
     CharmmParameterSet,
@@ -79,17 +80,13 @@ for env in ["waterbox", "vacuum"]:
     ########################################################
     # ------------------- load samples ---------------------#
 
-    mm_samples = []
-    if os.path.isfile(f"../{system_name}/intst1/run_1/lig_in_{env}.dcd"):
-        path_mm = f"../{system_name}/intst1/run_1/lig_in_{env}.dcd"
-    else:
-        path_mm = f"../{system_name}/intst1/lig_in_{env}.dcd"
-
-    traj = mdtraj.load_dcd(path_mm, top=psf_file)
-
+    files = glob.glob(f"../{system_name}/intst1/**/lig_in_{env}.dcd",recursive=True)
+    traj = mdtraj.load(files,top = psf_file)
+    
     if env == "waterbox":
         traj.image_molecules()
 
+    mm_samples = []
     mm_samples.extend(traj.xyz * unit.nanometer)  # NOTE: this is in nanometer!
 
     ####################################################
