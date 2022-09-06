@@ -793,7 +793,7 @@ class FreeEnergyCalculator(object):
         plt.close()
 
     def plot_free_energy(self, env: str):
-        plt.figure(figsize=[4, 4], dpi=300)
+        plt.figure(figsize=[8, 8], dpi=300)
         if env == "vacuum":
             x = [
                 a
