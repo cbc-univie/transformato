@@ -53,8 +53,8 @@ class IntermediateStateFactory(object):
             logger.info(f"Folder for endstate correction exist already")
 
         # copy submit script to the newly created folder
-        submit_switching_script_source = f"{self.configuration['bin_dir']}/submit_switching_slurm.sh"
-        submit_switchting_script_target = f"{self.path}/../endstate_correction/submit_switching_slurm.sh"
+        submit_switching_script_source = f"{self.configuration['bin_dir']}/slurm_switching.sh"
+        submit_switchting_script_target = f"{self.path}/../endstate_correction/slurm_switching.sh"
         shutil.copyfile(submit_switching_script_source, submit_switchting_script_target)
 
         # modify the perform_correction file from transformato bin and save it in the endstate_correcition folder
