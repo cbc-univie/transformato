@@ -18,7 +18,9 @@ IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
 from transformato.mutate import DummyRegion, MutationDefinition, ProposeMutationRoute
+
 logger = logging.getLogger(__name__)
+
 
 class ProposeMutationRouteASFE(object):
     def __init__(
@@ -119,11 +121,17 @@ class ProposeMutationRouteASFE(object):
                 if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
                     lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
 
-                elif atom.frame_type.atom1.idx not in lp_dict_common_core and name == "m1":
+                elif (
+                    atom.frame_type.atom1.idx not in lp_dict_common_core
+                    and name == "m1"
+                ):
                     logger.info(f"Adding atom {atom.idx} to the common core of mol1")
                     self.add_idx_to_common_core_of_mol1([atom.idx])
 
-                elif atom.frame_type.atom1.idx not in lp_dict_common_core and name == "m2":
+                elif (
+                    atom.frame_type.atom1.idx not in lp_dict_common_core
+                    and name == "m2"
+                ):
                     logger.info(f"Adding atom {atom.idx} to the common core of mol1")
                     self.add_idx_to_common_core_of_mol2([atom.idx])
 
@@ -325,6 +333,11 @@ class ProposeMutationRouteASFE(object):
                 if atom_idx in hydrogens:
                     # is already mutated in the previouse step
                     continue
+                elif self.psf1["waterbox"].atoms[atom_idx].type == "LPH":
+                    logger.info(
+                        "Skipping lonepairs in vdw mutations",
+                        self.psf1["waterbox"].atoms[atom_idx],
+                    )
                 else:
                     # normal lj mutation
                     m = MutationDefinition(
