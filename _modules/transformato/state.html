@@ -76,7 +76,6 @@
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
@@ -118,35 +117,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">output_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span> <span class="o">=</span> <span class="n">multiple_runs</span></div>
-
-    <span class="k">def</span> <span class="nf">endstate_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Will create script for endstate correction&quot;</span><span class="p">)</span>              
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">/../endstate_correction&quot;</span><span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Folder for endstate correction exist already&quot;</span><span class="p">)</span>
-
-        <span class="c1"># copy submit script to the newly created folder</span>
-        <span class="n">submit_switching_script_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/slurm_switching.sh&quot;</span>
-        <span class="n">submit_switchting_script_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">/../endstate_correction/slurm_switching.sh&quot;</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">submit_switching_script_source</span><span class="p">,</span> <span class="n">submit_switchting_script_target</span><span class="p">)</span>
-
-        <span class="c1"># modify the perform_correction file from transformato bin and save it in the endstate_correcition folder</span>
-        <span class="n">endstate_correction_script_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/perform_correction.py&quot;</span>
-        <span class="n">endstate_correction_script_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">/../endstate_correction/perform_correction.py&quot;</span>
-        <span class="n">fin</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">endstate_correction_script_source</span><span class="p">,</span><span class="s2">&quot;rt&quot;</span><span class="p">)</span>
-        <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">endstate_correction_script_target</span><span class="p">,</span><span class="s2">&quot;wt&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;NAMEofSYSTEM&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;NAMEofSYSTEM&quot;</span><span class="p">,</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure1&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">))</span>
-            <span class="k">elif</span> <span class="s2">&quot;TLC&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;TLC&quot;</span><span class="p">,</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure1&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-        <span class="n">fin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="IntermediateStateFactory.write_state"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory.write_state">[docs]</a>    <span class="k">def</span> <span class="nf">write_state</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
