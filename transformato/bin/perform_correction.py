@@ -20,8 +20,8 @@ tlc = TLC
 
 for env in ["waterbox", "vacuum"]:
 
-    parameter_base = f"/site/raid3/johannes/free_solv_test/data"
-    # load the charmm specific files (psf, pdb, rtf, crd files)
+
+    # load the charmm specific files (psf, rtf, crd files)
     psf_file = f"../{system_name}/intst1/lig_in_{env}.psf"
     psf = CharmmPsfFile(psf_file)
     pdb = PDBFile(f"../{system_name}/intst1/lig_in_{env}.pdb")
@@ -31,10 +31,10 @@ for env in ["waterbox", "vacuum"]:
     parms = ()
     file = f"../{system_name}/intst1/{tlc.lower()}"
     if os.path.isfile(f"{file}.str"):
-        parms += (f"{file.lower()}.str",)
+        parms += (f"{file}.str",)
     else:
-        parms += (f"{file.lower()}_g.rtf",)
-        parms += (f"{file.lower()}.prm",)
+        parms += (f"{file}_g.rtf",)
+        parms += (f"{file}.prm",)
 
     parms += (f"../toppar/top_all36_cgenff.rtf",)
     parms += (f"../toppar/par_all36_cgenff.prm",)
