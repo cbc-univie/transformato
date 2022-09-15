@@ -17,6 +17,6 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: dessant/label-actions@v2.2.0
+    - uses: actions/labeler@v4
       with: 
         config-path: .github/label-actions.yml
