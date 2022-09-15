@@ -334,6 +334,8 @@ class ProposeMutationRouteASFE(object):
                     # is already mutated in the previouse step
                     continue
                 elif self.psf1["waterbox"].atoms[atom_idx].type == "LPH":
+                    # The atom type LPH has no LJ interactions, so it does not need
+                    # to be turned off
                     logger.info(
                         "Skipping lonepairs in vdw mutations",
                         self.psf1["waterbox"].atoms[atom_idx],
