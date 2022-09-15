@@ -5,8 +5,7 @@ from transformato import (
 )
 
 from transformato.utils import run_simulation, postprocessing
-from transformato.annihilation import ProposeMutationRouteASFE
-from transformato.mutate import perform_mutations
+from transformato.mutate import ProposeMutationRoute, perform_mutations
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
@@ -22,7 +21,7 @@ warnings.filterwarnings("ignore", module="parmed")
 def create_asfe_system(configuration):
 
     s1 = SystemStructure(configuration, "structure1")
-    s1_absolute = ProposeMutationRouteASFE(s1)
+    s1_absolute = ProposeMutationRoute(s1)
     s1_absolute.propose_common_core()
     s1_absolute.finish_common_core()
     mutation_list = s1_absolute.generate_mutations_to_common_core_for_mol1()
@@ -128,13 +127,20 @@ def test_compare_mda_and_mdtraj():
 )
 def test_create_asfe_system_with_lp():
 
+    from transformato.mutate import ProposeMutationRoute
+
     configuration = load_config_yaml(
-        config=f"/site/raid3/johannes/free_solv_test/data/config/1,3-dichlorobenzene.yaml",
-        input_dir="/site/raid3/johannes/free_solv_test/data/",
-        output_dir="/site/raid3/johannes/free_solv_test/",
+        config=f"{get_testsystems_dir()}/config/1,3-dichlorobenzene-asfe.yaml",
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
     )
 
-    s1, mutation_list = create_asfe_system(configuration)
+    s1 = SystemStructure(configuration, "structure1")
+    s1_absolute = ProposeMutationRoute(s1)
+    s1_absolute.propose_common_core()
+    s1_absolute.finish_common_core()
+
+    mutation_list = s1_absolute.generate_mutations_to_common_core_for_mol1()
 
     multiple_runs = 3
     i = IntermediateStateFactory(system=s1, multiple_runs= multiple_runs, configuration=configuration)
