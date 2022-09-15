@@ -18,5 +18,3 @@ jobs:
 
     steps:
     - uses: dessant/label-actions@v2
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
