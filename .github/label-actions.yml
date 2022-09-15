@@ -1,0 +1,36 @@
+version: 1
+labels:
+  - label: "enhancement"
+    files:
+      - ".transformato/.*"
+  - label: "github"
+    files:
+      - ".github/.*"
+  - label: "gradle"
+    files:
+      - "gradle/.*"
+      - ".*.gradle"
+      - ".*.gradle.kts"
+      - "buildSrc/.*"
+      - "gradle.properties"
+      - "gradlew"
+  - label: "idea"
+    files:
+      - ".idea/.*"
+  - label: "git"
+    files:
+      - ".gitignore"
+      - ".gitattributes"
+  - label: "wiki"
+    files:
+      - "wiki/.*"
+      - "README.md"
+  - label: "module1"
+    files:
+      - "module1/.*"
+  - label: "module2"
+    files:
+      - "module2/.*"
+  - label: "module3"
+    files:
+      - "module3/.*"
