@@ -7,4 +7,4 @@ restraints:
 charmm:
 - transformato/charmm_factory.py
 analysis:
--transformato/analysis.py
+- transformato/analysis.py
