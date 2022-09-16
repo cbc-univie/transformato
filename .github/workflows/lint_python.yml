@@ -1,0 +1,46 @@
+name: lint_python
+
+on: [pull_request, workflow_dispatch]
+
+permissions:
+  checks: write
+  contents: write
+  
+jobs:
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+        
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+          
+      - name: Install Python dependencies
+        run: pip install flake8 pep8-naming black
+        
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          black: true
+          black_dir: "transformato/"
+          black_args: '--extend-exclude="(bin/*|scripts/*|_version.py)"'
+          auto_fix: true
+          flake8: true
+          flake8_dir: "transformato/"
+          flake8_args: "--exclude=scripts,bin,_version.py --max-line-length=88 --extend-ignore=E203 --exit-zero"
+
+        
+      #- name: Setup flake8 annotations
+      #  uses: rbialon/flake8-annotations@v1
+      #- name: Lint with flake8
+      #  run: |
+      #    pip install flake8 pep8-naming
+      #    # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+      #    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+
