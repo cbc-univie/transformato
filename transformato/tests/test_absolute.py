@@ -29,6 +29,7 @@ def create_asfe_system(configuration):
 
     return s1, mutation_list
 
+
 @pytest.mark.asfe
 def test_create_asfe_system():
 
@@ -41,7 +42,9 @@ def test_create_asfe_system():
     s1, mutation_list = create_asfe_system(configuration)
 
     multiple_runs = 3
-    i = IntermediateStateFactory(system=s1, multiple_runs= multiple_runs, configuration=configuration)
+    i = IntermediateStateFactory(
+        system=s1, multiple_runs=multiple_runs, configuration=configuration
+    )
 
     perform_mutations(
         configuration=configuration,
@@ -54,8 +57,11 @@ def test_create_asfe_system():
     assert len(i.output_files) == 7
     assert len((mutation_list)["charge"][0].atoms_to_be_mutated) == 6
     name = f"{configuration['system']['structure1']['name']}"
-    if not os.path.exists(f"{get_test_output_dir()}/{name}-asfe/{name}/intst{randint(1,len(i.output_files))}/run_{randint(1,multiple_runs)}/"):
+    if not os.path.exists(
+        f"{get_test_output_dir()}/{name}-asfe/{name}/intst{randint(1,len(i.output_files))}/run_{randint(1,multiple_runs)}/"
+    ):
         sys.exit(f"File does not exist")
+
 
 def run_asfe_system():
 
@@ -67,7 +73,9 @@ def run_asfe_system():
 
     s1, mutation_list = create_asfe_system(configuration)
 
-    i = IntermediateStateFactory(system=s1, multiple_runs=3, configuration=configuration)
+    i = IntermediateStateFactory(
+        system=s1, multiple_runs=3, configuration=configuration
+    )
 
     perform_mutations(
         configuration=configuration,
@@ -81,6 +89,7 @@ def run_asfe_system():
 
     run_simulation(i.output_files, engine="openMM")
 
+
 def analyse_asfe_with_module(module):
 
     configuration = load_config_yaml(
@@ -91,7 +100,7 @@ def analyse_asfe_with_module(module):
 
     final_dg = []
     runs = 3
-    for run in range(1,runs + 1):
+    for run in range(1, runs + 1):
         ddG_openMM, dddG, f_openMM = postprocessing(
             configuration,
             name="methanol",
@@ -104,9 +113,12 @@ def analyse_asfe_with_module(module):
         )
         print(f"Free energy difference: {ddG_openMM} +- {dddG} [kT]")
         final_dg.append(ddG_openMM)
-    print(f"Final free energy is {round(np.average(final_dg),2)} +- {round(np.std(final_dg))} of the {runs} individual runs {final_dg}")
+    print(
+        f"Final free energy is {round(np.average(final_dg),2)} +- {round(np.std(final_dg))} of the {runs} individual runs {final_dg}"
+    )
 
     return final_dg
+
 
 @pytest.mark.asfe
 @pytest.mark.skipif(
