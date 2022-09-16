@@ -1,5 +1,14 @@
 enhancement:
-- '*'
-
-label1:
 - transformato/**/*
+
+asfe:
+- transformato/annihilation.py
+
+restraints:
+- transformato/restraints.py
+
+charmm:
+- transformato/charmm_factory.py
+
+analysis:
+-transformato/analysis.py
