@@ -121,6 +121,7 @@ def test_compare_mda_and_mdtraj():
     mdtraj_results = analyse_asfe_with_module(module="mdtraj")
     assert np.isclose(np.average(mda_results), np.average(mdtraj_results))
 
+
 @pytest.mark.asfe
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
@@ -132,16 +133,13 @@ def test_create_asfe_system_with_lp():
         config=f"/site/raid3/johannes/free_solv_test/data/config/1,3-dichlorobenzene.yaml",
         input_dir="/site/raid3/johannes/free_solv_test/data/",
         output_dir="/site/raid3/johannes/free_solv_test/",
-    )
+=======
 
-    s1, mutation_list = create_asfe_system(configuration)
 
-    multiple_runs = 3
-    i = IntermediateStateFactory(system=s1, multiple_runs= multiple_runs, configuration=configuration)
 
-    perform_mutations(
-        configuration=configuration,
-        nr_of_mutation_steps_charge=2,
-        i=i,
-        mutation_list=mutation_list,
-    )
+def test_perform_enstate_correction_asfe_system():
+
+    configuration = load_config_yaml(
+        config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
