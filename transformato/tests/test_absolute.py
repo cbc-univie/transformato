@@ -134,8 +134,6 @@ def test_compare_mda_and_mdtraj():
     assert np.isclose(np.average(mda_results), np.average(mdtraj_results))
 
 
-
-
 def test_perform_enstate_correction_asfe_system():
 
     configuration = load_config_yaml(
@@ -156,7 +154,5 @@ def test_perform_enstate_correction_asfe_system():
         endstate_correction=True,
     )
 
-
     assert len(i.output_files) == 7
     assert len((mutation_list)["charge"][0].atoms_to_be_mutated) == 6
-
