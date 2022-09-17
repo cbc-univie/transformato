@@ -132,3 +132,31 @@ def test_compare_mda_and_mdtraj():
     mda_results = analyse_asfe_with_module(module="mda")
     mdtraj_results = analyse_asfe_with_module(module="mdtraj")
     assert np.isclose(np.average(mda_results), np.average(mdtraj_results))
+
+
+
+
+def test_perform_enstate_correction_asfe_system():
+
+    configuration = load_config_yaml(
+        config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
+    )
+
+    s1, mutation_list = create_asfe_system(configuration)
+
+    i = IntermediateStateFactory(system=s1, configuration=configuration)
+
+    perform_mutations(
+        configuration=configuration,
+        nr_of_mutation_steps_charge=2,
+        i=i,
+        mutation_list=mutation_list,
+        endstate_correction=True,
+    )
+
+
+    assert len(i.output_files) == 7
+    assert len((mutation_list)["charge"][0].atoms_to_be_mutated) == 6
+

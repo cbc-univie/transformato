@@ -18,6 +18,7 @@ IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +71,7 @@ def perform_mutations(
     nr_of_mutation_steps_lj_of_hydrogens: int = 1,
     nr_of_mutation_steps_lj_of_heavy_atoms: int = 1,
     nr_of_mutation_steps_cc: int = 5,
+    endstate_correction: bool = False,
 ):
     """Performs the mutations necessary to mutate the physical endstate to the defined common core.
 
@@ -263,6 +265,10 @@ def perform_mutations(
             intermediate_factory=i,
             mutation=mutation_list["transform"],
         )
+
+    if endstate_correction:
+        i.endstate_correction()
+
 
 
 @dataclass
