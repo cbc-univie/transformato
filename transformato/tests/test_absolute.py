@@ -133,6 +133,7 @@ def test_create_asfe_system_with_lp():
         config=f"/site/raid3/johannes/free_solv_test/data/config/1,3-dichlorobenzene.yaml",
         input_dir="/site/raid3/johannes/free_solv_test/data/",
         output_dir="/site/raid3/johannes/free_solv_test/",
+        )
 
 
 
@@ -143,3 +144,4 @@ def test_perform_enstate_correction_asfe_system():
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
         input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
+        )
