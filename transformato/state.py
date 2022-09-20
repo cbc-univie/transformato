@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import glob
 from io import StringIO
 from typing import List
 
@@ -42,6 +43,35 @@ class IntermediateStateFactory(object):
         self.output_files = []
         self.current_step = 1
         self.multiple_runs = multiple_runs
+
+    def endstate_correction(self):
+
+        logger.info(f"Will create script for endstate correction")              
+        try:
+            os.makedirs(f"{self.path}/../endstate_correction")
+        except:
+            logger.info(f"Folder for endstate correction exist already")
+
+        # copy submit script to the newly created folder
+        submit_switching_script_source = f"{self.configuration['bin_dir']}/slurm_switching.sh"
+        submit_switchting_script_target = f"{self.path}/../endstate_correction/slurm_switching.sh"
+        shutil.copyfile(submit_switching_script_source, submit_switchting_script_target)
+
+        # modify the perform_correction file from transformato bin and save it in the endstate_correcition folder
+        endstate_correction_script_source = f"{self.configuration['bin_dir']}/perform_correction.py"
+        endstate_correction_script_target = f"{self.path}/../endstate_correction/perform_correction.py"
+        fin = open(endstate_correction_script_source,"rt")
+        fout = open(endstate_correction_script_target,"wt")
+
+        for line in fin:
+            if "NAMEofSYSTEM" in line:
+                fout.write(line.replace("NAMEofSYSTEM",f'"{self.configuration["system"]["structure1"]["name"]}"'))
+            elif "TLC" in line:
+                fout.write(line.replace("TLC",f'"{self.configuration["system"]["structure1"]["tlc"]}"'))
+            else:
+                fout.write(line)
+        fin.close()
+        fout.close()
 
     def write_state(
         self,
