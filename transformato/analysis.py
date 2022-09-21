@@ -316,7 +316,7 @@ class FreeEnergyCalculator(object):
             script_name = f"charmm_evaluate_energy_in_{env}.inp"
             assert len(volumn_list) > 1
         elif env == "vacuum":
-            script_name = "charmm_evaluate_energy_in_{env}.inp"
+            script_name = f"charmm_evaluate_energy_in_{env}.inp"
 
         top = self.configuration["system"][self.structure][env]["intermediate-filename"]
 

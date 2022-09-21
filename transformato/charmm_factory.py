@@ -38,7 +38,7 @@ class CharmmFactory:
         charmm_postprocessing_script = self._get_CHARMM_postprocessing_header(env)
         if env == "vacuum":
             charmm_postprocessing_script += (
-                self._get_CHARMM_vacuum_postprocessing_body()
+                self._get_CHARMM_vacuum_postprocessing_body(env)
             )
         elif env == "waterbox" or env == "complex":
             charmm_postprocessing_script += (
@@ -196,7 +196,6 @@ read para card unit 10 append flex
             toppar += f"""
 ! Read {tlc} STR
 stream {tlc}.str
-read para card unit 10 append flex
 
 ! Read dummy_atom RTF
 open read unit 10 card name dummy_atom_definitions.rtf
@@ -231,7 +230,7 @@ read coor unit 10 card
         """
         return header
 
-    def _get_CHARMM_vacuum_postprocessing_body(self) -> str:
+    def _get_CHARMM_vacuum_postprocessing_body(self, env) -> str:
         body = f"""
 coor orie sele all end ! put the molecule at the origin
 
@@ -259,7 +258,7 @@ set skip ?skip
 set nframes @nframes !?nfile
 traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
 
-open form writ unit 51 name ener_vac.log
+open form writ unit 51 name ener_{env}.log
 echu 51
 set idx 0
 label loop
@@ -429,7 +428,7 @@ calc zcen = 0.
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
         # always center
-        centering = """
+            centering = """
 calc xcen = @A / 2 
 calc ycen = @B / 2 
 calc zcen = @C / 2        
