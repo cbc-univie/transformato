@@ -417,8 +417,6 @@ with open(file_name + '_system.xml','w') as outfile:
             shutil.copyfile(
                 omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
-            if self.multiple_runs:
-                self._modify_submit_script(omm_simulation_submit_script_target)
 
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
@@ -441,6 +439,9 @@ with open(file_name + '_system.xml','w') as outfile:
             )
         else:
             raise RuntimeError(f"Only solvation/binding free energies implemented")
+
+        if self.multiple_runs:
+            self._modify_submit_script(omm_simulation_submit_script_target)
 
         # Prepend workload manager instructions
         self._write_workload_preamble(omm_simulation_submit_script_target)
