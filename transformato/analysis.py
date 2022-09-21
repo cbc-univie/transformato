@@ -27,7 +27,6 @@ from transformato.utils import get_structure_name, isnotebook
 logger = logging.getLogger(__name__)
 
 
-
 def return_reduced_potential(
     potential_energy: unit.Quantity,
     volume: unit.Quantity,
