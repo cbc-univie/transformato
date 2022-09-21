@@ -41,8 +41,13 @@ test:
   imports:
     - transformato
     - transformato.mutate
-    - transformato.analyse
-    
+    - transformato.analysis
+    - transformato.constants
+    - transformato.restraints
+    - transformato.state
+    - transformato.system
+    - transformato.utils
+        
 about:
   home: https://github.com/wiederm/transformato
   summary: 'Tool for setting up relativ binding free energyies'
@@ -51,7 +56,6 @@ about:
     one ligand into another (relative binding free energy).
     The created files are used to run MD simulations and calculate
     the resulting free energy differences.
-
   license: MIT
   license_family: MIT
   license_file: LICENSE
