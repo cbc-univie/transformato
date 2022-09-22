@@ -303,3 +303,22 @@ def isnotebook():
             return False  # Other type (?)
     except NameError:
         return False  # Probably standard Python interpreter
+
+def check_switching_function(vdw_switch):
+    """
+    There are three possibilities for the CHARMM/openMM switching functions:
+    - vfswitch
+    - switch
+    - no-switch (not implemented --- this will use vfswitch)
+    """
+    if vdw_switch.lower() == "force-switch":
+        return "vfswitch"
+    elif vdw_switch.lower() == "switch":
+        return "vswitch"
+    elif vdw_switch.lower() == "no-switch":
+        raise NotImplementedError()
+        return ""
+    else:
+        raise NotImplementedError(
+            f"Other switching functino called: {vdw_switch}."
+        )

@@ -1,5 +1,6 @@
 import datetime
 from transformato.constants import temperature, charmm_gpu
+from transformato.utils import check_switching_function
 from openmm import unit
 import os
 
@@ -11,7 +12,9 @@ class CharmmFactory:
 
         self.configuration = configuration
         self.structure = structure
-        self.vdw_switching_keyword = self._check_switching_function()
+        prms = self._get_simulations_parameters()
+        vdw_switch = prms.get("vdw", "Force-switch")  # default is vfswitch
+        self.vdw_switching_keyword = check_switching_function(vdw_switch)
         self.charmm_gpu = charmm_gpu
 
     def _get_simulations_parameters(self):
@@ -20,18 +23,6 @@ class CharmmFactory:
             prms[key] = self.configuration["simulation"]["parameters"][key]
         return prms
 
-    def _check_switching_function(self) -> str:
-        prms = self._get_simulations_parameters()
-        vdw = prms.get("vdw", "Force-switch")  # default is vfswitch
-        if vdw.lower() == "force-switch":
-            return "vfswitch"
-        elif vdw.lower() == "switch":
-            return "vswitch"
-        elif vdw.lower() == "no-switch":  # not implemented
-            raise NotImplementedError()
-            return ""
-        else:
-            raise RuntimeError()
 
     def generate_CHARMM_postprocessing_files(self, env: str) -> str:
 
