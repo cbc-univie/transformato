@@ -2,12 +2,13 @@ import copy
 import gc
 import logging
 import multiprocessing as mp
-import os,sys
+import os, sys
 import pickle
 import subprocess
 from collections import defaultdict
 from itertools import repeat, starmap
 from typing import List, Set, Tuple
+
 
 import matplotlib.pyplot as plt
 import MDAnalysis
@@ -24,7 +25,6 @@ from transformato.constants import temperature
 from transformato.utils import get_structure_name, isnotebook
 
 logger = logging.getLogger(__name__)
-
 
 
 def return_reduced_potential(
@@ -108,7 +108,9 @@ class FreeEnergyCalculator(object):
 
         assert type(nr_of_max_snapshots) == int
         self.nr_of_max_snapshots = nr_of_max_snapshots
-        self.snapshots, self.unitcell, self.nr_of_states, self.N_k = self._merge_trajs(multiple_runs)
+        self.snapshots, self.unitcell, self.nr_of_states, self.N_k = self._merge_trajs(
+            multiple_runs
+        )
 
     def _generate_openMM_system(self, env: str, lambda_state: int) -> Simulation:
         # read in necessary files
@@ -187,7 +189,7 @@ class FreeEnergyCalculator(object):
                     dcd_path = f"{self.base_path}/intst{lambda_state}/run_{multiple_runs}/{conf_sub['intermediate-filename']}.dcd"
                 else:
                     dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
-                
+
                 psf_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
                 if not os.path.isfile(dcd_path):
                     raise RuntimeError(f"{dcd_path} does not exist.")
@@ -433,7 +435,12 @@ class FreeEnergyCalculator(object):
         return energies
 
     def energy_at_lambda(
-        self, lambda_state: int, env: str, nr_of_max_snapshots: int, in_memory: bool, multiple_runs: int,
+        self,
+        lambda_state: int,
+        env: str,
+        nr_of_max_snapshots: int,
+        in_memory: bool,
+        multiple_runs: int,
     ) -> Tuple:
         gc.enable()
         logger.info(f"Analysing lambda state {lambda_state} of {self.nr_of_states}")
@@ -558,9 +565,9 @@ class FreeEnergyCalculator(object):
             logger.info(f"Saving results: {file}")
             results = {"u_kn": u_kn, "N_k": N_k}
             pickle.dump(results, open(file, "wb+"))
-            
+
             return self.calculate_dG_using_mbar(u_kn, N_k, env)
-        
+
         else:
             return self.calculate_dG_using_mbar(u_kn, N_k, env)
 
@@ -765,7 +772,7 @@ class FreeEnergyCalculator(object):
         ax = sns.heatmap(
             overlap_matrix,
             cmap="Reds",
-            cbar = False,
+            cbar=False,
             linewidth=0.5,
             annot=True,
             fmt="0.2f",
@@ -774,7 +781,7 @@ class FreeEnergyCalculator(object):
 
         ax = sns.heatmap(
             overlap_matrix,
-            mask = overlap_matrix < 0.009,
+            mask=overlap_matrix < 0.009,
             cmap="Blues",
             linewidth=0.5,
             annot=True,
@@ -878,19 +885,19 @@ class FreeEnergyCalculator(object):
             f"Free energy to common core: {energy_estimate} [kT] with uncertainty: {uncertainty} [kT]."
         )
 
-
     def detailed_overlap(self, env):
-        
+
         mbar_matrix = self.free_energy_overlap(env=env)
-        upper = np.diagonal(mbar_matrix, offset = 1)
-        lower = np.diagonal(mbar_matrix, offset = -1)
-        av_upper = sum(upper/(len(mbar_matrix)-1))
-        av_lower = sum(lower/(len(mbar_matrix)-1))
+        upper = np.diagonal(mbar_matrix, offset=1)
+        lower = np.diagonal(mbar_matrix, offset=-1)
+        av_upper = sum(upper / (len(mbar_matrix) - 1))
+        av_lower = sum(lower / (len(mbar_matrix) - 1))
 
-        print(f"The average overlap in {env} between the states is {round(av_upper,3)} and {round(av_lower,3)}")
+        print(
+            f"The average overlap in {env} between the states is {round(av_upper,3)} and {round(av_lower,3)}"
+        )
 
-        all = np.concatenate((upper,lower))
+        all = np.concatenate((upper, lower))
         for state, i in enumerate(all):
             if i < 0.01:
                 print(f" WARNINING: In state {state}, the overlap is {round(i,3)}")
-
