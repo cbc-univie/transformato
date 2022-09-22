@@ -86,7 +86,7 @@
 <span class="kn">from</span> <span class="nn">transformato.charmm_factory</span> <span class="kn">import</span> <span class="n">CharmmFactory</span>
 <span class="kn">from</span> <span class="nn">transformato.mutate</span> <span class="kn">import</span> <span class="n">Mutation</span>
 <span class="kn">from</span> <span class="nn">transformato.restraints</span> <span class="kn">import</span> <span class="n">write_restraints_yaml</span>
-<span class="kn">from</span> <span class="nn">transformato.utils</span> <span class="kn">import</span> <span class="n">get_toppar_dir</span><span class="p">,</span> <span class="n">psf_correction</span>
+<span class="kn">from</span> <span class="nn">transformato.utils</span> <span class="kn">import</span> <span class="n">get_toppar_dir</span><span class="p">,</span> <span class="n">psf_correction</span><span class="p">,</span> <span class="n">check_switching_function</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -559,7 +559,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_hmr</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_serializer</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_switching_function</span><span class="p">()</span>
+        <span class="n">check_switching_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span>
@@ -576,24 +576,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_hmr</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_serializer</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="IntermediateStateFactory._check_switching_function"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._check_switching_function">[docs]</a>    <span class="k">def</span> <span class="nf">_check_switching_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        There are three possibilities for the CHARMM/openMM switching functions:</span>
-<span class="sd">        - vfswitch</span>
-<span class="sd">        - switch</span>
-<span class="sd">        - no-switch (not implemented --- this will use vfswitch)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;force-switch&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>  <span class="c1"># don&#39;t do anything, that&#39;s the default for c-gui openMM scripts</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;switch&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;no-switch&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>  <span class="c1"># this is the openMM default --- simply don&#39;t call the c-gui switching function</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Other switching functino called: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntermediateStateFactory._check_hmr"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._check_hmr">[docs]</a>    <span class="k">def</span> <span class="nf">_check_hmr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
         <span class="s2">&quot;add hmr if requested in config file&quot;</span>
