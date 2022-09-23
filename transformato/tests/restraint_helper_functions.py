@@ -92,7 +92,7 @@ def vfswitch(system, psf, inputs):
         chg, sig, eps = nonbonded.getParticleParameters(i)
         nonbonded.setParticleParameters(i, chg, 0.0, 0.0)  # zero-out LJ
         sig = sig * 0.5
-        eps = eps ** 0.5
+        eps = eps**0.5
         vfswitch.addParticle([sig, eps])
     for i in range(nonbonded.getNumExceptions()):
         atom1, atom2 = nonbonded.getExceptionParameters(i)[:2]

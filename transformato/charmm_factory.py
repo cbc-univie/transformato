@@ -66,7 +66,7 @@ class CharmmFactory:
         return charmm_production_script
 
     @staticmethod
-    def build_reduced_toppar(tlc: str, charmm_gui_base :str) -> str:
+    def build_reduced_toppar(tlc: str, charmm_gui_base: str) -> str:
         date = datetime.date.today()
         toppar = f"""* Simplified toppar script
 * Version from {date}
@@ -173,8 +173,9 @@ stream ../../toppar/toppar_all36_label_spin.str
 stream ../../toppar/toppar_all36_label_fluorophore.str
 """
 
-
-        if os.path.isfile(f"{charmm_gui_base}/waterbox/{tlc.lower()}/{tlc.lower()}_g.rtf"):
+        if os.path.isfile(
+            f"{charmm_gui_base}/waterbox/{tlc.lower()}/{tlc.lower()}_g.rtf"
+        ):
             toppar += f"""
 ! Read {tlc} RTF
 open read unit 10 card name {tlc}_g.rtf

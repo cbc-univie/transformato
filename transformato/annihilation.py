@@ -18,7 +18,9 @@ IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
 from transformato.mutate import DummyRegion, MutationDefinition
+
 logger = logging.getLogger(__name__)
+
 
 class ProposeMutationRouteASFE(object):
     def __init__(

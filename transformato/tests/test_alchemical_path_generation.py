@@ -9,9 +9,14 @@ import sys
 import warnings
 
 import pytest
+
 # read in specific topology with parameters
-from transformato import (IntermediateStateFactory, ProposeMutationRoute,
-                          SystemStructure, load_config_yaml)
+from transformato import (
+    IntermediateStateFactory,
+    ProposeMutationRoute,
+    SystemStructure,
+    load_config_yaml,
+)
 from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
@@ -26,8 +31,9 @@ def test_transformato_imported():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_acetylaceton_methyl_common_core():
-    from transformato_testsystems.testsystems import \
-        mutate_acetylaceton_methyl_common_core
+    from transformato_testsystems.testsystems import (
+        mutate_acetylaceton_methyl_common_core,
+    )
 
     conf = f"{get_testsystems_dir()}/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
@@ -41,8 +47,7 @@ def test_generate_alchemical_path_acetylaceton_methyl_common_core():
 
 @pytest.mark.rbfe
 def test_rbfe_mutate_2oj9():
-    from transformato import (ProposeMutationRoute, SystemStructure,
-                              load_config_yaml)
+    from transformato import ProposeMutationRoute, SystemStructure, load_config_yaml
 
     from ..mutate import mutate_pure_tautomers
 
@@ -88,8 +93,7 @@ def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_toluene_commmon_core():
-    from transformato_testsystems.testsystems import \
-        mutate_toluene_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
@@ -116,8 +120,7 @@ def test_generate_alchemical_path_for_toluene_commmon_core():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_toluene_commmon_core_with_CUDA():
-    from transformato_testsystems.testsystems import \
-        mutate_toluene_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_toluene_to_methane_cc
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe-CUDA.yaml",
@@ -148,8 +151,7 @@ def test_generate_alchemical_path_for_toluene_commmon_core_with_CUDA():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_2MIN_common_core():
-    from transformato_testsystems.testsystems import \
-        mutate_2_methylindole_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_2_methylindole_to_methane_cc
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/test-2MIN-methane-rsfe.yaml",
@@ -163,8 +165,7 @@ def test_generate_alchemical_path_for_2MIN_common_core():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_2MFN_common_core():
-    from transformato_testsystems.testsystems import \
-        mutate_2_methylfuran_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_2_methylfuran_to_methane_cc
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/test-2MFN-methane-rsfe.yaml",
@@ -178,8 +179,7 @@ def test_generate_alchemical_path_for_2MFN_common_core():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_neopentane_common_core():
-    from transformato_testsystems.testsystems import \
-        mutate_neopentane_to_methane_cc
+    from transformato_testsystems.testsystems import mutate_neopentane_to_methane_cc
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/test-neopentane-methane-rsfe.yaml",
