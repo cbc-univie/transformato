@@ -9,6 +9,7 @@ from collections import defaultdict
 from itertools import repeat, starmap
 from typing import List, Set, Tuple
 
+
 import matplotlib.pyplot as plt
 import MDAnalysis
 import mdtraj
