@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -56,8 +57,18 @@
 <li class="toctree-l4"><a class="reference internal" href="#usage">Usage:</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transformato.restraints.Restraint"><code class="docutils literal notranslate"><span class="pre">Restraint</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#transformato.restraints.create_restraints_from_config"><code class="docutils literal notranslate"><span class="pre">restraints.create_restraints_from_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transformato.restraints.generate_extremities"><code class="docutils literal notranslate"><span class="pre">restraints.generate_extremities()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transformato.restraints.generate_simple_selection"><code class="docutils literal notranslate"><span class="pre">restraints.generate_simple_selection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transformato.restraints.get3DDistance"><code class="docutils literal notranslate"><span class="pre">restraints.get3DDistance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#transformato.restraints.write_restraints_yaml"><code class="docutils literal notranslate"><span class="pre">restraints.write_restraints_yaml()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="transformato.state.html">transformato.state</a></li>
@@ -98,7 +109,7 @@
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-transformato.restraints"></span><span class="target" id="module-0"></span><p>Manages restraints and the forces created from them.</p>
+<span class="target" id="module-transformato.restraints"></span><p>Manages restraints and the forces created from them.</p>
 <section id="basic-function">
 <h3>Basic function:<a class="headerlink" href="#basic-function" title="Permalink to this heading"></a></h3>
 <p>From the ‘restraints’ section in the config.yaml, the intermediate state factory creates an appropriate restraints.yaml in the
@@ -115,7 +126,7 @@ Define your restraints in the config.yaml.</p>
 <p>For further usage instructions, see the ‘System Setup’ section of the main documentation.</p>
 </div>
 </section>
-</section>
+<span class="target" id="module-0"></span></section>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
 <dl class="py class">
