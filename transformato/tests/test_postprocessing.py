@@ -841,7 +841,6 @@ def test_compare_energies_toluene_waterbox(caplog):
         config=conf, input_dir=get_testsystems_dir(), output_dir=get_testsystems_dir()
     )  # NOTE: for preprocessing input_dir is the output dir
 
-
     f = FreeEnergyCalculator(configuration, "toluene")
     for idx, b in enumerate(output_files_toluene):
         traj = md.load_dcd(

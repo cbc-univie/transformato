@@ -23,13 +23,12 @@ class CharmmFactory:
             prms[key] = self.configuration["simulation"]["parameters"][key]
         return prms
 
-
     def generate_CHARMM_postprocessing_files(self, env: str) -> str:
 
         charmm_postprocessing_script = self._get_CHARMM_postprocessing_header(env)
         if env == "vacuum":
-            charmm_postprocessing_script += (
-                self._get_CHARMM_vacuum_postprocessing_body(env)
+            charmm_postprocessing_script += self._get_CHARMM_vacuum_postprocessing_body(
+                env
             )
         elif env == "waterbox" or env == "complex":
             charmm_postprocessing_script += (
@@ -57,7 +56,7 @@ class CharmmFactory:
         return charmm_production_script
 
     @staticmethod
-    def build_reduced_toppar(tlc: str, charmm_gui_base :str) -> str:
+    def build_reduced_toppar(tlc: str, charmm_gui_base: str) -> str:
         date = datetime.date.today()
         toppar = f"""* Simplified toppar script
 * Version from {date}
@@ -164,8 +163,9 @@ stream ../../toppar/toppar_all36_label_spin.str
 stream ../../toppar/toppar_all36_label_fluorophore.str
 """
 
-
-        if os.path.isfile(f"{charmm_gui_base}/waterbox/{tlc.lower()}/{tlc.lower()}_g.rtf"):
+        if os.path.isfile(
+            f"{charmm_gui_base}/waterbox/{tlc.lower()}/{tlc.lower()}_g.rtf"
+        ):
             toppar += f"""
 ! Read {tlc} RTF
 open read unit 10 card name {tlc}_g.rtf
@@ -418,7 +418,7 @@ calc zcen = 0.
             GPU_domdec = ""
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
-        # always center
+            # always center
             centering = """
 calc xcen = @A / 2 
 calc ycen = @B / 2 

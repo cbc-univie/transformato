@@ -18,7 +18,10 @@ logger = logging.getLogger(__name__)
 
 class IntermediateStateFactory(object):
     def __init__(
-        self, system: transformato.system.SystemStructure, configuration: dict, multiple_runs = False
+        self,
+        system: transformato.system.SystemStructure,
+        configuration: dict,
+        multiple_runs=False,
     ):
         """
         Generate the intermediate directories with for the provided systems with the provided mutations.
@@ -46,28 +49,45 @@ class IntermediateStateFactory(object):
 
     def endstate_correction(self):
 
-        logger.info(f"Will create script for endstate correction")              
+        logger.info(f"Will create script for endstate correction")
         try:
             os.makedirs(f"{self.path}/../endstate_correction")
         except:
             logger.info(f"Folder for endstate correction exist already")
 
         # copy submit script to the newly created folder
-        submit_switching_script_source = f"{self.configuration['bin_dir']}/slurm_switching.sh"
-        submit_switchting_script_target = f"{self.path}/../endstate_correction/slurm_switching.sh"
+        submit_switching_script_source = (
+            f"{self.configuration['bin_dir']}/slurm_switching.sh"
+        )
+        submit_switchting_script_target = (
+            f"{self.path}/../endstate_correction/slurm_switching.sh"
+        )
         shutil.copyfile(submit_switching_script_source, submit_switchting_script_target)
 
         # modify the perform_correction file from transformato bin and save it in the endstate_correcition folder
-        endstate_correction_script_source = f"{self.configuration['bin_dir']}/perform_correction.py"
-        endstate_correction_script_target = f"{self.path}/../endstate_correction/perform_correction.py"
-        fin = open(endstate_correction_script_source,"rt")
-        fout = open(endstate_correction_script_target,"wt")
+        endstate_correction_script_source = (
+            f"{self.configuration['bin_dir']}/perform_correction.py"
+        )
+        endstate_correction_script_target = (
+            f"{self.path}/../endstate_correction/perform_correction.py"
+        )
+        fin = open(endstate_correction_script_source, "rt")
+        fout = open(endstate_correction_script_target, "wt")
 
         for line in fin:
             if "NAMEofSYSTEM" in line:
-                fout.write(line.replace("NAMEofSYSTEM",f'"{self.configuration["system"]["structure1"]["name"]}"'))
+                fout.write(
+                    line.replace(
+                        "NAMEofSYSTEM",
+                        f'"{self.configuration["system"]["structure1"]["name"]}"',
+                    )
+                )
             elif "TLC" in line:
-                fout.write(line.replace("TLC",f'"{self.configuration["system"]["structure1"]["tlc"]}"'))
+                fout.write(
+                    line.replace(
+                        "TLC", f'"{self.configuration["system"]["structure1"]["tlc"]}"'
+                    )
+                )
             else:
                 fout.write(line)
         fin.close()
@@ -139,9 +159,9 @@ class IntermediateStateFactory(object):
             if type(self.multiple_runs) == str:
                 os.makedirs(f"{output_file_base}/{self.multiple_runs}")
             else:
-                for i in range(1,self.multiple_runs + 1):
+                for i in range(1, self.multiple_runs + 1):
                     os.makedirs(f"{output_file_base}/run_{i}")
-                
+
         self.output_files.append(output_file_base)
 
         # Used for restraints:
@@ -352,24 +372,28 @@ with open(file_name + '_system.xml','w') as outfile:
 
     def _modify_submit_script(self, shFile):
         # submit script is modified to loop over all runs depending on the number defined in the consecutive
-        # runs 
+        # runs
         logger.info(f"We will manipulate the submit script for use with multiple runs")
 
         fout = open(f"{shFile}.tmp", "wt")
-        with open (f"{shFile}", "r+") as f:
+        with open(f"{shFile}", "r+") as f:
             for line in f:
                 if line.startswith(f"input=lig_in_"):
                     fout.write("for i in {1.." + f"{self.multiple_runs}" + "};\n")
                     fout.write("do \n")
                     fout.write(line)
                 elif line.startswith("python -u openmm"):
-                    line = line.replace("${istep}.dcd","run_${i}/${istep}.dcd")
-                    fout.write(line.replace(line.split()[-1],"run_${i}/"+f"{line.split()[-1]}"))  
-                    fout.write(f"done \n")    
+                    line = line.replace("${istep}.dcd", "run_${i}/${istep}.dcd")
+                    fout.write(
+                        line.replace(
+                            line.split()[-1], "run_${i}/" + f"{line.split()[-1]}"
+                        )
+                    )
+                    fout.write(f"done \n")
                 else:
                     fout.write(line)
         fout.close()
-        shutil.move(fout.name,shFile)
+        shutil.move(fout.name, shFile)
 
     def _copy_omm_files(self, intermediate_state_file_path: str):
         """
@@ -578,7 +602,7 @@ with open(file_name + '_system.xml','w') as outfile:
 
         # copy ligand rtf file
         ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
-        toppar_target = (f"{intermediate_state_file_path}/{self.system.tlc.lower()}.str")
+        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.str"
         shutil.copyfile(ligand_rtf, toppar_target)
 
     def _copy_crd_file(self, intermediate_state_file_path: str):
@@ -605,11 +629,11 @@ with open(file_name + '_system.xml','w') as outfile:
         basedir = self.system.charmm_gui_base
 
         try:
-            self._copy_ligand_specific_top_and_par(basedir, intermediate_state_file_path)
+            self._copy_ligand_specific_top_and_par(
+                basedir, intermediate_state_file_path
+            )
         except:
             self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
-
-
 
         # copy crd file
         self._copy_crd_file((intermediate_state_file_path))
@@ -1036,7 +1060,9 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 ../../toppar/toppar_all36_lipid_prot.str
 ../../toppar/toppar_all36_lipid_sphingo.str
 """
-        if os.path.isfile(f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"):
+        if os.path.isfile(
+            f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
+        ):
             toppar_format += f"""{self.system.tlc.lower()}_g.rtf
 {self.system.tlc.lower()}.prm
 dummy_atom_definitions.rtf

@@ -54,7 +54,7 @@ def postprocessing(
         f.load_trajs(nr_of_max_snapshots=max_snapshots)
         f.base_path = path
     elif analyze_traj_with == "mdtraj":
-        f.load_trajs(nr_of_max_snapshots=max_snapshots, multiple_runs = multiple_runs)
+        f.load_trajs(nr_of_max_snapshots=max_snapshots, multiple_runs=multiple_runs)
     else:
         logger.info(f"using {analyze_traj_with} for analysis")
 
@@ -71,9 +71,13 @@ def postprocessing(
     else:
         ddG, dddG = f.end_state_free_energy_difference
         print("######################################")
-        print(f"Free energy to common core for {configuration['system']['structure1']['name']} in kT")
+        print(
+            f"Free energy to common core for {configuration['system']['structure1']['name']} in kT"
+        )
         print("######################################")
-        print(f"Free energy difference from {configuration['system']['structure1']['name']} to CC: {ddG} [kT]")
+        print(
+            f"Free energy difference from {configuration['system']['structure1']['name']} to CC: {ddG} [kT]"
+        )
         print(f"Uncertanty: {dddG} [kT]")
         print("######################################")
         print("######################################")
@@ -304,6 +308,7 @@ def isnotebook():
     except NameError:
         return False  # Probably standard Python interpreter
 
+
 def check_switching_function(vdw_switch):
     """
     There are three possibilities for the CHARMM/openMM switching functions:
@@ -319,6 +324,4 @@ def check_switching_function(vdw_switch):
         raise NotImplementedError()
         return ""
     else:
-        raise NotImplementedError(
-            f"Other switching functino called: {vdw_switch}."
-        )
+        raise NotImplementedError(f"Other switching functino called: {vdw_switch}.")
