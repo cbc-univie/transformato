@@ -316,7 +316,7 @@ stop"""
             self.configuration["simulation"].get("GPU", False) == True
             and self.charmm_gpu == "domdec-gpu"
         ):
-            GPU_domdec = "domdec gpu on"
+            GPU_domdec = "domdec gpu only"
             GPU_openMM = ""
         elif (
             self.configuration["simulation"].get("GPU", False) == True
@@ -395,7 +395,7 @@ stop"""
             self.configuration["simulation"].get("GPU", False) == True
             and self.charmm_gpu == "domdec-gpu"
         ):
-            GPU_domdec = "domdec gpu on"
+            GPU_domdec = "domdec gpu only"
             GPU_openMM = ""
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
