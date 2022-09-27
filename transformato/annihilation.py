@@ -1,11 +1,15 @@
 import logging
 import parmed as pm
+
 import networkx as nx
+
 
 logger = logging.getLogger(__name__)
 
 
+
 def calculate_order_of_LJ_mutations_asfe(central_atoms: list, G: nx.Graph) -> list:
+
 
     ordered_LJ_mutations = []
     root = central_atoms[0]
@@ -16,6 +20,7 @@ def calculate_order_of_LJ_mutations_asfe(central_atoms: list, G: nx.Graph) -> li
     G_dummy = G.copy()
 
     while len(G_dummy.nodes()) > 0:
+
 
         G_origweights = G_dummy.copy()
 
