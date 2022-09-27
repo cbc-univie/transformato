@@ -405,7 +405,7 @@ that connects the specific dummy group to the real region.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">ProposeMutationRoute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.mutate.</span></span><span class="sig-name descname"><span class="pre">ProposeMutationRoute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -416,7 +416,7 @@ that connects the specific dummy group to the real region.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>A class that proposes the mutation route between two molecules with a
 common core (same atom types) based on two mols and generates the mutation
 objects to perform the mutation on the psf objects.
@@ -428,7 +428,7 @@ objects to perform the mutation on the psf objects.
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>s1</strong> (<a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a>) – </p></li>
-<li><p><strong>s2</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a><em>]</em>) – </p></li>
+<li><p><strong>s2</strong> (<a class="reference internal" href="transformato.system.html#transformato.system.SystemStructure" title="transformato.system.SystemStructure"><em>SystemStructure</em></a>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -643,29 +643,6 @@ Show common core.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.finish_common_core">
-<span class="sig-name descname"><span class="pre">finish_common_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connected_dummy_regions_cc1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connected_dummy_regions_cc2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odered_connected_dummy_regions_cc1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">odered_connected_dummy_regions_cc2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.finish_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.finish_common_core" title="Permalink to this definition"></a></dt>
-<dd><p>The dummy region is created and the final atoms connected to the CC are collected. It is possible
-to define a dummy region on its own or to change the ordering how the lj parameters of the
-heavy atoms in the dummy region are turned off
-———
-connected_dummy_regions_cc1: list = []
-connected_dummy_regions_cc2: list = []
-odered_connected_dummy_regions_cc1: list = []
-odered_connected_dummy_regions_cc2: list = []</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>connected_dummy_regions_cc1</strong> (<em>list</em>) – </p></li>
-<li><p><strong>connected_dummy_regions_cc2</strong> (<em>list</em>) – </p></li>
-<li><p><strong>odered_connected_dummy_regions_cc1</strong> (<em>list</em>) – </p></li>
-<li><p><strong>odered_connected_dummy_regions_cc2</strong> (<em>list</em>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol1">
 <span class="sig-name descname"><span class="pre">generate_mutations_to_common_core_for_mol1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.generate_mutations_to_common_core_for_mol1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol1" title="Permalink to this definition"></a></dt>
 <dd><dl class="simple">
@@ -712,24 +689,6 @@ odered_connected_dummy_regions_cc2: list = []</p>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.get_idx_of_all_atoms">
-<span class="sig-name descname"><span class="pre">get_idx_of_all_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol1_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.get_idx_of_all_atoms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.get_idx_of_all_atoms" title="Permalink to this definition"></a></dt>
-<dd><p>mol1_name: str</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mol1_name</strong> (<em>str</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.propose_common_core">
-<span class="sig-name descname"><span class="pre">propose_common_core</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.propose_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.propose_common_core" title="Permalink to this definition"></a></dt>
-<dd><p>Searches for the common core using the rdkit module, in case of asfe only a list of
-atoms of the ligand is created</p>
 </dd></dl>
 
 <dl class="py method">
