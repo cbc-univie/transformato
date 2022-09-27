@@ -362,7 +362,9 @@ class ProposeMutationRoute(object):
 
         except:
 
-            logger.info("Only information about one structure, assume an ASFE simulation is requested")
+            logger.info(
+                "Only information about one structure, assume an ASFE simulation is requested"
+            )
             mol1_name: str = "m1"
             self.system: dict = {"system1": s1}
             self.mols: dict = {mol1_name: s1.mol}
@@ -376,7 +378,6 @@ class ProposeMutationRoute(object):
             self.s1_tlc = s1.tlc
             self.asfe: bool = True
             self.dummy_region_cc1: DummyRegion
-
 
     def _check_cgenff_versions(self):
 
@@ -601,18 +602,24 @@ class ProposeMutationRoute(object):
         ]
         lp_dict_dummy_region = defaultdict(list)
         lp_dict_common_core = defaultdict(list)
-        print(f'die version {pm.__version__}')
+        print(f"die version {pm.__version__}")
         for atom in psf.view[f":{tlc}"].atoms:
             if atom.name.find("LP") == False:
                 print(f"die Atome {atom}")
                 if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
                     lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
 
-                elif atom.frame_type.atom1.idx not in lp_dict_common_core and name == "m1":
+                elif (
+                    atom.frame_type.atom1.idx not in lp_dict_common_core
+                    and name == "m1"
+                ):
                     logger.info(f"Adding atom {atom.idx} to the common core of mol1")
                     self.add_idx_to_common_core_of_mol1([atom.idx])
 
-                elif atom.frame_type.atom1.idx not in lp_dict_common_core and name == "m2":
+                elif (
+                    atom.frame_type.atom1.idx not in lp_dict_common_core
+                    and name == "m2"
+                ):
                     logger.info(f"Adding atom {atom.idx} to the common core of mol1")
                     self.add_idx_to_common_core_of_mol2([atom.idx])
 
@@ -649,12 +656,12 @@ class ProposeMutationRoute(object):
 
     def propose_common_core(self):
         """
-        Searches for the common core using the rdkit module, in case of asfe only a list of 
+        Searches for the common core using the rdkit module, in case of asfe only a list of
         atoms of the ligand is created
         """
 
         if self.asfe:
-           self.get_idx_of_all_atoms("m1")
+            self.get_idx_of_all_atoms("m1")
         else:
             # System for RBFE/RSFE contains two mols
             mcs = self._find_mcs("m1", "m2")
@@ -668,8 +675,8 @@ class ProposeMutationRoute(object):
         odered_connected_dummy_regions_cc2: list = [],
     ):
         """
-        The dummy region is created and the final atoms connected to the CC are collected. It is possible 
-        to define a dummy region on its own or to change the ordering how the lj parameters of the 
+        The dummy region is created and the final atoms connected to the CC are collected. It is possible
+        to define a dummy region on its own or to change the ordering how the lj parameters of the
         heavy atoms in the dummy region are turned off
         ---------
         connected_dummy_regions_cc1: list = []
@@ -683,8 +690,12 @@ class ProposeMutationRoute(object):
             # set the teriminal real/dummy atom indices
             self._set_common_core_parameters()
             # match the real/dummy atoms
-            match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol1()
-            match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol2()
+            match_terminal_atoms_cc1 = (
+                self._match_terminal_real_and_dummy_atoms_for_mol1()
+            )
+            match_terminal_atoms_cc2 = (
+                self._match_terminal_real_and_dummy_atoms_for_mol2()
+            )
             logger.info("Find connected dummy regions")
             # define connected dummy regions
             if not connected_dummy_regions_cc1:
@@ -696,21 +707,29 @@ class ProposeMutationRoute(object):
                     mol_name="m2",
                 )
 
-            logger.debug(f"connected dummy regions for mol1: {connected_dummy_regions_cc1}")
-            logger.debug(f"connected dummy regions for mol2: {connected_dummy_regions_cc2}")
+            logger.debug(
+                f"connected dummy regions for mol1: {connected_dummy_regions_cc1}"
+            )
+            logger.debug(
+                f"connected dummy regions for mol2: {connected_dummy_regions_cc2}"
+            )
 
             # calculate the ordering or LJ mutations
             if not odered_connected_dummy_regions_cc1:
-                odered_connected_dummy_regions_cc1 = self._calculate_order_of_LJ_mutations(
-                    connected_dummy_regions_cc1,
-                    match_terminal_atoms_cc1,
-                    self.graphs["m1"].copy(),
+                odered_connected_dummy_regions_cc1 = (
+                    self._calculate_order_of_LJ_mutations(
+                        connected_dummy_regions_cc1,
+                        match_terminal_atoms_cc1,
+                        self.graphs["m1"].copy(),
+                    )
                 )
             if not odered_connected_dummy_regions_cc2:
-                odered_connected_dummy_regions_cc2 = self._calculate_order_of_LJ_mutations(
-                    connected_dummy_regions_cc2,
-                    match_terminal_atoms_cc2,
-                    self.graphs["m2"].copy(),
+                odered_connected_dummy_regions_cc2 = (
+                    self._calculate_order_of_LJ_mutations(
+                        connected_dummy_regions_cc2,
+                        match_terminal_atoms_cc2,
+                        self.graphs["m2"].copy(),
+                    )
                 )
             logger.info(
                 f"sorted connected dummy regions for mol1: {odered_connected_dummy_regions_cc1}"
@@ -763,7 +782,7 @@ class ProposeMutationRoute(object):
             psf1, psf2 = self._prepare_cc_for_charge_transfer()
             self.charge_compensated_ligand1_psf = psf1
             self.charge_compensated_ligand2_psf = psf2
-        
+
         else:
 
             # all atoms should become dummy atoms in the end
@@ -779,9 +798,11 @@ class ProposeMutationRoute(object):
 
             # calculate the ordering or LJ mutations
             if not odered_connected_dummy_regions_cc1:
-                odered_connected_dummy_regions_cc1 = calculate_order_of_LJ_mutations_asfe(
-                    central_atoms,
-                    self.graphs["m1"].copy(),
+                odered_connected_dummy_regions_cc1 = (
+                    calculate_order_of_LJ_mutations_asfe(
+                        central_atoms,
+                        self.graphs["m1"].copy(),
+                    )
                 )
 
             if odered_connected_dummy_regions_cc1:
@@ -1128,7 +1149,7 @@ class ProposeMutationRoute(object):
 
         if not self.asfe:
             m["transform"] = self._transform_common_core()
-        
+
         return m
 
     def generate_mutations_to_common_core_for_mol2(self) -> dict:
@@ -1259,10 +1280,9 @@ class ProposeMutationRoute(object):
         mutations = defaultdict(list)
         tlc = self.s1_tlc
 
-
         if self.asfe:
             psf = self.psf1["waterbox"]
-            cc_idx = [] # no CC in ASFE
+            cc_idx = []  # no CC in ASFE
             list_termin_dummy_atoms = []
 
         else:

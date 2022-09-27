@@ -251,7 +251,7 @@ class SystemStructure(object):
                 if hasattr(atom, "frame_type"):
                     lp = True
 
-            # this is used for creating the vacuum structure, 
+            # this is used for creating the vacuum structure,
             # unfortunatly parmed forgets afterwards about the frame_type
             # which is necessary for the check_for_lp function
             if lp:
@@ -262,7 +262,7 @@ class SystemStructure(object):
                     if hasattr(atom, "frame_type"):
                         frame_idx.append(atom.idx)
                         frame_frame.append(atom.frame_type)
-                psf = psf[f":{self.tlc}"] # the important part
+                psf = psf[f":{self.tlc}"]  # the important part
                 psf.groups = g
                 for atom in psf.atoms:
                     if atom.idx in frame_idx:

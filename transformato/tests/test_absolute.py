@@ -25,7 +25,7 @@ def create_asfe_system(configuration):
     s1_absolute.propose_common_core()
     s1_absolute.finish_common_core()
     mutation_list = s1_absolute.generate_mutations_to_common_core_for_mol1()
-    
+
     return s1, mutation_list
 
 
@@ -132,6 +132,7 @@ def test_compare_mda_and_mdtraj():
     mdtraj_results = analyse_asfe_with_module(module="mdtraj")
     assert np.isclose(np.average(mda_results), np.average(mdtraj_results))
 
+
 @pytest.mark.asfe
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
@@ -143,7 +144,6 @@ def test_create_asfe_system_with_lp():
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/1,3-dichlorobenzene-asfe.yaml",
-
         input_dir=get_testsystems_dir(),
         output_dir=get_test_output_dir(),
     )
@@ -156,8 +156,9 @@ def test_create_asfe_system_with_lp():
     mutation_list = s1_absolute.generate_mutations_to_common_core_for_mol1()
 
     multiple_runs = 3
-    i = IntermediateStateFactory(system=s1, multiple_runs= multiple_runs, configuration=configuration)
-
+    i = IntermediateStateFactory(
+        system=s1, multiple_runs=multiple_runs, configuration=configuration
+    )
 
     perform_mutations(
         configuration=configuration,
@@ -165,4 +166,3 @@ def test_create_asfe_system_with_lp():
         i=i,
         mutation_list=mutation_list,
     )
-

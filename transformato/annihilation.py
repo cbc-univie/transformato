@@ -4,8 +4,8 @@ import networkx as nx
 
 logger = logging.getLogger(__name__)
 
-def calculate_order_of_LJ_mutations_asfe(central_atoms: list, G: nx.Graph) -> list:
 
+def calculate_order_of_LJ_mutations_asfe(central_atoms: list, G: nx.Graph) -> list:
 
     ordered_LJ_mutations = []
     root = central_atoms[0]
