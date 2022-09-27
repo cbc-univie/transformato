@@ -581,18 +581,24 @@ class ProposeMutationRoute(object):
         ]
         lp_dict_dummy_region = defaultdict(list)
         lp_dict_common_core = defaultdict(list)
-        print(f'die version {pm.__version__}')
+        print(f"die version {pm.__version__}")
         for atom in psf.view[f":{tlc}"].atoms:
             if atom.name.find("LP") == False:
                 print(f"die Atome {atom}")
                 if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
                     lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
 
-                elif atom.frame_type.atom1.idx not in lp_dict_common_core and name == "m1":
+                elif (
+                    atom.frame_type.atom1.idx not in lp_dict_common_core
+                    and name == "m1"
+                ):
                     logger.info(f"Adding atom {atom.idx} to the common core of mol1")
                     self.add_idx_to_common_core_of_mol1([atom.idx])
 
-                elif atom.frame_type.atom1.idx not in lp_dict_common_core and name == "m2":
+                elif (
+                    atom.frame_type.atom1.idx not in lp_dict_common_core
+                    and name == "m2"
+                ):
                     logger.info(f"Adding atom {atom.idx} to the common core of mol1")
                     self.add_idx_to_common_core_of_mol2([atom.idx])
 
@@ -610,7 +616,6 @@ class ProposeMutationRoute(object):
         )
 
         return odered_connected_dummy_regions_cc_with_lp
-
 
     def propose_common_core(self):
         mcs = self._find_mcs("m1", "m2")

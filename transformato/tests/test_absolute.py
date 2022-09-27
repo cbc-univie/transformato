@@ -26,7 +26,7 @@ def create_asfe_system(configuration):
     s1_absolute.propose_common_core()
     s1_absolute.finish_common_core()
     mutation_list = s1_absolute.generate_mutations_to_common_core_for_mol1()
-    
+
     return s1, mutation_list
 
 
@@ -132,4 +132,3 @@ def test_compare_mda_and_mdtraj():
     mda_results = analyse_asfe_with_module(module="mda")
     mdtraj_results = analyse_asfe_with_module(module="mdtraj")
     assert np.isclose(np.average(mda_results), np.average(mdtraj_results))
-
