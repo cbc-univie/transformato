@@ -17,7 +17,9 @@ IPythonConsole.molSize = (900, 900)  # Change image size
 IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
+
 from transformato.mutate import DummyRegion, MutationDefinition, ProposeMutationRoute
+
 
 logger = logging.getLogger(__name__)
 
