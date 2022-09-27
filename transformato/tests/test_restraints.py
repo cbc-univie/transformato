@@ -173,7 +173,6 @@ def test_integration():
     pdbpath = PATH_2OJ9
     with open(
         f"{get_testsystems_dir()}/config/test-2oj9-restraints.yaml", "r"
-        
     ) as stream:
         try:
             configuration = yaml.safe_load(stream)
@@ -234,8 +233,13 @@ def test_integration():
             state = simulation.context.getState(getEnergy=True, groups={i})
             logger.info("Force contributions before steps:")
             logger.info(f"{f}::{state.getPotentialEnergy()}")
-            if f.getEnergyFunction() == "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2":  # flatbottom-twosided, has set r0
-                assert 0.9 in f.getBondParameters(0)[1] # assert the manually set r0 value is found in the bond parameters
+            if (
+                f.getEnergyFunction()
+                == "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2"
+            ):  # flatbottom-twosided, has set r0
+                assert (
+                    0.9 in f.getBondParameters(0)[1]
+                )  # assert the manually set r0 value is found in the bond parameters
 
     logger.info("Simulation stepping")
     simulation.step(9)
@@ -274,21 +278,22 @@ def test_integration():
                 f.setBondParameters(0, [0, 1], [25, 5])
 
             elif (
-            f.getEnergyFunction() == "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2)-r0)^2"
+                f.getEnergyFunction()
+                == "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2)-r0)^2"
             ):  # flatbottom-oneside-soft shape:
                 f.setBondParameters(0, [0, 1], [250, 0.01])
 
             elif (
-            f.getEnergyFunction() == "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2))^2"
+                f.getEnergyFunction()
+                == "step(distance(g1,g2)-r0) * (k/2)*(distance(g1,g2))^2"
             ):  # flatbottom-oneside-sharp:
                 f.setBondParameters(0, [0, 1], [250, 0.01])
 
             elif (
-                f.getEnergyFunction() == "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2"
-                ):  # flatbottom-twosided, has an additional wellsize parameter:
-                f.setBondParameters(0, [0, 1], [250, 12,1])
-
-
+                f.getEnergyFunction()
+                == "step(abs(distance(g1,g2)-r0)-w)*k*(distance(g1,g2)-r0)^2"
+            ):  # flatbottom-twosided, has an additional wellsize parameter:
+                f.setBondParameters(0, [0, 1], [250, 12, 1])
 
             f.updateParametersInContext(simulation.context)
 
