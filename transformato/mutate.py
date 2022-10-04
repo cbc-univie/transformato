@@ -1013,7 +1013,8 @@ class ProposeMutationRoute(object):
                 )
 
         from rdkit.Chem import rdCoordGen
-        rdCoordGen.AddCoords(mol) # Create Cordinates
+
+        rdCoordGen.AddCoords(mol)  # Create Cordinates
 
         drawer.DrawMolecule(mol, highlightAtoms=highlight)
         drawer.FinishDrawing()
