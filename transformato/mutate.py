@@ -1006,14 +1006,16 @@ class ProposeMutationRoute(object):
                 opts.atomLabels[i.GetIdx()] = (
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
                 )
-        else:
+        elif mol.GetNumAtoms() < 30:
             for i in mol.GetAtoms():
                 opts.atomLabels[i.GetIdx()] = (
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_name")
                 )
 
+        from rdkit.Chem import rdCoordGen
+        rdCoordGen.AddCoords(mol) # Create Cordinates
+
         drawer.DrawMolecule(mol, highlightAtoms=highlight)
-        Draw.DrawingOptions.includeAtomNumbers = False
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace("svg:", "")
         return svg
