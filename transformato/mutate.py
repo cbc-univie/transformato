@@ -906,14 +906,14 @@ class ProposeMutationRoute(object):
         logger.debug("Substructere match idx: {}".format(s1))
 
         self._show_common_core(
-            m1, self.get_common_core_idx_mol1(), show_atom_type = False ,internal = True
+            m1, self.get_common_core_idx_mol1(), show_atom_type=False, internal=True
         )
 
         s2 = m2.GetSubstructMatch(mcsp)
         logger.debug("Substructere match idx: {}".format(s2))
 
         self._show_common_core(
-            m2, self.get_common_core_idx_mol2(), show_atom_type = False,internal = True
+            m2, self.get_common_core_idx_mol2(), show_atom_type=False, internal=True
         )
         self._substructure_match[mol1_name] = list(s1)
         self._substructure_match[mol2_name] = list(s2)
@@ -960,7 +960,10 @@ class ProposeMutationRoute(object):
         Shows common core on mol1
         """
         return self._show_common_core(
-            self.mols["m1"], self.get_common_core_idx_mol1(), show_atom_types, internal = False
+            self.mols["m1"],
+            self.get_common_core_idx_mol1(),
+            show_atom_types,
+            internal=False,
         )
 
     def show_common_core_on_mol2(self, show_atom_types: bool = False):
@@ -968,10 +971,15 @@ class ProposeMutationRoute(object):
         Shows common core on mol2
         """
         return self._show_common_core(
-            self.mols["m2"], self.get_common_core_idx_mol2(), show_atom_types, internal = False
+            self.mols["m2"],
+            self.get_common_core_idx_mol2(),
+            show_atom_types,
+            internal=False,
         )
 
-    def _show_common_core(self, mol, highlight: list, show_atom_type: bool, internal: bool):
+    def _show_common_core(
+        self, mol, highlight: list, show_atom_type: bool, internal: bool
+    ):
         """
         Helper function - do not call directly.
         Show common core.
@@ -996,14 +1004,12 @@ class ProposeMutationRoute(object):
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_name")
                 )
 
-
-
         rdCoordGen.AddCoords(mol)  # Create Cordinates
 
         drawer.DrawMolecule(mol, highlightAtoms=highlight)
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace("svg:", "")
-    
+
         if internal:
             display(SVG(svg))
 
