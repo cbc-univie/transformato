@@ -7,7 +7,7 @@ temperature = 303.15 * unit.kelvin
 kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
 kT = kB * temperature
 charmm_gpu = ""
-charmm_gpu = "domdec-gpu"  # uncomment this if you want to use domdec-gpu
+# charmm_gpu = "domdec-gpu"  # uncomment this if you want to use domdec-gpu
 this = sys.modules[__name__]
 # we can explicitly make assignments on it
 this.NUM_PROC = 1
