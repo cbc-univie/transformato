@@ -5,6 +5,7 @@ from openmm import unit
 import os
 
 
+
 class CharmmFactory:
     """Class to build the string needed to create a CHARMM input and streaming file"""
 
