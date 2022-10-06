@@ -1,5 +1,6 @@
 import datetime
 from transformato.constants import temperature, charmm_gpu
+from transformato.utils import check_switching_function
 from openmm import unit
 import os
 
@@ -11,7 +12,9 @@ class CharmmFactory:
 
         self.configuration = configuration
         self.structure = structure
-        self.vdw_switching_keyword = self._check_switching_function()
+        prms = self._get_simulations_parameters()
+        vdw_switch = prms.get("vdw", "Force-switch")  # default is vfswitch
+        self.vdw_switching_keyword = check_switching_function(vdw_switch)
         self.charmm_gpu = charmm_gpu
 
     def _get_simulations_parameters(self):
@@ -20,25 +23,12 @@ class CharmmFactory:
             prms[key] = self.configuration["simulation"]["parameters"][key]
         return prms
 
-    def _check_switching_function(self) -> str:
-        prms = self._get_simulations_parameters()
-        vdw = prms.get("vdw", "Force-switch")  # default is vfswitch
-        if vdw.lower() == "force-switch":
-            return "vfswitch"
-        elif vdw.lower() == "switch":
-            return "vswitch"
-        elif vdw.lower() == "no-switch":  # not implemented
-            raise NotImplementedError()
-            return ""
-        else:
-            raise RuntimeError()
-
     def generate_CHARMM_postprocessing_files(self, env: str) -> str:
 
         charmm_postprocessing_script = self._get_CHARMM_postprocessing_header(env)
         if env == "vacuum":
-            charmm_postprocessing_script += (
-                self._get_CHARMM_vacuum_postprocessing_body()
+            charmm_postprocessing_script += self._get_CHARMM_vacuum_postprocessing_body(
+                env
             )
         elif env == "waterbox" or env == "complex":
             charmm_postprocessing_script += (
@@ -197,7 +187,6 @@ read para card unit 10 append flex
             toppar += f"""
 ! Read {tlc} STR
 stream {tlc}.str
-read para card unit 10 append flex
 
 ! Read dummy_atom RTF
 open read unit 10 card name dummy_atom_definitions.rtf
@@ -232,7 +221,7 @@ read coor unit 10 card
         """
         return header
 
-    def _get_CHARMM_vacuum_postprocessing_body(self) -> str:
+    def _get_CHARMM_vacuum_postprocessing_body(self, env) -> str:
         body = f"""
 coor orie sele all end ! put the molecule at the origin
 
@@ -260,7 +249,7 @@ set skip ?skip
 set nframes @nframes !?nfile
 traj firstu 41 nunit 1 begi @start skip @skip stop @nframes
 
-open form writ unit 51 name ener_vac.log
+open form writ unit 51 name ener_{env}.log
 echu 51
 set idx 0
 label loop
@@ -327,11 +316,11 @@ stop"""
             self.configuration["simulation"].get("GPU", False) == True
             and self.charmm_gpu == "domdec-gpu"
         ):
-            GPU_domdec = "domdec gpu on"
+            GPU_domdec = "domdec gpu only"
             GPU_openMM = ""
         elif (
             self.configuration["simulation"].get("GPU", False) == True
-            and self.charmm_gpu != "domdec-gpu"
+            and self.charmm_gpu == "charmm-openmm"
         ):
             GPU_openMM = "omm on"
             GPU_domdec = ""
@@ -406,7 +395,7 @@ stop"""
             self.configuration["simulation"].get("GPU", False) == True
             and self.charmm_gpu == "domdec-gpu"
         ):
-            GPU_domdec = "domdec gpu on"
+            GPU_domdec = "domdec gpu only"
             GPU_openMM = ""
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
@@ -417,7 +406,7 @@ calc zcen = 0.
 """
         elif (
             self.configuration["simulation"].get("GPU", False) == True
-            and self.charmm_gpu != "domdec-gpu"
+            and self.charmm_gpu == "charmm-openmm"
         ):
             GPU_openMM = "omm on"
             GPU_domdec = ""
@@ -429,8 +418,8 @@ calc zcen = 0.
             GPU_domdec = ""
             dyn = """    lang rbuf 0. tbath @temp ilbfrq 0  firstt @temp -
     ECHECK 0"""
-        # always center
-        centering = """
+            # always center
+            centering = """
 calc xcen = @A / 2 
 calc ycen = @B / 2 
 calc zcen = @C / 2        

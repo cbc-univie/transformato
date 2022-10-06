@@ -11,7 +11,7 @@ import transformato
 from transformato.charmm_factory import CharmmFactory
 from transformato.mutate import Mutation
 from transformato.restraints import write_restraints_yaml
-from transformato.utils import get_toppar_dir, psf_correction
+from transformato.utils import get_toppar_dir, psf_correction, check_switching_function
 
 logger = logging.getLogger(__name__)
 
@@ -441,8 +441,6 @@ with open(file_name + '_system.xml','w') as outfile:
             shutil.copyfile(
                 omm_simulation_submit_script_source, omm_simulation_submit_script_target
             )
-            if self.multiple_runs:
-                self._modify_submit_script(omm_simulation_submit_script_target)
 
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
@@ -465,6 +463,9 @@ with open(file_name + '_system.xml','w') as outfile:
             )
         else:
             raise RuntimeError(f"Only solvation/binding free energies implemented")
+
+        if self.multiple_runs:
+            self._modify_submit_script(omm_simulation_submit_script_target)
 
         # Prepend workload manager instructions
         self._write_workload_preamble(omm_simulation_submit_script_target)
@@ -507,7 +508,7 @@ with open(file_name + '_system.xml','w') as outfile:
         self._check_hmr(omm_simulation_script_target)
         self._add_serializer(omm_simulation_script_target)
         self._change_platform(omm_simulation_script_target)
-        self._check_switching_function()
+        check_switching_function(self.vdw_switch)
 
         if (
             self.configuration["simulation"]["free-energy-type"] == "rsfe"
@@ -524,24 +525,6 @@ with open(file_name + '_system.xml','w') as outfile:
             self._check_hmr(omm_simulation_script_target)
             self._add_serializer(omm_simulation_script_target)
             self._change_platform(omm_simulation_script_target)
-
-    def _check_switching_function(self):
-        """
-        There are three possibilities for the CHARMM/openMM switching functions:
-        - vfswitch
-        - switch
-        - no-switch (not implemented --- this will use vfswitch)
-        """
-        if self.vdw_switch.lower() == "force-switch":
-            pass  # don't do anything, that's the default for c-gui openMM scripts
-        elif self.vdw_switch.lower() == "switch":
-            pass
-        elif self.vdw_switch.lower() == "no-switch":
-            pass  # this is the openMM default --- simply don't call the c-gui switching function
-        else:
-            raise NotImplementedError(
-                f"Other switching functino called: {self.vdw_switch}."
-            )
 
     def _check_hmr(self, file):
         "add hmr if requested in config file"
