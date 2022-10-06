@@ -320,7 +320,7 @@ stop"""
             GPU_openMM = ""
         elif (
             self.configuration["simulation"].get("GPU", False) == True
-            and self.charmm_gpu != "domdec-gpu"
+            and self.charmm_gpu == "charmm-openmm"
         ):
             GPU_openMM = "omm on"
             GPU_domdec = ""
@@ -406,7 +406,7 @@ calc zcen = 0.
 """
         elif (
             self.configuration["simulation"].get("GPU", False) == True
-            and self.charmm_gpu != "domdec-gpu"
+            and self.charmm_gpu == "charmm-openmm"
         ):
             GPU_openMM = "omm on"
             GPU_domdec = ""
