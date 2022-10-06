@@ -22,8 +22,6 @@ Functions
 
 
 
-.. automethod:: transformato.utils.check_switching_function
-
 .. automethod:: transformato.utils.get_bin_dir
 
 .. automethod:: transformato.utils.get_structure_name
