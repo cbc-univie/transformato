@@ -17,7 +17,15 @@ on:
     #   Scheduled workflows run on the latest commit on the default or base branch.
     #   (from https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule)
     - cron: "0 0 * * *"
-
+  workflow_dispatch:
+    inputs:
+      CACHE_NUMBER:
+        type: number
+        default: 0
+      RUN_TESTS:
+        type: boolean
+        default: true
+        
 jobs:
   test:
     name: Test on ${{ matrix.os }}, Python ${{ matrix.python-version }}
@@ -37,6 +45,26 @@ jobs:
         df -h
         ulimit -a
 
+    - name: Set cache date
+      run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+      
+    - name: Make Cache (no worflow_dispatch)
+      if: ${{ github.event_name != 'workflow_dispatch' }}
+      uses: actions/cache@v2
+      with:
+        path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
+        # Increase the last number (0) to reset cache manually
+        key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep.yaml') }}-${{ env.DATE }}-0
+      id: cache1
+      
+    - name: Make Cache (worflow_dispatch)
+      if: ${{ github.event_name == 'workflow_dispatch' }}
+      uses: actions/cache@v2
+      with:
+        path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
+        key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep.yaml') }}-${{ env.DATE }}-${{ inputs.CACHE_NUMBER }}
+      id: cache2
+
 
     # More info on options: https://github.com/conda-incubator/setup-miniconda
     - uses: conda-incubator/setup-miniconda@v2
@@ -49,7 +77,11 @@ jobs:
         activate-environment: test
         auto-update-conda: false
         auto-activate-base: false
-        show-channel-urls: true
+        #show-channel-urls: true
+        use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
+  
+    - name: Update environment
+      run: conda env update -n fep -f devtools/conda-envs/fep.yaml        
 
     - name: Install package
 
@@ -66,6 +98,7 @@ jobs:
       shell: bash -l {0}
 
       run: |
+        conda activate fep
         pytest -v --cov=transformato --cov-report=xml --color=yes transformato/tests/
 
     - name: CodeCov
