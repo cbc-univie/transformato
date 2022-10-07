@@ -54,7 +54,7 @@ jobs:
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
         # Increase the last number (0) to reset cache manually
-        key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep.yaml') }}-${{ env.DATE }}-0
+        key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep_env.yaml') }}-${{ env.DATE }}-0
       id: cache1
       
     - name: Make Cache (worflow_dispatch)
@@ -62,7 +62,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
-        key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep.yaml') }}-${{ env.DATE }}-${{ inputs.CACHE_NUMBER }}
+        key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep_env.yaml') }}-${{ env.DATE }}-${{ inputs.CACHE_NUMBER }}
       id: cache2
 
 
@@ -81,7 +81,7 @@ jobs:
         use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
   
     - name: Update environment
-      run: conda env update -n fep -f devtools/conda-envs/fep.yaml        
+      run: conda env update -n fep -f devtools/conda-envs/fep_env.yaml        
 
     - name: Install package
 
