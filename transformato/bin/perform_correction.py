@@ -11,6 +11,7 @@ from openmm.app import (
 from endstate_correction.analysis import plot_endstate_correction_results
 from endstate_correction.protocol import perform_endstate_correction, Protocol
 import mdtraj
+import pickle
 from openmm import unit
 
 
@@ -79,6 +80,10 @@ for env in ["waterbox", "vacuum"]:
     )
 
     r = perform_endstate_correction(fep_protocoll)
+    
+    with open(f"results_{system_name}.pickle", "wb") as file:
+        pickle.dump(r, file)
+        
     plot_endstate_correction_results(
         system_name, r, f"results_neq_unidirectional_{env}.png"
     )

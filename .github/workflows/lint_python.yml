@@ -21,7 +21,7 @@ jobs:
           python-version: 3.9
           
       - name: Install Python dependencies
-        run: pip install flake8 pep8-naming black
+        run: pip install black
         
       - name: Run linters
         uses: wearerequired/lint-action@v2

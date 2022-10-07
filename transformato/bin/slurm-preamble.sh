@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -p lgpu
+#SBATCH -p gpu
 #SBATCH --gres=gpu
 
 source ~/miniconda3/etc/profile.d/conda.sh

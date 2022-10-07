@@ -246,13 +246,29 @@ class SystemStructure(object):
             coord = pm.charmm.CharmmCrdFile(crd_file_path)
             psf.coordinates = coord.coordinates
 
+            lp = False
             for atom in psf.atoms:
-                if hasattr(atom, "frame"):
-                    raise NotImplementedError(
-                        "Currently lonepairs are not supported for rsfe calculations"
-                    )
+                if hasattr(atom, "frame_type"):
+                    lp = True
 
-            psf = psf[f":{self.tlc}"]
+            # this is used for creating the vacuum structure,
+            # unfortunatly parmed forgets afterwards about the frame_type
+            # which is necessary for the check_for_lp function
+            if lp:
+                g = psf.groups
+                frame_idx = []
+                frame_frame = []
+                for atom in psf.atoms:
+                    if hasattr(atom, "frame_type"):
+                        frame_idx.append(atom.idx)
+                        frame_frame.append(atom.frame_type)
+                psf = psf[f":{self.tlc}"]  # the important part
+                psf.groups = g
+                for atom in psf.atoms:
+                    if atom.idx in frame_idx:
+                        atom.frame_type = frame_frame[frame_idx.index(atom.idx)]
+            else:
+                psf = psf[f":{self.tlc}"]
 
         else:
             psf_file_name = configuration["system"][self.structure][env][
