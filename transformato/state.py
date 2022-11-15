@@ -1077,7 +1077,7 @@ dummy_parameters.prm
         else:
             toppar_format += f"""dummy_atom_definitions.rtf
 dummy_parameters.prm
-"""            
+"""
 
         f = open(f"{output_file_base}/toppar.str", "w+")
         f.write(toppar_format)
