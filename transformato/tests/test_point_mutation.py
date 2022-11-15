@@ -52,7 +52,13 @@ def test_setting_up_point_mutation():
         configuration=configuration,
     )
 
-    perform_mutations(configuration=configuration,nr_of_mutation_steps_charge=3, nr_of_mutation_steps_cc=3, i=i, mutation_list=mutation_list)
+    perform_mutations(
+        configuration=configuration,
+        nr_of_mutation_steps_charge=3,
+        nr_of_mutation_steps_cc=3,
+        i=i,
+        mutation_list=mutation_list,
+    )
 
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
     print(f"Die mutation list {mutation_list}")
@@ -61,4 +67,9 @@ def test_setting_up_point_mutation():
         configuration=configuration,
     )
 
-    perform_mutations(configuration=configuration,nr_of_mutation_steps_charge=3, i=i, mutation_list=mutation_list)
+    perform_mutations(
+        configuration=configuration,
+        nr_of_mutation_steps_charge=3,
+        i=i,
+        mutation_list=mutation_list,
+    )
