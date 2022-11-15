@@ -38,52 +38,46 @@ class SystemStructure(object):
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "rbfe":
             self.envs = set(["complex", "waterbox"])
-            for env in self.envs:
-                parameter = self._read_parameters(env)
-                # set up system
-                self.psfs[env] = self._initialize_system(configuration, env)
-                # load parameters
-                self.psfs[env].load_parameters(parameter)
-                # get offset
-                self.offset[
-                    env
-                ] = self._determine_offset_and_set_possible_dummy_properties(
-                    self.psfs[env]
-                )
-
-            # generate rdkit mol object of small molecule
-            self.mol: Chem.Mol = self._generate_rdkit_mol(
-                "complex", self.psfs["complex"][f":{self.tlc}"]
-            )
-            self.graph: nx.Graph = self.mol_to_nx(self.mol)
-
         elif (
             configuration["simulation"]["free-energy-type"] == "rsfe"
             or configuration["simulation"]["free-energy-type"] == "asfe"
         ):
             self.envs = set(["waterbox", "vacuum"])
-            for env in self.envs:
-                parameter = self._read_parameters(env)
-                # set up system
-                self.psfs[env] = self._initialize_system(configuration, env)
-                # load parameters
-                self.psfs[env].load_parameters(parameter)
-                # get offset
-                self.offset[
-                    env
-                ] = self._determine_offset_and_set_possible_dummy_properties(
-                    self.psfs[env]
-                )
-
-            # generate rdkit mol object of small molecule
-            self.mol: Chem.Mol = self._generate_rdkit_mol(
-                "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
-            )
-            self.graph: nx.Graph = self.mol_to_nx(self.mol)
         else:
             raise NotImplementedError(
                 "only binding and solvation free energy implemented."
             )
+
+        for env in self.envs:
+            # set up system
+            self.psfs[env] = self._initialize_system(configuration, env)
+            # load parameters, by default only the most important toppar files are loaded
+            try:
+                parameter = self._read_parameters(env)
+                self.psfs[env].load_parameters(parameter)
+            except pm.exceptions.ParameterError:
+                parameter = self._read_parameters(env, full_set = True)
+                self.psfs[env].load_parameters(parameter)
+
+            # get offset
+            self.offset[
+                env
+            ] = self._determine_offset_and_set_possible_dummy_properties(
+                self.psfs[env]
+            )
+
+        # generate rdkit mol object of small molecule
+        self.mol: Chem.Mol = self._generate_rdkit_mol(
+            "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
+        ) # for RBFE this was called "complex"
+        self.graph: nx.Graph = self.mol_to_nx(self.mol)
+
+        # For RBFE:
+        # generate rdkit mol object of small molecule
+        # self.mol: Chem.Mol = self._generate_rdkit_mol(
+        #     "complex", self.psfs["complex"][f":{self.tlc}"]
+        # )
+        # self.graph: nx.Graph = self.mol_to_nx(self.mol)
 
     def _set_hmr(self, configuration: dict, env: str):
         # check if HMR is set
@@ -140,13 +134,15 @@ class SystemStructure(object):
 
             return G
 
-    def _read_parameters(self, env: str) -> pm.charmm.CharmmParameterSet:
+    def _read_parameters(self, env: str, full_set: bool = False) -> pm.charmm.CharmmParameterSet:
         """
         Reads in topparameters from a toppar dir and ligand specific parameters.
         Parameters
         ----------
         env: str
             waterbox,complex or vacuum
+        full_set: bool
+            wheather all files mentioned in the openmm/toppar.str should be read in, default is False
         Returns
         ----------
         parameter : pm.charmm.CharmmParameterSet
@@ -158,10 +154,10 @@ class SystemStructure(object):
             env = "waterbox"
 
         charmm_gui_env = self.charmm_gui_base + env
-        tlc = self.tlc
-        tlc_lower = str(tlc).lower()
+        tlc_lower = str(self.tlc).lower()
         toppar_dir = f"{charmm_gui_env}/toppar"
 
+        # check if toppar dir is available in CHARMM-GU folder, if not fall back to toppar dir from transformato
         if os.path.isdir(toppar_dir):
             pass
         else:
@@ -190,21 +186,35 @@ class SystemStructure(object):
                 cgenff_version = re.findall("\d+\.\d+", cgenff)[0]
                 self.cgenff_version = float(cgenff_version)
 
-        parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
-        parameter_files += (f"{toppar_dir}/par_all36m_prot.prm",)
-        parameter_files += (f"{toppar_dir}/par_all36_na.prm",)
-        parameter_files += (f"{toppar_dir}/top_all36_na.rtf",)
-        parameter_files += (f"{toppar_dir}/top_all36_cgenff.rtf",)
-        parameter_files += (f"{toppar_dir}/par_all36_cgenff.prm",)
-        parameter_files += (f"{toppar_dir}/par_all36_lipid.prm",)
-        parameter_files += (f"{toppar_dir}/top_all36_lipid.rtf",)
-        parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
-        parameter_files += (
-            f"{toppar_dir}/toppar_all36_prot_na_combined.str",
-        )  # if modified aminoacids are needed
-        if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
-            parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
-        # set up parameter objec
+        if full_set:
+            with open(f"{charmm_gui_env}/openmm/toppar.str", "r") as ommtopparstream:
+                for line in ommtopparstream:
+                    if tlc_lower:
+                        if line.strip() != "" and not tlc_lower in line:
+                            filename = line.strip('\n').split('/')[-1]
+                            parameter_files += (f"{toppar_dir}/{filename}", )
+                    else:
+                        if line.strip() != "":
+                            filename = line.strip('\n').split('/')[-1]
+                            parameter_files += (f"{toppar_dir}/{filename}", )
+
+        else:
+            parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
+            parameter_files += (f"{toppar_dir}/par_all36m_prot.prm",)
+            parameter_files += (f"{toppar_dir}/par_all36_na.prm",)
+            parameter_files += (f"{toppar_dir}/top_all36_na.rtf",)
+            parameter_files += (f"{toppar_dir}/top_all36_cgenff.rtf",)
+            parameter_files += (f"{toppar_dir}/par_all36_cgenff.prm",)
+            parameter_files += (f"{toppar_dir}/par_all36_lipid.prm",)
+            parameter_files += (f"{toppar_dir}/top_all36_lipid.rtf",)
+            parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
+            parameter_files += (
+                f"{toppar_dir}/toppar_all36_prot_na_combined.str",
+            )  # if modified aminoacids are needed
+            # if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
+            #     parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
+
+        # set up parameter object
         parameter = pm.charmm.CharmmParameterSet(*parameter_files)
         return parameter
 
