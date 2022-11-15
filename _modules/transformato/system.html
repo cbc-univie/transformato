@@ -108,7 +108,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;charmm_gui_dir&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="s2">&quot;waterbox&quot;</span><span class="p">)</span>
+        <span class="c1"># self.parameter = self._read_parameters(&quot;waterbox&quot;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cgenff_version</span><span class="p">:</span> <span class="nb">float</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="c1"># running a binding-free energy calculation?</span>
@@ -132,21 +132,19 @@
                 <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">pm</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ParameterError</span><span class="p">:</span>
-                <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">full_set</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">full_set</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
 
             <span class="c1"># get offset</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span> <span class="o">=</span> <span class="s2">&quot;GUA:CYT:URA:PSU&quot;</span>  <span class="c1"># TODO: find better solution!</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span>
-                <span class="n">env</span>
-            <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
             <span class="p">)</span>
 
         <span class="c1"># generate rdkit mol object of small molecule</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_rdkit_mol</span><span class="p">(</span>
             <span class="s2">&quot;waterbox&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-        <span class="p">)</span> <span class="c1"># for RBFE this was called &quot;complex&quot;</span>
+        <span class="p">)</span>  <span class="c1"># for RBFE this was called &quot;complex&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_to_nx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">)</span></div>
 
         <span class="c1"># For RBFE:</span>
@@ -211,7 +209,9 @@
 
             <span class="k">return</span> <span class="n">G</span>
 
-<div class="viewcode-block" id="SystemStructure._read_parameters"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._read_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_read_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_set</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmParameterSet</span><span class="p">:</span>
+<div class="viewcode-block" id="SystemStructure._read_parameters"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._read_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_read_parameters</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_set</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmParameterSet</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads in topparameters from a toppar dir and ligand specific parameters.</span>
 <span class="sd">        Parameters</span>
@@ -268,12 +268,12 @@
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ommtopparstream</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">tlc_lower</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">tlc_lower</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-                            <span class="n">filename</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                            <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">)</span>
+                            <span class="n">filename</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                            <span class="n">filename</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                            <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">)</span>
+                            <span class="n">filename</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                            <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/top_all36_prot.rtf&quot;</span><span class="p">,)</span>
@@ -423,15 +423,14 @@
         <span class="n">pdb</span><span class="o">.</span><span class="n">write_pdb</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_tmp.pdb&quot;</span><span class="p">)</span>
 
         <span class="kn">from</span> <span class="nn">openbabel</span> <span class="kn">import</span> <span class="n">openbabel</span>
+
         <span class="n">obConversion</span> <span class="o">=</span> <span class="n">openbabel</span><span class="o">.</span><span class="n">OBConversion</span><span class="p">()</span>
         <span class="n">obConversion</span><span class="o">.</span><span class="n">SetInAndOutFormats</span><span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="n">openbabel</span><span class="o">.</span><span class="n">OBMol</span><span class="p">()</span>
-        <span class="n">obConversion</span><span class="o">.</span><span class="n">ReadFile</span><span class="p">(</span> <span class="n">mol</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_tmp.pdb&quot;</span><span class="p">)</span>
-        <span class="n">obConversion</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">(</span> <span class="n">mol</span><span class="p">,</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reduced.sdf&quot;</span><span class="p">)</span>
+        <span class="n">obConversion</span><span class="o">.</span><span class="n">ReadFile</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_tmp.pdb&quot;</span><span class="p">)</span>
+        <span class="n">obConversion</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reduced.sdf&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reduced.sdf&quot;</span>
-
-
 
     <span class="k">def</span> <span class="nf">_return_strand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -494,8 +493,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_return_strand</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>
-        
-                
+
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_small_molecule</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
         <span class="p">(</span>
             <span class="n">atom_idx_to_atom_name</span><span class="p">,</span>
