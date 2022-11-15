@@ -628,12 +628,12 @@ with open(file_name + '_system.xml','w') as outfile:
 
         basedir = self.system.charmm_gui_base
 
-        try:
-            self._copy_ligand_specific_top_and_par(
-                basedir, intermediate_state_file_path
-            )
-        except:
-            self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
+        # try:
+        #     self._copy_ligand_specific_top_and_par(
+        #         basedir, intermediate_state_file_path
+        #     )
+        # except:
+        #     self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
 
         # copy crd file
         self._copy_crd_file((intermediate_state_file_path))

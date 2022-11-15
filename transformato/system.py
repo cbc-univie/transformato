@@ -60,6 +60,7 @@ class SystemStructure(object):
                 self.psfs[env].load_parameters(parameter)
 
             # get offset
+            self.tlc = "GUA:CYT:URA:PSU"  # TODO: find better solution!
             self.offset[
                 env
             ] = self._determine_offset_and_set_possible_dummy_properties(
@@ -327,10 +328,45 @@ class SystemStructure(object):
 
         return min(idx_list)
 
+    def _create_sdf_file(self) -> str:
+
+        file_path = f"{self.charmm_gui_base}/waterbox/openmm/"
+
+        pdb = pm.read_PDB(f"{file_path}/step3_input.pdb")
+
+        deletedatoms = 0
+        atomid = 0
+        length = len(pdb.atoms)
+        while deletedatoms + atomid < length:
+            if pdb.atoms[atomid].residue.segid != "RNAA":
+                pdb.atoms.remove(pdb.atoms[atomid])
+                deletedatoms += 1
+            else:
+                atomid += 1
+
+        pdb.write_pdb(f"{file_path}/step3_input_tmp.pdb")
+
+        from openbabel import openbabel
+        obConversion = openbabel.OBConversion()
+        obConversion.SetInAndOutFormats("pdb", "sdf")
+        mol = openbabel.OBMol()
+        obConversion.ReadFile( mol,f"{file_path}/step3_input_tmp.pdb")
+        obConversion.WriteFile( mol,f"{file_path}/step3_input_reduced.sdf")
+
+        return f"{file_path}/step3_input_reduced.sdf"
+
+
+
+    def _return_strand(self):
+
+        sdf_file = self._create_sdf_file()
+
+        suppl = Chem.SDMolSupplier
+
     def _return_small_molecule(self, env: str) -> Chem.rdchem.Mol:
         import glob
 
-        charmm_gui_env = self.charmm_gui_base + env
+        charmm_gui_env = self.charmm_gui_base + "waterbox"
         possible_files = []
         for ending in ["sdf", "mol", "mol2"]:
             possible_files.extend(glob.glob(f"{charmm_gui_env}/*/*{ending}"))
@@ -377,6 +413,13 @@ class SystemStructure(object):
         """
 
         assert type(psf) == pm.charmm.CharmmPsfFile
+
+        try:
+            self._return_strand()
+        except:
+            pass
+        
+                
         mol = self._return_small_molecule(env)
         (
             atom_idx_to_atom_name,

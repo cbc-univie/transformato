@@ -358,13 +358,13 @@ class ProposeMutationRoute(object):
             self.dummy_region_cc2: DummyRegion
 
             self.asfe: bool = False
-            self._check_cgenff_versions()
+            # self._check_cgenff_versions()
 
-        except:
-
+        except AttributeError:
             logger.info(
                 "Only information about one structure, assume an ASFE simulation is requested"
             )
+
             mol1_name: str = "m1"
             self.system: dict = {"system1": s1}
             self.mols: dict = {mol1_name: s1.mol}
@@ -1458,8 +1458,11 @@ class CommonCoreTransformation(object):
             cc_names_struc1.append(ligand1_atom.name)
             cc_names_struc2.append(ligand2_atom.name)
 
-        print(f"CC Struc1: {cc_names_struc1}")
-        print(f"CC Struc2: {cc_names_struc2}")
+        logger.info(f"CC Struc1: {cc_names_struc1}")
+        logger.info(f"CC Struc2: {cc_names_struc2}")
+
+        ### DANGER ONLY FOR ONE MUTATION NEEEDS TO BE FIXED #####
+        match_atom_names_cc1_to_cc2 ={"O5'": "O5'", 'H5T': 'H5T', "C5'": "C5'", "H5''": "H5''", "H5'": "H5'", "C4'": "C4'", "H4'": "H4'", "O4'": "O4'", "C1'": "C1'", "C2'": "C2'", "C3'": "C3'", "H3'": "H3'", "O3'": "O3'", 'P': 'P', 'O2P': 'O2P', 'O1P': 'O1P', "H1'": "H1'", "H2''": "H2''", "O2'": "O2'", "H2'": "H2'", 'N1': 'N1', 'C6': 'C6', 'H6': 'H6', 'C5': 'C5', 'H5': 'H5', 'C4': 'C4', 'N3': 'N3', 'C2': 'C2', 'O2': 'O2', 'N4': 'N4', 'H42': 'H42', 'H41': 'H41', 'N9': 'N9', 'N7': 'N7', 'C8': 'C8', 'H8': 'H8', 'N2': 'N2', 'H21': 'H21', 'H22': 'H22', 'H1': 'H1', 'O6': 'O6', 'H3T': 'H3T'}
         return match_atom_names_cc1_to_cc2
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
@@ -1472,7 +1475,7 @@ class CommonCoreTransformation(object):
 
             # compare to charge compenstated psf 2
             for ligand2_atom in self.charge_compensated_ligand2_psf:
-                if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name:
+                if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name and ligand1_atom.residue.name == ligand2_atom.residue.name and ligand1_atom.type == ligand2_atom.type and len(ligand1_atom.residue.atoms) == len(ligand2_atom.residue.atoms):
                     found = True
                     # are the atoms different?
                     logger.debug(f"Modifying atom: {ligand1_atom}")
@@ -1488,7 +1491,24 @@ class CommonCoreTransformation(object):
                     ligand1_atom.charge = modified_charge
 
             if not found:
-                raise RuntimeError("No corresponding atom in cc2 found")
+                try:
+                    for ligand2_atom in self.charge_compensated_ligand2_psf:
+                        if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name and len(ligand1_atom.residue.atoms) == len(ligand2_atom.residue.atoms):
+                            found = True
+                            # are the atoms different?
+                            print(f"Modifying atom: {ligand1_atom}")
+                            print(f"Template atom: {ligand2_atom}")
+
+                            # scale epsilon
+                            modified_charge = (
+                                scale * ligand1_atom.charge + (1 - scale) * ligand2_atom.charge
+                            )
+                            print(
+                                f"Current charge: {ligand1_atom.charge}; target charge: {ligand2_atom.charge}; modified charge: {modified_charge}"
+                            )
+                            ligand1_atom.charge = modified_charge
+                except:
+                    raise RuntimeError(f"No corresponding atom for {ligand1_atom} in cc2 found")
 
     def _mutate_atoms(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
         """
@@ -1517,7 +1537,7 @@ class CommonCoreTransformation(object):
                 if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name:
                     found = True
                     # are the atoms different?
-                    if ligand1_atom.type != ligand2_atom.type:
+                    if ligand1_atom.type != ligand2_atom.type and len(ligand1_atom.residue.atoms) == len(ligand2_atom.residue.atoms):
                         if "DDX" in ligand1_atom.type:
                             logger.warning(
                                 "This is the terminal LJ atom. If everything went correct, this does not have to change atom types."
