@@ -1031,8 +1031,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 
     def _write_toppar_str(self, output_file_base):
 
-        toppar_format = f"""
-../../toppar/top_all36_prot.rtf
+        toppar_format = f"""../../toppar/top_all36_prot.rtf
 ../../toppar/par_all36m_prot.prm
 ../../toppar/top_all36_na.rtf
 ../../toppar/par_all36_na.prm
@@ -1068,11 +1067,17 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
-        else:
+        elif os.path.isfile(
+            f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
+        ):
             toppar_format += f"""{self.system.tlc.lower()}.str
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
+        else:
+            toppar_format += f"""dummy_atom_definitions.rtf
+dummy_parameters.prm
+"""            
 
         f = open(f"{output_file_base}/toppar.str", "w+")
         f.write(toppar_format)
@@ -1100,7 +1105,7 @@ dummy_parameters.prm
         psf.write_psf(string_object)
         # read in psf and correct some aspects of the file not suitable for CHARMM
         corrected_psf = psf_correction(string_object)
-        with open(f"{output_file_base}/lig_in_{env}_corr.psf", "w+") as f:
+        with open(f"{output_file_base}/lig_in_{env}.psf", "w+") as f:
             f.write(corrected_psf)
         # write pdb
         psf.write_pdb(f"{output_file_base}/lig_in_{env}.pdb")

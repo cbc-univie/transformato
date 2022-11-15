@@ -32,7 +32,7 @@ class SystemStructure(object):
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
         self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
-        self.parameter = self._read_parameters("waterbox")
+        # self.parameter = self._read_parameters("waterbox")
         self.cgenff_version: float
         self.envs = set()
         # running a binding-free energy calculation?
@@ -418,8 +418,8 @@ class SystemStructure(object):
             self._return_strand()
         except:
             pass
-        
-                
+
+
         mol = self._return_small_molecule(env)
         (
             atom_idx_to_atom_name,
