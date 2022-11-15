@@ -1518,6 +1518,7 @@ class CommonCoreTransformation(object):
 
             # compare to charge compenstated psf 2
             for ligand2_atom in self.charge_compensated_ligand2_psf:
+                # Assure that only atoms from the same resdiue are compared
                 if (
                     self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name
                     and ligand1_atom.residue.name == ligand2_atom.residue.name
@@ -1542,6 +1543,7 @@ class CommonCoreTransformation(object):
             if not found:
                 try:
                     for ligand2_atom in self.charge_compensated_ligand2_psf:
+                        # make sure resdiue PSU which is like CYT are nevertheless found
                         if self.atom_names_mapping[
                             ligand1_atom.name
                         ] == ligand2_atom.name and len(
@@ -1594,7 +1596,7 @@ class CommonCoreTransformation(object):
                 # is there a match up?
                 if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name:
                     found = True
-                    # are the atoms different?
+                    # are the atoms different? and assure that only atomtypes in the same residue are compared
                     if ligand1_atom.type != ligand2_atom.type and len(
                         ligand1_atom.residue.atoms
                     ) == len(ligand2_atom.residue.atoms):
