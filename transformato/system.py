@@ -56,21 +56,19 @@ class SystemStructure(object):
                 parameter = self._read_parameters(env)
                 self.psfs[env].load_parameters(parameter)
             except pm.exceptions.ParameterError:
-                parameter = self._read_parameters(env, full_set = True)
+                parameter = self._read_parameters(env, full_set=True)
                 self.psfs[env].load_parameters(parameter)
 
             # get offset
             self.tlc = "GUA:CYT:URA:PSU"  # TODO: find better solution!
-            self.offset[
-                env
-            ] = self._determine_offset_and_set_possible_dummy_properties(
+            self.offset[env] = self._determine_offset_and_set_possible_dummy_properties(
                 self.psfs[env]
             )
 
         # generate rdkit mol object of small molecule
         self.mol: Chem.Mol = self._generate_rdkit_mol(
             "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
-        ) # for RBFE this was called "complex"
+        )  # for RBFE this was called "complex"
         self.graph: nx.Graph = self.mol_to_nx(self.mol)
 
         # For RBFE:
@@ -135,7 +133,9 @@ class SystemStructure(object):
 
             return G
 
-    def _read_parameters(self, env: str, full_set: bool = False) -> pm.charmm.CharmmParameterSet:
+    def _read_parameters(
+        self, env: str, full_set: bool = False
+    ) -> pm.charmm.CharmmParameterSet:
         """
         Reads in topparameters from a toppar dir and ligand specific parameters.
         Parameters
@@ -192,12 +192,12 @@ class SystemStructure(object):
                 for line in ommtopparstream:
                     if tlc_lower:
                         if line.strip() != "" and not tlc_lower in line:
-                            filename = line.strip('\n').split('/')[-1]
-                            parameter_files += (f"{toppar_dir}/{filename}", )
+                            filename = line.strip("\n").split("/")[-1]
+                            parameter_files += (f"{toppar_dir}/{filename}",)
                     else:
                         if line.strip() != "":
-                            filename = line.strip('\n').split('/')[-1]
-                            parameter_files += (f"{toppar_dir}/{filename}", )
+                            filename = line.strip("\n").split("/")[-1]
+                            parameter_files += (f"{toppar_dir}/{filename}",)
 
         else:
             parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
@@ -347,15 +347,14 @@ class SystemStructure(object):
         pdb.write_pdb(f"{file_path}/step3_input_tmp.pdb")
 
         from openbabel import openbabel
+
         obConversion = openbabel.OBConversion()
         obConversion.SetInAndOutFormats("pdb", "sdf")
         mol = openbabel.OBMol()
-        obConversion.ReadFile( mol,f"{file_path}/step3_input_tmp.pdb")
-        obConversion.WriteFile( mol,f"{file_path}/step3_input_reduced.sdf")
+        obConversion.ReadFile(mol, f"{file_path}/step3_input_tmp.pdb")
+        obConversion.WriteFile(mol, f"{file_path}/step3_input_reduced.sdf")
 
         return f"{file_path}/step3_input_reduced.sdf"
-
-
 
     def _return_strand(self):
 
@@ -418,8 +417,7 @@ class SystemStructure(object):
             self._return_strand()
         except:
             pass
-        
-                
+
         mol = self._return_small_molecule(env)
         (
             atom_idx_to_atom_name,
