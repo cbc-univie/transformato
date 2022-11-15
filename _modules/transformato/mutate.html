@@ -1594,6 +1594,7 @@
 
             <span class="c1"># compare to charge compenstated psf 2</span>
             <span class="k">for</span> <span class="n">ligand2_atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_compensated_ligand2_psf</span><span class="p">:</span>
+                <span class="c1"># Assure that only atoms from the same resdiue are compared</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span>
                     <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span>
@@ -1618,6 +1619,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">ligand2_atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_compensated_ligand2_psf</span><span class="p">:</span>
+                        <span class="c1"># make sure resdiue PSU which is like CYT are nevertheless found</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span>
                             <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span>
                         <span class="p">]</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
@@ -1670,7 +1672,7 @@
                 <span class="c1"># is there a match up?</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="c1"># are the atoms different?</span>
+                    <span class="c1"># are the atoms different? and assure that only atomtypes in the same residue are compared</span>
                     <span class="k">if</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
                         <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span>
                     <span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
