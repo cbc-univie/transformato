@@ -162,10 +162,14 @@ class SystemStructure(object):
 
         # check if toppar dir is available in CHARMM-GUI folder, if not fall back to toppar dir from transformato
         if os.path.isdir(toppar_dir):
-            logger.info(f"Using the toppar directory from the CHARMM-GUI folder; {toppar_dir}")
+            logger.info(
+                f"Using the toppar directory from the CHARMM-GUI folder; {toppar_dir}"
+            )
         else:
             toppar_dir = get_toppar_dir()
-            logger.info(f"Using the toppar directory provided in the transformato package; {toppar_dir}")
+            logger.info(
+                f"Using the toppar directory provided in the transformato package; {toppar_dir}"
+            )
 
         # if custom parameter are added they are located in l1,l2
         l1 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.rtf"
