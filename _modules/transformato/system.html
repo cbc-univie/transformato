@@ -238,10 +238,14 @@
 
         <span class="c1"># check if toppar dir is available in CHARMM-GUI folder, if not fall back to toppar dir from transformato</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">toppar_dir</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using the toppar directory from the CHARMM-GUI folder; </span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Using the toppar directory from the CHARMM-GUI folder; </span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">toppar_dir</span> <span class="o">=</span> <span class="n">get_toppar_dir</span><span class="p">()</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using the toppar directory provided in the transformato package; </span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Using the toppar directory provided in the transformato package; </span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># if custom parameter are added they are located in l1,l2</span>
         <span class="n">l1</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">.rtf&quot;</span>
