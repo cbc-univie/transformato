@@ -108,7 +108,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;charmm_gui_dir&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="c1"># self.parameter = self._read_parameters(&quot;waterbox&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="s2">&quot;waterbox&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cgenff_version</span><span class="p">:</span> <span class="nb">float</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="c1"># running a binding-free energy calculation?</span>
@@ -136,7 +136,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
 
             <span class="c1"># get offset</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span> <span class="o">=</span> <span class="s2">&quot;GUA:CYT:URA:PSU&quot;</span>  <span class="c1"># TODO: find better solution!</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
             <span class="p">)</span>
@@ -225,6 +224,9 @@
 <span class="sd">        parameter : pm.charmm.CharmmParameterSet</span>
 <span class="sd">            parameters obtained from the CHARMM-GUI output dir.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># save list of files for creation of toppar.str</span>
+        <span class="k">global</span> <span class="n">parameter_files</span>
+        <span class="n">parameter_files</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
 
         <span class="c1"># the parameters for the vacuum system is parsed from the waterbox charmm-gui directory</span>
         <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
@@ -234,14 +236,14 @@
         <span class="n">tlc_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">toppar_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/toppar&quot;</span>
 
-        <span class="c1"># check if toppar dir is available in CHARMM-GU folder, if not fall back to toppar dir from transformato</span>
+        <span class="c1"># check if toppar dir is available in CHARMM-GUI folder, if not fall back to toppar dir from transformato</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">toppar_dir</span><span class="p">):</span>
-            <span class="k">pass</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using the toppar directory from the CHARMM-GUI folder; </span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">toppar_dir</span> <span class="o">=</span> <span class="n">get_toppar_dir</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using the toppar directory provided in the transformato package; </span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># if custom parameter are added they are located in l1,l2</span>
-        <span class="n">parameter_files</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="n">l1</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">.rtf&quot;</span>
         <span class="n">l2</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">.prm&quot;</span>
         <span class="n">l3</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">.str&quot;</span>
@@ -404,44 +406,10 @@
 
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">idx_list</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_create_sdf_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-
-        <span class="n">file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/openmm/&quot;</span>
-
-        <span class="n">pdb</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">read_PDB</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input.pdb&quot;</span><span class="p">)</span>
-
-        <span class="n">deletedatoms</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">atomid</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdb</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">deletedatoms</span> <span class="o">+</span> <span class="n">atomid</span> <span class="o">&lt;</span> <span class="n">length</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">pdb</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">atomid</span><span class="p">]</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">segid</span> <span class="o">!=</span> <span class="s2">&quot;RNAA&quot;</span><span class="p">:</span>
-                <span class="n">pdb</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pdb</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">atomid</span><span class="p">])</span>
-                <span class="n">deletedatoms</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">atomid</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="n">pdb</span><span class="o">.</span><span class="n">write_pdb</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_tmp.pdb&quot;</span><span class="p">)</span>
-
-        <span class="kn">from</span> <span class="nn">openbabel</span> <span class="kn">import</span> <span class="n">openbabel</span>
-
-        <span class="n">obConversion</span> <span class="o">=</span> <span class="n">openbabel</span><span class="o">.</span><span class="n">OBConversion</span><span class="p">()</span>
-        <span class="n">obConversion</span><span class="o">.</span><span class="n">SetInAndOutFormats</span><span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
-        <span class="n">mol</span> <span class="o">=</span> <span class="n">openbabel</span><span class="o">.</span><span class="n">OBMol</span><span class="p">()</span>
-        <span class="n">obConversion</span><span class="o">.</span><span class="n">ReadFile</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_tmp.pdb&quot;</span><span class="p">)</span>
-        <span class="n">obConversion</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reduced.sdf&quot;</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reduced.sdf&quot;</span>
-
-    <span class="k">def</span> <span class="nf">_return_strand</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="n">sdf_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sdf_file</span><span class="p">()</span>
-
-        <span class="n">suppl</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">SDMolSupplier</span>
-
     <span class="k">def</span> <span class="nf">_return_small_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">glob</span>
 
-        <span class="n">charmm_gui_env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span> <span class="o">+</span> <span class="s2">&quot;waterbox&quot;</span>
+        <span class="n">charmm_gui_env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span> <span class="o">+</span> <span class="n">env</span>
         <span class="n">possible_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ending</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sdf&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;mol2&quot;</span><span class="p">]:</span>
             <span class="n">possible_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/*/*</span><span class="si">{</span><span class="n">ending</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
@@ -488,12 +456,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_return_strand</span><span class="p">()</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
-
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_small_molecule</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
         <span class="p">(</span>
             <span class="n">atom_idx_to_atom_name</span><span class="p">,</span>
