@@ -1032,13 +1032,14 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
     def _write_toppar_str(self, output_file_base):
 
         from transformato.system import parameter_files
-
         base = "../../toppar"
         toppar_format = ""
         for i in parameter_files:
             # the parameterfiles for customized ligands are in another directory and are considered below
-            if self.system.tlc.lower() in i:
+            if self.configuration["system"]["structure1"]["tlc"].lower() in i:
                 pass
+            elif self.configuration["system"]["structure2"]["tlc"].lower() in i:
+                pass            
             else:
                 toppar_format += f"{base}/{i.split('/')[-1]} \n"
 
