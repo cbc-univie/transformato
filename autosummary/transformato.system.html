@@ -206,12 +206,10 @@ Everything is constructed automatically from the charmm-gui folder.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.system.SystemStructure._read_parameters">
-<span class="sig-name descname"><span class="pre">_read_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._read_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._read_parameters" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_read_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._read_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._read_parameters" title="Permalink to this definition"></a></dt>
 <dd><p>Reads in topparameters from a toppar dir and ligand specific parameters.
 :param env: waterbox,complex or vacuum
-:type env: str
-:param full_set: wheather all files mentioned in the openmm/toppar.str should be read in, default is False
-:type full_set: bool</p>
+:type env: str</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>parameter</strong> – parameters obtained from the CHARMM-GUI output dir.</p>
@@ -220,10 +218,7 @@ Everything is constructed automatically from the charmm-gui folder.
 <dd class="field-even"><p>pm.charmm.CharmmParameterSet</p>
 </dd>
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>env</strong> (<em>str</em>) – </p></li>
-<li><p><strong>full_set</strong> (<em>bool</em>) – </p></li>
-</ul>
+<dd class="field-odd"><p><strong>env</strong> (<em>str</em>) – </p>
 </dd>
 </dl>
 </dd></dl>
