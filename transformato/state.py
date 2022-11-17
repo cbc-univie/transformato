@@ -1034,12 +1034,20 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
         from transformato.system import parameter_files
         base = "../../toppar"
         toppar_format = ""
+        # Only necessary because the variable self.configuration["system"]["structure2"]["tlc"] gives a keyError for asfe
+        # since its not defined there
+        try:
+            if self.configuration["system"]["structure2"]["tlc"].lower():
+                struct2 = self.configuration["system"]["structure2"]["tlc"].lower()
+        except KeyError:
+            struct2 = "emptyString"
+
         for i in parameter_files:
             # the parameterfiles for customized ligands are in another directory and are considered below
             if self.configuration["system"]["structure1"]["tlc"].lower() in i:
                 pass
-            elif self.configuration["system"]["structure2"]["tlc"].lower() in i:
-                pass            
+            if struct2 in i:
+                pass
             else:
                 toppar_format += f"{base}/{i.split('/')[-1]} \n"
 
