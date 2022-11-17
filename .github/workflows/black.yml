@@ -23,7 +23,10 @@ jobs:
       - name: Install Python dependencies
         run: pip install black flake8
 
-      - name: Run linters
+      - name: Run Black Formatting
         uses: wearerequired/lint-action@v2
         with:
           black: true
+          black_dir: "transformato/"
+          black_args: '--extend-exclude="(bin/*|scripts/*|_version.py)"'
+          auto_fix: true
