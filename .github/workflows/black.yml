@@ -2,6 +2,10 @@ name: BlackFormatting
 
 on: [pull_request, workflow_dispatch]
 
+permissions:
+  checks: write
+  contents: write
+  
 jobs:
   run-linters:
     name: BlackFormatting
