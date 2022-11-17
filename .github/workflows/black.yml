@@ -15,8 +15,6 @@ jobs:
       
       - uses: psf/black@stable
         with:
-          black: true
-          black_dir: "transformato/"
+          options: "--check --verbose"
           black_args: '--extend-exclude="(bin/*|scripts/*|_version.py)"'
-          auto_fix: true
       
