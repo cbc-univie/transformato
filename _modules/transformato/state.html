@@ -1116,9 +1116,12 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure2&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">struct2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure2&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">struct2</span> <span class="o">=</span> <span class="s2">&quot;emptyString&quot;</span>
+
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">struct2</span> <span class="o">=</span> <span class="s2">&quot;emptyString&quot;</span>
-
+        
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">parameter_files</span><span class="p">:</span>
             <span class="c1"># the parameterfiles for customized ligands are in another directory and are considered below</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure1&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
