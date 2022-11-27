@@ -1519,14 +1519,7 @@ class CommonCoreTransformation(object):
             # compare to charge compenstated psf 2
             for ligand2_atom in self.charge_compensated_ligand2_psf:
                 # Assure that only atoms from the same resdiue are compared, and only atoms belonging to the same chain!
-                if (
-                    self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name
-                    and ligand1_atom.residue.name == ligand2_atom.residue.name
-                    and ligand1_atom.type == ligand2_atom.type
-                    and len(ligand1_atom.residue.atoms)
-                    == len(ligand2_atom.residue.atoms)
-                    and ligand1_atom.residue.chain == ligand2_atom.residue.chain
-                ):
+                if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name and ligand1_atom.residue.name == ligand2_atom.residue.name and ligand1_atom.type == ligand2_atom.type and len(ligand1_atom.residue.atoms) == len(ligand2_atom.residue.atoms) and ligand1_atom.residue.chain == ligand2_atom.residue.chain:
                     found = True
                     # are the atoms different?
                     logger.debug(f"Modifying atom: {ligand1_atom}")
@@ -1545,13 +1538,7 @@ class CommonCoreTransformation(object):
                 try:
                     for ligand2_atom in self.charge_compensated_ligand2_psf:
                         # make sure resdiue PSU which is like CYT are nevertheless found
-                        if (
-                            self.atom_names_mapping[ligand1_atom.name]
-                            == ligand2_atom.name
-                            and len(ligand1_atom.residue.atoms)
-                            == len(ligand2_atom.residue.atoms)
-                            and ligand1_atom.residue.chain == ligand2_atom.residue.chain
-                        ):
+                        if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name and len(ligand1_atom.residue.atoms) == len(ligand2_atom.residue.atoms) and ligand1_atom.residue.chain == ligand2_atom.residue.chain:
                             found = True
                             # are the atoms different?
                             print(f"Modifying atom: {ligand1_atom}")
