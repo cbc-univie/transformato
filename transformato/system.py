@@ -149,6 +149,9 @@ class SystemStructure(object):
         parameter : pm.charmm.CharmmParameterSet
             parameters obtained from the CHARMM-GUI output dir.
         """
+        # save list of files for creation of toppar.str
+        global parameter_files
+        parameter_files = tuple()
 
         # the parameters for the vacuum system is parsed from the waterbox charmm-gui directory
         if env == "vacuum":
@@ -158,14 +161,18 @@ class SystemStructure(object):
         tlc_lower = str(self.tlc).lower()
         toppar_dir = f"{charmm_gui_env}/toppar"
 
-        # check if toppar dir is available in CHARMM-GU folder, if not fall back to toppar dir from transformato
+        # check if toppar dir is available in CHARMM-GUI folder, if not fall back to toppar dir from transformato
         if os.path.isdir(toppar_dir):
-            pass
+            logger.info(
+                f"Using the toppar directory from the CHARMM-GUI folder; {toppar_dir}"
+            )
         else:
             toppar_dir = get_toppar_dir()
+            logger.info(
+                f"Using the toppar directory provided in the transformato package; {toppar_dir}"
+            )
 
         # if custom parameter are added they are located in l1,l2
-        parameter_files = tuple()
         l1 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.rtf"
         l2 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.prm"
         l3 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.str"
