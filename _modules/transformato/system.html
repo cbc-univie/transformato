@@ -225,6 +225,9 @@
 <span class="sd">        parameter : pm.charmm.CharmmParameterSet</span>
 <span class="sd">            parameters obtained from the CHARMM-GUI output dir.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># save list of files for creation of toppar.str</span>
+        <span class="k">global</span> <span class="n">parameter_files</span>
+        <span class="n">parameter_files</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
 
         <span class="c1"># the parameters for the vacuum system is parsed from the waterbox charmm-gui directory</span>
         <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
@@ -234,14 +237,18 @@
         <span class="n">tlc_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">toppar_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/toppar&quot;</span>
 
-        <span class="c1"># check if toppar dir is available in CHARMM-GU folder, if not fall back to toppar dir from transformato</span>
+        <span class="c1"># check if toppar dir is available in CHARMM-GUI folder, if not fall back to toppar dir from transformato</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">toppar_dir</span><span class="p">):</span>
-            <span class="k">pass</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Using the toppar directory from the CHARMM-GUI folder; </span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">toppar_dir</span> <span class="o">=</span> <span class="n">get_toppar_dir</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Using the toppar directory provided in the transformato package; </span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># if custom parameter are added they are located in l1,l2</span>
-        <span class="n">parameter_files</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">()</span>
         <span class="n">l1</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">.rtf&quot;</span>
         <span class="n">l2</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">.prm&quot;</span>
         <span class="n">l3</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">charmm_gui_env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">tlc_lower</span><span class="si">}</span><span class="s2">.str&quot;</span>
