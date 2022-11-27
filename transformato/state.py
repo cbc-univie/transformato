@@ -1040,9 +1040,12 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
         try:
             if self.configuration["system"]["structure2"]["tlc"].lower():
                 struct2 = self.configuration["system"]["structure2"]["tlc"].lower()
+            else:
+                struct2 = "emptyString"
+
         except KeyError:
             struct2 = "emptyString"
-
+        
         for i in parameter_files:
             # the parameterfiles for customized ligands are in another directory and are considered below
             if self.configuration["system"]["structure1"]["tlc"].lower() in i:
