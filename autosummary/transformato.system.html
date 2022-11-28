@@ -139,6 +139,18 @@ Everything is constructed automatically from the charmm-gui folder.
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="transformato.system.SystemStructure._create_sdf_file">
+<span class="sig-name descname"><span class="pre">_create_sdf_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._create_sdf_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._create_sdf_file" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a sdf file, if none is available
+useful for point mutations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties">
 <span class="sig-name descname"><span class="pre">_determine_offset_and_set_possible_dummy_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._determine_offset_and_set_possible_dummy_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties" title="Permalink to this definition"></a></dt>
 <dd><p>Determines the offset and sets possible properties on the psf.
@@ -176,6 +188,18 @@ Everything is constructed automatically from the charmm-gui folder.
 <li><p><strong>env</strong> (<em>str</em>) – </p></li>
 <li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.system.SystemStructure._get_tlc">
+<span class="sig-name descname"><span class="pre">_get_tlc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._get_tlc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._get_tlc" title="Permalink to this definition"></a></dt>
+<dd><p>If no information about a small ligend is available this function will try to find
+all residues which are in the first chain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
