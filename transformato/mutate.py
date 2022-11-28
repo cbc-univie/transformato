@@ -602,10 +602,9 @@ class ProposeMutationRoute(object):
         ]
         lp_dict_dummy_region = defaultdict(list)
         lp_dict_common_core = defaultdict(list)
-        print(f"die version {pm.__version__}")
+
         for atom in psf.view[f":{tlc}"].atoms:
             if atom.name.find("LP") == False:
-                print(f"die Atome {atom}")
                 if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
                     lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
 
@@ -1554,15 +1553,15 @@ class CommonCoreTransformation(object):
                         ):
                             found = True
                             # are the atoms different?
-                            print(f"Modifying atom: {ligand1_atom}")
-                            print(f"Template atom: {ligand2_atom}")
+                            logger.debug(f"Modifying atom: {ligand1_atom}")
+                            logger.debug(f"Template atom: {ligand2_atom}")
 
                             # scale epsilon
                             modified_charge = (
                                 scale * ligand1_atom.charge
                                 + (1 - scale) * ligand2_atom.charge
                             )
-                            print(
+                            logger.debug(
                                 f"Current charge: {ligand1_atom.charge}; target charge: {ligand2_atom.charge}; modified charge: {modified_charge}"
                             )
                             ligand1_atom.charge = modified_charge

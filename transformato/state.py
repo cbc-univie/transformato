@@ -132,7 +132,7 @@ class IntermediateStateFactory(object):
                     )
 
                 else:
-                    # mutation_type.print_details()
+
                     logger.debug(f"Lambda electrostatics: {lambda_value_electrostatic}")
                     logger.debug(f"Lambda vdw: {lambda_value_vdw}")
 
