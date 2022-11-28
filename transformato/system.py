@@ -82,12 +82,12 @@ class SystemStructure(object):
         # )
         # self.graph: nx.Graph = self.mol_to_nx(self.mol)
 
-    def _get_tlc(self,psf) -> str:
+    def _get_tlc(self, psf) -> str:
         """
         If no information about a small ligend is available this function will try to find
         all residues which are in the first chain
         """
-        
+
         # This works only if TIP3 water and NaCl as ions is used
         # it will consider other ions as residue as well
         # It first checks for the chains and will always take the FIRST
@@ -366,8 +366,8 @@ class SystemStructure(object):
 
     def _create_sdf_file(self) -> str:
         """
-        Creates a sdf file, if none is available 
-        useful for point mutations 
+        Creates a sdf file, if none is available
+        useful for point mutations
         """
 
         file_path = f"{self.charmm_gui_base}/waterbox/openmm/"
