@@ -208,7 +208,7 @@
                     <span class="p">)</span>
 
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="c1"># mutation_type.print_details()</span>
+
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lambda electrostatics: </span><span class="si">{</span><span class="n">lambda_value_electrostatic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lambda vdw: </span><span class="si">{</span><span class="n">lambda_value_vdw</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1116,6 +1116,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure2&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">struct2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure2&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">struct2</span> <span class="o">=</span> <span class="s2">&quot;emptyString&quot;</span>
+
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="n">struct2</span> <span class="o">=</span> <span class="s2">&quot;emptyString&quot;</span>
 
