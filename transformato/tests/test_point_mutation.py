@@ -32,7 +32,7 @@ warnings.filterwarnings("ignore", module="parmed")
 def test_setting_up_point_mutation():
 
     configuration = load_config_yaml(
-        config=f"/site/raid3/johannes/bioinfo/data/config/cano2_modif2.yaml",
+        config=f"/site/raid3/johannes/bioinfo/data/config/cano2-modif2.yaml",
         input_dir="/site/raid3/johannes/bioinfo/data",
         output_dir="/site/raid3/johannes/bioinfo/test",
     )

@@ -1,5 +1,6 @@
 import logging
 import os
+import glob
 import re
 from collections import defaultdict
 from typing import Tuple
@@ -59,8 +60,11 @@ class SystemStructure(object):
                 parameter = self._read_parameters(env, full_set=True)
                 self.psfs[env].load_parameters(parameter)
 
+            # for point mutation, expects TIP3P water and NaCl as ions
+            if not self.tlc:
+                self.tlc = str(self._get_tlc(self.psfs[env]))
+
             # get offset
-            self.tlc = "GUA:CYT:URA:PSU"  # TODO: find better solution!
             self.offset[env] = self._determine_offset_and_set_possible_dummy_properties(
                 self.psfs[env]
             )
@@ -77,6 +81,31 @@ class SystemStructure(object):
         #     "complex", self.psfs["complex"][f":{self.tlc}"]
         # )
         # self.graph: nx.Graph = self.mol_to_nx(self.mol)
+
+    def _get_tlc(self,psf) -> str:
+        """
+        If no information about a small ligend is available this function will try to find
+        all residues which are in the first chain
+        """
+        
+        # This works only if TIP3 water and NaCl as ions is used
+        # it will consider other ions as residue as well
+        # It first checks for the chains and will always take the FIRST
+        # chain
+        chains = []
+        for atom in psf.view:
+            if atom.residue.name not in chains:
+                chains.append(atom.residue.chain)
+
+        tlc = ""
+        for atom in psf.view["!(:TIP3:SOD:POT:CLA)"]:
+            if atom.residue.name not in tlc and atom.residue.chain == chains[0]:
+                tlc += f":{atom.residue.name}"
+
+        assert len(tlc) < 16
+
+        # Remove first colon so it looks e.g. like this: GUA:CYT:URA
+        return tlc[1:]
 
     def _set_hmr(self, configuration: dict, env: str):
         # check if HMR is set
@@ -336,6 +365,10 @@ class SystemStructure(object):
         return min(idx_list)
 
     def _create_sdf_file(self) -> str:
+        """
+        Creates a sdf file, if none is available 
+        useful for point mutations 
+        """
 
         file_path = f"{self.charmm_gui_base}/waterbox/openmm/"
 
@@ -363,14 +396,7 @@ class SystemStructure(object):
 
         return f"{file_path}/step3_input_reduced.sdf"
 
-    def _return_strand(self):
-
-        sdf_file = self._create_sdf_file()
-
-        suppl = Chem.SDMolSupplier
-
-    def _return_small_molecule(self, env: str) -> Chem.rdchem.Mol:
-        import glob
+    def _return_small_molecule(self) -> Chem.rdchem.Mol:
 
         charmm_gui_env = self.charmm_gui_base + "waterbox"
         possible_files = []
@@ -421,11 +447,11 @@ class SystemStructure(object):
         assert type(psf) == pm.charmm.CharmmPsfFile
 
         try:
-            self._return_strand()
+            self._create_sdf_file()
         except:
             pass
 
-        mol = self._return_small_molecule(env)
+        mol = self._return_small_molecule()
         (
             atom_idx_to_atom_name,
             _,
