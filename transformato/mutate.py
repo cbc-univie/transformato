@@ -1505,7 +1505,7 @@ class CommonCoreTransformation(object):
         #     "O6": "O6",
         #     "H3T": "H3T",
         # }
-        
+
         return match_atom_names_cc1_to_cc2
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
