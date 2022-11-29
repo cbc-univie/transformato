@@ -72,11 +72,11 @@ def postprocessing(
         ddG, dddG = f.end_state_free_energy_difference
         print("######################################")
         print(
-            f"Free energy to common core for {configuration['system']['structure1']['name']} in kT"
+            f"Free energy to common core for {name} in kT"
         )
         print("######################################")
         print(
-            f"Free energy difference from {configuration['system']['structure1']['name']} to CC: {ddG} [kT]"
+            f"Free energy difference from {name} to CC: {ddG} [kT]"
         )
         print(f"Uncertanty: {dddG} [kT]")
         print("######################################")
