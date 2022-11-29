@@ -158,12 +158,12 @@
         <span class="c1"># )</span>
         <span class="c1"># self.graph: nx.Graph = self.mol_to_nx(self.mol)</span>
 
-<div class="viewcode-block" id="SystemStructure._get_tlc"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._get_tlc">[docs]</a>    <span class="k">def</span> <span class="nf">_get_tlc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">psf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="SystemStructure._get_tlc"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._get_tlc">[docs]</a>    <span class="k">def</span> <span class="nf">_get_tlc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If no information about a small ligend is available this function will try to find</span>
 <span class="sd">        all residues which are in the first chain</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="c1"># This works only if TIP3 water and NaCl as ions is used</span>
         <span class="c1"># it will consider other ions as residue as well</span>
         <span class="c1"># It first checks for the chains and will always take the FIRST</span>
@@ -442,8 +442,8 @@
 
 <div class="viewcode-block" id="SystemStructure._create_sdf_file"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._create_sdf_file">[docs]</a>    <span class="k">def</span> <span class="nf">_create_sdf_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Creates a sdf file, if none is available </span>
-<span class="sd">        useful for point mutations </span>
+<span class="sd">        Creates a sdf file, if none is available</span>
+<span class="sd">        useful for point mutations</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/openmm/&quot;</span>

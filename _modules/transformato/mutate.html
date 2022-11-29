@@ -1297,8 +1297,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Charge parameters mutation: </span><span class="si">{</span><span class="n">charge_mutation</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
             <span class="n">t</span> <span class="o">=</span> <span class="n">CommonCoreTransformation</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="o">.</span><span class="n">lj_default</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="o">.</span><span class="n">lj_default</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="p">,</span>
@@ -1537,50 +1537,51 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc2: </span><span class="si">{</span><span class="n">cc_names_struc2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1">### DANGER ONLY FOR ONE MUTATION NEEEDS TO BE FIXED #####</span>
-        <span class="n">match_atom_names_cc1_to_cc2</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;O5&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;O5&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H5T&quot;</span><span class="p">:</span> <span class="s2">&quot;H5T&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C5&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;C5&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H5&#39;&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;H5&#39;&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H5&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;H5&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C4&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;C4&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H4&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;H4&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;O4&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;O4&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C1&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;C1&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C2&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;C2&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C3&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;C3&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H3&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;H3&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;O3&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;O3&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="s2">&quot;P&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;O2P&quot;</span><span class="p">:</span> <span class="s2">&quot;O2P&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;O1P&quot;</span><span class="p">:</span> <span class="s2">&quot;O1P&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H1&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;H1&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H2&#39;&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;H2&#39;&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;O2&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;O2&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H2&#39;&quot;</span><span class="p">:</span> <span class="s2">&quot;H2&#39;&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;N1&quot;</span><span class="p">:</span> <span class="s2">&quot;N1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C6&quot;</span><span class="p">:</span> <span class="s2">&quot;C6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H6&quot;</span><span class="p">:</span> <span class="s2">&quot;H6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C5&quot;</span><span class="p">:</span> <span class="s2">&quot;C5&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H5&quot;</span><span class="p">:</span> <span class="s2">&quot;H5&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C4&quot;</span><span class="p">:</span> <span class="s2">&quot;C4&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;N3&quot;</span><span class="p">:</span> <span class="s2">&quot;N3&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C2&quot;</span><span class="p">:</span> <span class="s2">&quot;C2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;O2&quot;</span><span class="p">:</span> <span class="s2">&quot;O2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;N4&quot;</span><span class="p">:</span> <span class="s2">&quot;N4&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H42&quot;</span><span class="p">:</span> <span class="s2">&quot;H42&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H41&quot;</span><span class="p">:</span> <span class="s2">&quot;H41&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;N9&quot;</span><span class="p">:</span> <span class="s2">&quot;N9&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;N7&quot;</span><span class="p">:</span> <span class="s2">&quot;N7&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;C8&quot;</span><span class="p">:</span> <span class="s2">&quot;C8&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H8&quot;</span><span class="p">:</span> <span class="s2">&quot;H8&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;N2&quot;</span><span class="p">:</span> <span class="s2">&quot;N2&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H21&quot;</span><span class="p">:</span> <span class="s2">&quot;H21&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H22&quot;</span><span class="p">:</span> <span class="s2">&quot;H22&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H1&quot;</span><span class="p">:</span> <span class="s2">&quot;H1&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;O6&quot;</span><span class="p">:</span> <span class="s2">&quot;O6&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;H3T&quot;</span><span class="p">:</span> <span class="s2">&quot;H3T&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
+        <span class="c1"># match_atom_names_cc1_to_cc2 = {</span>
+        <span class="c1">#     &quot;O5&#39;&quot;: &quot;O5&#39;&quot;,</span>
+        <span class="c1">#     &quot;H5T&quot;: &quot;H5T&quot;,</span>
+        <span class="c1">#     &quot;C5&#39;&quot;: &quot;C5&#39;&quot;,</span>
+        <span class="c1">#     &quot;H5&#39;&#39;&quot;: &quot;H5&#39;&#39;&quot;,</span>
+        <span class="c1">#     &quot;H5&#39;&quot;: &quot;H5&#39;&quot;,</span>
+        <span class="c1">#     &quot;C4&#39;&quot;: &quot;C4&#39;&quot;,</span>
+        <span class="c1">#     &quot;H4&#39;&quot;: &quot;H4&#39;&quot;,</span>
+        <span class="c1">#     &quot;O4&#39;&quot;: &quot;O4&#39;&quot;,</span>
+        <span class="c1">#     &quot;C1&#39;&quot;: &quot;C1&#39;&quot;,</span>
+        <span class="c1">#     &quot;C2&#39;&quot;: &quot;C2&#39;&quot;,</span>
+        <span class="c1">#     &quot;C3&#39;&quot;: &quot;C3&#39;&quot;,</span>
+        <span class="c1">#     &quot;H3&#39;&quot;: &quot;H3&#39;&quot;,</span>
+        <span class="c1">#     &quot;O3&#39;&quot;: &quot;O3&#39;&quot;,</span>
+        <span class="c1">#     &quot;P&quot;: &quot;P&quot;,</span>
+        <span class="c1">#     &quot;O2P&quot;: &quot;O2P&quot;,</span>
+        <span class="c1">#     &quot;O1P&quot;: &quot;O1P&quot;,</span>
+        <span class="c1">#     &quot;H1&#39;&quot;: &quot;H1&#39;&quot;,</span>
+        <span class="c1">#     &quot;H2&#39;&#39;&quot;: &quot;H2&#39;&#39;&quot;,</span>
+        <span class="c1">#     &quot;O2&#39;&quot;: &quot;O2&#39;&quot;,</span>
+        <span class="c1">#     &quot;H2&#39;&quot;: &quot;H2&#39;&quot;,</span>
+        <span class="c1">#     &quot;N1&quot;: &quot;N1&quot;,</span>
+        <span class="c1">#     &quot;C6&quot;: &quot;C6&quot;,</span>
+        <span class="c1">#     &quot;H6&quot;: &quot;H6&quot;,</span>
+        <span class="c1">#     &quot;C5&quot;: &quot;C5&quot;,</span>
+        <span class="c1">#     &quot;H5&quot;: &quot;H5&quot;,</span>
+        <span class="c1">#     &quot;C4&quot;: &quot;C4&quot;,</span>
+        <span class="c1">#     &quot;N3&quot;: &quot;N3&quot;,</span>
+        <span class="c1">#     &quot;C2&quot;: &quot;C2&quot;,</span>
+        <span class="c1">#     &quot;O2&quot;: &quot;O2&quot;,</span>
+        <span class="c1">#     &quot;N4&quot;: &quot;N4&quot;,</span>
+        <span class="c1">#     &quot;H42&quot;: &quot;H42&quot;,</span>
+        <span class="c1">#     &quot;H41&quot;: &quot;H41&quot;,</span>
+        <span class="c1">#     &quot;N9&quot;: &quot;N9&quot;,</span>
+        <span class="c1">#     &quot;N7&quot;: &quot;N7&quot;,</span>
+        <span class="c1">#     &quot;C8&quot;: &quot;C8&quot;,</span>
+        <span class="c1">#     &quot;H8&quot;: &quot;H8&quot;,</span>
+        <span class="c1">#     &quot;N2&quot;: &quot;N2&quot;,</span>
+        <span class="c1">#     &quot;H21&quot;: &quot;H21&quot;,</span>
+        <span class="c1">#     &quot;H22&quot;: &quot;H22&quot;,</span>
+        <span class="c1">#     &quot;H1&quot;: &quot;H1&quot;,</span>
+        <span class="c1">#     &quot;O6&quot;: &quot;O6&quot;,</span>
+        <span class="c1">#     &quot;H3T&quot;: &quot;H3T&quot;,</span>
+        <span class="c1"># }</span>
+        
         <span class="k">return</span> <span class="n">match_atom_names_cc1_to_cc2</span></div>
 
     <span class="k">def</span> <span class="nf">_mutate_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
