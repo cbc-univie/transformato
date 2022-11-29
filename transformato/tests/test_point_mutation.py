@@ -23,12 +23,11 @@ from transformato_testsystems.testsystems import get_testsystems_dir
 warnings.filterwarnings("ignore", module="parmed")
 
 
-# @pytest.mark.rbfe
-# @pytest.mark.requires_parmed_supporting_lp
-# @pytest.mark.skipif(
-#     os.getenv("CI") == "true",
-#     reason="Skipping tests that cannot pass in github actions",
-# )
+@pytest.mark.point_mutation
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_setting_up_point_mutation():
 
     configuration = load_config_yaml(
