@@ -83,9 +83,9 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 <span class="kn">import</span> <span class="nn">parmed</span> <span class="k">as</span> <span class="nn">pm</span>
-<span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">display</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">SVG</span>
 <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
-<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">AllChem</span><span class="p">,</span> <span class="n">Draw</span><span class="p">,</span> <span class="n">rdFMCS</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">AllChem</span><span class="p">,</span> <span class="n">Draw</span><span class="p">,</span> <span class="n">rdFMCS</span><span class="p">,</span> <span class="n">rdCoordGen</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.Draw</span> <span class="kn">import</span> <span class="n">rdMolDraw2D</span>
 <span class="kn">from</span> <span class="nn">rdkit.Chem.Draw</span> <span class="kn">import</span> <span class="n">IPythonConsole</span>
 
@@ -1096,11 +1096,17 @@
 
         <span class="n">s1</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">mcsp</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructere match idx: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_display_mol</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
+            <span class="n">m1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span> <span class="n">show_atom_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
         <span class="n">s2</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">mcsp</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructere match idx: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_display_mol</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
+            <span class="n">m2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span> <span class="n">show_atom_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol1_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol2_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
 
@@ -1141,33 +1147,15 @@
 
         <span class="k">return</span> <span class="n">unique_subgraphs</span>
 
-<div class="viewcode-block" id="ProposeMutationRoute._display_mol"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._display_mol">[docs]</a>    <span class="k">def</span> <span class="nf">_display_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Gets mol as input and displays its 2D Structure using IPythonConsole.</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        mol: Chem.Mol</span>
-<span class="sd">            a rdkit mol object</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">def</span> <span class="nf">mol_with_atom_index</span><span class="p">(</span><span class="n">mol</span><span class="p">):</span>
-            <span class="n">atoms</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
-                <span class="n">mol</span><span class="o">.</span><span class="n">GetAtomWithIdx</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">SetProp</span><span class="p">(</span>
-                    <span class="s2">&quot;molAtomMapNumber&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetAtomWithIdx</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
-                <span class="p">)</span>
-            <span class="k">return</span> <span class="n">mol</span>
-
-        <span class="n">mol</span> <span class="o">=</span> <span class="n">mol_with_atom_index</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
-        <span class="n">AllChem</span><span class="o">.</span><span class="n">Compute2DCoords</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
-        <span class="n">display</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="ProposeMutationRoute.show_common_core_on_mol1"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.show_common_core_on_mol1">[docs]</a>    <span class="k">def</span> <span class="nf">show_common_core_on_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_atom_types</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shows common core on mol1</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span> <span class="n">show_atom_types</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span>
+            <span class="n">show_atom_types</span><span class="p">,</span>
+            <span class="n">internal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="ProposeMutationRoute.show_common_core_on_mol2"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.show_common_core_on_mol2">[docs]</a>    <span class="k">def</span> <span class="nf">show_common_core_on_mol2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show_atom_types</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
@@ -1175,10 +1163,15 @@
 <span class="sd">        Shows common core on mol2</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span> <span class="n">show_atom_types</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span>
+            <span class="n">show_atom_types</span><span class="p">,</span>
+            <span class="n">internal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProposeMutationRoute._show_common_core"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._show_common_core">[docs]</a>    <span class="k">def</span> <span class="nf">_show_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">highlight</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">show_atom_type</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<div class="viewcode-block" id="ProposeMutationRoute._show_common_core"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._show_common_core">[docs]</a>    <span class="k">def</span> <span class="nf">_show_common_core</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">highlight</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">show_atom_type</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">internal</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function - do not call directly.</span>
 <span class="sd">        Show common core.</span>
@@ -1186,9 +1179,8 @@
         <span class="c1"># https://rdkit.blogspot.com/2015/02/new-drawing-code.html</span>
 
         <span class="n">mol</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
-        <span class="n">AllChem</span><span class="o">.</span><span class="n">Compute2DCoords</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
 
-        <span class="n">drawer</span> <span class="o">=</span> <span class="n">rdMolDraw2D</span><span class="o">.</span><span class="n">MolDraw2DSVG</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+        <span class="n">drawer</span> <span class="o">=</span> <span class="n">rdMolDraw2D</span><span class="o">.</span><span class="n">MolDraw2DSVG</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
         <span class="n">drawer</span><span class="o">.</span><span class="n">SetFontSize</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
 
         <span class="n">opts</span> <span class="o">=</span> <span class="n">drawer</span><span class="o">.</span><span class="n">drawOptions</span><span class="p">()</span>
@@ -1198,16 +1190,21 @@
                 <span class="n">opts</span><span class="o">.</span><span class="n">atomLabels</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">GetProp</span><span class="p">(</span><span class="s2">&quot;atom_index&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">GetProp</span><span class="p">(</span><span class="s2">&quot;atom_type&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">30</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
                 <span class="n">opts</span><span class="o">.</span><span class="n">atomLabels</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">GetProp</span><span class="p">(</span><span class="s2">&quot;atom_index&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span> <span class="o">+</span> <span class="n">i</span><span class="o">.</span><span class="n">GetProp</span><span class="p">(</span><span class="s2">&quot;atom_name&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
 
+        <span class="n">rdCoordGen</span><span class="o">.</span><span class="n">AddCoords</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>  <span class="c1"># Create Cordinates</span>
+
         <span class="n">drawer</span><span class="o">.</span><span class="n">DrawMolecule</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">highlightAtoms</span><span class="o">=</span><span class="n">highlight</span><span class="p">)</span>
-        <span class="n">Draw</span><span class="o">.</span><span class="n">DrawingOptions</span><span class="o">.</span><span class="n">includeAtomNumbers</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">drawer</span><span class="o">.</span><span class="n">FinishDrawing</span><span class="p">()</span>
         <span class="n">svg</span> <span class="o">=</span> <span class="n">drawer</span><span class="o">.</span><span class="n">GetDrawingText</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;svg:&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">internal</span><span class="p">:</span>
+            <span class="n">display</span><span class="p">(</span><span class="n">SVG</span><span class="p">(</span><span class="n">svg</span><span class="p">))</span>
+
         <span class="k">return</span> <span class="n">svg</span></div>
 
 <div class="viewcode-block" id="ProposeMutationRoute.generate_mutations_to_common_core_for_mol1"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.generate_mutations_to_common_core_for_mol1">[docs]</a>    <span class="k">def</span> <span class="nf">generate_mutations_to_common_core_for_mol1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
