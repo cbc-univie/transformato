@@ -5,6 +5,8 @@ coverage:
     project:
       default:
         threshold: 50%
+ignore:
+  - "transformato/testsystems.py"  # ignore folders and all its contents
 comment:
   layout: "header"
   require_changes: false
