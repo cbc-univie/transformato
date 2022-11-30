@@ -17,6 +17,7 @@ IPythonConsole.molSize = (900, 900)  # Change image size
 IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
+from transformato.annihilation import calculate_order_of_LJ_mutations_asfe
 
 
 logger = logging.getLogger(__name__)
@@ -311,7 +312,7 @@ class ProposeMutationRoute(object):
     def __init__(
         self,
         s1: SystemStructure,
-        s2: SystemStructure,
+        s2: SystemStructure = None,
     ):
         """
         A class that proposes the mutation route between two molecules with a
@@ -322,41 +323,61 @@ class ProposeMutationRoute(object):
         mol1: Chem.Mol
         mol2: Chem.Mol
         """
+        try:
+            mol1_name: str = "m1"
+            mol2_name: str = "m2"
+            self.system: dict = {"system1": s1, "system2": s2}
+            self.mols: dict = {mol1_name: s1.mol, mol2_name: s2.mol}
+            self.graphs: dict = {mol1_name: s1.graph, mol2_name: s2.graph}
+            # psfs for reference of only ligand
+            self.psfs: dict = {
+                mol1_name: s1.psfs["waterbox"][f":{s1.tlc}"],
+                mol2_name: s2.psfs["waterbox"][f":{s2.tlc}"],
+            }
+            self.psf1: pm.charmm.CharmmPsfFile = s1.psfs
+            self.psf2: pm.charmm.CharmmPsfFile = s2.psfs
+            self._substructure_match: dict = {mol1_name: [], mol2_name: []}
+            self.removed_indeces: dict = {mol1_name: [], mol2_name: []}
+            self.added_indeces: dict = {mol1_name: [], mol2_name: []}
+            self.s1_tlc = s1.tlc
+            self.s2_tlc = s2.tlc
 
-        mol1_name: str = "m1"
-        mol2_name: str = "m2"
-        self.system: dict = {"system1": s1, "system2": s2}
-        self.mols: dict = {mol1_name: s1.mol, mol2_name: s2.mol}
-        self.graphs: dict = {mol1_name: s1.graph, mol2_name: s2.graph}
-        # psfs for reference of only ligand
-        self.psfs: dict = {
-            mol1_name: s1.psfs["waterbox"][f":{s1.tlc}"],
-            mol2_name: s2.psfs["waterbox"][f":{s2.tlc}"],
-        }
-        self.psf1: pm.charmm.CharmmPsfFile = s1.psfs
-        self.psf2: pm.charmm.CharmmPsfFile = s2.psfs
-        self._substructure_match: dict = {mol1_name: [], mol2_name: []}
-        self.removed_indeces: dict = {mol1_name: [], mol2_name: []}
-        self.added_indeces: dict = {mol1_name: [], mol2_name: []}
-        self.s1_tlc = s1.tlc
-        self.s2_tlc = s2.tlc
+            self.terminal_real_atom_cc1: list = []
+            self.terminal_real_atom_cc2: list = []
+            self.terminal_dummy_atom_cc1: list = []
+            self.terminal_dummy_atom_cc2: list = []
 
-        self.terminal_real_atom_cc1: list = []
-        self.terminal_real_atom_cc2: list = []
-        self.terminal_dummy_atom_cc1: list = []
-        self.terminal_dummy_atom_cc2: list = []
+            self.bondCompare = rdFMCS.BondCompare.CompareAny
+            self.atomCompare = rdFMCS.AtomCompare.CompareElements
+            self.maximizeBonds: bool = True
+            self.matchValences: bool = False
+            self.completeRingsOnly: bool = False
+            self.ringMatchesRingOnly: bool = True
 
-        self.bondCompare = rdFMCS.BondCompare.CompareAny
-        self.atomCompare = rdFMCS.AtomCompare.CompareElements
-        self.maximizeBonds: bool = True
-        self.matchValences: bool = False
-        self.completeRingsOnly: bool = False
-        self.ringMatchesRingOnly: bool = True
+            self.dummy_region_cc1: DummyRegion
+            self.dummy_region_cc2: DummyRegion
 
-        self.dummy_region_cc1: DummyRegion
-        self.dummy_region_cc2: DummyRegion
+            self.asfe: bool = False
+            self._check_cgenff_versions()
 
-        self._check_cgenff_versions()
+        except:
+
+            logger.info(
+                "Only information about one structure, assume an ASFE simulation is requested"
+            )
+            mol1_name: str = "m1"
+            self.system: dict = {"system1": s1}
+            self.mols: dict = {mol1_name: s1.mol}
+            self.graphs: dict = {mol1_name: s1.graph}
+            # psfs for reference of only ligand
+            self.psfs: dict = {s1.psfs["waterbox"][f":{s1.tlc}"]}
+            self.psf1: pm.charmm.CharmmPsfFile = s1.psfs
+            self._substructure_match: dict = {mol1_name: []}
+            self.removed_indeces: dict = {mol1_name: []}
+            self.added_indeces: dict = {mol1_name: []}
+            self.s1_tlc = s1.tlc
+            self.asfe: bool = True
+            self.dummy_region_cc1: DummyRegion
 
     def _check_cgenff_versions(self):
 
@@ -581,17 +602,24 @@ class ProposeMutationRoute(object):
         ]
         lp_dict_dummy_region = defaultdict(list)
         lp_dict_common_core = defaultdict(list)
-
+        print(f"die version {pm.__version__}")
         for atom in psf.view[f":{tlc}"].atoms:
             if atom.name.find("LP") == False:
-                if atom.frame.atom1.idx in flat_ordered_connected_dummy_regions:
-                    lp_dict_dummy_region[atom.frame.atom1.idx].append(atom.idx)
+                print(f"die Atome {atom}")
+                if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
+                    lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
 
-                elif atom.frame.atom1.idx not in lp_dict_common_core and name == "m1":
+                elif (
+                    atom.frame_type.atom1.idx not in lp_dict_common_core
+                    and name == "m1"
+                ):
                     logger.info(f"Adding atom {atom.idx} to the common core of mol1")
                     self.add_idx_to_common_core_of_mol1([atom.idx])
 
-                elif atom.frame.atom1.idx not in lp_dict_common_core and name == "m2":
+                elif (
+                    atom.frame_type.atom1.idx not in lp_dict_common_core
+                    and name == "m2"
+                ):
                     logger.info(f"Adding atom {atom.idx} to the common core of mol1")
                     self.add_idx_to_common_core_of_mol2([atom.idx])
 
@@ -610,9 +638,34 @@ class ProposeMutationRoute(object):
 
         return odered_connected_dummy_regions_cc_with_lp
 
+    def get_idx_of_all_atoms(
+        self,
+        mol1_name: str,
+    ):
+        """
+        Iterates over all atoms of the molecule and saves them as a list
+        ----------
+        mol1_name: str
+        """
+
+        s1 = []
+        for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
+            s1.append(atom.idx)
+
+        self._substructure_match[mol1_name] = list(s1)
+
     def propose_common_core(self):
-        mcs = self._find_mcs("m1", "m2")
-        return mcs
+        """
+        Searches for the common core using the rdkit module, in case of asfe only a list of
+        atoms of the ligand is created
+        """
+
+        if self.asfe:
+            self.get_idx_of_all_atoms("m1")
+        else:
+            # System for RBFE/RSFE contains two mols
+            mcs = self._find_mcs("m1", "m2")
+            return mcs
 
     def finish_common_core(
         self,
@@ -621,89 +674,152 @@ class ProposeMutationRoute(object):
         odered_connected_dummy_regions_cc1: list = [],
         odered_connected_dummy_regions_cc2: list = [],
     ):
-        # set the teriminal real/dummy atom indices
-        self._set_common_core_parameters()
-        # match the real/dummy atoms
-        match_terminal_atoms_cc1 = self._match_terminal_real_and_dummy_atoms_for_mol1()
-        match_terminal_atoms_cc2 = self._match_terminal_real_and_dummy_atoms_for_mol2()
-        logger.info("Find connected dummy regions")
-        # define connected dummy regions
-        if not connected_dummy_regions_cc1:
-            connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
+        """
+        The dummy region is created and the final atoms connected to the CC are collected. It is possible
+        to define a dummy region on its own or to change the ordering how the lj parameters of the
+        heavy atoms in the dummy region are turned off
+        ---------
+        connected_dummy_regions_cc1: list = []
+        connected_dummy_regions_cc2: list = []
+        odered_connected_dummy_regions_cc1: list = []
+        odered_connected_dummy_regions_cc2: list = []
+        """
+
+        if not self.asfe:
+
+            # set the teriminal real/dummy atom indices
+            self._set_common_core_parameters()
+            # match the real/dummy atoms
+            match_terminal_atoms_cc1 = (
+                self._match_terminal_real_and_dummy_atoms_for_mol1()
+            )
+            match_terminal_atoms_cc2 = (
+                self._match_terminal_real_and_dummy_atoms_for_mol2()
+            )
+            logger.info("Find connected dummy regions")
+            # define connected dummy regions
+            if not connected_dummy_regions_cc1:
+                connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
+                    mol_name="m1",
+                )
+            if not connected_dummy_regions_cc2:
+                connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
+                    mol_name="m2",
+                )
+
+            logger.debug(
+                f"connected dummy regions for mol1: {connected_dummy_regions_cc1}"
+            )
+            logger.debug(
+                f"connected dummy regions for mol2: {connected_dummy_regions_cc2}"
+            )
+
+            # calculate the ordering or LJ mutations
+            if not odered_connected_dummy_regions_cc1:
+                odered_connected_dummy_regions_cc1 = (
+                    self._calculate_order_of_LJ_mutations(
+                        connected_dummy_regions_cc1,
+                        match_terminal_atoms_cc1,
+                        self.graphs["m1"].copy(),
+                    )
+                )
+            if not odered_connected_dummy_regions_cc2:
+                odered_connected_dummy_regions_cc2 = (
+                    self._calculate_order_of_LJ_mutations(
+                        connected_dummy_regions_cc2,
+                        match_terminal_atoms_cc2,
+                        self.graphs["m2"].copy(),
+                    )
+                )
+            logger.info(
+                f"sorted connected dummy regions for mol1: {odered_connected_dummy_regions_cc1}"
+            )
+            logger.info(
+                f"sorted connected dummy regions for mol2: {odered_connected_dummy_regions_cc2}"
+            )
+
+            if odered_connected_dummy_regions_cc1:
+                odered_connected_dummy_regions_cc1 = self._check_for_lp(
+                    odered_connected_dummy_regions_cc1,
+                    self.psf1["waterbox"],
+                    self.s1_tlc,
+                    "m1",
+                )
+
+            if odered_connected_dummy_regions_cc2:
+                odered_connected_dummy_regions_cc2 = self._check_for_lp(
+                    odered_connected_dummy_regions_cc2,
+                    self.psf2["waterbox"],
+                    self.s2_tlc,
+                    "m2",
+                )
+
+            # find the atoms from dummy_region in s1 that needs to become lj default
+            (
+                lj_default_cc1,
+                lj_default_cc2,
+            ) = self._match_terminal_dummy_atoms_between_common_cores(
+                match_terminal_atoms_cc1, match_terminal_atoms_cc2
+            )
+
+            self.dummy_region_cc1 = DummyRegion(
                 mol_name="m1",
+                tlc=self.s1_tlc,
+                match_termin_real_and_dummy_atoms=match_terminal_atoms_cc1,
+                connected_dummy_regions=odered_connected_dummy_regions_cc1,
+                lj_default=lj_default_cc1,
             )
-        if not connected_dummy_regions_cc2:
-            connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
+
+            self.dummy_region_cc2 = DummyRegion(
                 mol_name="m2",
+                tlc=self.s2_tlc,
+                match_termin_real_and_dummy_atoms=match_terminal_atoms_cc2,
+                connected_dummy_regions=odered_connected_dummy_regions_cc2,
+                lj_default=lj_default_cc2,
             )
 
-        logger.debug(f"connected dummy regions for mol1: {connected_dummy_regions_cc1}")
-        logger.debug(f"connected dummy regions for mol2: {connected_dummy_regions_cc2}")
+            # generate charge compmensated psfs
+            psf1, psf2 = self._prepare_cc_for_charge_transfer()
+            self.charge_compensated_ligand1_psf = psf1
+            self.charge_compensated_ligand2_psf = psf2
 
-        # calculate the ordering or LJ mutations
-        if not odered_connected_dummy_regions_cc1:
-            odered_connected_dummy_regions_cc1 = self._calculate_order_of_LJ_mutations(
-                connected_dummy_regions_cc1,
-                match_terminal_atoms_cc1,
-                self.graphs["m1"].copy(),
+        else:
+
+            # all atoms should become dummy atoms in the end
+            central_atoms = nx.center(self.graphs["m1"])
+
+            # Assure, that the central atom is no hydrogen
+            for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
+                if atom.idx in central_atoms:
+                    if atom.name.startswith("H") == True:
+                        raise RuntimeError(
+                            f"One of the central atoms seems to be a hydrogen atom"
+                        )
+
+            # calculate the ordering or LJ mutations
+            if not odered_connected_dummy_regions_cc1:
+                odered_connected_dummy_regions_cc1 = (
+                    calculate_order_of_LJ_mutations_asfe(
+                        central_atoms,
+                        self.graphs["m1"].copy(),
+                    )
+                )
+
+            if odered_connected_dummy_regions_cc1:
+                odered_connected_dummy_regions_cc1 = self._check_for_lp(
+                    odered_connected_dummy_regions_cc1,
+                    self.psf1["waterbox"],
+                    self.s1_tlc,
+                    "m1",
+                )
+
+            self.dummy_region_cc1 = DummyRegion(
+                mol_name="m1",
+                tlc=self.s1_tlc,
+                match_termin_real_and_dummy_atoms=[],
+                connected_dummy_regions=odered_connected_dummy_regions_cc1,
+                lj_default=[],
             )
-        if not odered_connected_dummy_regions_cc2:
-            odered_connected_dummy_regions_cc2 = self._calculate_order_of_LJ_mutations(
-                connected_dummy_regions_cc2,
-                match_terminal_atoms_cc2,
-                self.graphs["m2"].copy(),
-            )
-        logger.info(
-            f"sorted connected dummy regions for mol1: {odered_connected_dummy_regions_cc1}"
-        )
-        logger.info(
-            f"sorted connected dummy regions for mol2: {odered_connected_dummy_regions_cc2}"
-        )
-
-        if odered_connected_dummy_regions_cc1:
-            odered_connected_dummy_regions_cc1 = self._check_for_lp(
-                odered_connected_dummy_regions_cc1,
-                self.psf1["waterbox"],
-                self.s1_tlc,
-                "m1",
-            )
-
-        if odered_connected_dummy_regions_cc2:
-            odered_connected_dummy_regions_cc2 = self._check_for_lp(
-                odered_connected_dummy_regions_cc2,
-                self.psf2["waterbox"],
-                self.s2_tlc,
-                "m2",
-            )
-
-        # find the atoms from dummy_region in s1 that needs to become lj default
-        (
-            lj_default_cc1,
-            lj_default_cc2,
-        ) = self._match_terminal_dummy_atoms_between_common_cores(
-            match_terminal_atoms_cc1, match_terminal_atoms_cc2
-        )
-
-        self.dummy_region_cc1 = DummyRegion(
-            mol_name="m1",
-            tlc=self.s1_tlc,
-            match_termin_real_and_dummy_atoms=match_terminal_atoms_cc1,
-            connected_dummy_regions=odered_connected_dummy_regions_cc1,
-            lj_default=lj_default_cc1,
-        )
-
-        self.dummy_region_cc2 = DummyRegion(
-            mol_name="m2",
-            tlc=self.s2_tlc,
-            match_termin_real_and_dummy_atoms=match_terminal_atoms_cc2,
-            connected_dummy_regions=odered_connected_dummy_regions_cc2,
-            lj_default=lj_default_cc2,
-        )
-
-        # generate charge compmensated psfs
-        psf1, psf2 = self._prepare_cc_for_charge_transfer()
-        self.charge_compensated_ligand1_psf = psf1
-        self.charge_compensated_ligand2_psf = psf2
 
     def calculate_common_core(self):
 
@@ -1023,13 +1139,14 @@ class ProposeMutationRoute(object):
             list of mutations
 
         """
-        if not self.terminal_real_atom_cc1:
-            raise RuntimeError("First generate the MCS. Aborting.")
 
         m = self._mutate_to_common_core(
             self.dummy_region_cc1, self.get_common_core_idx_mol1(), mol_name="m1"
         )
-        m["transform"] = self._transform_common_core()
+
+        if not self.asfe:
+            m["transform"] = self._transform_common_core()
+
         return m
 
     def generate_mutations_to_common_core_for_mol2(self) -> dict:
@@ -1157,26 +1274,30 @@ class ProposeMutationRoute(object):
         Generates the mutation route to the common fore for mol.
         """
 
-        from collections import defaultdict
-
-        # copy of the currently used psf
-        psf = self.psfs[f"{mol_name}"][:, :, :]
-
         mutations = defaultdict(list)
-
-        # get the atom that connects the common core to the dummy regiom
-        match_termin_real_and_dummy_atoms = (
-            dummy_region.match_termin_real_and_dummy_atoms
-        )
-        # get the terminal dummy atoms
-        list_termin_dummy_atoms = []
-        for m in match_termin_real_and_dummy_atoms.values():
-            list_termin_dummy_atoms.extend(list(m))
-        logger.info(f"Terminal dummy atoms: {list_termin_dummy_atoms}")
-
         tlc = self.s1_tlc
-        if mol_name == "m2":
-            tlc = self.s2_tlc
+
+        if self.asfe:
+            psf = self.psf1["waterbox"]
+            cc_idx = []  # no CC in ASFE
+            list_termin_dummy_atoms = []
+
+        else:
+            # copy of the currently used psf
+            psf = self.psfs[f"{mol_name}"][:, :, :]
+            # only necessary for relative binding/solvation free energies
+            # get the atom that connects the common core to the dummy regiom
+            match_termin_real_and_dummy_atoms = (
+                dummy_region.match_termin_real_and_dummy_atoms
+            )
+            # get the terminal dummy atoms
+            list_termin_dummy_atoms = []
+            for m in match_termin_real_and_dummy_atoms.values():
+                list_termin_dummy_atoms.extend(list(m))
+            logger.info(f"Terminal dummy atoms: {list_termin_dummy_atoms}")
+
+            if mol_name == "m2":
+                tlc = self.s2_tlc
 
         # iterate through atoms and select atoms that need to be mutated
         atoms_to_be_mutated = []
@@ -1245,7 +1366,7 @@ class ProposeMutationRoute(object):
                             steric_mutation_to_default=True,
                         )
                         mutations["default-lj"].append(m)
-                    elif atom_idx in hydrogens:
+                    elif atom_idx in hydrogens or psf[atom_idx].type == "LPH":
                         # already mutated
                         continue
                     else:

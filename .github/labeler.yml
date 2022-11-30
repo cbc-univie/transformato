@@ -1,5 +1,3 @@
-enhancement:
-- transformato/**/*
 asfe:
 - transformato/annihilation.py
 restraints:
@@ -8,3 +6,6 @@ charmm:
 - transformato/charmm_factory.py
 analysis:
 - transformato/analysis.py
+endstate_correction:
+- transformato/bin/perform_correction.py
+- transformato/bin/slurm_switching.sh

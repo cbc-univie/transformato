@@ -2,7 +2,8 @@
 
 
 path=$1
-SWITCH=$2
+
+source  /opt/intel/oneapi/setvars.sh
 
 cd ${path}
 pwd
@@ -10,18 +11,7 @@ hostname
 
 
 input=charmm_run_vacuum
-charmm_openmm_domdec -i ${input}.inp > log_vac.out
+OMP_NUM_THREADS=8 charmm_c47_omm_domdecgpu -i ${input}.inp > log_vac.out
 
 input=charmm_run_waterbox
-charmm_openmm_domdec -i ${input}.inp > log_solv.out
-
-
-case ${SWITCH} in
-1)
-run_vacuum
-;;
-2)
-run_vacuum
-run_waterbox
-;;
-esac
+OMP_NUM_THREADS=8 charmm_c47_omm_domdecgpu -i ${input}.inp > log_solv.out
