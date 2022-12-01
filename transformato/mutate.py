@@ -7,9 +7,9 @@ from typing import List, Tuple
 import numpy as np
 import networkx as nx
 import parmed as pm
-from IPython.core.display import display
+from IPython.display import display, SVG
 from rdkit import Chem
-from rdkit.Chem import AllChem, Draw, rdFMCS
+from rdkit.Chem import AllChem, Draw, rdFMCS, rdCoordGen
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem.Draw import IPythonConsole
 
@@ -1020,11 +1020,17 @@ class ProposeMutationRoute(object):
 
         s1 = m1.GetSubstructMatch(mcsp)
         logger.debug("Substructere match idx: {}".format(s1))
-        self._display_mol(m1)
+
+        self._show_common_core(
+            m1, self.get_common_core_idx_mol1(), show_atom_type=False, internal=True
+        )
+
         s2 = m2.GetSubstructMatch(mcsp)
         logger.debug("Substructere match idx: {}".format(s2))
-        self._display_mol(m2)
 
+        self._show_common_core(
+            m2, self.get_common_core_idx_mol2(), show_atom_type=False, internal=True
+        )
         self._substructure_match[mol1_name] = list(s1)
         self._substructure_match[mol2_name] = list(s2)
 
@@ -1065,33 +1071,15 @@ class ProposeMutationRoute(object):
 
         return unique_subgraphs
 
-    def _display_mol(self, mol: Chem.Mol):
-        """
-        Gets mol as input and displays its 2D Structure using IPythonConsole.
-        Parameters
-        ----------
-        mol: Chem.Mol
-            a rdkit mol object
-        """
-
-        def mol_with_atom_index(mol):
-            atoms = mol.GetNumAtoms()
-            for idx in range(atoms):
-                mol.GetAtomWithIdx(idx).SetProp(
-                    "molAtomMapNumber", str(mol.GetAtomWithIdx(idx).GetIdx())
-                )
-            return mol
-
-        mol = mol_with_atom_index(mol)
-        AllChem.Compute2DCoords(mol)
-        display(mol)
-
     def show_common_core_on_mol1(self, show_atom_types: bool = False):
         """
         Shows common core on mol1
         """
         return self._show_common_core(
-            self.mols["m1"], self.get_common_core_idx_mol1(), show_atom_types
+            self.mols["m1"],
+            self.get_common_core_idx_mol1(),
+            show_atom_types,
+            internal=False,
         )
 
     def show_common_core_on_mol2(self, show_atom_types: bool = False):
@@ -1099,10 +1087,15 @@ class ProposeMutationRoute(object):
         Shows common core on mol2
         """
         return self._show_common_core(
-            self.mols["m2"], self.get_common_core_idx_mol2(), show_atom_types
+            self.mols["m2"],
+            self.get_common_core_idx_mol2(),
+            show_atom_types,
+            internal=False,
         )
 
-    def _show_common_core(self, mol, highlight: list, show_atom_type: bool):
+    def _show_common_core(
+        self, mol, highlight: list, show_atom_type: bool, internal: bool
+    ):
         """
         Helper function - do not call directly.
         Show common core.
@@ -1110,9 +1103,8 @@ class ProposeMutationRoute(object):
         # https://rdkit.blogspot.com/2015/02/new-drawing-code.html
 
         mol = deepcopy(mol)
-        AllChem.Compute2DCoords(mol)
 
-        drawer = rdMolDraw2D.MolDraw2DSVG(800, 800)
+        drawer = rdMolDraw2D.MolDraw2DSVG(500, 500)
         drawer.SetFontSize(6)
 
         opts = drawer.drawOptions()
@@ -1122,16 +1114,21 @@ class ProposeMutationRoute(object):
                 opts.atomLabels[i.GetIdx()] = (
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
                 )
-        else:
+        elif mol.GetNumAtoms() < 30:
             for i in mol.GetAtoms():
                 opts.atomLabels[i.GetIdx()] = (
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_name")
                 )
 
+        rdCoordGen.AddCoords(mol)  # Create Cordinates
+
         drawer.DrawMolecule(mol, highlightAtoms=highlight)
-        Draw.DrawingOptions.includeAtomNumbers = False
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace("svg:", "")
+
+        if internal:
+            display(SVG(svg))
+
         return svg
 
     def generate_mutations_to_common_core_for_mol1(self) -> dict:
