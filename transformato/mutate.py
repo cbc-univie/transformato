@@ -7,9 +7,9 @@ from typing import List, Tuple
 import numpy as np
 import networkx as nx
 import parmed as pm
-from IPython.display import display, SVG
+from IPython.core.display import display
 from rdkit import Chem
-from rdkit.Chem import AllChem, Draw, rdFMCS, rdCoordGen
+from rdkit.Chem import AllChem, Draw, rdFMCS
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem.Draw import IPythonConsole
 
@@ -997,6 +997,16 @@ class ProposeMutationRoute(object):
 
         m1, m2 = [deepcopy(self.mols[mol1_name]), deepcopy(self.mols[mol2_name])]
 
+
+        #second copy of mols - to use as representation with removed hydrogens
+        remmol1 = deepcopy(m1)
+        remmol2 = deepcopy(m2)
+        #removal of hydrogens
+        remmol1 = Chem.rdmolops.RemoveAllHs(remmol1)
+        remmol2 = Chem.rdmolops.RemoveAllHs(remmol2)
+        #remmols contains both molecules with removed hydrogens
+        remmols = [remmol1, remmol2]
+
         for m in [m1, m2]:
             logger.debug("Mol in SMILES format: {}.".format(Chem.MolToSmiles(m, True)))
 
@@ -1004,8 +1014,11 @@ class ProposeMutationRoute(object):
         changed_mols = [Chem.Mol(x) for x in [m1, m2]]
 
         # find substructure match (ignore bond order but enforce element matching)
+
+        #findmcs-function is called for mol-objects with removed hydrogens
         mcs = rdFMCS.FindMCS(
-            changed_mols,
+            #changed_mols,
+            remmols,
             bondCompare=self.bondCompare,
             timeout=120,
             atomCompare=self.atomCompare,
@@ -1014,25 +1027,63 @@ class ProposeMutationRoute(object):
             completeRingsOnly=self.completeRingsOnly,
             ringMatchesRingOnly=self.ringMatchesRingOnly,
         )
+
+        '''
+        compare find_mcs-function from tf_routes:
+        res = rdFMCS.FindMCS(
+                remmols,
+                ringMatchesRingOnly=True,
+                completeRingsOnly=True,
+                ringCompare=rdkit.Chem.rdFMCS.RingCompare.StrictRingFusion,
+            )
+
+        '''
+
+
         logger.debug("Substructure match: {}".format(mcs.smartsString))
         # convert from SMARTS
         mcsp = Chem.MolFromSmarts(mcs.smartsString, False)
 
         s1 = m1.GetSubstructMatch(mcsp)
         logger.debug("Substructere match idx: {}".format(s1))
-
-        self._show_common_core(
-            m1, self.get_common_core_idx_mol1(), show_atom_type=False, internal=True
-        )
-
+        self._display_mol(m1)
         s2 = m2.GetSubstructMatch(mcsp)
         logger.debug("Substructere match idx: {}".format(s2))
+        self._display_mol(m2)
 
-        self._show_common_core(
-            m2, self.get_common_core_idx_mol2(), show_atom_type=False, internal=True
-        )
-        self._substructure_match[mol1_name] = list(s1)
-        self._substructure_match[mol2_name] = list(s2)
+
+        #new code: add hydrogens to both common-core-on-molecule-projections
+        #set with all common core atom indices for both molecules
+        hit_ats1_compl = set(s1)
+        hit_ats2_compl = set(s2)
+
+        #check for each common core atom whether hydrogen atoms are in its neighbourhood (molecule 1)
+        for indexnr in s1:
+                atom = m1.GetAtomWithIdx(indexnr)
+                for x in atom.GetNeighbors():
+                    if x.GetSymbol() == "H":
+                        hit_ats1_compl.add(x.GetIdx())
+
+        #create new tuple of common core atom indices with additional hydrogens
+        hit_ats1 = tuple(hit_ats1_compl)
+
+        #check for each common core atom whether hydrogen atoms are in its neighbourhood (molecule 2)
+        for indexnr in s2:
+            atom = m2.GetAtomWithIdx(indexnr)
+            for x in atom.GetNeighbors():
+                if x.GetSymbol() == "H":
+                    hit_ats2_compl.add(x.GetIdx())
+        
+        #create new tuple of common core atom indices with additional hydrogens
+        hit_ats2 = tuple(hit_ats2_compl)
+
+
+
+        self._substructure_match[mol1_name] = list(hit_ats1)
+        self._substructure_match[mol2_name] = list(hit_ats2)
+
+        #self._substructure_match[mol1_name] = list(s1)
+        #self._substructure_match[mol2_name] = list(s2)
 
         return mcs
 
@@ -1071,15 +1122,33 @@ class ProposeMutationRoute(object):
 
         return unique_subgraphs
 
+    def _display_mol(self, mol: Chem.Mol):
+        """
+        Gets mol as input and displays its 2D Structure using IPythonConsole.
+        Parameters
+        ----------
+        mol: Chem.Mol
+            a rdkit mol object
+        """
+
+        def mol_with_atom_index(mol):
+            atoms = mol.GetNumAtoms()
+            for idx in range(atoms):
+                mol.GetAtomWithIdx(idx).SetProp(
+                    "molAtomMapNumber", str(mol.GetAtomWithIdx(idx).GetIdx())
+                )
+            return mol
+
+        mol = mol_with_atom_index(mol)
+        AllChem.Compute2DCoords(mol)
+        display(mol)
+
     def show_common_core_on_mol1(self, show_atom_types: bool = False):
         """
         Shows common core on mol1
         """
         return self._show_common_core(
-            self.mols["m1"],
-            self.get_common_core_idx_mol1(),
-            show_atom_types,
-            internal=False,
+            self.mols["m1"], self.get_common_core_idx_mol1(), show_atom_types
         )
 
     def show_common_core_on_mol2(self, show_atom_types: bool = False):
@@ -1087,15 +1156,10 @@ class ProposeMutationRoute(object):
         Shows common core on mol2
         """
         return self._show_common_core(
-            self.mols["m2"],
-            self.get_common_core_idx_mol2(),
-            show_atom_types,
-            internal=False,
+            self.mols["m2"], self.get_common_core_idx_mol2(), show_atom_types
         )
 
-    def _show_common_core(
-        self, mol, highlight: list, show_atom_type: bool, internal: bool
-    ):
+    def _show_common_core(self, mol, highlight: list, show_atom_type: bool):
         """
         Helper function - do not call directly.
         Show common core.
@@ -1103,8 +1167,9 @@ class ProposeMutationRoute(object):
         # https://rdkit.blogspot.com/2015/02/new-drawing-code.html
 
         mol = deepcopy(mol)
+        AllChem.Compute2DCoords(mol)
 
-        drawer = rdMolDraw2D.MolDraw2DSVG(500, 500)
+        drawer = rdMolDraw2D.MolDraw2DSVG(800, 800)
         drawer.SetFontSize(6)
 
         opts = drawer.drawOptions()
@@ -1114,21 +1179,16 @@ class ProposeMutationRoute(object):
                 opts.atomLabels[i.GetIdx()] = (
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
                 )
-        elif mol.GetNumAtoms() < 30:
+        else:
             for i in mol.GetAtoms():
                 opts.atomLabels[i.GetIdx()] = (
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_name")
                 )
 
-        rdCoordGen.AddCoords(mol)  # Create Cordinates
-
         drawer.DrawMolecule(mol, highlightAtoms=highlight)
+        Draw.DrawingOptions.includeAtomNumbers = False
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace("svg:", "")
-
-        if internal:
-            display(SVG(svg))
-
         return svg
 
     def generate_mutations_to_common_core_for_mol1(self) -> dict:
