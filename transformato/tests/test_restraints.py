@@ -23,6 +23,7 @@ import transformato.restraints as tfrs
 import transformato.utils as tfut
 import yaml
 from transformato_testsystems.testsystems import get_testsystems_dir
+import MDAnalysis
 
 PATH_2OJ9 = f"{get_testsystems_dir()}/2OJ9-original/complex/openmm/step3_input.pdb"
 PATH_2OJ9_DIR = f"{get_testsystems_dir()}/2OJ9-original/complex/openmm/"
@@ -54,13 +55,13 @@ def test_create_restraints_from_config():
 def test_restraints():
 
     testrestraint = tfrs.Restraint(
-        "resname BMI and type C", "protein and name CA", PATH_2OJ9, 14
+        "resname BMI and type C", "protein and name CA", MDAnalysis.Universe(PATH_2OJ9), 14
     )
 
     testrestraint_fb = tfrs.Restraint(
         "resname BMI and type C",
         "protein and name CA",
-        PATH_2OJ9,
+        MDAnalysis.Universe(PATH_2OJ9),
         14,
         shape="flatbottom",
         wellsize=0.12,
