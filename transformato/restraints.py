@@ -40,7 +40,7 @@ class Restraint:
         self,
         selligand: str,
         selprotein: str,
-        pdbpath: str,
+        topology: MDAnalysis.Universe,
         k: float = 3,
         shape: str = "harmonic",
         wellsize: float = 0.05,
@@ -56,7 +56,7 @@ class Restraint:
         Args:
             selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings
             k: the force (=spring) constant applied to the potential energy formula. See the 'System Setup' section for details.
-            pdbpath: the path to the pdbfile underlying the topology analysis
+            topology: the MDAnalysis universe used to generate restraint geometries
             shape: one of 'harmonic', 'flatbottom', 'flatbottom-oneside-sharp' or 'flatbottom-twoside'. Defines the shape of the harmonic energy potential.
             wellsize: Defines the well-size in a two-sided flat-bottom potential. Defaults to 0.05 nanometers.
             kwargs: Catcher for additional restraint_args
@@ -76,7 +76,7 @@ class Restraint:
                 f"Invalid potential shape specified for restraint: {self.shape}"
             )
 
-        self.topology = MDAnalysis.Universe(pdbpath)
+        self.topology = topology
         self.g1 = self.topology.select_atoms(selligand)
         self.g2 = self.topology.select_atoms(selprotein)
 
@@ -226,14 +226,14 @@ def get3DDistance(pos1, pos2):
     return distance
 
 
-def generate_simple_selection(configuration, pdbpath):
+def generate_simple_selection(configuration):
     """Takes the common core and selects surrounding carbon-alphas
 
     This ensures that the initial simple restraints on both sides is identical
 
     Args:
         configuration (dict): the read-in restraints.yaml
-        pdbpath (str): path to local pdb used as base for the restraints
+        
 
     Returns:
         str: An MDAnalysis selection string, representing the carbon-alphas surrounding the cores.
@@ -254,7 +254,7 @@ def generate_simple_selection(configuration, pdbpath):
     return selstr
 
 
-def generate_extremities(configuration, pdbpath, n_extremities, sphinner=0, sphouter=5):
+def generate_extremities(configuration, topology, n_extremities, sphinner=0, sphouter=5):
     """Takes the common core and generates n extremities at the furthest point
 
         Returns a selection string of the extremities with a sphlayer (see MDAnalysis docs) selecting type C from sphinner to sphouter.
@@ -277,7 +277,7 @@ def generate_extremities(configuration, pdbpath, n_extremities, sphinner=0, spho
 
     Args:
         configuration (dict): the read-in restraints.yaml
-        pdbpath (str): path to local pdb used as base for the restraints
+        topology (MDAnalysis.Universe): MDAnalysis.Universe object used to generate ligand geometries
         n_extremities (int): how many extremities to generate. Cannot exceed number of carbons in the ligand
         sphinner (float): Distance to start of the sphlayer, default 0
         sphouter (float): Distance to end of the sphlayer, default 5
@@ -289,7 +289,7 @@ def generate_extremities(configuration, pdbpath, n_extremities, sphinner=0, spho
         array: An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer
     """
 
-    ligand_topology = MDAnalysis.Universe(pdbpath)
+    ligand_topology = topology
     tlc = configuration["system"]["structure"]["tlc"]
     ccs = configuration["system"]["structure"]["ccs"]
     cc_names_selection = ""
@@ -384,6 +384,7 @@ def create_restraints_from_config(configuration, pdbpath):
     Returns:
         array: An array of Restraint instances
     """
+    universe=MDAnalysis.Universe(pdbpath)
 
     tlc = configuration["system"]["structure"]["tlc"]
 
@@ -409,22 +410,22 @@ def create_restraints_from_config(configuration, pdbpath):
 
     if "auto" in restraint_command_string and restraint_args["mode"] == "simple":
         logger.debug("generating simple selection")
-        selstr = generate_simple_selection(configuration, pdbpath)
+        selstr = generate_simple_selection(configuration)
         restraints.append(
-            Restraint(f"resname {tlc} and type C", selstr, pdbpath, **restraint_args)
+            Restraint(f"resname {tlc} and type C", selstr, universe, **restraint_args)
         )
 
     elif "auto" in restraint_command_string and restraint_args["mode"] == "extremities":
         logger.debug("generating extremity selections")
         selection_strings = generate_extremities(
-            configuration, pdbpath, restraint_args["n_extremities"]
+            configuration, universe, restraint_args["n_extremities"]
         )
         for selection in selection_strings:
             restraints.append(
                 Restraint(
                     selection,
                     f"(sphlayer 3 10 ({selection})) and name CA",
-                    pdbpath,
+                    universe,
                     **restraint_args,
                 )
             )
@@ -442,7 +443,7 @@ def create_restraints_from_config(configuration, pdbpath):
             logger.debug(f"Keywords for {restraint}: {restraint_kw}")
             restraints.append(
                 Restraint(
-                    restraint["group1"], restraint["group2"], pdbpath, **restraint_kw
+                    restraint["group1"], restraint["group2"], universe, **restraint_kw
                 )
             )
 
