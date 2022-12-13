@@ -429,6 +429,19 @@ def create_restraints_from_config(configuration, pdbpath):
                     **restraint_args,
                 )
             )
+        
+        # At this point only automatic ex-restraints exist
+        # check for duplicates in the ligand group g1
+
+        all_restraint_atoms=restraints[0].g1
+        for restraint in restraints[1:-1]:
+            all_restraint_atoms+=restraint.g1
+        logger.info(f"All restraint atoms: {[atom.name for atom in all_restraint_atoms]}")
+        duplicate_restraint_atoms=set([atom for atom in all_restraint_atoms if all_restraint_atoms.ix.tolist().count(atom.ix)>1])
+        logger.info(f"list: {all_restraint_atoms.ix.tolist()}")
+        logger.info(f"Duplicate restraint atoms: {duplicate_restraint_atoms}")
+
+
 
     if "manual" in restraint_command_string:
         logger.debug("generating manual selections")
