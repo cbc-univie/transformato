@@ -44,6 +44,10 @@ def test_create_restraints_from_config():
         config = yaml.safe_load(stream)
 
     assert type(config) == dict  # checks if config yaml is properly loaded
+
+    # Modify the imported config to check duplicate restraint atom handling
+    config["simulation"]["restraints"]="auto k=100 scaling extremities=5 manual"
+    
     restraints = tfrs.create_restraints_from_config(config, PATH_2OJ9)
     assert type(restraints) == list
     for restraint in restraints:
