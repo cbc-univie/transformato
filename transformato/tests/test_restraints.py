@@ -172,6 +172,7 @@ def test_integration():
 
     prop = dict()
     pdbpath = PATH_2OJ9
+    universe = MDAnalysis.Universe(PATH_2OJ9)
     with open(
         f"{get_testsystems_dir()}/config/test-2oj9-restraints.yaml", "r"
     ) as stream:
@@ -194,9 +195,9 @@ def test_integration():
 
     # Test an additional, simple restraint
     logger.debug("generating simple selection")
-    selstr = tfrs.generate_simple_selection(configuration, pdbpath)
+    selstr = tfrs.generate_simple_selection(configuration)
     tlc = configuration["system"]["structure"]["tlc"]
-    restraintList.append(tfrs.Restraint(f"resname {tlc} and type C", selstr, pdbpath))
+    restraintList.append(tfrs.Restraint(f"resname {tlc} and type C", selstr, universe))
 
     logger.debug(
         "****************** ALL RESTRAINTS CREATED SUCCESSFULLY ***************************"
