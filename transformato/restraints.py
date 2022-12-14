@@ -431,13 +431,10 @@ def create_restraints_from_config(configuration, pdbpath):
                 )
             )
         
-        # At this point only automatic ex-restraints exist
-
+        # At this point only automatic ex-restraints exist, so no need to filter restraints
         ex_cores=[restraint.kwargs["ex_core"] for restraint in restraints]
-
-        logger.info(15*"-"+f"Available cores for assignment: {len(ex_cores)}")
+        logger.debug(15*"-"+f"Available cores for assignment: {len(ex_cores)}")
         
-
         def assign_atom(atom:MDAnalysis.core.groups.Atom):
             """
             Inner function to assign an atom involved in multiple restraint ligand groups to a single one.
@@ -448,40 +445,36 @@ def create_restraints_from_config(configuration, pdbpath):
             Args:
             atom: The duplicate atom to reassign.
             """
-
             distances=dict()
             
-
+            # Sort cores by distance to duplicate atom
             for core in ex_cores:
                 distances[core]=get3DDistance(atom.position,core.position)
                 
                 sorted_distances=dict(sorted(distances.items(),key=lambda x:x[1]))
 
-            logger.info(f"Sorted Distances: {sorted_distances}")
+            logger.debug(f"Sorted Distances: {sorted_distances}")
+
+            # get closest core. Remove duplicate atom from g1 in all restraints that do not have the closest core as core
             closest=list(sorted_distances.keys())[0]
             for restraint in restraints:
                 if restraint.kwargs["ex_core"].ix!=closest.ix:
-                    logger.info(f"Removing {atom}")
-                    logger.info(f"Old: {restraint.g1.names}")
+                    logger.debug(f"Removing {atom}")
                     restraint.g1=restraint.g1.difference(atom)
-                    logger.info(f"New: {restraint.g1.names}")
-                
-
-            
-        # check for duplicates in the ligand group g1
-
+                          
+        # Check for duplicates in the ligand group g1
         all_restraint_atoms=restraints[0].g1
         for restraint in restraints[1:-1]:
             all_restraint_atoms+=restraint.g1
-        logger.info(f"All restraint atoms: {[atom.name for atom in all_restraint_atoms]}")
+        logger.debug(f"All restraint atoms: {[atom.name for atom in all_restraint_atoms]}")
         duplicate_restraint_atoms=set([atom for atom in all_restraint_atoms if all_restraint_atoms.ix.tolist().count(atom.ix)>1]) # uniquify via set
         
         logger.info(f"Duplicate restraint atoms: {duplicate_restraint_atoms}")
 
+        # Remove duplicate atoms
         for atom in duplicate_restraint_atoms:
             assign_atom(atom)
         
-
     if "manual" in restraint_command_string:
         logger.debug("generating manual selections")
         manual_restraint_list = configuration["simulation"]["manualrestraints"].keys()
