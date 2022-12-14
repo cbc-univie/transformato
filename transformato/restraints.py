@@ -286,7 +286,7 @@ def generate_extremities(configuration, topology, n_extremities, sphinner=0, sph
         ValueError: If an invalid amount of extremities is specified.
 
     Returns:
-        array: An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer
+        [selection_strings,extremity_cores]: A nested array of MDAnalysis selection strings representing the selected extremities and its vicinity as defined by sphlayer and an array of the found extremity cores
     """
 
     ligand_topology = topology
@@ -369,8 +369,8 @@ def generate_extremities(configuration, topology, n_extremities, sphinner=0, sph
             f"name {core.name} or ((sphlayer {sphinner} {sphouter} name {core.name} and resname {tlc}) and type C)"
         )
 
-    logger.debug(f"Created extremities with selectiobns: {selection_strings}")
-    return selection_strings
+    logger.debug(f"Created extremities with selections: {selection_strings}")
+    return selection_strings,extremity_cores
 
 
 def create_restraints_from_config(configuration, pdbpath):
@@ -417,31 +417,70 @@ def create_restraints_from_config(configuration, pdbpath):
 
     elif "auto" in restraint_command_string and restraint_args["mode"] == "extremities":
         logger.debug("generating extremity selections")
-        selection_strings = generate_extremities(
+        selection_strings, extremity_cores = generate_extremities(
             configuration, universe, restraint_args["n_extremities"]
         )
-        for selection in selection_strings:
+        for i,selection in enumerate(selection_strings):
             restraints.append(
                 Restraint(
                     selection,
                     f"(sphlayer 3 10 ({selection})) and name CA",
                     universe,
-                    **restraint_args,
+                    ex_core=extremity_cores[i],
+                    **restraint_args
                 )
             )
         
         # At this point only automatic ex-restraints exist
+
+        ex_cores=[restraint.kwargs["ex_core"] for restraint in restraints]
+
+        logger.info(15*"-"+f"Available cores for assignment: {len(ex_cores)}")
+        
+
+        def assign_atom(atom:MDAnalysis.core.groups.Atom):
+            """
+            Inner function to assign an atom involved in multiple restraint ligand groups to a single one.
+            
+            The restraint with the geometrically closest core will be chosen and the atom deleted from all others.
+
+            
+            Args:
+            atom: The duplicate atom to reassign.
+            """
+
+            distances=dict()
+            
+
+            for core in ex_cores:
+                distances[core]=get3DDistance(atom.position,core.position)
+                
+                sorted_distances=dict(sorted(distances.items(),key=lambda x:x[1]))
+
+            logger.info(f"Sorted Distances: {sorted_distances}")
+            closest=list(sorted_distances.keys())[0]
+            for restraint in restraints:
+                if restraint.kwargs["ex_core"].ix!=closest.ix:
+                    logger.info(f"Removing {atom}")
+                    logger.info(f"Old: {restraint.g1.names}")
+                    restraint.g1=restraint.g1.difference(atom)
+                    logger.info(f"New: {restraint.g1.names}")
+                
+
+            
         # check for duplicates in the ligand group g1
 
         all_restraint_atoms=restraints[0].g1
         for restraint in restraints[1:-1]:
             all_restraint_atoms+=restraint.g1
         logger.info(f"All restraint atoms: {[atom.name for atom in all_restraint_atoms]}")
-        duplicate_restraint_atoms=set([atom for atom in all_restraint_atoms if all_restraint_atoms.ix.tolist().count(atom.ix)>1])
-        logger.info(f"list: {all_restraint_atoms.ix.tolist()}")
+        duplicate_restraint_atoms=set([atom for atom in all_restraint_atoms if all_restraint_atoms.ix.tolist().count(atom.ix)>1]) # uniquify via set
+        
         logger.info(f"Duplicate restraint atoms: {duplicate_restraint_atoms}")
 
-
+        for atom in duplicate_restraint_atoms:
+            assign_atom(atom)
+        
 
     if "manual" in restraint_command_string:
         logger.debug("generating manual selections")
