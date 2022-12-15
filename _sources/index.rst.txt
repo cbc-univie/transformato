@@ -3,10 +3,10 @@
   You can adapt this file completely to your liking, but it should at least
   contain the root `toctree` directive.
  
-Welcome to the documentation for |trafo|!
+Welcome to the documentation for transformato!
 =========================================================
  
-The python package |trafo| (Tool Running MD AgNoStic Calculations FOR Multistate Serial ATOm Insertion) is an implementation of the Common Core / Serial-Atom-Insertion
+The python package transformato (Tool Running MD AgNoStic Calculations FOR Multistate Serial ATOm Insertion) is an implementation of the Common Core / Serial-Atom-Insertion
 (CC-SAI) approach\ [1]_ for calculating free energy differences\.
 It does so by connecting the physical endstates of two molecules via alchemical pathways.
  
@@ -17,8 +17,6 @@ or **relative binding free energies** (RBFE) [3]_ can be calculated. For the pro
  
 If you'd like to take a look at the code,
 head over to our `github repository <https://github.com/wiederm/transformato>`_\ .
-
-Das ist jetzt aber der letzte test
 
  
 .. toctree::
@@ -41,7 +39,7 @@ Das ist jetzt aber der letzte test
  
 .. [2] Wieder, M., Fleck, M., Braunsfeld, B., and Boresch, S. (2022). *Alchemical free energy simulations without speed limits. A generic framework to calculate free energy differences independent of the underlying molecular dynamics program.* J. Comput. Chem. 43, 1151–1160, `DOI ⤶ <https://doi.org/10.1002/jcc.26877>`_
  
-.. [3] Karwounopoulos, J., Wieder, M., and Boresch, S. (2022). *Relative binding free energy calculations with Transformato: a molecular dynamics engine-independent tool.* Front. Mol. Biosic., *submitted*.
+.. [3] Karwounopoulos, J., Wieder, M., and Boresch, S. (2022). *Relative binding free energy calculations with Transformato: a molecular dynamics engine-independent tool.* Front. Mol. Biosic. 9:954638, `DOI ⤶ <https://doi.org/10.3389/fmolb.2022.954638>`_
  
 .. rubric:: Maintainers
  
