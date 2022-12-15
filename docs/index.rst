@@ -13,7 +13,7 @@ It does so by connecting the physical endstates of two molecules via alchemical 
 It requires very little set-up time and is designed to work directly with output from
 `CHARMM - GUI <http://www.charmm-gui.org>`_\. Currently either **relative solvation free energies** (RSFE) [2]_
 or **relative binding free energies** (RBFE) [3]_ can be calculated. For the production runs either
-`CHARMM <https://academiccharmm.org/>`_\ or `openMM <https://openmm.org/>`_\ are required.
+`CHARMM <https://academiccharmm.org/>`_\  or `openMM <https://openmm.org/>`_\  are required.
  
 If you'd like to take a look at the code,
 head over to our `github repository <https://github.com/wiederm/transformato>`_\ .
