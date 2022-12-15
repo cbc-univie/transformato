@@ -131,13 +131,13 @@ Define your restraints in the config.yaml.</p>
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="transformato.restraints.Restraint">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">Restraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selligand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selprotein</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'harmonic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformato.restraints.</span></span><span class="sig-name descname"><span class="pre">Restraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selligand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selprotein</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'harmonic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>selligand</strong> (<em>str</em>) – </p></li>
 <li><p><strong>selprotein</strong> (<em>str</em>) – </p></li>
-<li><p><strong>pdbpath</strong> (<em>str</em>) – </p></li>
+<li><p><strong>topology</strong> (<em>Universe</em>) – </p></li>
 <li><p><strong>k</strong> (<em>float</em>) – </p></li>
 <li><p><strong>shape</strong> (<em>str</em>) – </p></li>
 <li><p><strong>wellsize</strong> (<em>float</em>) – </p></li>
@@ -146,7 +146,7 @@ Define your restraints in the config.yaml.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.restraints.Restraint.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selligand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selprotein</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'harmonic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selligand</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selprotein</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'harmonic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wellsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/restraints.html#Restraint.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.restraints.Restraint.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Class representing a restraint to apply to the system.</p>
 <p>Intermediary step - openMM force objects are generated directly from this class and applied to the system.</p>
 <dl class="field-list simple">
@@ -158,7 +158,7 @@ Define your restraints in the config.yaml.</p>
 <li><p><strong>selligand</strong> (<em>MDAnalysis selection string</em>) – MDAnalysis selection strings</p></li>
 <li><p><strong>selprotein</strong> (<em>MDAnalysis selection string</em>) – MDAnalysis selection strings</p></li>
 <li><p><strong>k</strong> (<em>float</em>) – the force (=spring) constant applied to the potential energy formula. See the ‘System Setup’ section for details.</p></li>
-<li><p><strong>pdbpath</strong> (<em>str</em>) – the path to the pdbfile underlying the topology analysis</p></li>
+<li><p><strong>topology</strong> (<em>Universe</em>) – the MDAnalysis universe used to generate restraint geometries</p></li>
 <li><p><strong>shape</strong> (<em>str</em>) – one of ‘harmonic’, ‘flatbottom’, ‘flatbottom-oneside-sharp’ or ‘flatbottom-twoside’. Defines the shape of the harmonic energy potential.</p></li>
 <li><p><strong>wellsize</strong> (<em>float</em>) – Defines the well-size in a two-sided flat-bottom potential. Defaults to 0.05 nanometers.</p></li>
 <li><p><strong>kwargs</strong> – Catcher for additional restraint_args</p></li>
@@ -240,7 +240,7 @@ Define your restraints in the config.yaml.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.restraints.generate_extremities">
-<span class="sig-prename descclassname"><span class="pre">restraints.</span></span><span class="sig-name descname"><span class="pre">generate_extremities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_extremities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphinner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphouter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.restraints.generate_extremities" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">restraints.</span></span><span class="sig-name descname"><span class="pre">generate_extremities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_extremities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphinner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sphouter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.restraints.generate_extremities" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the common core and generates n extremities at the furthest point</p>
 <blockquote>
 <div><p>Returns a selection string of the extremities with a sphlayer (see MDAnalysis docs) selecting type C from sphinner to sphouter.
@@ -262,7 +262,7 @@ The algorithm works as follows:</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>configuration</strong> (<em>dict</em>) – the read-in restraints.yaml</p></li>
-<li><p><strong>pdbpath</strong> (<em>str</em>) – path to local pdb used as base for the restraints</p></li>
+<li><p><strong>topology</strong> (<em>MDAnalysis.Universe</em>) – MDAnalysis.Universe object used to generate ligand geometries</p></li>
 <li><p><strong>n_extremities</strong> (<em>int</em>) – how many extremities to generate. Cannot exceed number of carbons in the ligand</p></li>
 <li><p><strong>sphinner</strong> (<em>float</em>) – Distance to start of the sphlayer, default 0</p></li>
 <li><p><strong>sphouter</strong> (<em>float</em>) – Distance to end of the sphlayer, default 5</p></li>
@@ -272,25 +272,22 @@ The algorithm works as follows:</p>
 <dd class="field-even"><p><strong>ValueError</strong> – If an invalid amount of extremities is specified.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</p>
+<dd class="field-odd"><p>A nested array of MDAnalysis selection strings representing the selected extremities and its vicinity as defined by sphlayer and an array of the found extremity cores</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>array</p>
+<dd class="field-even"><p>[selection_strings,extremity_cores]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.restraints.generate_simple_selection">
-<span class="sig-prename descclassname"><span class="pre">restraints.</span></span><span class="sig-name descname"><span class="pre">generate_simple_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformato.restraints.generate_simple_selection" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">restraints.</span></span><span class="sig-name descname"><span class="pre">generate_simple_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#transformato.restraints.generate_simple_selection" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the common core and selects surrounding carbon-alphas</p>
 <p>This ensures that the initial simple restraints on both sides is identical</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>configuration</strong> (<em>dict</em>) – the read-in restraints.yaml</p></li>
-<li><p><strong>pdbpath</strong> (<em>str</em>) – path to local pdb used as base for the restraints</p></li>
-</ul>
+<dd class="field-odd"><p><strong>configuration</strong> (<em>dict</em>) – the read-in restraints.yaml</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>An MDAnalysis selection string, representing the carbon-alphas surrounding the cores.</p>

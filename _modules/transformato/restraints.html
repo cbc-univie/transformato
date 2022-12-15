@@ -116,7 +116,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">selligand</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">selprotein</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">pdbpath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">topology</span><span class="p">:</span> <span class="n">MDAnalysis</span><span class="o">.</span><span class="n">Universe</span><span class="p">,</span>
         <span class="n">k</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">shape</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;harmonic&quot;</span><span class="p">,</span>
         <span class="n">wellsize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
@@ -132,7 +132,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            selligand,selprotein (MDAnalysis selection string): MDAnalysis selection strings</span>
 <span class="sd">            k: the force (=spring) constant applied to the potential energy formula. See the &#39;System Setup&#39; section for details.</span>
-<span class="sd">            pdbpath: the path to the pdbfile underlying the topology analysis</span>
+<span class="sd">            topology: the MDAnalysis universe used to generate restraint geometries</span>
 <span class="sd">            shape: one of &#39;harmonic&#39;, &#39;flatbottom&#39;, &#39;flatbottom-oneside-sharp&#39; or &#39;flatbottom-twoside&#39;. Defines the shape of the harmonic energy potential.</span>
 <span class="sd">            wellsize: Defines the well-size in a two-sided flat-bottom potential. Defaults to 0.05 nanometers.</span>
 <span class="sd">            kwargs: Catcher for additional restraint_args</span>
@@ -152,7 +152,7 @@
                 <span class="sa">f</span><span class="s2">&quot;Invalid potential shape specified for restraint: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">MDAnalysis</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">pdbpath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">topology</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">g1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">selligand</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">g2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">selprotein</span><span class="p">)</span>
 
@@ -302,14 +302,14 @@
     <span class="k">return</span> <span class="n">distance</span>
 
 
-<span class="k">def</span> <span class="nf">generate_simple_selection</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">pdbpath</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">generate_simple_selection</span><span class="p">(</span><span class="n">configuration</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Takes the common core and selects surrounding carbon-alphas</span>
 
 <span class="sd">    This ensures that the initial simple restraints on both sides is identical</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        configuration (dict): the read-in restraints.yaml</span>
-<span class="sd">        pdbpath (str): path to local pdb used as base for the restraints</span>
+<span class="sd">        </span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        str: An MDAnalysis selection string, representing the carbon-alphas surrounding the cores.</span>
@@ -330,7 +330,7 @@
     <span class="k">return</span> <span class="n">selstr</span>
 
 
-<span class="k">def</span> <span class="nf">generate_extremities</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">pdbpath</span><span class="p">,</span> <span class="n">n_extremities</span><span class="p">,</span> <span class="n">sphinner</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sphouter</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">generate_extremities</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">topology</span><span class="p">,</span> <span class="n">n_extremities</span><span class="p">,</span> <span class="n">sphinner</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sphouter</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Takes the common core and generates n extremities at the furthest point</span>
 
 <span class="sd">        Returns a selection string of the extremities with a sphlayer (see MDAnalysis docs) selecting type C from sphinner to sphouter.</span>
@@ -353,7 +353,7 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        configuration (dict): the read-in restraints.yaml</span>
-<span class="sd">        pdbpath (str): path to local pdb used as base for the restraints</span>
+<span class="sd">        topology (MDAnalysis.Universe): MDAnalysis.Universe object used to generate ligand geometries</span>
 <span class="sd">        n_extremities (int): how many extremities to generate. Cannot exceed number of carbons in the ligand</span>
 <span class="sd">        sphinner (float): Distance to start of the sphlayer, default 0</span>
 <span class="sd">        sphouter (float): Distance to end of the sphlayer, default 5</span>
@@ -362,10 +362,10 @@
 <span class="sd">        ValueError: If an invalid amount of extremities is specified.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        array: An array of MDAnalysis selection strings, representing the selected extremities and its vicinity as defined by sphlayer</span>
+<span class="sd">        [selection_strings,extremity_cores]: A nested array of MDAnalysis selection strings representing the selected extremities and its vicinity as defined by sphlayer and an array of the found extremity cores</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">ligand_topology</span> <span class="o">=</span> <span class="n">MDAnalysis</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">pdbpath</span><span class="p">)</span>
+    <span class="n">ligand_topology</span> <span class="o">=</span> <span class="n">topology</span>
     <span class="n">tlc</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span>
     <span class="n">ccs</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure&quot;</span><span class="p">][</span><span class="s2">&quot;ccs&quot;</span><span class="p">]</span>
     <span class="n">cc_names_selection</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -445,8 +445,8 @@
             <span class="sa">f</span><span class="s2">&quot;name </span><span class="si">{</span><span class="n">core</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> or ((sphlayer </span><span class="si">{</span><span class="n">sphinner</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">sphouter</span><span class="si">}</span><span class="s2"> name </span><span class="si">{</span><span class="n">core</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> and resname </span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">) and type C)&quot;</span>
         <span class="p">)</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created extremities with selectiobns: </span><span class="si">{</span><span class="n">selection_strings</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">selection_strings</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created extremities with selections: </span><span class="si">{</span><span class="n">selection_strings</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">selection_strings</span><span class="p">,</span><span class="n">extremity_cores</span>
 
 
 <span class="k">def</span> <span class="nf">create_restraints_from_config</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">pdbpath</span><span class="p">):</span>
@@ -460,6 +460,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        array: An array of Restraint instances</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">universe</span><span class="o">=</span><span class="n">MDAnalysis</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="n">pdbpath</span><span class="p">)</span>
 
     <span class="n">tlc</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="s2">&quot;structure&quot;</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span>
 
@@ -485,26 +486,71 @@
 
     <span class="k">if</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">in</span> <span class="n">restraint_command_string</span> <span class="ow">and</span> <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;simple&quot;</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;generating simple selection&quot;</span><span class="p">)</span>
-        <span class="n">selstr</span> <span class="o">=</span> <span class="n">generate_simple_selection</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">pdbpath</span><span class="p">)</span>
+        <span class="n">selstr</span> <span class="o">=</span> <span class="n">generate_simple_selection</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
         <span class="n">restraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Restraint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;resname </span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2"> and type C&quot;</span><span class="p">,</span> <span class="n">selstr</span><span class="p">,</span> <span class="n">pdbpath</span><span class="p">,</span> <span class="o">**</span><span class="n">restraint_args</span><span class="p">)</span>
+            <span class="n">Restraint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;resname </span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2"> and type C&quot;</span><span class="p">,</span> <span class="n">selstr</span><span class="p">,</span> <span class="n">universe</span><span class="p">,</span> <span class="o">**</span><span class="n">restraint_args</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">elif</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">in</span> <span class="n">restraint_command_string</span> <span class="ow">and</span> <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;extremities&quot;</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;generating extremity selections&quot;</span><span class="p">)</span>
-        <span class="n">selection_strings</span> <span class="o">=</span> <span class="n">generate_extremities</span><span class="p">(</span>
-            <span class="n">configuration</span><span class="p">,</span> <span class="n">pdbpath</span><span class="p">,</span> <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;n_extremities&quot;</span><span class="p">]</span>
+        <span class="n">selection_strings</span><span class="p">,</span> <span class="n">extremity_cores</span> <span class="o">=</span> <span class="n">generate_extremities</span><span class="p">(</span>
+            <span class="n">configuration</span><span class="p">,</span> <span class="n">universe</span><span class="p">,</span> <span class="n">restraint_args</span><span class="p">[</span><span class="s2">&quot;n_extremities&quot;</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="k">for</span> <span class="n">selection</span> <span class="ow">in</span> <span class="n">selection_strings</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">selection</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">selection_strings</span><span class="p">):</span>
             <span class="n">restraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Restraint</span><span class="p">(</span>
                     <span class="n">selection</span><span class="p">,</span>
                     <span class="sa">f</span><span class="s2">&quot;(sphlayer 3 10 (</span><span class="si">{</span><span class="n">selection</span><span class="si">}</span><span class="s2">)) and name CA&quot;</span><span class="p">,</span>
-                    <span class="n">pdbpath</span><span class="p">,</span>
-                    <span class="o">**</span><span class="n">restraint_args</span><span class="p">,</span>
+                    <span class="n">universe</span><span class="p">,</span>
+                    <span class="n">ex_core</span><span class="o">=</span><span class="n">extremity_cores</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="o">**</span><span class="n">restraint_args</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+        
+        <span class="c1"># At this point only automatic ex-restraints exist, so no need to filter restraints</span>
+        <span class="n">ex_cores</span><span class="o">=</span><span class="p">[</span><span class="n">restraint</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ex_core&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">restraint</span> <span class="ow">in</span> <span class="n">restraints</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="mi">15</span><span class="o">*</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;Available cores for assignment: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ex_cores</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">def</span> <span class="nf">assign_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span><span class="n">MDAnalysis</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">Atom</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Inner function to assign an atom involved in multiple restraint ligand groups to a single one.</span>
+<span class="sd">            </span>
+<span class="sd">            The restraint with the geometrically closest core will be chosen and the atom deleted from all others.</span>
 
+<span class="sd">            </span>
+<span class="sd">            Args:</span>
+<span class="sd">            atom: The duplicate atom to reassign.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">distances</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
+            
+            <span class="c1"># Sort cores by distance to duplicate atom</span>
+            <span class="k">for</span> <span class="n">core</span> <span class="ow">in</span> <span class="n">ex_cores</span><span class="p">:</span>
+                <span class="n">distances</span><span class="p">[</span><span class="n">core</span><span class="p">]</span><span class="o">=</span><span class="n">get3DDistance</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">position</span><span class="p">,</span><span class="n">core</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+                
+                <span class="n">sorted_distances</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">distances</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sorted Distances: </span><span class="si">{</span><span class="n">sorted_distances</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># get closest core. Remove duplicate atom from g1 in all restraints that do not have the closest core as core</span>
+            <span class="n">closest</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">sorted_distances</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">restraint</span> <span class="ow">in</span> <span class="n">restraints</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">restraint</span><span class="o">.</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;ex_core&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">ix</span><span class="o">!=</span><span class="n">closest</span><span class="o">.</span><span class="n">ix</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removing </span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">restraint</span><span class="o">.</span><span class="n">g1</span><span class="o">=</span><span class="n">restraint</span><span class="o">.</span><span class="n">g1</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+                          
+        <span class="c1"># Check for duplicates in the ligand group g1</span>
+        <span class="n">all_restraint_atoms</span><span class="o">=</span><span class="n">restraints</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">g1</span>
+        <span class="k">for</span> <span class="n">restraint</span> <span class="ow">in</span> <span class="n">restraints</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">all_restraint_atoms</span><span class="o">+=</span><span class="n">restraint</span><span class="o">.</span><span class="n">g1</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All restraint atoms: </span><span class="si">{</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">all_restraint_atoms</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">duplicate_restraint_atoms</span><span class="o">=</span><span class="nb">set</span><span class="p">([</span><span class="n">atom</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">all_restraint_atoms</span> <span class="k">if</span> <span class="n">all_restraint_atoms</span><span class="o">.</span><span class="n">ix</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">ix</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">])</span> <span class="c1"># uniquify via set</span>
+        
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Duplicate restraint atoms: </span><span class="si">{</span><span class="n">duplicate_restraint_atoms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Remove duplicate atoms</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">duplicate_restraint_atoms</span><span class="p">:</span>
+            <span class="n">assign_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+        
     <span class="k">if</span> <span class="s2">&quot;manual&quot;</span> <span class="ow">in</span> <span class="n">restraint_command_string</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;generating manual selections&quot;</span><span class="p">)</span>
         <span class="n">manual_restraint_list</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;manualrestraints&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -518,7 +564,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Keywords for </span><span class="si">{</span><span class="n">restraint</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">restraint_kw</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">restraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Restraint</span><span class="p">(</span>
-                    <span class="n">restraint</span><span class="p">[</span><span class="s2">&quot;group1&quot;</span><span class="p">],</span> <span class="n">restraint</span><span class="p">[</span><span class="s2">&quot;group2&quot;</span><span class="p">],</span> <span class="n">pdbpath</span><span class="p">,</span> <span class="o">**</span><span class="n">restraint_kw</span>
+                    <span class="n">restraint</span><span class="p">[</span><span class="s2">&quot;group1&quot;</span><span class="p">],</span> <span class="n">restraint</span><span class="p">[</span><span class="s2">&quot;group2&quot;</span><span class="p">],</span> <span class="n">universe</span><span class="p">,</span> <span class="o">**</span><span class="n">restraint_kw</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
