@@ -6,8 +6,8 @@
 Welcome to the documentation for transformato!
 =========================================================
  
-The python package transformato (Tool Running MD AgNoStic Calculations FOR Multistate Serial ATOm Insertion) is an implementation of the Common Core / Serial-Atom-Insertion
-(CC-SAI) approach\ [1]_ for calculating free energy differences\.
+The python package transformato (**T**\ ool **R**\ unning MD **A**\ g\ **N**\ o\ **S**\ tic Calculations **FOR** **M**\ ultistate Serial **ATO**\ m Insertion) is an implementation of the Common Core / Serial-Atom-Insertion
+(CC-SAI) approach [1]_ for calculating free energy differences\.
 It does so by connecting the physical endstates of two molecules via alchemical pathways.
  
 It requires very little set-up time and is designed to work directly with output from
