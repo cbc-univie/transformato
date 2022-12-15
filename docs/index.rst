@@ -6,7 +6,7 @@
 Welcome to the documentation for |trafo|!
 =========================================================
  
-The python package |trafo| is an implementation of the Common Core / Serial-Atom-Insertion
+The python package |trafo| (Tool Running MD AgNoStic Calculations FOR Multistate Serial ATOm Insertion) is an implementation of the Common Core / Serial-Atom-Insertion
 (CC-SAI) approach\ [1]_ for calculating free energy differences\.
 It does so by connecting the physical endstates of two molecules via alchemical pathways.
  
