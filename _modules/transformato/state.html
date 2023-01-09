@@ -1,34 +1,70 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
   <title>transformato.state &mdash; transformato  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html">
-            <img src="../../_static/logo_transformato.png" class="logo" alt="Logo"/>
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> transformato
+          
+
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -36,7 +72,18 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../whatistransformato.html">Theoretical background</a></li>
@@ -49,30 +96,69 @@
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
 </ul>
 
+            
+          
         </div>
+        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">transformato</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">transformato.state</li>
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>transformato.state</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <h1>Source code for transformato.state</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -99,7 +185,7 @@
         <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">multiple_runs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate the intermediate directories with for the provided systems with the provided mutations.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -176,7 +262,7 @@
         <span class="n">lambda_value_vdw</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">common_core_transformation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        write_state Defines everything that is written to the intermediate state directories</span>
 
 <span class="sd">        Parameters</span>
@@ -259,7 +345,7 @@
         <span class="c1"># adding serializer functions</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd"># mw: adding xml serializer to the simulation script</span>
 <span class="sd">file_name = str(args.psffile).replace(&#39;.psf&#39;, &#39;&#39;)</span>
 <span class="sd">print(file_name)</span>
@@ -277,7 +363,7 @@
         <span class="k">return</span> <span class="n">prms</span>
 
 <div class="viewcode-block" id="IntermediateStateFactory._write_workload_preamble"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_workload_preamble">[docs]</a>    <span class="k">def</span> <span class="nf">_write_workload_preamble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepends the preamble of the selected workload manager in the file specified by filepath</span>
 
 <span class="sd">        The preamble is the *-preamble.sh file found in transformato/bin</span>
@@ -299,7 +385,7 @@
             <span class="n">script_to_prepend_to</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">preamble</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntermediateStateFactory._copy_charmm_files"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_charmm_files">[docs]</a>    <span class="k">def</span> <span class="nf">_copy_charmm_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _copy_charmm_files Copy CHARMM specific files in running directories</span>
 
 <span class="sd">        Parameters</span>
@@ -472,7 +558,7 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">fout</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">shFile</span><span class="p">)</span>
 
 <div class="viewcode-block" id="IntermediateStateFactory._copy_omm_files"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_omm_files">[docs]</a>    <span class="k">def</span> <span class="nf">_copy_omm_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _copy_omm_files Copyies the files needed for the production runs with openMM in the intst* directories</span>
 
 <span class="sd">        Parameters</span>
@@ -698,7 +784,7 @@
                 <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmCrdFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">crd_file_target</span><span class="p">)</span>
 
 <div class="viewcode-block" id="IntermediateStateFactory._copy_files"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_files">[docs]</a>    <span class="k">def</span> <span class="nf">_copy_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Copy the files from the original CHARMM-GUI output folder in the intermediate directories.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -721,7 +807,7 @@
 <div class="viewcode-block" id="IntermediateStateFactory._overwrite_simulation_script_parameters"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._overwrite_simulation_script_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_overwrite_simulation_script_parameters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">omm_simulation_parameter_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">omm_simulation_parameter_target</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _overwrite_simulation_script_parameters changes parameters that are defined in omm_simulation_parameter_source</span>
 
 <span class="sd">        Parameters</span>
@@ -809,7 +895,7 @@
 <div class="viewcode-block" id="IntermediateStateFactory._write_rtf_file"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_rtf_file">[docs]</a>    <span class="k">def</span> <span class="nf">_write_rtf_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="n">tlc</span>
     <span class="p">):</span>  <span class="c1"># NOTE: this needs some refactoring!</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the dummy atom parameter rtf.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -926,7 +1012,7 @@
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="p">[</span><span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">,</span> <span class="n">atom3</span><span class="p">]):</span>
 
                 <span class="k">if</span> <span class="p">[</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="ow">in</span> <span class="n">already_seen</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="p">[</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="p">[</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">already_seen</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">])</span>
@@ -1052,7 +1138,7 @@
         <span class="c1">#################################################################</span>
         <span class="n">prm_file_handler</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">prm_file_handler</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-            <span class="sd">&quot;&quot;&quot;NONBONDED nbxmod  5 atom cdiel fshift vatom vdistance vfswitch -</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;NONBONDED nbxmod  5 atom cdiel fshift vatom vdistance vfswitch -</span>
 <span class="sd">cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5&quot;&quot;&quot;</span>
         <span class="p">)</span>
         <span class="n">prm_file_handler</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1077,7 +1163,7 @@
         <span class="n">prm_file_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="IntermediateStateFactory._init_base_dir"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._init_base_dir">[docs]</a>    <span class="k">def</span> <span class="nf">_init_base_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the base directory in which all intermediate states are located</span>
 <span class="sd">        and create the central toppar dir.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1165,7 +1251,7 @@
 
 <div class="viewcode-block" id="IntermediateStateFactory._write_psf"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_psf">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_write_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the new psf and pdb file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1182,7 +1268,7 @@
         <span class="n">psf</span><span class="o">.</span><span class="n">write_pdb</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.pdb&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IntermediateStateFactory._init_intermediate_state_dir"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._init_intermediate_state_dir">[docs]</a>    <span class="k">def</span> <span class="nf">_init_intermediate_state_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the intermediate state directory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">output_file_base</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">/intst</span><span class="si">{</span><span class="n">nr</span><span class="si">}</span><span class="s2">/&quot;</span>
@@ -1194,30 +1280,46 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.</p>
-  </div>
+    <p>
+        &#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
