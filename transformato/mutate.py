@@ -1600,7 +1600,8 @@ class CommonCoreTransformation(object):
                     # are the atoms different? and assure that only atomtypes in the same residue are compared
                     if ligand1_atom.type != ligand2_atom.type and len(
                         ligand1_atom.residue.atoms
-                    ) == len(ligand2_atom.residue.atoms):
+                    ) == len(ligand2_atom.residue.atoms) and ligand1_atom.residue.number == ligand2_atom.residue.number:
+                    ## ATTENTION compare only the same residue with the same NUMBER!
                         if "DDX" in ligand1_atom.type:
                             logger.warning(
                                 "This is the terminal LJ atom. If everything went correct, this does not have to change atom types."
