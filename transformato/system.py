@@ -102,7 +102,7 @@ class SystemStructure(object):
             if atom.residue.name not in tlc and atom.residue.chain == chains[0]:
                 tlc += f":{atom.residue.name}"
 
-        assert len(tlc) < 16
+        assert len(tlc) < 20
 
         # Remove first colon so it looks e.g. like this: GUA:CYT:URA
         return tlc[1:]
