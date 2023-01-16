@@ -70,6 +70,7 @@ def test_setting_up_point_mutation():
         mutation_list=mutation_list,
     )
 
+
 @pytest.mark.point_mutation
 @pytest.mark.skipif(
     os.getenv("CI") == "true",

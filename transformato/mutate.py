@@ -1522,7 +1522,8 @@ class CommonCoreTransformation(object):
                 if (
                     self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name
                     # and ligand1_atom.residue.name == ligand2_atom.residue.name
-                    and ligand1_atom.residue.number == ligand2_atom.residue.number # residue names are not unique
+                    and ligand1_atom.residue.number
+                    == ligand2_atom.residue.number  # residue names are not unique
                     and ligand1_atom.type == ligand2_atom.type
                     and len(ligand1_atom.residue.atoms)
                     == len(ligand2_atom.residue.atoms)
