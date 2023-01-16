@@ -69,3 +69,50 @@ def test_setting_up_point_mutation():
         i=i,
         mutation_list=mutation_list,
     )
+
+@pytest.mark.point_mutation
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_setting_up_point_mutation_type2():
+
+    configuration = load_config_yaml(
+        config=f"/site/raid3/johannes/bioinfo/data/config/cano5-psu5.yaml",
+        input_dir="/site/raid3/johannes/bioinfo/data",
+        output_dir="/site/raid3/johannes/bioinfo/test3",
+    )
+
+    # pdb.set_trace()
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+
+    perform_mutations(
+        configuration=configuration,
+        nr_of_mutation_steps_charge=3,
+        nr_of_mutation_steps_cc=3,
+        i=i,
+        mutation_list=mutation_list,
+    )
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+    )
+
+    perform_mutations(
+        configuration=configuration,
+        nr_of_mutation_steps_charge=3,
+        i=i,
+        mutation_list=mutation_list,
+    )
