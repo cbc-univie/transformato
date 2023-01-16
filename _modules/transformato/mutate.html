@@ -1757,10 +1757,13 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="c1"># are the atoms different? and assure that only atomtypes in the same residue are compared</span>
-                    <span class="k">if</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
-                        <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span>
-                    <span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span><span class="p">:</span>
-                    <span class="c1">## ATTENTION compare only the same residue with the same NUMBER!</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span>
+                        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+                        <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+                        <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span>
+                    <span class="p">):</span>
+                        <span class="c1">## ATTENTION compare only the same residue with the same NUMBER!</span>
                         <span class="k">if</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">in</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                                 <span class="s2">&quot;This is the terminal LJ atom. If everything went correct, this does not have to change atom types.&quot;</span>
@@ -2261,17 +2264,18 @@
 
             <span class="n">compensating_on_this_real_atom</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">connecting_real_atom_for_this_dummy_region</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
         <span class="c1"># check if rest charge is missing</span>
-        <span class="n">new_charge</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">charge</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="c1"># new and total charge is differen because new_charge considers all strands (RNAA and RNAB) but only RNAA is modified</span>
+<span class="c1">#         new_charge = sum(</span>
+<span class="c1">#             [atom.charge for atom in psf.view[f&quot;:{self.tlc.upper()}&quot;].atoms]</span>
+<span class="c1">#         )</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">new_charge</span><span class="p">,</span> <span class="n">total_charge</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Charge compensation failed. Introducing non integer total charge: </span><span class="si">{</span><span class="n">new_charge</span><span class="si">}</span><span class="s2">. Target total charge: </span><span class="si">{</span><span class="n">total_charge</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="p">)</span></div>
+<span class="c1">#         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):</span>
+<span class="c1">#             raise RuntimeError(</span>
+<span class="c1">#                 f&quot;Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}.&quot;</span>
+<span class="c1">#             )</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_scale_epsilon</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
