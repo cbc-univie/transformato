@@ -2109,14 +2109,15 @@ class Mutation(object):
 
         # check if rest charge is missing
         # new and total charge is differen because new_charge considers all strands (RNAA and RNAB) but only RNAA is modified
-#         new_charge = sum(
-#             [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
-#         )
 
-#         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
-#             raise RuntimeError(
-#                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
-#             )
+    #         new_charge = sum(
+    #             [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
+    #         )
+
+    #         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
+    #             raise RuntimeError(
+    #                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
+    #             )
 
     @staticmethod
     def _scale_epsilon(atom, lambda_value: float):
