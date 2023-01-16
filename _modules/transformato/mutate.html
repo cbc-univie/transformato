@@ -1680,11 +1680,13 @@
                 <span class="c1"># Assure that only atoms from the same resdiue are compared, and only atoms belonging to the same chain!</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span>
-                    <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span>
+                    <span class="c1"># and ligand1_atom.residue.name == ligand2_atom.residue.name</span>
+                    <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span> <span class="c1"># residue names are not unique</span>
                     <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span>
                     <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
                     <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
                     <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span>
+                    <span class="ow">and</span> <span class="s2">&quot;DD&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span>
                 <span class="p">):</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="c1"># are the atoms different?</span>
@@ -1710,6 +1712,8 @@
                             <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
                             <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
                             <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span>
+                            <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span>
+                            <span class="ow">and</span> <span class="s2">&quot;DD&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span>
                         <span class="p">):</span>
                             <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                             <span class="c1"># are the atoms different?</span>
@@ -2268,14 +2272,15 @@
 
         <span class="c1"># check if rest charge is missing</span>
         <span class="c1"># new and total charge is differen because new_charge considers all strands (RNAA and RNAB) but only RNAA is modified</span>
-<span class="c1">#         new_charge = sum(</span>
-<span class="c1">#             [atom.charge for atom in psf.view[f&quot;:{self.tlc.upper()}&quot;].atoms]</span>
-<span class="c1">#         )</span>
 
-<span class="c1">#         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):</span>
-<span class="c1">#             raise RuntimeError(</span>
-<span class="c1">#                 f&quot;Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}.&quot;</span>
-<span class="c1">#             )</span>
+    <span class="c1">#         new_charge = sum(</span>
+    <span class="c1">#             [atom.charge for atom in psf.view[f&quot;:{self.tlc.upper()}&quot;].atoms]</span>
+    <span class="c1">#         )</span>
+
+    <span class="c1">#         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):</span>
+    <span class="c1">#             raise RuntimeError(</span>
+    <span class="c1">#                 f&quot;Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}.&quot;</span>
+    <span class="c1">#             )</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_scale_epsilon</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
