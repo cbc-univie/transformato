@@ -1610,9 +1610,9 @@ class CommonCoreTransformation(object):
                         and ligand1_atom.residue.number == ligand2_atom.residue.number
                     ):
                         ## ATTENTION compare only the same residue with the same NUMBER!
-                        if "DDX" in ligand1_atom.type:
+                        if "DD" in ligand1_atom.type:
                             logger.warning(
-                                "This is the terminal LJ atom. If everything went correct, this does not have to change atom types."
+                                "Dummy atoms should not change their atomtypes"
                             )
                         else:
                             self._modify_type_in_cc(ligand1_atom, psf)
@@ -1682,9 +1682,10 @@ class CommonCoreTransformation(object):
                 ) == sorted([ligand2_atom1_name, ligand2_atom2_name]):
                     found = True
                     # are the bonds different?
+                    all_types = [ligand1_bond.atom1.type, ligand1_bond.atom2.type,ligand2_bond.atom1.type, ligand2_bond.atom2.type]
                     if sorted(
                         [ligand1_bond.atom1.type, ligand1_bond.atom2.type]
-                    ) == sorted([ligand2_bond.atom1.type, ligand2_bond.atom2.type]):
+                    ) == sorted([ligand2_bond.atom1.type, ligand2_bond.atom2.type]) or ("DDD" in str(all_types) and "DDX" not in str(all_types)):
                         continue
                     logger.debug(f"Modifying bond: {ligand1_bond}")
 
@@ -1749,6 +1750,14 @@ class CommonCoreTransformation(object):
                     ]
                 ) == sorted([ligand2_atom1_name, ligand2_atom2_name, cc2_a3]):
                     found = True
+                    all_types = [
+                            cc1_angle.atom1.type,
+                            cc1_angle.atom2.type,
+                            cc1_angle.atom3.type,
+                            cc2_angle.atom1.type,
+                            cc2_angle.atom2.type,
+                            cc2_angle.atom3.type,
+                        ]
                     if sorted(
                         [
                             cc1_angle.atom1.type,
@@ -1761,7 +1770,7 @@ class CommonCoreTransformation(object):
                             cc2_angle.atom2.type,
                             cc2_angle.atom3.type,
                         ]
-                    ):
+                    ) or ("DDD" in str(all_types) and "DDX" not in str(all_types)):
                         continue
 
                     logger.debug(f"Modifying angle: {cc1_angle}")
@@ -1844,12 +1853,22 @@ class CommonCoreTransformation(object):
                     [new_atom1_name, new_atom2_name, new_atom3_name, new_atom4_name]
                 ):
                     found = True
+                    all_types = [
+                            original_torsion.atom1.type,
+                            original_torsion.atom2.type,
+                            original_torsion.atom3.type,
+                            original_torsion.atom4.type,
+                            new_torsion.atom1.type,
+                            new_torsion.atom2.type,
+                            new_torsion.atom3.type,
+                            new_torsion.atom4.type,
+                        ]
                     if sorted(
                         [
                             original_torsion.atom1.type,
                             original_torsion.atom2.type,
                             original_torsion.atom3.type,
-                            original_torsion.atom3.type,
+                            original_torsion.atom4.type,
                         ]
                     ) == sorted(
                         [
@@ -1858,7 +1877,7 @@ class CommonCoreTransformation(object):
                             new_torsion.atom3.type,
                             new_torsion.atom4.type,
                         ]
-                    ):
+                    ) or ("DDD" in str(all_types) and "DDX" not in str(all_types)):
                         continue
 
                     mod_types = []
