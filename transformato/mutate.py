@@ -1682,10 +1682,17 @@ class CommonCoreTransformation(object):
                 ) == sorted([ligand2_atom1_name, ligand2_atom2_name]):
                     found = True
                     # are the bonds different?
-                    all_types = [ligand1_bond.atom1.type, ligand1_bond.atom2.type,ligand2_bond.atom1.type, ligand2_bond.atom2.type]
+                    all_types = [
+                        ligand1_bond.atom1.type,
+                        ligand1_bond.atom2.type,
+                        ligand2_bond.atom1.type,
+                        ligand2_bond.atom2.type,
+                    ]
                     if sorted(
                         [ligand1_bond.atom1.type, ligand1_bond.atom2.type]
-                    ) == sorted([ligand2_bond.atom1.type, ligand2_bond.atom2.type]) or ("DDD" in str(all_types) and "DDX" not in str(all_types)):
+                    ) == sorted([ligand2_bond.atom1.type, ligand2_bond.atom2.type]) or (
+                        "DDD" in str(all_types) and "DDX" not in str(all_types)
+                    ):
                         continue
                     logger.debug(f"Modifying bond: {ligand1_bond}")
 
@@ -1751,13 +1758,13 @@ class CommonCoreTransformation(object):
                 ) == sorted([ligand2_atom1_name, ligand2_atom2_name, cc2_a3]):
                     found = True
                     all_types = [
-                            cc1_angle.atom1.type,
-                            cc1_angle.atom2.type,
-                            cc1_angle.atom3.type,
-                            cc2_angle.atom1.type,
-                            cc2_angle.atom2.type,
-                            cc2_angle.atom3.type,
-                        ]
+                        cc1_angle.atom1.type,
+                        cc1_angle.atom2.type,
+                        cc1_angle.atom3.type,
+                        cc2_angle.atom1.type,
+                        cc2_angle.atom2.type,
+                        cc2_angle.atom3.type,
+                    ]
                     if sorted(
                         [
                             cc1_angle.atom1.type,
@@ -1770,7 +1777,9 @@ class CommonCoreTransformation(object):
                             cc2_angle.atom2.type,
                             cc2_angle.atom3.type,
                         ]
-                    ) or ("DDD" in str(all_types) and "DDX" not in str(all_types)):
+                    ) or (
+                        "DDD" in str(all_types) and "DDX" not in str(all_types)
+                    ):
                         continue
 
                     logger.debug(f"Modifying angle: {cc1_angle}")
@@ -1854,15 +1863,15 @@ class CommonCoreTransformation(object):
                 ):
                     found = True
                     all_types = [
-                            original_torsion.atom1.type,
-                            original_torsion.atom2.type,
-                            original_torsion.atom3.type,
-                            original_torsion.atom4.type,
-                            new_torsion.atom1.type,
-                            new_torsion.atom2.type,
-                            new_torsion.atom3.type,
-                            new_torsion.atom4.type,
-                        ]
+                        original_torsion.atom1.type,
+                        original_torsion.atom2.type,
+                        original_torsion.atom3.type,
+                        original_torsion.atom4.type,
+                        new_torsion.atom1.type,
+                        new_torsion.atom2.type,
+                        new_torsion.atom3.type,
+                        new_torsion.atom4.type,
+                    ]
                     if sorted(
                         [
                             original_torsion.atom1.type,
@@ -1877,7 +1886,9 @@ class CommonCoreTransformation(object):
                             new_torsion.atom3.type,
                             new_torsion.atom4.type,
                         ]
-                    ) or ("DDD" in str(all_types) and "DDX" not in str(all_types)):
+                    ) or (
+                        "DDD" in str(all_types) and "DDX" not in str(all_types)
+                    ):
                         continue
 
                     mod_types = []
