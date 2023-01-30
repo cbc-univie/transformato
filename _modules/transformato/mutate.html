@@ -1764,8 +1764,8 @@
                     <span class="c1"># are the atoms different? and assure that only atomtypes in the same residue are compared</span>
                     <span class="k">if</span> <span class="p">(</span>
                         <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span>
-                        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-                        <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+                        <span class="c1"># and len(ligand1_atom.residue.atoms)</span>
+                        <span class="c1"># == len(ligand2_atom.residue.atoms)</span>
                         <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span>
                     <span class="p">):</span>
                         <span class="c1">## ATTENTION compare only the same residue with the same NUMBER!</span>
