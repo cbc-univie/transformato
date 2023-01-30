@@ -1683,9 +1683,9 @@
                     <span class="c1"># and ligand1_atom.residue.name == ligand2_atom.residue.name</span>
                     <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span>
                     <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span>  <span class="c1"># residue names are not unique</span>
-                    <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span>
-                    <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-                    <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+                    <span class="c1"># and ligand1_atom.type == ligand2_atom.type</span>
+                    <span class="c1"># and len(ligand1_atom.residue.atoms)</span>
+                    <span class="c1"># == len(ligand2_atom.residue.atoms)</span>
                     <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span>
                     <span class="ow">and</span> <span class="s2">&quot;DD&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span>
                 <span class="p">):</span>
@@ -1841,10 +1841,17 @@
                 <span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">ligand2_atom1_name</span><span class="p">,</span> <span class="n">ligand2_atom2_name</span><span class="p">]):</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="c1"># are the bonds different?</span>
-                    <span class="n">all_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span><span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+                    <span class="n">all_types</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                    <span class="p">]</span>
                     <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span>
                         <span class="p">[</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
-                    <span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)):</span>
+                    <span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
+                        <span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span>
+                    <span class="p">):</span>
                         <span class="k">continue</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modifying bond: </span><span class="si">{</span><span class="n">ligand1_bond</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1910,13 +1917,13 @@
                 <span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">ligand2_atom1_name</span><span class="p">,</span> <span class="n">ligand2_atom2_name</span><span class="p">,</span> <span class="n">cc2_a3</span><span class="p">]):</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="n">all_types</span> <span class="o">=</span> <span class="p">[</span>
-                            <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="p">]</span>
+                        <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                    <span class="p">]</span>
                     <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
@@ -1929,7 +1936,9 @@
                             <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
                             <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
                         <span class="p">]</span>
-                    <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)):</span>
+                    <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                        <span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span>
+                    <span class="p">):</span>
                         <span class="k">continue</span>
 
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modifying angle: </span><span class="si">{</span><span class="n">cc1_angle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2013,15 +2022,15 @@
                 <span class="p">):</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="n">all_types</span> <span class="o">=</span> <span class="p">[</span>
-                            <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                            <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="p">]</span>
+                        <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                    <span class="p">]</span>
                     <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
@@ -2036,7 +2045,9 @@
                             <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
                             <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
                         <span class="p">]</span>
-                    <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)):</span>
+                    <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                        <span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span>
+                    <span class="p">):</span>
                         <span class="k">continue</span>
 
                     <span class="n">mod_types</span> <span class="o">=</span> <span class="p">[]</span>
