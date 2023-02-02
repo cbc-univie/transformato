@@ -121,7 +121,6 @@ def setup_acetylacetone_tautomer_pair(
 
 
 def test_proposed_mutation_mcs():
-
     from rdkit.Chem import rdFMCS
 
     for conf in [
@@ -445,7 +444,6 @@ def test_find_connected_dummy_regions1():
 
 
 def test_find_connected_dummy_regions2():
-
     ##################################################
     conf = f"{get_testsystems_dir()}/config/test-2oj9-rsfe.yaml"
     configuration = load_config_yaml(
@@ -584,7 +582,6 @@ def setup_systems(conf):
 
 
 def test_generate_mutation_list_for_multiple_systems():
-
     for conf, system_name in zip(
         [
             f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
@@ -593,7 +590,6 @@ def test_generate_mutation_list_for_multiple_systems():
         ],
         ["toluene-methane", "neopentane-methane", "ethane-ethanol"],
     ):
-
         if system_name == "ethane-methanol":
             (
                 configuration,
@@ -669,7 +665,6 @@ def test_write_endpoint_state():
 
 
 def test_charges_at_endstate():
-
     for conf, system_name in zip(
         [
             f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
@@ -677,7 +672,6 @@ def test_charges_at_endstate():
         ],
         ["toluene-methane" "ethane-ethanol"],
     ):
-
         # try writing endstate in all directions
         (
             configuration,
@@ -713,7 +707,6 @@ def test_charges_at_endstate():
 
 
 def test_setup_dual_junction_system():
-
     conf = f"{get_testsystems_dir()}/config/test-2oj9-rsfe.yaml"
     configuration, mutation_list_mol1, mutation_list_mol2, i_s1, i_s2 = setup_systems(
         conf
@@ -749,7 +742,6 @@ def test_charge_mutation_for_multiple_systems():
         ],
         ["toluene-methane", "neopentane-methane", "ethane-methanol"],
     ):
-
         configuration = load_config_yaml(
             config=conf,
             input_dir=get_testsystems_dir(),
@@ -966,11 +958,9 @@ def test_vdw_mutation_for_hydrogens_system2():
 
 
 def test_bonded_mutation():
-
     for conf in [
         f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
     ]:
-
         configuration = load_config_yaml(
             config=conf,
             input_dir=get_testsystems_dir(),
@@ -1117,7 +1107,6 @@ def test_equivalent_endstates_vacuum():
 
 
 def test_equivalent_endstates_waterbox():
-
     import openmm as mm
     import openmm.app as app
 
@@ -1533,12 +1522,10 @@ def test_bonded_mutation_angles(caplog):
         faulty = False
         for angle_t2_idx, angle_t2 in enumerate(psf_at_t2_cc.angles):
             if atom1_t2 in angle_t2 and atom2_t2 in angle_t2 and atom3_t2 in angle_t2:
-
                 if (
                     not (prm_at_t1_cc[angle_t1_idx] == prm_at_t2_cc[angle_t2_idx])
                     and atom1_t2 == "<Atom C12 [14]; In UNK 0>"
                 ):  # the AND statement is only necessary for cgenff v.4.6 becaues the c11-c18-n6 in bmi and c12-c16-n6 in unk are slightly different
-
                     print("###################")
                     print(prm_at_t1_cc[angle_t1_idx])
                     print(prm_at_t2_cc[angle_t2_idx])
@@ -1657,7 +1644,6 @@ def test_bonded_mutation_dihedrals(caplog):
 
         assert dihedral_t2 != None
         if not (prm_at_t1_cc[dihedral_t1_idx] == prm_at_t2_cc[dihedral_t2_idx]):
-
             print("###################")
             print(prm_at_t1_cc[dihedral_t1_idx])
             print(prm_at_t2_cc[dihedral_t2_idx])
@@ -2008,7 +1994,6 @@ def test_full_mutation_system2():
 
         # turn off heavy atoms
         for mutation in mutation_list["lj"]:
-
             i.write_state(
                 mutation_conf=[mutation],
                 lambda_value_vdw=lambda_vdw,

@@ -10,7 +10,6 @@ from transformato import load_config_yaml
 
 
 def run_2OJ9_tautomer_pair_rsfe():
-
     conf_path = "config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf_path, input_dir="../../data/", output_dir=get_test_output_dir()
@@ -24,7 +23,6 @@ def run_2OJ9_tautomer_pair_rsfe():
 
 
 def run_acetylacetone_tautomer_pair_rsfe():
-
     conf_path = "config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf_path, input_dir="../../data/", output_dir=get_test_output_dir()
@@ -38,7 +36,6 @@ def run_acetylacetone_tautomer_pair_rsfe():
 
 
 def run_2OJ9_tautomer_pair_rbfe():
-
     conf_path = "config/test-2oj9-tautomer-pair-rbfe.yaml"
     configuration = load_config_yaml(
         config=conf_path, input_dir="../../data/", output_dir=get_test_output_dir()

@@ -400,11 +400,9 @@ def create_restraints_from_config(configuration, pdbpath):
             restraint_args["mode"] = "extremities"
             restraint_args["n_extremities"] = int(arg.split("=")[1])
         elif "shape=" in arg:
-
             restraint_args["shape"] = str(arg.split("=")[1])
 
         elif "wellsize=" in arg:
-
             restraint_args["wellsize"] = float(arg.split("=")[1])
 
     if "auto" in restraint_command_string and restraint_args["mode"] == "simple":
@@ -434,7 +432,6 @@ def create_restraints_from_config(configuration, pdbpath):
         manual_restraint_list = configuration["simulation"]["manualrestraints"].keys()
         logger.debug(f"Manual restraints defined: {manual_restraint_list}")
         for key in manual_restraint_list:
-
             restraint = configuration["simulation"]["manualrestraints"][key]
             restraint_kw = {}
             for key in restraint.keys():
@@ -467,7 +464,6 @@ def write_restraints_yaml(path, system, config, current_step):
     }
 
     if "scaling" in config["simulation"]["restraints"]:
-
         if current_step == 1:
             lambda_value_scaling = 0
         elif current_step == 2:

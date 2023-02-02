@@ -32,7 +32,6 @@ def initialize_NUM_PROC(n_proc):
 
 
 def change_platform_to_test_platform(configuration: dict, engine: str):
-
     if engine == "openMM":
         change_to = test_platform_openMM
     elif engine == "CHARMM":
@@ -51,7 +50,6 @@ def change_platform_to_test_platform(configuration: dict, engine: str):
 
 
 def change_platform_to(configuration: dict, change_to: str):
-
     if change_to.upper() == "GPU":
         configuration["simulation"]["GPU"] = True
         print("Setting platform to GPU")

@@ -27,6 +27,7 @@ from parmed.charmm.psf import _ZeroDict, _FileEOF, _resre
 
 import parmed as pm
 
+
 # from parmed.charmm.psf import _catchindexerror
 @pm.charmm.psf._catchindexerror
 class CustomCharmmPsfFile(pm.charmm.CharmmPsfFile):

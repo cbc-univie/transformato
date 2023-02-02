@@ -14,6 +14,7 @@ from transformato.charmmPsfFile import CustomCharmmPsfFile
 
 logger = logging.getLogger(__name__)
 
+
 class SystemStructure(object):
     def __init__(self, configuration: dict, structure: str):
         """
@@ -139,7 +140,6 @@ class SystemStructure(object):
 
             return preprocessing._mol_to_nx_full_weight(mol)
         except ModuleNotFoundError:
-
             G = nx.Graph()
 
             for atom in mol.GetAtoms():
@@ -255,9 +255,7 @@ class SystemStructure(object):
         parameter = pm.charmm.CharmmParameterSet(*parameter_files)
         return parameter
 
-    def _initialize_system(
-        self, configuration: dict, env: str
-    ) -> CustomCharmmPsfFile:
+    def _initialize_system(self, configuration: dict, env: str) -> CustomCharmmPsfFile:
         """
         Generates the psf file and sets the coordinates from the CHARMM-GUI files.
         Parameters
@@ -397,7 +395,6 @@ class SystemStructure(object):
         return f"{file_path}/step3_input_reduced.sdf"
 
     def _return_small_molecule(self) -> Chem.rdchem.Mol:
-
         charmm_gui_env = self.charmm_gui_base + "waterbox"
         possible_files = []
         for ending in ["sdf", "mol", "mol2"]:
