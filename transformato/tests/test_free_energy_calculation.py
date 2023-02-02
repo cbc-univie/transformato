@@ -26,7 +26,6 @@ warnings.filterwarnings("ignore", module="parmed")
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_1a0q_1a07_rsfe_with_openMM(caplog):
-
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.DEBUG)
     conf = f"{get_testsystems_dir()}/config/test-1a0q-1a07-rsfe.yaml"

@@ -9,7 +9,6 @@ class CharmmFactory:
     """Class to build the string needed to create a CHARMM input and streaming file"""
 
     def __init__(self, configuration: dict, structure: str) -> None:
-
         self.configuration = configuration
         self.structure = structure
         prms = self._get_simulations_parameters()
@@ -24,7 +23,6 @@ class CharmmFactory:
         return prms
 
     def generate_CHARMM_postprocessing_files(self, env: str) -> str:
-
         charmm_postprocessing_script = self._get_CHARMM_postprocessing_header(env)
         if env == "vacuum":
             charmm_postprocessing_script += self._get_CHARMM_vacuum_postprocessing_body(
@@ -499,7 +497,6 @@ stop"""
         return body
 
     def _get_CHARMM_postprocessing_header(self, env: str) -> str:
-
         intermediate_filename = self.configuration["system"][self.structure][env][
             "intermediate-filename"
         ]
