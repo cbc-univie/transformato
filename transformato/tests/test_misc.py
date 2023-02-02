@@ -15,7 +15,6 @@ from transformato_testsystems.testsystems import (
 
 
 def test_reduced_energy():
-
     # with openMM generated traj evaluated with openMM
     e = -41264.39524669979 * unit.kilojoule_per_mole
     rE = return_reduced_potential(e, volume=0, temperature=T)
@@ -37,7 +36,6 @@ def test_reduced_energy():
 
 
 def test_convert_to_kT():
-
     kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
     beta = 1.0 / (kB * T)
 
@@ -77,7 +75,6 @@ def test_change_platform():
 
 
 def test_scaling():
-
     for i in np.linspace(1, 0, 11):
         f = max((1 - ((1 - i) * 2)), 0.0)
         print(f"{i}:{f}")
@@ -91,7 +88,6 @@ def test_scaling():
 
 
 def test_old_scaling():
-
     for i in np.linspace(1, 0, 11):
         f = 1 - (1 - i) * 2
         print(f"{i}:{f}")
@@ -103,7 +99,6 @@ def test_old_scaling():
 
 
 def test_reading_of_coords():
-
     env = "vacuum"
     output_files_t1, _ = get_output_files_2oj9_tautomer_pair()
 

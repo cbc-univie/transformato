@@ -46,7 +46,6 @@ def postprocessing(
 
 
 def calculate_rsfe_mp():
-
     conf = "config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="../../data/", output_dir="../../data"
@@ -59,7 +58,6 @@ def calculate_rsfe_mp():
 
 
 def calculate_rbfe_mp():
-
     conf = "config/test-2oj9-tautomer-pair-rbfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="../../data/", output_dir="../../data"
@@ -99,7 +97,6 @@ def procsh(shr_name, dims, i):
 
 
 def create_data():
-
     name = "2OJ9-original"
     conf = "config/test-2oj9-tautomer-pair-rbfe.yaml"
     configuration = load_config_yaml(
@@ -121,7 +118,6 @@ def create_data():
 
 
 def load_traj_span_mp(shm, shm_xyz, dims):
-
     ctx = mp.get_context("spawn")
     pool = ctx.Pool(processes=4)
     # pool.map(proct, [i for i in range(snapshots.n_frames)])

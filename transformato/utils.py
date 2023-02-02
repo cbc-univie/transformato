@@ -163,7 +163,6 @@ def print_mutations(mutation: dict):
 
 
 def load_config_yaml(config, input_dir, output_dir) -> dict:
-
     with open(f"{config}", "r") as stream:
         try:
             settingsMap = yaml.safe_load(stream)
@@ -210,7 +209,6 @@ def load_config_yaml(config, input_dir, output_dir) -> dict:
 
     # for absolute solvation only one ligand is necessaryy
     if settingsMap["simulation"]["free-energy-type"] == "asfe":
-
         system_name = f"{settingsMap['system']['structure1']['name']}-{settingsMap['simulation']['free-energy-type']}"
 
     else:
