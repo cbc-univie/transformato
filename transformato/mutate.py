@@ -19,6 +19,7 @@ IPythonConsole.ipython_useSVG = True  # Change output to SVG
 from transformato.system import SystemStructure
 from transformato.annihilation import calculate_order_of_LJ_mutations_asfe
 
+from transformato.charmmPsfFile import CustomCharmmPsfFile
 
 logger = logging.getLogger(__name__)
 
@@ -334,8 +335,8 @@ class ProposeMutationRoute(object):
                 mol1_name: s1.psfs["waterbox"][f":{s1.tlc}"],
                 mol2_name: s2.psfs["waterbox"][f":{s2.tlc}"],
             }
-            self.psf1: pm.charmm.CharmmPsfFile = s1.psfs
-            self.psf2: pm.charmm.CharmmPsfFile = s2.psfs
+            self.psf1: CustomCharmmPsfFile = s1.psfs
+            self.psf2: CustomCharmmPsfFile = s2.psfs
             self._substructure_match: dict = {mol1_name: [], mol2_name: []}
             self.removed_indeces: dict = {mol1_name: [], mol2_name: []}
             self.added_indeces: dict = {mol1_name: [], mol2_name: []}
@@ -371,7 +372,7 @@ class ProposeMutationRoute(object):
             self.graphs: dict = {mol1_name: s1.graph}
             # psfs for reference of only ligand
             self.psfs: dict = {s1.psfs["waterbox"][f":{s1.tlc}"]}
-            self.psf1: pm.charmm.CharmmPsfFile = s1.psfs
+            self.psf1: CustomCharmmPsfFile = s1.psfs
             self._substructure_match: dict = {mol1_name: []}
             self.removed_indeces: dict = {mol1_name: []}
             self.added_indeces: dict = {mol1_name: []}
@@ -585,7 +586,7 @@ class ProposeMutationRoute(object):
     def _check_for_lp(
         self,
         odered_connected_dummy_regions_cc_with_lp: list,
-        psf: pm.charmm.CharmmPsfFile,
+        psf: CustomCharmmPsfFile,
         tlc: str,
         name: str,
     ) -> list:
@@ -1393,11 +1394,11 @@ class CommonCoreTransformation(object):
         self,
         cc1_indicies: list,
         cc2_indicies: list,
-        ligand1_psf: pm.charmm.CharmmPsfFile,
-        ligand2_psf: pm.charmm.CharmmPsfFile,
+        ligand1_psf: CustomCharmmPsfFile,
+        ligand2_psf: CustomCharmmPsfFile,
         tlc_cc1: str,
         tlc_cc2: str,
-        charge_compensated_ligand2_psf: pm.charmm.CharmmPsfFile,
+        charge_compensated_ligand2_psf: CustomCharmmPsfFile,
         charge_mutation: bool,
         bonded_terms_mutation: bool,
     ):
@@ -1409,8 +1410,8 @@ class CommonCoreTransformation(object):
             indices of cc1
         cc2_indicies : list
             indices of cc2 (in the same order as cc1)
-        ligand1_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
-        ligand2_psf : pm.charmm.CharmmPsfFile (copy of only ligand)
+        ligand1_psf : CustomCharmmPsfFile (copy of only ligand)
+        ligand2_psf : CustomCharmmPsfFile (copy of only ligand)
             the target psf that is used to generate the new bonded parmaeters
         tlc_cc1 : str
             three letter code of ligand in cc1
@@ -1419,14 +1420,14 @@ class CommonCoreTransformation(object):
         """
         self.cc1_indicies: list = cc1_indicies
         self.cc2_indicies: list = cc2_indicies
-        self.ligand2_psf: pm.charmm.CharmmPsfFile = ligand2_psf
-        self.ligand1_psf: pm.charmm.CharmmPsfFile = ligand1_psf
+        self.ligand2_psf: CustomCharmmPsfFile = ligand2_psf
+        self.ligand1_psf: CustomCharmmPsfFile = ligand1_psf
         self.tlc_cc1: str = tlc_cc1
         self.tlc_cc2: str = tlc_cc2
         self.atom_names_mapping = self._get_atom_mapping()
         self.charge_mutation: bool = charge_mutation
         self.bonded_terms_mutation: bool = bonded_terms_mutation
-        self.charge_compensated_ligand2_psf: pm.charmm.CharmmPsfFile = (
+        self.charge_compensated_ligand2_psf: CustomCharmmPsfFile = (
             charge_compensated_ligand2_psf
         )
 
@@ -1508,7 +1509,7 @@ class CommonCoreTransformation(object):
 
         return match_atom_names_cc1_to_cc2
 
-    def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
+    def _mutate_charges(self, psf: CustomCharmmPsfFile, scale: float):
 
         # common core of psf 1 is transformed to psf 2
         for ligand1_atom in psf.view[f":{self.tlc_cc1}"]:
@@ -1576,7 +1577,7 @@ class CommonCoreTransformation(object):
                         f"No corresponding atom for {ligand1_atom} in cc2 found"
                     )
 
-    def _mutate_atoms(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
+    def _mutate_atoms(self, psf: CustomCharmmPsfFile, lambda_value: float):
         """
         mutate atom types.
 
@@ -1643,7 +1644,7 @@ class CommonCoreTransformation(object):
             if not found:
                 raise RuntimeError("No corresponding atom in cc2 found")
 
-    def _mutate_bonds(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
+    def _mutate_bonds(self, psf: CustomCharmmPsfFile, lambda_value: float):
 
         logger.debug("#######################")
         logger.debug("mutate_bonds")
@@ -1723,7 +1724,7 @@ class CommonCoreTransformation(object):
                     "No corresponding bond in cc2 found: {}".format(ligand1_bond)
                 )
 
-    def _mutate_angles(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
+    def _mutate_angles(self, psf: CustomCharmmPsfFile, lambda_value: float):
 
         mod_type = namedtuple("Angle", "k, theteq")
         for cc1_angle in psf.view[f":{self.tlc_cc1}"].angles:
@@ -1806,7 +1807,7 @@ class CommonCoreTransformation(object):
                 logger.critical(cc1_angle)
                 raise RuntimeError("No corresponding angle in cc2 found")
 
-    def _mutate_torsions(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
+    def _mutate_torsions(self, psf: CustomCharmmPsfFile, lambda_value: float):
 
         mod_type = namedtuple("Torsion", "phi_k, per, phase, scee, scnb")
 
@@ -1930,18 +1931,18 @@ class CommonCoreTransformation(object):
                 logger.critical(original_torsion)
                 raise RuntimeError("No corresponding torsion in cc2 found")
 
-    def mutate(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
+    def mutate(self, psf: CustomCharmmPsfFile, lambda_value: float):
         """
         Mutates the bonded parameters of cc1 to cc2.
         Parameters
         ----------
-        psf : pm.charmm.CharmmPsfFile
+        psf : CustomCharmmPsfFile
             psf that gets mutated
         lambda_value : float
             lambda_value
         """
 
-        assert type(psf) == pm.charmm.CharmmPsfFile
+        assert type(psf) == CustomCharmmPsfFile
         if self.charge_mutation:
             logger.info(f" -- Charge parameters from cc1 are transformed to cc2.")
             logger.info(f"Lambda value:{lambda_value}")
@@ -1962,7 +1963,7 @@ class CommonCoreTransformation(object):
             self._mutate_torsions(psf, lambda_value)
 
     @staticmethod
-    def _modify_type_in_cc(atom: pm.Atom, psf: pm.charmm.CharmmPsfFile):
+    def _modify_type_in_cc(atom: pm.Atom, psf: CustomCharmmPsfFile):
 
         if hasattr(atom, "initial_type"):
             # only change parameters
@@ -1986,7 +1987,7 @@ class Mutation(object):
         self.tlc = dummy_region.tlc
 
     def _mutate_charge(
-        self, psf: pm.charmm.CharmmPsfFile, lambda_value: float, offset: int
+        self, psf: CustomCharmmPsfFile, lambda_value: float, offset: int
     ):
 
         total_charge = int(
@@ -2013,7 +2014,7 @@ class Mutation(object):
 
     def _mutate_vdw(
         self,
-        psf: pm.charmm.CharmmPsfFile,
+        psf: CustomCharmmPsfFile,
         lambda_value: float,
         vdw_atom_idx: List[int],
         offset: int,
@@ -2045,7 +2046,7 @@ class Mutation(object):
 
     def mutate(
         self,
-        psf: pm.charmm.CharmmPsfFile,
+        psf: CustomCharmmPsfFile,
         lambda_value_electrostatic: float = 1.0,
         lambda_value_vdw: float = 1.0,
         vdw_atom_idx: List[int] = [],
@@ -2073,7 +2074,7 @@ class Mutation(object):
             )
 
     def _compensate_charge(
-        self, psf: pm.charmm.CharmmPsfFile, total_charge: int, offset: int
+        self, psf: CustomCharmmPsfFile, total_charge: int, offset: int
     ):
         """
         _compensate_charge This function compensates the charge changes of a dummy region on the terminal real atom
@@ -2081,7 +2082,7 @@ class Mutation(object):
 
         Parameters
         ----------
-        psf : pm.charmm.CharmmPsfFile
+        psf : CustomCharmmPsfFile
             [description]
         total_charge : int
             [description]

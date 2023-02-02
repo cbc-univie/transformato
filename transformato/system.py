@@ -10,9 +10,9 @@ import parmed as pm
 from rdkit import Chem
 
 from transformato.utils import get_toppar_dir
+from transformato.charmmPsfFile import CustomCharmmPsfFile
 
 logger = logging.getLogger(__name__)
-
 
 class SystemStructure(object):
     def __init__(self, configuration: dict, structure: str):
@@ -31,7 +31,7 @@ class SystemStructure(object):
         self.name: str = configuration["system"][structure]["name"]
         self.tlc: str = configuration["system"][structure]["tlc"]
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
-        self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
+        self.psfs: defaultdict = defaultdict(CustomCharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
         # self.parameter = self._read_parameters("waterbox")
         self.cgenff_version: float
@@ -257,7 +257,7 @@ class SystemStructure(object):
 
     def _initialize_system(
         self, configuration: dict, env: str
-    ) -> pm.charmm.CharmmPsfFile:
+    ) -> CustomCharmmPsfFile:
         """
         Generates the psf file and sets the coordinates from the CHARMM-GUI files.
         Parameters
@@ -268,7 +268,7 @@ class SystemStructure(object):
             waterbox,complex or vacuum
         Returns
         ----------
-        psf : pm.charmm.CharmmPsfFile
+        psf : CustomCharmmPsfFile
         """
 
         if env == "vacuum":
@@ -289,7 +289,7 @@ class SystemStructure(object):
             )
 
             # load psf
-            psf = pm.charmm.CharmmPsfFile(psf_file_path)
+            psf = CustomCharmmPsfFile(psf_file_path)
             coord = pm.charmm.CharmmCrdFile(crd_file_path)
             psf.coordinates = coord.coordinates
 
@@ -327,26 +327,26 @@ class SystemStructure(object):
 
             psf_file_path = f"{self.charmm_gui_base}/{env}/openmm/{psf_file_name}.psf"
             crd_file_path = f"{self.charmm_gui_base}/{env}/openmm/{crd_file_name}.crd"
-            psf = pm.charmm.CharmmPsfFile(psf_file_path)
+            psf = CustomCharmmPsfFile(psf_file_path)
             coord = pm.charmm.CharmmCrdFile(crd_file_path)
             psf.coordinates = coord.coordinates
 
         return psf
 
     def _determine_offset_and_set_possible_dummy_properties(
-        self, psf: pm.charmm.CharmmPsfFile
+        self, psf: CustomCharmmPsfFile
     ) -> int:
         """
         Determines the offset and sets possible properties on the psf.
         Parameters
         ----------
-        psf : pm.charmm.CharmmPsfFile
+        psf : CustomCharmmPsfFile
         env: str
             waterbox,complex or vacuum
         Returns
         ----------
         """
-        assert type(psf) == pm.charmm.CharmmPsfFile
+        assert type(psf) == CustomCharmmPsfFile
         if len(psf.view[f":{self.tlc}"].atoms) < 1:
             raise RuntimeError(f"No ligand selected for tlc: {self.tlc}")
 
@@ -430,7 +430,7 @@ class SystemStructure(object):
             )
 
     def _generate_rdkit_mol(
-        self, env: str, psf: pm.charmm.CharmmPsfFile
+        self, env: str, psf: CustomCharmmPsfFile
     ) -> Chem.rdchem.Mol:
         """
         Generates the rdkit mol object.
@@ -438,13 +438,13 @@ class SystemStructure(object):
         ----------
         env: str
             waterbox,complex or vacuum
-        psf: pm.charmm.CharmmPsfFile
+        psf: CustomCharmmPsfFile
         Returns
         ----------
         mol: rdkit.Chem.rdchem.Mol
         """
 
-        assert type(psf) == pm.charmm.CharmmPsfFile
+        assert type(psf) == CustomCharmmPsfFile
 
         try:
             self._create_sdf_file()
@@ -480,13 +480,13 @@ class SystemStructure(object):
         return mol
 
     def generate_atom_tables_from_psf(
-        self, psf: pm.charmm.CharmmPsfFile
+        self, psf: CustomCharmmPsfFile
     ) -> Tuple[dict, dict, dict, dict]:
         """
         Generate mapping dictionaries for a molecule in a psf.
         Parameters
         ----------
-        psf: pm.charmm.CharmmPsfFile
+        psf: CustomCharmmPsfFile
         Returns
         ----------
         dict's
