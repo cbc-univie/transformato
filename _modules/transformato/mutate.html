@@ -180,7 +180,7 @@
 
 <span class="kn">from</span> <span class="nn">transformato.system</span> <span class="kn">import</span> <span class="n">SystemStructure</span>
 <span class="kn">from</span> <span class="nn">transformato.annihilation</span> <span class="kn">import</span> <span class="n">calculate_order_of_LJ_mutations_asfe</span>
-
+<span class="kn">from</span> <span class="nn">transformato.charmmPsfFile</span> <span class="kn">import</span> <span class="n">CustomCharmmPsfFile</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -194,7 +194,6 @@
     <span class="n">intermediate_factory</span><span class="p">,</span>
     <span class="n">mutation</span><span class="p">,</span>
 <span class="p">):</span>
-
     <span class="k">for</span> <span class="n">lambda_value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nr_of_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
@@ -212,7 +211,6 @@
     <span class="n">intermediate_factory</span><span class="p">,</span>
     <span class="n">mutation</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-
     <span class="k">for</span> <span class="n">lambda_value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nr_of_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
@@ -354,7 +352,6 @@
             <span class="o">==</span> <span class="n">list_of_heavy_atoms_to_be_mutated</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="ow">and</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span>
         <span class="p">):</span>
-
             <span class="k">for</span> <span class="n">lambda_value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
                 <span class="mf">0.75</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nr_of_mutation_steps_lj_of_heavy_atoms</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="p">):</span>
@@ -398,7 +395,6 @@
     <span class="c1"># generate terminal LJ</span>
     <span class="c1">######################################</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span><span class="p">:</span>
-
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Generate terminal LJ particle in step: </span><span class="si">{</span><span class="n">i</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2"> on atoms: </span><span class="si">{</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">vdw_atom_idx</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">mutation_list</span><span class="p">[</span><span class="s1">&#39;default-lj&#39;</span><span class="p">]]</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -442,7 +438,6 @@
     <span class="n">lj_default</span><span class="p">:</span> <span class="nb">list</span>
 
     <span class="k">def</span> <span class="nf">return_connecting_real_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dummy_atoms</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
-
         <span class="k">for</span> <span class="n">real_atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">match_termin_real_and_dummy_atoms</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">dummy_atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">match_termin_real_and_dummy_atoms</span><span class="p">[</span><span class="n">real_atom</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">dummy_atom</span> <span class="ow">in</span> <span class="n">dummy_atoms</span><span class="p">:</span>
@@ -462,7 +457,6 @@
     <span class="n">steric_mutation_to_default</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">print_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Atoms to be mutated: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mutated on common core: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">common_core</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -496,8 +490,8 @@
                 <span class="n">mol1_name</span><span class="p">:</span> <span class="n">s1</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">s1</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
                 <span class="n">mol2_name</span><span class="p">:</span> <span class="n">s2</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">s2</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
             <span class="p">}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">psfs</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">psf2</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">psfs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">psfs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psf2</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span> <span class="o">=</span> <span class="n">s2</span><span class="o">.</span><span class="n">psfs</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[],</span> <span class="n">mol2_name</span><span class="p">:</span> <span class="p">[]}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">removed_indeces</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[],</span> <span class="n">mol2_name</span><span class="p">:</span> <span class="p">[]}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">added_indeces</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[],</span> <span class="n">mol2_name</span><span class="p">:</span> <span class="p">[]}</span>
@@ -523,7 +517,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_cgenff_versions</span><span class="p">()</span>
 
         <span class="k">except</span><span class="p">:</span>
-
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s2">&quot;Only information about one structure, assume an ASFE simulation is requested&quot;</span>
             <span class="p">)</span>
@@ -533,7 +526,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">graphs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="n">s1</span><span class="o">.</span><span class="n">graph</span><span class="p">}</span>
             <span class="c1"># psfs for reference of only ligand</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">s1</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">s1</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">psfs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span> <span class="o">=</span> <span class="n">s1</span><span class="o">.</span><span class="n">psfs</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[]}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">removed_indeces</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[]}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">added_indeces</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="p">[]}</span>
@@ -542,7 +535,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="p">:</span> <span class="n">DummyRegion</span></div>
 
     <span class="k">def</span> <span class="nf">_check_cgenff_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">cgenff_sys1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;system1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cgenff_version</span>
         <span class="n">cgenff_sys2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="s2">&quot;system2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cgenff_version</span>
         <span class="k">if</span> <span class="n">cgenff_sys1</span> <span class="o">==</span> <span class="n">cgenff_sys2</span><span class="p">:</span>
@@ -655,7 +647,6 @@
         <span class="n">match_terminal_atoms_cc1</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">match_terminal_atoms_cc2</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
-
         <span class="n">cc1_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">]</span>
         <span class="n">cc2_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">]</span>
 
@@ -664,13 +655,11 @@
 
         <span class="c1"># iterate through the common core substracter (the order represents the matched atoms)</span>
         <span class="k">for</span> <span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cc1_idx</span><span class="p">,</span> <span class="n">cc2_idx</span><span class="p">):</span>
-
             <span class="c1"># if both atoms are terminal atoms connected dummy regions can be identified</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">idx1</span> <span class="ow">in</span> <span class="n">match_terminal_atoms_cc1</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
                 <span class="ow">and</span> <span class="n">idx2</span> <span class="ow">in</span> <span class="n">match_terminal_atoms_cc2</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
             <span class="p">):</span>
-
                 <span class="n">connected_dummy_cc1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">match_terminal_atoms_cc1</span><span class="p">[</span><span class="n">idx1</span><span class="p">])</span>
                 <span class="n">connected_dummy_cc2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">match_terminal_atoms_cc2</span><span class="p">[</span><span class="n">idx2</span><span class="p">])</span>
 
@@ -705,7 +694,6 @@
         <span class="n">match_terminal_atoms</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">G</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">tf_routes.routes</span> <span class="kn">import</span> <span class="p">(</span>
                 <span class="n">_calculate_order_of_LJ_mutations_new</span> <span class="k">as</span> <span class="n">_calculate_order_of_LJ_mutations_with_bfs</span><span class="p">,</span>
@@ -747,7 +735,7 @@
 <div class="viewcode-block" id="ProposeMutationRoute._check_for_lp"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._check_for_lp">[docs]</a>    <span class="k">def</span> <span class="nf">_check_for_lp</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">odered_connected_dummy_regions_cc_with_lp</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-        <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
+        <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span>
         <span class="n">tlc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -848,7 +836,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">asfe</span><span class="p">:</span>
-
             <span class="c1"># set the teriminal real/dummy atom indices</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_common_core_parameters</span><span class="p">()</span>
             <span class="c1"># match the real/dummy atoms</span>
@@ -946,7 +933,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">charge_compensated_ligand2_psf</span> <span class="o">=</span> <span class="n">psf2</span>
 
         <span class="k">else</span><span class="p">:</span>
-
             <span class="c1"># all atoms should become dummy atoms in the end</span>
             <span class="n">central_atoms</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">])</span>
 
@@ -984,7 +970,6 @@
             <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">calculate_common_core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">propose_common_core</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">finish_common_core</span><span class="p">()</span>
 
@@ -1003,7 +988,6 @@
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">()],</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="p">],</span>
         <span class="p">):</span>
-
             <span class="c1"># set `initial_charge` parameter for Mutation</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
                 <span class="c1"># charge, epsilon and rmin are directly modiefied</span>
@@ -1102,7 +1086,6 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_idx_not_in_common_core_for_mol</span><span class="p">(</span><span class="s2">&quot;m2&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_idx_not_in_common_core_for_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-
         <span class="n">dummy_list_mol</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="n">mol_name</span><span class="p">]</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()</span>
@@ -1205,7 +1188,6 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_find_connected_dummy_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">set</span><span class="p">]:</span>
-
         <span class="n">sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_common_core</span><span class="p">(</span><span class="n">mol_name</span><span class="p">)</span>
         <span class="c1">#############################</span>
         <span class="c1"># start</span>
@@ -1347,7 +1329,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="o">.</span><span class="n">lj_default</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="o">.</span><span class="n">lj_default</span><span class="p">,</span>
         <span class="p">):</span>
-
             <span class="c1"># did atom type change? if not don&#39;t add BondedMutations</span>
             <span class="n">atom1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">][</span><span class="n">cc1</span><span class="p">]</span>
             <span class="n">atom2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">][</span><span class="n">cc2</span><span class="p">]</span>
@@ -1553,11 +1534,11 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">cc1_indicies</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">cc2_indicies</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-        <span class="n">ligand1_psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
-        <span class="n">ligand2_psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
+        <span class="n">ligand1_psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span>
+        <span class="n">ligand2_psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span>
         <span class="n">tlc_cc1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">tlc_cc2</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">charge_compensated_ligand2_psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
+        <span class="n">charge_compensated_ligand2_psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span>
         <span class="n">charge_mutation</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">bonded_terms_mutation</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">):</span>
@@ -1569,8 +1550,8 @@
 <span class="sd">            indices of cc1</span>
 <span class="sd">        cc2_indicies : list</span>
 <span class="sd">            indices of cc2 (in the same order as cc1)</span>
-<span class="sd">        ligand1_psf : pm.charmm.CharmmPsfFile (copy of only ligand)</span>
-<span class="sd">        ligand2_psf : pm.charmm.CharmmPsfFile (copy of only ligand)</span>
+<span class="sd">        ligand1_psf : CustomCharmmPsfFile (copy of only ligand)</span>
+<span class="sd">        ligand2_psf : CustomCharmmPsfFile (copy of only ligand)</span>
 <span class="sd">            the target psf that is used to generate the new bonded parmaeters</span>
 <span class="sd">        tlc_cc1 : str</span>
 <span class="sd">            three letter code of ligand in cc1</span>
@@ -1579,14 +1560,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cc1_indicies</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">cc1_indicies</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cc2_indicies</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">cc2_indicies</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ligand2_psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span> <span class="o">=</span> <span class="n">ligand2_psf</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ligand1_psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span> <span class="o">=</span> <span class="n">ligand1_psf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ligand2_psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span> <span class="o">=</span> <span class="n">ligand2_psf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ligand1_psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span> <span class="o">=</span> <span class="n">ligand1_psf</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">tlc_cc1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc2</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">tlc_cc2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_atom_mapping</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charge_mutation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">charge_mutation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bonded_terms_mutation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">bonded_terms_mutation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">charge_compensated_ligand2_psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge_compensated_ligand2_psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">charge_compensated_ligand2_psf</span>
         <span class="p">)</span>
 
@@ -1621,7 +1602,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc2: </span><span class="si">{</span><span class="n">cc_names_struc2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">match_atom_names_cc1_to_cc2</span></div>
 
-    <span class="k">def</span> <span class="nf">_mutate_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_mutate_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 
         <span class="c1"># common core of psf 1 is transformed to psf 2</span>
         <span class="k">for</span> <span class="n">ligand1_atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]:</span>
@@ -1649,7 +1630,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding atom in cc2 found&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CommonCoreTransformation._mutate_atoms"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation._mutate_atoms">[docs]</a>    <span class="k">def</span> <span class="nf">_mutate_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonCoreTransformation._mutate_atoms"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation._mutate_atoms">[docs]</a>    <span class="k">def</span> <span class="nf">_mutate_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        mutate atom types.</span>
 
@@ -1710,14 +1691,13 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding atom in cc2 found&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_mutate_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_mutate_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;#######################&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;mutate_bonds&quot;</span><span class="p">)</span>
 
         <span class="n">mod_type</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Bond&quot;</span><span class="p">,</span> <span class="s2">&quot;k, req&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">ligand1_bond</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">bonds</span><span class="p">:</span>
-
             <span class="n">ligand1_atom1_name</span> <span class="o">=</span> <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">name</span>
             <span class="n">ligand1_atom2_name</span> <span class="o">=</span> <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">name</span>
             <span class="c1"># all atoms of the bond must be in cc</span>
@@ -1782,7 +1762,7 @@
                     <span class="s2">&quot;No corresponding bond in cc2 found: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="p">)</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_mutate_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_mutate_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 
         <span class="n">mod_type</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Angle&quot;</span><span class="p">,</span> <span class="s2">&quot;k, theteq&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">cc1_angle</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">angles</span><span class="p">:</span>
@@ -1855,13 +1835,12 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">cc1_angle</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding angle in cc2 found&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_mutate_torsions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_mutate_torsions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 
         <span class="n">mod_type</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Torsion&quot;</span><span class="p">,</span> <span class="s2">&quot;phi_k, per, phase, scee, scnb&quot;</span><span class="p">)</span>
 
         <span class="c1"># get all torsions present in initial topology</span>
         <span class="k">for</span> <span class="n">original_torsion</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dihedrals</span><span class="p">:</span>
-
             <span class="n">found</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">original_atom1_name</span> <span class="o">=</span> <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">name</span>
             <span class="n">original_atom2_name</span> <span class="o">=</span> <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">name</span>
@@ -1967,18 +1946,18 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">original_torsion</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding torsion in cc2 found&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CommonCoreTransformation.mutate"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation.mutate">[docs]</a>    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<div class="viewcode-block" id="CommonCoreTransformation.mutate"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation.mutate">[docs]</a>    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Mutates the bonded parameters of cc1 to cc2.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        psf : pm.charmm.CharmmPsfFile</span>
+<span class="sd">        psf : CustomCharmmPsfFile</span>
 <span class="sd">            psf that gets mutated</span>
 <span class="sd">        lambda_value : float</span>
 <span class="sd">            lambda_value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">CustomCharmmPsfFile</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_mutation</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; -- Charge parameters from cc1 are transformed to cc2.&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lambda value:</span><span class="si">{</span><span class="n">lambda_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1999,7 +1978,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_torsions</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_modify_type_in_cc</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">Atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_modify_type_in_cc</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">Atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">):</span>
             <span class="c1"># only change parameters</span>
@@ -2013,16 +1992,14 @@
 
 <div class="viewcode-block" id="Mutation"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation">[docs]</a><span class="k">class</span> <span class="nc">Mutation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <div class="viewcode-block" id="Mutation.__init__"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms_to_be_mutated</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">dummy_region</span><span class="p">:</span> <span class="n">DummyRegion</span><span class="p">):</span>
-
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">atoms_to_be_mutated</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span> <span class="o">=</span> <span class="n">atoms_to_be_mutated</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region</span> <span class="o">=</span> <span class="n">dummy_region</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span> <span class="o">=</span> <span class="n">dummy_region</span><span class="o">.</span><span class="n">tlc</span></div>
 
     <span class="k">def</span> <span class="nf">_mutate_charge</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">):</span>
-
         <span class="n">total_charge</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
             <span class="nb">round</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_charge</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">]))</span>
         <span class="p">)</span>
@@ -2047,13 +2024,12 @@
 
     <span class="k">def</span> <span class="nf">_mutate_vdw</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
+        <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span>
         <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">vdw_atom_idx</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">to_default</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">):</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">vdw_atom_idx</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Specified atom </span><span class="si">{</span><span class="n">vdw_atom_idx</span><span class="si">}</span><span class="s2"> is not in atom_idx list </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="si">}</span><span class="s2">. Aborting.&quot;</span>
@@ -2079,7 +2055,7 @@
 
 <div class="viewcode-block" id="Mutation.mutate"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation.mutate">[docs]</a>    <span class="k">def</span> <span class="nf">mutate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
+        <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span>
         <span class="n">lambda_value_electrostatic</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">lambda_value_vdw</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">vdw_atom_idx</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
@@ -2107,7 +2083,7 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Mutation._compensate_charge"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation._compensate_charge">[docs]</a>    <span class="k">def</span> <span class="nf">_compensate_charge</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">total_charge</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span><span class="p">,</span> <span class="n">total_charge</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _compensate_charge This function compensates the charge changes of a dummy region on the terminal real atom</span>
@@ -2115,7 +2091,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        psf : pm.charmm.CharmmPsfFile</span>
+<span class="sd">        psf : CustomCharmmPsfFile</span>
 <span class="sd">            [description]</span>
 <span class="sd">        total_charge : int</span>
 <span class="sd">            [description]</span>
@@ -2200,7 +2176,6 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_modify_type</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">atom_type_suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">):</span>
             <span class="c1"># only change parameters</span>
             <span class="k">pass</span>
@@ -2224,7 +2199,6 @@
     <span class="n">single_state</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">nr_of_bonded_windows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
 <span class="p">):</span>
-
     <span class="kn">from</span> <span class="nn">transformato</span> <span class="kn">import</span> <span class="p">(</span>
         <span class="n">IntermediateStateFactory</span><span class="p">,</span>
     <span class="p">)</span>

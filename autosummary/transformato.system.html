@@ -232,12 +232,12 @@ Everything is constructed automatically from the charmm-gui folder.
 <span class="sig-name descname"><span class="pre">_determine_offset_and_set_possible_dummy_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._determine_offset_and_set_possible_dummy_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines the offset and sets possible properties on the psf.
 :param psf:
-:type psf: pm.charmm.CharmmPsfFile
+:type psf: CustomCharmmPsfFile
 :param env: waterbox,complex or vacuum
 :type env: str</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p>
+<dd class="field-odd"><p><strong>psf</strong> (<em>CustomCharmmPsfFile</em>) – </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
@@ -252,7 +252,7 @@ Everything is constructed automatically from the charmm-gui folder.
 :param env: waterbox,complex or vacuum
 :type env: str
 :param psf:
-:type psf: pm.charmm.CharmmPsfFile</p>
+:type psf: CustomCharmmPsfFile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>mol</strong></p>
@@ -263,7 +263,7 @@ Everything is constructed automatically from the charmm-gui folder.
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>env</strong> (<em>str</em>) – </p></li>
-<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -282,7 +282,7 @@ Everything is constructed automatically from the charmm-gui folder.
 <dd class="field-odd"><p><strong>psf</strong></p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>pm.charmm.CharmmPsfFile</p>
+<dd class="field-even"><p>CustomCharmmPsfFile</p>
 </dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -317,13 +317,13 @@ Everything is constructed automatically from the charmm-gui folder.
 <span class="sig-name descname"><span class="pre">generate_atom_tables_from_psf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure.generate_atom_tables_from_psf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure.generate_atom_tables_from_psf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate mapping dictionaries for a molecule in a psf.
 :param psf:
-:type psf: pm.charmm.CharmmPsfFile</p>
+:type psf: CustomCharmmPsfFile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict’s</p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p>
+<dd class="field-even"><p><strong>psf</strong> (<em>CustomCharmmPsfFile</em>) – </p>
 </dd>
 </dl>
 </dd></dl>

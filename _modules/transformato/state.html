@@ -210,7 +210,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span> <span class="o">=</span> <span class="n">multiple_runs</span></div>
 
     <span class="k">def</span> <span class="nf">endstate_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Will create script for endstate correction&quot;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">/../endstate_correction&quot;</span><span class="p">)</span>
@@ -284,7 +283,6 @@
 
         <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">mutation_type</span> <span class="ow">in</span> <span class="n">mutation_conf</span><span class="p">:</span>
-
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">common_core_transformation</span> <span class="o">&lt;</span> <span class="mf">1.0</span>
                 <span class="p">):</span>  <span class="c1"># NOTE: THis is inconsisten -- the mutatino_type is the actual mutation in this case</span>
@@ -328,7 +326,6 @@
 
         <span class="c1"># Used for restraints:</span>
         <span class="k">if</span> <span class="s2">&quot;restraints&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s2">&quot;Found restraints in configuration file - writing restraints.yaml&quot;</span>
             <span class="p">)</span>
@@ -745,7 +742,6 @@
     <span class="k">def</span> <span class="nf">_copy_ligand_specific_top_and_par</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">basedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
-
         <span class="c1"># copy ligand rtf file</span>
         <span class="n">ligand_rtf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s2">/waterbox/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_g.rtf&quot;</span>
         <span class="n">toppar_target</span> <span class="o">=</span> <span class="p">(</span>
@@ -761,14 +757,12 @@
     <span class="k">def</span> <span class="nf">_copy_ligand_specific_str</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">basedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
-
         <span class="c1"># copy ligand rtf file</span>
         <span class="n">ligand_rtf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s2">/waterbox/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.str&quot;</span>
         <span class="n">toppar_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.str&quot;</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">ligand_rtf</span><span class="p">,</span> <span class="n">toppar_target</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_copy_crd_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-
         <span class="n">basedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">charmm_gui_base</span>
         <span class="c1"># copy crd files</span>
         <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
@@ -921,7 +915,6 @@
         <span class="n">rtf_file_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_write_prm_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="n">tlc</span><span class="p">):</span>
-
         <span class="n">header_prm</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;* Parameters generated by analogy by</span>
 <span class="s2">* CHARMM General Force Field (CGenFF) program version 1.0.0</span>
 <span class="s2">*</span>
@@ -1010,7 +1003,6 @@
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">angles</span><span class="p">:</span>
             <span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">,</span> <span class="n">atom3</span> <span class="o">=</span> <span class="n">angle</span><span class="o">.</span><span class="n">atom1</span><span class="p">,</span> <span class="n">angle</span><span class="o">.</span><span class="n">atom2</span><span class="p">,</span> <span class="n">angle</span><span class="o">.</span><span class="n">atom3</span>
             <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="p">[</span><span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">,</span> <span class="n">atom3</span><span class="p">]):</span>
-
                 <span class="k">if</span> <span class="p">[</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">]</span> <span class="ow">in</span> <span class="n">already_seen</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="p">[</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span><span class="w"> </span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="k">continue</span>
@@ -1192,7 +1184,6 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">toppar_source</span><span class="p">,</span> <span class="n">toppar_target</span><span class="p">,</span> <span class="n">dirs_exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_write_toppar_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">):</span>
-
         <span class="n">toppar_format</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">../../toppar/top_all36_prot.rtf</span>
 <span class="s2">../../toppar/par_all36m_prot.prm</span>
