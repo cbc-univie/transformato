@@ -94,7 +94,6 @@ def test_run_28_1h1q_rsfe_analysis_with_CHARMM():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_run_1a0q_1a07_rsfe_production_with_CHARMM(caplog):
-
     from transformato import (
         IntermediateStateFactory,
         ProposeMutationRoute,
