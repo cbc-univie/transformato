@@ -208,9 +208,7 @@ class SystemStructure(object):
         parameter = pm.charmm.CharmmParameterSet(*parameter_files)
         return parameter
 
-    def _initialize_system(
-        self, configuration: dict, env: str
-    ) -> CustomCharmmPsfFile:
+    def _initialize_system(self, configuration: dict, env: str) -> CustomCharmmPsfFile:
         """
         Generates the psf file and sets the coordinates from the CHARMM-GUI files.
         Parameters

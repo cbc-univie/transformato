@@ -1441,7 +1441,6 @@ class CommonCoreTransformation(object):
         return match_atom_names_cc1_to_cc2
 
     def _mutate_charges(self, psf: CustomCharmmPsfFile, scale: float):
-
         # common core of psf 1 is transformed to psf 2
         for ligand1_atom in psf.view[f":{self.tlc_cc1}"]:
             if ligand1_atom.name not in self.atom_names_mapping:
@@ -1530,7 +1529,6 @@ class CommonCoreTransformation(object):
                 raise RuntimeError("No corresponding atom in cc2 found")
 
     def _mutate_bonds(self, psf: CustomCharmmPsfFile, lambda_value: float):
-
         logger.debug("#######################")
         logger.debug("mutate_bonds")
 
@@ -1601,7 +1599,6 @@ class CommonCoreTransformation(object):
                 )
 
     def _mutate_angles(self, psf: CustomCharmmPsfFile, lambda_value: float):
-
         mod_type = namedtuple("Angle", "k, theteq")
         for cc1_angle in psf.view[f":{self.tlc_cc1}"].angles:
             ligand1_atom1_name = cc1_angle.atom1.name
@@ -1674,7 +1671,6 @@ class CommonCoreTransformation(object):
                 raise RuntimeError("No corresponding angle in cc2 found")
 
     def _mutate_torsions(self, psf: CustomCharmmPsfFile, lambda_value: float):
-
         mod_type = namedtuple("Torsion", "phi_k, per, phase, scee, scnb")
 
         # get all torsions present in initial topology
@@ -1817,7 +1813,6 @@ class CommonCoreTransformation(object):
 
     @staticmethod
     def _modify_type_in_cc(atom: pm.Atom, psf: CustomCharmmPsfFile):
-
         if hasattr(atom, "initial_type"):
             # only change parameters
             pass
