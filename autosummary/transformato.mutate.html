@@ -208,11 +208,11 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cc1_indicies</strong> (<em>list</em>) – </p></li>
 <li><p><strong>cc2_indicies</strong> (<em>list</em>) – </p></li>
-<li><p><strong>ligand1_psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
-<li><p><strong>ligand2_psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
+<li><p><strong>ligand1_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>ligand2_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 <li><p><strong>tlc_cc1</strong> (<em>str</em>) – </p></li>
 <li><p><strong>tlc_cc2</strong> (<em>str</em>) – </p></li>
-<li><p><strong>charge_compensated_ligand2_psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
+<li><p><strong>charge_compensated_ligand2_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 <li><p><strong>charge_mutation</strong> (<em>bool</em>) – </p></li>
 <li><p><strong>bonded_terms_mutation</strong> (<em>bool</em>) – </p></li>
 </ul>
@@ -227,9 +227,9 @@
 :param cc2_indicies: indices of cc2 (in the same order as cc1)
 :type cc2_indicies: list
 :param ligand1_psf:
-:type ligand1_psf: CustomCharmmPsfFile (copy of only ligand)
+:type ligand1_psf: pm.charmm.CharmmPsfFile (copy of only ligand)
 :param ligand2_psf: the target psf that is used to generate the new bonded parmaeters
-:type ligand2_psf: CustomCharmmPsfFile (copy of only ligand)
+:type ligand2_psf: pm.charmm.CharmmPsfFile (copy of only ligand)
 :param tlc_cc1: three letter code of ligand in cc1
 :type tlc_cc1: str
 :param tlc_cc2: three letter code of ligand in cc2
@@ -239,11 +239,11 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cc1_indicies</strong> (<em>list</em>) – </p></li>
 <li><p><strong>cc2_indicies</strong> (<em>list</em>) – </p></li>
-<li><p><strong>ligand1_psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
-<li><p><strong>ligand2_psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
+<li><p><strong>ligand1_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>ligand2_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 <li><p><strong>tlc_cc1</strong> (<em>str</em>) – </p></li>
 <li><p><strong>tlc_cc2</strong> (<em>str</em>) – </p></li>
-<li><p><strong>charge_compensated_ligand2_psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
+<li><p><strong>charge_compensated_ligand2_psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 <li><p><strong>charge_mutation</strong> (<em>bool</em>) – </p></li>
 <li><p><strong>bonded_terms_mutation</strong> (<em>bool</em>) – </p></li>
 </ul>
@@ -281,7 +281,7 @@
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 <li><p><strong>lambda_value</strong> (<em>float</em>) – </p></li>
 </ul>
 </dd>
@@ -293,13 +293,13 @@
 <span class="sig-name descname"><span class="pre">mutate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#CommonCoreTransformation.mutate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.CommonCoreTransformation.mutate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mutates the bonded parameters of cc1 to cc2.
 :param psf: psf that gets mutated
-:type psf: CustomCharmmPsfFile
+:type psf: pm.charmm.CharmmPsfFile
 :param lambda_value: lambda_value
 :type lambda_value: float</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 <li><p><strong>lambda_value</strong> (<em>float</em>) – </p></li>
 </ul>
 </dd>
@@ -404,7 +404,7 @@ that connects the specific dummy group to the real region.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>psf</strong> (<em>CustomCharmmPsfFile</em>) – [description]</p></li>
+<li><p><strong>psf</strong> (<em>pm.charmm.CharmmPsfFile</em>) – [description]</p></li>
 <li><p><strong>total_charge</strong> (<em>int</em>) – [description]</p></li>
 <li><p><strong>offset</strong> (<em>int</em>) – [description]</p></li>
 </ul>
@@ -422,7 +422,7 @@ that connects the specific dummy group to the real region.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 <li><p><strong>lambda_value_electrostatic</strong> (<em>float</em>) – </p></li>
 <li><p><strong>lambda_value_vdw</strong> (<em>float</em>) – </p></li>
 <li><p><strong>vdw_atom_idx</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – </p></li>
@@ -539,7 +539,7 @@ to the dummy region and assign it into the sorted list accordingly.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>odered_connected_dummy_regions_cc_with_lp</strong> (<em>list</em>) – </p></li>
-<li><p><strong>psf</strong> (<em>CustomCharmmPsfFile</em>) – </p></li>
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
 <li><p><strong>tlc</strong> (<em>str</em>) – </p></li>
 <li><p><strong>name</strong> (<em>str</em>) – </p></li>
 </ul>
