@@ -4,6 +4,7 @@ channels:
   - defaults
 dependencies:
   # Base depends
+  - pip
   - openmm
   - openmmtools
   - numpy
