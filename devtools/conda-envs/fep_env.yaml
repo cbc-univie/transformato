@@ -25,4 +25,6 @@ dependencies:
   - codecov
   - pip:
     - git+https://github.com/wiederm/tf_routes.git
+    - git+https://github.com/JohannesKarwou/ParmEd@access_lonepair_function
     - git+https://github.com/wiederm/transformato_testsystems.git
+    - git+https://github.com/wiederm/transformato
