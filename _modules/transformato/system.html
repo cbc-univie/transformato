@@ -171,7 +171,6 @@
 <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
 
 <span class="kn">from</span> <span class="nn">transformato.utils</span> <span class="kn">import</span> <span class="n">get_toppar_dir</span>
-<span class="kn">from</span> <span class="nn">transformato.charmmPsfFile</span> <span class="kn">import</span> <span class="n">CustomCharmmPsfFile</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -193,7 +192,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;charmm_gui_dir&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">CustomCharmmPsfFile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="s2">&quot;waterbox&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cgenff_version</span><span class="p">:</span> <span class="nb">float</span>
@@ -371,7 +370,9 @@
         <span class="n">parameter</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmParameterSet</span><span class="p">(</span><span class="o">*</span><span class="n">parameter_files</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parameter</span></div>
 
-<div class="viewcode-block" id="SystemStructure._initialize_system"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._initialize_system">[docs]</a>    <span class="k">def</span> <span class="nf">_initialize_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CustomCharmmPsfFile</span><span class="p">:</span>
+<div class="viewcode-block" id="SystemStructure._initialize_system"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._initialize_system">[docs]</a>    <span class="k">def</span> <span class="nf">_initialize_system</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the psf file and sets the coordinates from the CHARMM-GUI files.</span>
 <span class="sd">        Parameters</span>
@@ -382,7 +383,7 @@
 <span class="sd">            waterbox,complex or vacuum</span>
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
-<span class="sd">        psf : CustomCharmmPsfFile</span>
+<span class="sd">        psf : pm.charmm.CharmmPsfFile</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
@@ -403,7 +404,7 @@
             <span class="p">)</span>
 
             <span class="c1"># load psf</span>
-            <span class="n">psf</span> <span class="o">=</span> <span class="n">CustomCharmmPsfFile</span><span class="p">(</span><span class="n">psf_file_path</span><span class="p">)</span>
+            <span class="n">psf</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">(</span><span class="n">psf_file_path</span><span class="p">)</span>
             <span class="n">coord</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmCrdFile</span><span class="p">(</span><span class="n">crd_file_path</span><span class="p">)</span>
             <span class="n">psf</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">coord</span><span class="o">.</span><span class="n">coordinates</span>
 
@@ -441,26 +442,26 @@
 
             <span class="n">psf_file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">/openmm/</span><span class="si">{</span><span class="n">psf_file_name</span><span class="si">}</span><span class="s2">.psf&quot;</span>
             <span class="n">crd_file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">/openmm/</span><span class="si">{</span><span class="n">crd_file_name</span><span class="si">}</span><span class="s2">.crd&quot;</span>
-            <span class="n">psf</span> <span class="o">=</span> <span class="n">CustomCharmmPsfFile</span><span class="p">(</span><span class="n">psf_file_path</span><span class="p">)</span>
+            <span class="n">psf</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">(</span><span class="n">psf_file_path</span><span class="p">)</span>
             <span class="n">coord</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmCrdFile</span><span class="p">(</span><span class="n">crd_file_path</span><span class="p">)</span>
             <span class="n">psf</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">coord</span><span class="o">.</span><span class="n">coordinates</span>
 
         <span class="k">return</span> <span class="n">psf</span></div>
 
 <div class="viewcode-block" id="SystemStructure._determine_offset_and_set_possible_dummy_properties"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties">[docs]</a>    <span class="k">def</span> <span class="nf">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines the offset and sets possible properties on the psf.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        psf : CustomCharmmPsfFile</span>
+<span class="sd">        psf : pm.charmm.CharmmPsfFile</span>
 <span class="sd">        env: str</span>
 <span class="sd">            waterbox,complex or vacuum</span>
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">CustomCharmmPsfFile</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No ligand selected for tlc: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -513,7 +514,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="SystemStructure._generate_rdkit_mol"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._generate_rdkit_mol">[docs]</a>    <span class="k">def</span> <span class="nf">_generate_rdkit_mol</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the rdkit mol object.</span>
@@ -521,13 +522,13 @@
 <span class="sd">        ----------</span>
 <span class="sd">        env: str</span>
 <span class="sd">            waterbox,complex or vacuum</span>
-<span class="sd">        psf: CustomCharmmPsfFile</span>
+<span class="sd">        psf: pm.charmm.CharmmPsfFile</span>
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
 <span class="sd">        mol: rdkit.Chem.rdchem.Mol</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">CustomCharmmPsfFile</span>
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_small_molecule</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
         <span class="p">(</span>
             <span class="n">atom_idx_to_atom_name</span><span class="p">,</span>
@@ -557,13 +558,13 @@
         <span class="k">return</span> <span class="n">mol</span></div>
 
 <div class="viewcode-block" id="SystemStructure.generate_atom_tables_from_psf"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure.generate_atom_tables_from_psf">[docs]</a>    <span class="k">def</span> <span class="nf">generate_atom_tables_from_psf</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">CustomCharmmPsfFile</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate mapping dictionaries for a molecule in a psf.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        psf: CustomCharmmPsfFile</span>
+<span class="sd">        psf: pm.charmm.CharmmPsfFile</span>
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
 <span class="sd">        dict&#39;s</span>
