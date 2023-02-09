@@ -1,93 +1,48 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>System Setup &mdash; transformato  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Additional Settings" href="Additional_Settings.html" />
     <link rel="prev" title="Installation" href="Installation.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="index.html" class="icon icon-home"> transformato
           
-
-          
+          <a href="index.html">
+            
+              <img src="_static/logo_transformato.png" class="logo" alt="Logo"/>
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="whatistransformato.html">Theoretical background</a></li>
@@ -104,73 +59,32 @@
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">transformato</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>System Setup</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">System Setup</li>
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/System_Setup.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="system-setup">
-<h1>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this heading">¶</a></h1>
+<h1>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this heading"></a></h1>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <p>In this section we are only talking about <strong>RBFE</strong>, this means we do always have a complex and
@@ -189,7 +103,7 @@ an <em>analysis.py</em> script - this is covered on the <a class="reference inte
 <p>The overall structure on how everything needs to be set up and where which file has to be stored is given in
 the Figure below. During the following steps, this Figure might be interesting to look at.</p>
 <img alt="transformato-tree" src="_images/transformato-tree.svg" /><section id="step-1-creating-systems-using-charmm-gui">
-<h2>Step 1 – creating Systems using CHARMM-GUI<a class="headerlink" href="#step-1-creating-systems-using-charmm-gui" title="Permalink to this heading">¶</a></h2>
+<h2>Step 1 – creating Systems using CHARMM-GUI<a class="headerlink" href="#step-1-creating-systems-using-charmm-gui" title="Permalink to this heading"></a></h2>
 <p>First, one needs input files for the physical endstates. It is strongly encouraged to use CHARMM-GUI (specifically
 the solution builder) to create them. For running CHARMM-GUI you need a pdb file of your ligand as well as a pdb
 file of your ligand bound to the protein. In addition, you might need to provide CHARMM-GUI with a sdf or mol2 file
@@ -239,7 +153,7 @@ can generate this yourself using <a class="reference external" href="https://cge
 </div>
 </section>
 <section id="step-2-modifying-the-yaml-file">
-<h2>Step 2 – modifying the yaml file<a class="headerlink" href="#step-2-modifying-the-yaml-file" title="Permalink to this heading">¶</a></h2>
+<h2>Step 2 – modifying the yaml file<a class="headerlink" href="#step-2-modifying-the-yaml-file" title="Permalink to this heading"></a></h2>
 <p>The config.yaml provides all information necessary for setting up a mutation between two ligands.
 It contains:</p>
 <ol class="arabic simple">
@@ -321,20 +235,20 @@ directories.)</p>
 <dd><p>Should not be changed</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-name">
-<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-name" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-name" title="Permalink to this definition"></a></dt>
 <dd><p>The name of the folder containing the <strong>waterbox</strong>/ <strong>complex</strong> folders for that structure
 (<em>in this example, the folder needs to be called vim2_zn148</em>)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-tlc">
-<span class="sig-name descname"><span class="pre">tlc</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-tlc" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">tlc</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-tlc" title="Permalink to this definition"></a></dt>
 <dd><p>The residue name (resname) of the structure. When using CHARMM-GUI output, it is often called UNK</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-other">
-<span class="sig-name descname"><span class="pre">other</span></span><span class="sig-prename descclassname"> <span class="pre">parameters</span></span><a class="headerlink" href="#cmdoption-arg-other" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">other</span></span><span class="sig-prename descclassname"> <span class="pre">parameters</span></span><a class="headerlink" href="#cmdoption-arg-other" title="Permalink to this definition"></a></dt>
 <dd><p>These refer to the various files in the /openmm/ subfolder (e.g. the psf and crd files).</p>
 </dd></dl>
 
@@ -352,31 +266,31 @@ The <em>simulation</em> container contains the simulation parameters you want to
 <span class="sig-name descname"><span class="pre">parameters</span></span></dt>
 <dd><dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nstep">
-<span class="sig-name descname"><span class="pre">nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstep" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstep" title="Permalink to this definition"></a></dt>
 <dd><p>How many calculation steps you want to simulate</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nstdcd">
-<span class="sig-name descname"><span class="pre">nstdcd:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstdcd" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nstdcd:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstdcd" title="Permalink to this definition"></a></dt>
 <dd><p>Writing coordinates trajectory frequency (steps)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nstout">
-<span class="sig-name descname"><span class="pre">nstout:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstout" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nstout:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstout" title="Permalink to this definition"></a></dt>
 <dd><p>Writing output frequency (steps)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-cons">
-<span id="cmdoption-arg-None"></span><span id="cmdoption-arg-none"></span><span class="sig-name descname"><span class="pre">cons:</span></span><span class="sig-prename descclassname"> <span class="pre">[&quot;HBonds&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">None]</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-cons" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-arg-None"></span><span id="cmdoption-arg-none"></span><span class="sig-name descname"><span class="pre">cons:</span></span><span class="sig-prename descclassname"> <span class="pre">[&quot;HBonds&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">None]</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-cons" title="Permalink to this definition"></a></dt>
 <dd><p>Whether you want to use constraints or not.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-dt">
-<span class="sig-name descname"><span class="pre">dt:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-dt" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dt:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-dt" title="Permalink to this definition"></a></dt>
 <dd><p>The timestep in picoseconds.</p>
 <blockquote>
 <div><div class="admonition attention">
@@ -390,31 +304,31 @@ see <a class="reference internal" href="Additional_Settings.html"><span class="d
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-switch">
-<span id="cmdoption-arg-switch"></span><span class="sig-name descname"><span class="pre">switch:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;vfswitch&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;switch&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-switch" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-arg-switch"></span><span class="sig-name descname"><span class="pre">switch:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;vfswitch&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;switch&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-switch" title="Permalink to this definition"></a></dt>
 <dd><p>vdW cut-off method</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-mini_nstep">
-<span id="cmdoption-arg-mini-nstep"></span><span class="sig-name descname"><span class="pre">mini_nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-mini_nstep" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-arg-mini-nstep"></span><span class="sig-name descname"><span class="pre">mini_nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-mini_nstep" title="Permalink to this definition"></a></dt>
 <dd><p>Steps for minimization</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-GPU">
-<span id="cmdoption-arg-gpu"></span><span id="cmdoption-arg-False"></span><span id="cmdoption-arg-false"></span><span class="sig-name descname"><span class="pre">GPU:</span></span><span class="sig-prename descclassname"> <span class="pre">([True</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">False])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-GPU" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-arg-gpu"></span><span id="cmdoption-arg-False"></span><span id="cmdoption-arg-false"></span><span class="sig-name descname"><span class="pre">GPU:</span></span><span class="sig-prename descclassname"> <span class="pre">([True</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">False])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-GPU" title="Permalink to this definition"></a></dt>
 <dd><p>Whether you want to use GPU support or not. It’s strongly recommended to enable GPU support if possible.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-workload-manager">
-<span id="cmdoption-arg-SGE"></span><span id="cmdoption-arg-sge"></span><span class="sig-name descname"><span class="pre">workload-manager:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;slurm&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;SGE&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-workload-manager" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-arg-SGE"></span><span id="cmdoption-arg-sge"></span><span class="sig-name descname"><span class="pre">workload-manager:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;slurm&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;SGE&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-workload-manager" title="Permalink to this definition"></a></dt>
 <dd><p>For which workload-manager the script files should be output.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-free-energy-type">
-<span id="cmdoption-arg-rsfe"></span><span class="sig-name descname"><span class="pre">free-energy-type:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;rbfe&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;rsfe&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-free-energy-type" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-arg-rsfe"></span><span class="sig-name descname"><span class="pre">free-energy-type:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;rbfe&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;rsfe&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-free-energy-type" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate relative <strong>binding</strong> free energy or relative <strong>solvation</strong> free energy</p>
 </dd></dl>
 
@@ -430,50 +344,33 @@ step 3.</p>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="Additional_Settings.html" class="btn btn-neutral float-right" title="Additional Settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="Installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Additional_Settings.html" class="btn btn-neutral float-right" title="Additional Settings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.
-
-    </p>
+    <p>&#169; Copyright 2022, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch. Project structure based on the Computational Molecular Science Python Cookiecutter version 1.1.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
