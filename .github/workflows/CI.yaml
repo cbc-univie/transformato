@@ -34,9 +34,20 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.9]
+        include:
+          - os: ubuntu-latest
+            label: linux-64
+            environment-file: devtools/conda-envs/fep_env.yaml
+            miniforge-variant: Mambaforge
+            miniforge-version: 4.9.2-4
+#           - os: macos-latest
+#             label: osx-64
+#             # prefix: /Users/runner/miniconda3/envs/openmm7.6
+#             environment-file: devtools/conda-envs/openmm7.6.yaml
+#             miniforge-variant: Mambaforge-pypy3
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
     - name: Additional info about the build
       shell: bash
@@ -50,7 +61,7 @@ jobs:
       
     - name: Make Cache (no worflow_dispatch)
       if: ${{ github.event_name != 'workflow_dispatch' }}
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
         # Increase the last number (0) to reset cache manually
@@ -59,7 +70,7 @@ jobs:
       
     - name: Make Cache (worflow_dispatch)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
         key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep_env.yaml') }}-${{ env.DATE }}-${{ inputs.CACHE_NUMBER }}
@@ -70,18 +81,19 @@ jobs:
     - uses: conda-incubator/setup-miniconda@v2
       with:
         python-version: ${{ matrix.python-version }}
-        environment-file: devtools/conda-envs/fep_env.yaml
-
+        condarc-file: ${{ matrix.condarc-file }}
+        environment-file: ${{ matrix.environment-file }}
+        miniforge-variant: ${{ matrix.miniforge-variant }}
+        miniforge-version: ${{ matrix.miniforge-version }}
+        use-mamba: true
         channels: conda-forge,defaults
-
-        activate-environment: test
-        auto-update-conda: false
+        activate-environment: fep
         auto-activate-base: false
         #show-channel-urls: true
         use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
   
-    - name: Update environment
-      run: conda env update -n fep -f devtools/conda-envs/fep_env.yaml        
+#     - name: Update environment
+#       run: conda env update -n fep -f devtools/conda-envs/fep_env.yaml        
 
     - name: Install package
 
