@@ -28,6 +28,49 @@ def create_asfe_system(configuration):
 
     return s1, mutation_list
 
+@pytest.mark.asfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_2cpi_system():
+    molecule = "2-cyclopentylindole"
+    folder = "betterway2"
+
+    ### should be the same within each system ###
+    input_dir = "/site/raid4/johannes/sandbox/josef/data/"
+    config = f"/site/raid4/johannes/sandbox/josef/data/config/{molecule}.yaml"
+    configuration = load_config_yaml(
+        config=config, input_dir=input_dir, output_dir=f"{molecule}/{folder}"
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+
+    s1_to_s2.propose_common_core()
+
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+
+    # generate the mutation list for the original
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    print(mutation_list.keys())
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+        multiple_runs=4,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_lj_of_hydrogens=3,
+        nr_of_mutation_steps_charge=2,
+        nr_of_mutation_steps_cc=4,
+    )
+
 
 @pytest.mark.asfe
 def test_create_asfe_system():

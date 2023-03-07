@@ -1517,6 +1517,24 @@ class CommonCoreTransformation(object):
             cc_names_struc1.append(ligand1_atom.name)
             cc_names_struc2.append(ligand2_atom.name)
 
+        match_atom_names_cc1_to_cc2 = {
+            "C5": "C7",
+            "C6": "C6",
+            "C7": "C5",
+            "C8": "C",
+            "C9": "C1",
+            "C10": "C2",
+            "C11": "C3",
+            "C12": "C4",
+            "N": "N",
+            "H9": "H3",
+            "H10": "H",
+            "H11": "H1",
+            "H12": "H2",
+            "H13": "C8",
+            "H14": "H5",
+        }
+
         print(f"CC Struc1: {cc_names_struc1}")
         print(f"CC Struc2: {cc_names_struc2}")
         return match_atom_names_cc1_to_cc2
