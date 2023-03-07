@@ -19,7 +19,6 @@ warnings.filterwarnings("ignore", module="parmed")
 
 
 def create_asfe_system(configuration):
-
     s1 = SystemStructure(configuration, "structure1")
     s1_absolute = ProposeMutationRoute(s1)
     s1_absolute.propose_common_core()
@@ -27,6 +26,7 @@ def create_asfe_system(configuration):
     mutation_list = s1_absolute.generate_mutations_to_common_core_for_mol1()
 
     return s1, mutation_list
+
 
 @pytest.mark.asfe
 @pytest.mark.skipif(
@@ -74,7 +74,6 @@ def test_2cpi_system():
 
 @pytest.mark.asfe
 def test_create_asfe_system():
-
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
         input_dir=get_testsystems_dir(),
@@ -106,7 +105,6 @@ def test_create_asfe_system():
 
 
 def run_asfe_system():
-
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
         input_dir=get_testsystems_dir(),
@@ -133,7 +131,6 @@ def run_asfe_system():
 
 
 def analyse_asfe_with_module(module):
-
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
         input_dir=get_testsystems_dir(),
@@ -168,7 +165,6 @@ def analyse_asfe_with_module(module):
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_compare_mda_and_mdtraj():
-
     run_asfe_system()
 
     mda_results = analyse_asfe_with_module(module="mda")
@@ -182,7 +178,6 @@ def test_compare_mda_and_mdtraj():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_create_asfe_system_with_lp():
-
     from transformato.mutate import ProposeMutationRoute
 
     configuration = load_config_yaml(

@@ -36,7 +36,6 @@ logger = logging.getLogger(__name__)
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
 def test_create_restraints_from_config():
-
     with open(
         f"{get_testsystems_dir()}/config/test-2oj9-restraints.yaml", "r"
     ) as stream:
@@ -52,7 +51,6 @@ def test_create_restraints_from_config():
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
 def test_restraints():
-
     testrestraint = tfrs.Restraint(
         "resname BMI and type C", "protein and name CA", PATH_2OJ9, 14
     )

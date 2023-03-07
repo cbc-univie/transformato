@@ -250,7 +250,6 @@ def test_compare_energies_2OJ9_tautomer_waterbox(caplog):
     reason="Skipping tests that require CHARMM.",
 )
 def test_2oj9_postprocessing_with_different_engines():
-
     conf = f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -315,7 +314,6 @@ def test_2oj9_postprocessing_with_different_engines():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_2oj9_postprocessing_with_openMM():
-
     initialize_NUM_PROC(1)
 
     conf = f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rsfe.yaml"
@@ -540,7 +538,6 @@ def test_compare_energies_acetylacetone_keto_waterbox(caplog):
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_acetylacetone_postprocessing_different_engines():
-
     conf = f"{get_testsystems_dir()}/config/test-acetylacetone-tautomer-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -874,7 +871,6 @@ def test_compare_energies_toluene_waterbox(caplog):
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_toluene_to_methane_calculate_rsfe_with_different_engines():
-
     conf = f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
