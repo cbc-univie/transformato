@@ -464,19 +464,6 @@ to the dummy region and assign it into the sorted list accordingly.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._display_mol">
-<span class="sig-name descname"><span class="pre">_display_mol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._display_mol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._display_mol" title="Permalink to this definition"></a></dt>
-<dd><p>Gets mol as input and displays its 2D Structure using IPythonConsole.
-:param mol: a rdkit mol object
-:type mol: Chem.Mol</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>mol</strong> (<em>Mol</em>) – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._find_mcs">
 <span class="sig-name descname"><span class="pre">_find_mcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol1_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol2_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._find_mcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._find_mcs" title="Permalink to this definition"></a></dt>
 <dd><p>A class that proposes the mutation route between two molecules with a
@@ -590,7 +577,7 @@ Generates the mutation route to the common fore for mol.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._show_common_core">
-<span class="sig-name descname"><span class="pre">_show_common_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_atom_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._show_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._show_common_core" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_show_common_core</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highlight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_atom_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">internal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._show_common_core"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._show_common_core" title="Permalink to this definition"></a></dt>
 <dd><p>Helper function - do not call directly.
 Show common core.</p>
 <dl class="field-list simple">
@@ -598,6 +585,7 @@ Show common core.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>highlight</strong> (<em>list</em>) – </p></li>
 <li><p><strong>show_atom_type</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>internal</strong> (<em>bool</em>) – </p></li>
 </ul>
 </dd>
 </dl>
