@@ -233,7 +233,7 @@ def generate_simple_selection(configuration):
 
     Args:
         configuration (dict): the read-in restraints.yaml
-        
+
 
     Returns:
         str: An MDAnalysis selection string, representing the carbon-alphas surrounding the cores.
@@ -254,7 +254,9 @@ def generate_simple_selection(configuration):
     return selstr
 
 
-def generate_extremities(configuration, topology, n_extremities, sphinner=0, sphouter=5):
+def generate_extremities(
+    configuration, topology, n_extremities, sphinner=0, sphouter=5
+):
     """Takes the common core and generates n extremities at the furthest point
 
         Returns a selection string of the extremities with a sphlayer (see MDAnalysis docs) selecting type C from sphinner to sphouter.
@@ -370,7 +372,7 @@ def generate_extremities(configuration, topology, n_extremities, sphinner=0, sph
         )
 
     logger.debug(f"Created extremities with selections: {selection_strings}")
-    return selection_strings,extremity_cores
+    return selection_strings, extremity_cores
 
 
 def create_restraints_from_config(configuration, pdbpath):
@@ -384,7 +386,7 @@ def create_restraints_from_config(configuration, pdbpath):
     Returns:
         array: An array of Restraint instances
     """
-    universe=MDAnalysis.Universe(pdbpath)
+    universe = MDAnalysis.Universe(pdbpath)
 
     tlc = configuration["system"]["structure"]["tlc"]
 
@@ -401,11 +403,9 @@ def create_restraints_from_config(configuration, pdbpath):
             restraint_args["mode"] = "extremities"
             restraint_args["n_extremities"] = int(arg.split("=")[1])
         elif "shape=" in arg:
-
             restraint_args["shape"] = str(arg.split("=")[1])
 
         elif "wellsize=" in arg:
-
             restraint_args["wellsize"] = float(arg.split("=")[1])
 
     if "auto" in restraint_command_string and restraint_args["mode"] == "simple":
@@ -420,67 +420,74 @@ def create_restraints_from_config(configuration, pdbpath):
         selection_strings, extremity_cores = generate_extremities(
             configuration, universe, restraint_args["n_extremities"]
         )
-        for i,selection in enumerate(selection_strings):
+        for i, selection in enumerate(selection_strings):
             restraints.append(
                 Restraint(
                     selection,
                     f"(sphlayer 3 10 ({selection})) and name CA",
                     universe,
                     ex_core=extremity_cores[i],
-                    **restraint_args
+                    **restraint_args,
                 )
             )
-        
+
         # At this point only automatic ex-restraints exist, so no need to filter restraints
-        ex_cores=[restraint.kwargs["ex_core"] for restraint in restraints]
-        logger.debug(15*"-"+f"Available cores for assignment: {len(ex_cores)}")
-        
-        def assign_atom(atom:MDAnalysis.core.groups.Atom):
+        ex_cores = [restraint.kwargs["ex_core"] for restraint in restraints]
+        logger.debug(15 * "-" + f"Available cores for assignment: {len(ex_cores)}")
+
+        def assign_atom(atom: MDAnalysis.core.groups.Atom):
             """
             Inner function to assign an atom involved in multiple restraint ligand groups to a single one.
-            
+
             The restraint with the geometrically closest core will be chosen and the atom deleted from all others.
 
-            
+
             Args:
             atom: The duplicate atom to reassign.
             """
-            distances=dict()
-            
+            distances = dict()
+
             # Sort cores by distance to duplicate atom
             for core in ex_cores:
-                distances[core]=get3DDistance(atom.position,core.position)
-                
-                sorted_distances=dict(sorted(distances.items(),key=lambda x:x[1]))
+                distances[core] = get3DDistance(atom.position, core.position)
+
+                sorted_distances = dict(sorted(distances.items(), key=lambda x: x[1]))
 
             logger.debug(f"Sorted Distances: {sorted_distances}")
 
             # get closest core. Remove duplicate atom from g1 in all restraints that do not have the closest core as core
-            closest=list(sorted_distances.keys())[0]
+            closest = list(sorted_distances.keys())[0]
             for restraint in restraints:
-                if restraint.kwargs["ex_core"].ix!=closest.ix:
+                if restraint.kwargs["ex_core"].ix != closest.ix:
                     logger.debug(f"Removing {atom}")
-                    restraint.g1=restraint.g1.difference(atom)
-                          
+                    restraint.g1 = restraint.g1.difference(atom)
+
         # Check for duplicates in the ligand group g1
-        all_restraint_atoms=restraints[0].g1
+        all_restraint_atoms = restraints[0].g1
         for restraint in restraints[1:-1]:
-            all_restraint_atoms+=restraint.g1
-        logger.debug(f"All restraint atoms: {[atom.name for atom in all_restraint_atoms]}")
-        duplicate_restraint_atoms=set([atom for atom in all_restraint_atoms if all_restraint_atoms.ix.tolist().count(atom.ix)>1]) # uniquify via set
-        
+            all_restraint_atoms += restraint.g1
+        logger.debug(
+            f"All restraint atoms: {[atom.name for atom in all_restraint_atoms]}"
+        )
+        duplicate_restraint_atoms = set(
+            [
+                atom
+                for atom in all_restraint_atoms
+                if all_restraint_atoms.ix.tolist().count(atom.ix) > 1
+            ]
+        )  # uniquify via set
+
         logger.info(f"Duplicate restraint atoms: {duplicate_restraint_atoms}")
 
         # Remove duplicate atoms
         for atom in duplicate_restraint_atoms:
             assign_atom(atom)
-        
+
     if "manual" in restraint_command_string:
         logger.debug("generating manual selections")
         manual_restraint_list = configuration["simulation"]["manualrestraints"].keys()
         logger.debug(f"Manual restraints defined: {manual_restraint_list}")
         for key in manual_restraint_list:
-
             restraint = configuration["simulation"]["manualrestraints"][key]
             restraint_kw = {}
             for key in restraint.keys():
@@ -513,7 +520,6 @@ def write_restraints_yaml(path, system, config, current_step):
     }
 
     if "scaling" in config["simulation"]["restraints"]:
-
         if current_step == 1:
             lambda_value_scaling = 0
         elif current_step == 2:
