@@ -997,6 +997,17 @@ class ProposeMutationRoute(object):
 
         m1, m2 = [deepcopy(self.mols[mol1_name]), deepcopy(self.mols[mol2_name])]
 
+        # second copy of mols - to use as representation with removed hydrogens
+        remmol1 = deepcopy(m1)
+        remmol2 = deepcopy(m2)
+
+        # removal of hydrogens - if not removed, common core for molecule + hydrogens is computed!
+        remmol1 = Chem.rdmolops.RemoveAllHs(remmol1)
+        remmol2 = Chem.rdmolops.RemoveAllHs(remmol2)
+
+        # remmols contains both molecules with removed hydrogens
+        remmols = [remmol1, remmol2]
+
         for m in [m1, m2]:
             logger.debug("Mol in SMILES format: {}.".format(Chem.MolToSmiles(m, True)))
 
@@ -1004,6 +1015,12 @@ class ProposeMutationRoute(object):
         changed_mols = [Chem.Mol(x) for x in [m1, m2]]
 
         # find substructure match (ignore bond order but enforce element matching)
+
+        # findmcs-function is called for mol-objects with removed hydrogens
+
+        # original Transformato-parameters (yield bad / for Transformato not usable results for molecules with cyclic structures, e.g., ccores between 2-CPI and 7-CPI)
+        # especially because completeRingsOnly is set to False
+        """
         mcs = rdFMCS.FindMCS(
             changed_mols,
             bondCompare=self.bondCompare,
@@ -1014,25 +1031,94 @@ class ProposeMutationRoute(object):
             completeRingsOnly=self.completeRingsOnly,
             ringMatchesRingOnly=self.ringMatchesRingOnly,
         )
+        """
+
+        # find_mcs-function from tf_routes:
+        # yields more reasonable common cores (e.g. for 2-CPI/7-CPI )
+        # in particular, completeRingsOnly=True is important
+
+        mcs = rdFMCS.FindMCS(
+            remmols,
+            timeout=120,
+            ringMatchesRingOnly=True,
+            completeRingsOnly=True,
+            ringCompare=Chem.rdFMCS.RingCompare.StrictRingFusion,
+            bondCompare=rdFMCS.BondCompare.CompareAny,
+            matchValences=False,
+        )
+
         logger.debug("Substructure match: {}".format(mcs.smartsString))
         # convert from SMARTS
         mcsp = Chem.MolFromSmarts(mcs.smartsString, False)
 
         s1 = m1.GetSubstructMatch(mcsp)
         logger.debug("Substructere match idx: {}".format(s1))
-
         self._show_common_core(
             m1, self.get_common_core_idx_mol1(), show_atom_type=False, internal=True
         )
-
+        # self._display_mol(m1)
         s2 = m2.GetSubstructMatch(mcsp)
         logger.debug("Substructere match idx: {}".format(s2))
-
         self._show_common_core(
             m2, self.get_common_core_idx_mol2(), show_atom_type=False, internal=True
         )
-        self._substructure_match[mol1_name] = list(s1)
-        self._substructure_match[mol2_name] = list(s2)
+        # self._display_mol(m2)
+
+        # new code: add hydrogens to both common-core-on-molecule-projections
+        # set with all common core atom indices for both molecules
+        hit_ats1_compl = set(s1)
+        hit_ats2_compl = set(s2)
+
+        # check for each common core atom whether hydrogen atoms are in its neighbourhood
+        # s1/s2 contain the mapping of the common core (without hydrogens) to both molecules
+        # iterating over all mapped atoms, the number of hydrogens attached to the common core atom is determined
+        # the minimum number (i.e. if the atom of molecule 1 has one hydrogen bond, the atom of molecule 2 zero hydrogen bonds, it is zero) gives the number of hydrogen atoms to add to the common core
+
+        for indexpos, indexnr in enumerate(s1):
+            # get mapped atoms
+            atom1 = m1.GetAtomWithIdx(s1[indexpos])
+            atom2 = m2.GetAtomWithIdx(s2[indexpos])
+
+            # determine number of hydrogens in the neighbourhood of the atom from molecule1
+            h_atoms1 = 0
+            for x in atom1.GetNeighbors():
+                if x.GetSymbol() == "H":
+                    h_atoms1 = h_atoms1 + 1
+
+            # determine number of hydrogens in the neighbourhood of the atom from molecule2
+            h_atoms2 = 0
+            for x in atom2.GetNeighbors():
+                if x.GetSymbol() == "H":
+                    h_atoms2 = h_atoms2 + 1
+
+            # find minimum number of hydrogens
+            min_h_atoms = min(h_atoms1, h_atoms2)
+
+            # add minimum number of hydrogens to the ccore for molecule1
+            h_atoms1 = 0
+            for x in atom1.GetNeighbors():
+                if x.GetSymbol() == "H" and h_atoms1 < min_h_atoms:
+                    hit_ats1_compl.add(x.GetIdx())
+                    h_atoms1 = h_atoms1 + 1
+
+            # add minimum number of hydrogens to the ccore for molecule2
+            h_atoms2 = 0
+            for x in atom2.GetNeighbors():
+                if x.GetSymbol() == "H" and h_atoms2 < min_h_atoms:
+                    hit_ats2_compl.add(x.GetIdx())
+                    h_atoms2 = h_atoms2 + 1
+
+        # create new tuple of common core atom indices with additional hydrogens (molecule 1)
+        hit_ats1 = tuple(hit_ats1_compl)
+
+        # create new tuple of common core atom indices with additional hydrogens (molecule 2)
+        hit_ats2 = tuple(hit_ats2_compl)
+
+        self._substructure_match[mol1_name] = list(hit_ats1)
+        self._substructure_match[mol2_name] = list(hit_ats2)
+
+        # self._substructure_match[mol1_name] = list(s1)
+        # self._substructure_match[mol2_name] = list(s2)
 
         return mcs
 
