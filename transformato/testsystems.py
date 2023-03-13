@@ -4,7 +4,6 @@ from transformato.system import SystemStructure
 
 
 def perform_generic_mutation(configuration: dict):
-
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
 
