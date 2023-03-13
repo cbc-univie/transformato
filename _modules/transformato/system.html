@@ -195,7 +195,6 @@
 
             <span class="k">return</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">_mol_to_nx_full_weight</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-
             <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
 
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
