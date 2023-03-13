@@ -26,6 +26,7 @@ jobs:
       - name: Run Black formatting
         uses: wearerequired/lint-action@v2
         with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
           black: true
           black_dir: "transformato/"
           black_args: '--extend-exclude="(bin/*|scripts/*|_version.py)"'
