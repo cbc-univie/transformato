@@ -249,7 +249,6 @@ def test_generate_alchemical_path_for_7_CPI_to_common_core():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_1a0q_1a07(caplog):
-
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.INFO)
     conf = f"{get_testsystems_dir()}/config/test-1a0q-1a07-rsfe.yaml"
