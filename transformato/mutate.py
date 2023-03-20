@@ -1040,7 +1040,6 @@ class ProposeMutationRoute(object):
         # iterate_over_matches == False: the common core atoms for a single stubstructure match are determined
         # possibly a different match yields a bigger ccore - i.e. a ccore with more hydrogens (neopentane - methane)
         if iterate_over_matches == False:
-
             s1 = m1.GetSubstructMatch(mcsp)
             logger.debug("Substructere match idx: {}".format(s1))
             self._show_common_core(
@@ -1114,7 +1113,6 @@ class ProposeMutationRoute(object):
         # the substructure matches with the biggest emering common cores are finally chosen
         # the common cores for different substructure match pairs contain the same heavy atoms, but differ in the number of hydrogens, i.e. the finally chosen matches have the common cores with most hydrogens
         else:
-
             s1s = m1.GetSubstructMatches(mcsp, maxMatches=max_matches)
             logger.debug("Substructere match idx: {}".format(s1s))
             self._show_common_core(
@@ -1129,7 +1127,6 @@ class ProposeMutationRoute(object):
             curr_size_of_ccores = 0
             for s1 in s1s:
                 for s2 in s2s:
-
                     # new code: add hydrogens to both common-core-on-molecule-projections
                     # set with all common core atom indices for both molecules
                     hit_ats1_compl = list(s1)
