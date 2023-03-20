@@ -10,7 +10,6 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -668,7 +667,7 @@
         <span class="p">]</span>
         <span class="n">lp_dict_dummy_region</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="n">lp_dict_common_core</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;die version </span><span class="si">{</span><span class="n">pm</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;die Atome </span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1037,6 +1036,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mol1_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">mol2_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">iterate_over_matches</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">max_matches</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A class that proposes the mutation route between two molecules with a</span>
@@ -1058,6 +1059,17 @@
 
         <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span> <span class="o">=</span> <span class="p">[</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="n">mol1_name</span><span class="p">]),</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="n">mol2_name</span><span class="p">])]</span>
 
+        <span class="c1"># second copy of mols - to use as representation with removed hydrogens</span>
+        <span class="n">remmol1</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">m1</span><span class="p">)</span>
+        <span class="n">remmol2</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+
+        <span class="c1"># removal of hydrogens - if not removed, common core for molecule + hydrogens is computed!</span>
+        <span class="n">remmol1</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdmolops</span><span class="o">.</span><span class="n">RemoveAllHs</span><span class="p">(</span><span class="n">remmol1</span><span class="p">)</span>
+        <span class="n">remmol2</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdmolops</span><span class="o">.</span><span class="n">RemoveAllHs</span><span class="p">(</span><span class="n">remmol2</span><span class="p">)</span>
+
+        <span class="c1"># remmols contains both molecules with removed hydrogens</span>
+        <span class="n">remmols</span> <span class="o">=</span> <span class="p">[</span><span class="n">remmol1</span><span class="p">,</span> <span class="n">remmol2</span><span class="p">]</span>
+
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">]:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Mol in SMILES format: </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolToSmiles</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="kc">True</span><span class="p">)))</span>
 
@@ -1065,37 +1077,200 @@
         <span class="n">changed_mols</span> <span class="o">=</span> <span class="p">[</span><span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">]]</span>
 
         <span class="c1"># find substructure match (ignore bond order but enforce element matching)</span>
+
+        <span class="c1"># findmcs-function is called for mol-objects with removed hydrogens</span>
+
+        <span class="c1"># original Transformato-parameters (yield bad / for Transformato not usable results for molecules with cyclic structures, e.g., ccores between 2-CPI and 7-CPI)</span>
+        <span class="c1"># especially because completeRingsOnly is set to False</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        mcs = rdFMCS.FindMCS(</span>
+<span class="sd">            #changed_mols,</span>
+<span class="sd">            remmols,</span>
+<span class="sd">            bondCompare=self.bondCompare,</span>
+<span class="sd">            timeout=120,</span>
+<span class="sd">            atomCompare=self.atomCompare,</span>
+<span class="sd">            maximizeBonds=self.maximizeBonds,</span>
+<span class="sd">            matchValences=self.matchValences,</span>
+<span class="sd">            completeRingsOnly=self.completeRingsOnly,</span>
+<span class="sd">            ringMatchesRingOnly=self.ringMatchesRingOnly,</span>
+<span class="sd">        )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># find_mcs-function from tf_routes:</span>
+        <span class="c1"># yields more reasonable common cores (e.g. for 2-CPI/7-CPI )</span>
+        <span class="c1"># in particular, completeRingsOnly=True is important</span>
+
         <span class="n">mcs</span> <span class="o">=</span> <span class="n">rdFMCS</span><span class="o">.</span><span class="n">FindMCS</span><span class="p">(</span>
-            <span class="n">changed_mols</span><span class="p">,</span>
-            <span class="n">bondCompare</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bondCompare</span><span class="p">,</span>
+            <span class="n">remmols</span><span class="p">,</span>
             <span class="n">timeout</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>
-            <span class="n">atomCompare</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">atomCompare</span><span class="p">,</span>
-            <span class="n">maximizeBonds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">maximizeBonds</span><span class="p">,</span>
-            <span class="n">matchValences</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">matchValences</span><span class="p">,</span>
-            <span class="n">completeRingsOnly</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">completeRingsOnly</span><span class="p">,</span>
-            <span class="n">ringMatchesRingOnly</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ringMatchesRingOnly</span><span class="p">,</span>
+            <span class="n">ringMatchesRingOnly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">completeRingsOnly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">ringCompare</span><span class="o">=</span><span class="n">Chem</span><span class="o">.</span><span class="n">rdFMCS</span><span class="o">.</span><span class="n">RingCompare</span><span class="o">.</span><span class="n">StrictRingFusion</span><span class="p">,</span>
+            <span class="n">bondCompare</span><span class="o">=</span><span class="n">rdFMCS</span><span class="o">.</span><span class="n">BondCompare</span><span class="o">.</span><span class="n">CompareAny</span><span class="p">,</span>
+            <span class="n">matchValences</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
+
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructure match: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mcs</span><span class="o">.</span><span class="n">smartsString</span><span class="p">))</span>
         <span class="c1"># convert from SMARTS</span>
         <span class="n">mcsp</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">mcs</span><span class="o">.</span><span class="n">smartsString</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
 
-        <span class="n">s1</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">mcsp</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructere match idx: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
+        <span class="c1"># iterate_over_matches == False: the common core atoms for a single stubstructure match are determined</span>
+        <span class="c1"># possibly a different match yields a bigger ccore - i.e. a ccore with more hydrogens (neopentane - methane)</span>
+        <span class="k">if</span> <span class="n">iterate_over_matches</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
-            <span class="n">m1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span> <span class="n">show_atom_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
+            <span class="n">s1</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">mcsp</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructere match idx: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s1</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
+                <span class="n">m1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span> <span class="n">show_atom_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">s2</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">mcsp</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructere match idx: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
+                <span class="n">m2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span> <span class="n">show_atom_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
 
-        <span class="n">s2</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">mcsp</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructere match idx: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2</span><span class="p">))</span>
+            <span class="c1"># new code: add hydrogens to both common-core-on-molecule-projections</span>
+            <span class="c1"># set with all common core atom indices for both molecules</span>
+            <span class="n">hit_ats1_compl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+            <span class="n">hit_ats2_compl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
-            <span class="n">m2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span> <span class="n">show_atom_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol1_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol2_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+            <span class="c1"># check for each common core atom whether hydrogen atoms are in its neighbourhood</span>
+            <span class="c1"># s1/s2 contain the mapping of the common core (without hydrogens) to both molecules</span>
+            <span class="c1"># iterating over all mapped atoms, the number of hydrogens attached to the common core atom is determined</span>
+            <span class="c1"># the minimum number (i.e. if the atom of molecule 1 has one hydrogen bond, the atom of molecule 2 zero hydrogen bonds, it is zero) gives the number of hydrogen atoms to add to the common core</span>
 
-        <span class="k">return</span> <span class="n">mcs</span></div>
+            <span class="k">for</span> <span class="n">indexpos</span><span class="p">,</span> <span class="n">indexnr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s1</span><span class="p">):</span>
+                <span class="c1"># get mapped atoms</span>
+                <span class="n">atom1</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">GetAtomWithIdx</span><span class="p">(</span><span class="n">s1</span><span class="p">[</span><span class="n">indexpos</span><span class="p">])</span>
+                <span class="n">atom2</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">GetAtomWithIdx</span><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="n">indexpos</span><span class="p">])</span>
+
+                <span class="c1"># determine number of hydrogens in the neighbourhood of the atom from molecule1</span>
+                <span class="n">h_atoms1</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">atom1</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
+                        <span class="n">h_atoms1</span> <span class="o">=</span> <span class="n">h_atoms1</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="c1"># determine number of hydrogens in the neighbourhood of the atom from molecule2</span>
+                <span class="n">h_atoms2</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">atom2</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
+                        <span class="n">h_atoms2</span> <span class="o">=</span> <span class="n">h_atoms2</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="c1"># find minimum number of hydrogens</span>
+                <span class="n">min_h_atoms</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">h_atoms1</span><span class="p">,</span> <span class="n">h_atoms2</span><span class="p">)</span>
+
+                <span class="c1"># add minimum number of hydrogens to the ccore for molecule1</span>
+                <span class="n">h_atoms1</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">atom1</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span> <span class="ow">and</span> <span class="n">h_atoms1</span> <span class="o">&lt;</span> <span class="n">min_h_atoms</span><span class="p">:</span>
+                        <span class="n">hit_ats1_compl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+                        <span class="n">h_atoms1</span> <span class="o">=</span> <span class="n">h_atoms1</span> <span class="o">+</span> <span class="mi">1</span>
+
+                <span class="c1"># add minimum number of hydrogens to the ccore for molecule2</span>
+                <span class="n">h_atoms2</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">atom2</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span> <span class="ow">and</span> <span class="n">h_atoms2</span> <span class="o">&lt;</span> <span class="n">min_h_atoms</span><span class="p">:</span>
+                        <span class="n">hit_ats2_compl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+                        <span class="n">h_atoms2</span> <span class="o">=</span> <span class="n">h_atoms2</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="c1"># create new tuple of common core atom indices with additional hydrogens (molecule 1)</span>
+            <span class="n">hit_ats1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">hit_ats1_compl</span><span class="p">)</span>
+
+            <span class="c1"># create new tuple of common core atom indices with additional hydrogens (molecule 2)</span>
+            <span class="n">hit_ats2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">hit_ats2_compl</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol1_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">hit_ats1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol2_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">hit_ats2</span><span class="p">)</span>
+
+            <span class="c1"># self._substructure_match[mol1_name] = list(s1)</span>
+            <span class="c1"># self._substructure_match[mol2_name] = list(s2)</span>
+
+            <span class="k">return</span> <span class="n">mcs</span>
+
+        <span class="c1"># iterate_over_matches == True: it is iterated over all pairs of substructure matches</span>
+        <span class="c1"># the substructure matches with the biggest emering common cores are finally chosen</span>
+        <span class="c1"># the common cores for different substructure match pairs contain the same heavy atoms, but differ in the number of hydrogens, i.e. the finally chosen matches have the common cores with most hydrogens</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">s1s</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">mcsp</span><span class="p">,</span> <span class="n">maxMatches</span><span class="o">=</span><span class="n">max_matches</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructere match idx: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s1s</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
+                <span class="n">m1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span> <span class="n">show_atom_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">s2s</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">mcsp</span><span class="p">,</span> <span class="n">maxMatches</span><span class="o">=</span><span class="n">max_matches</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Substructere match idx: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s2s</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_show_common_core</span><span class="p">(</span>
+                <span class="n">m2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span> <span class="n">show_atom_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">internal</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="n">curr_size_of_ccores</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">s1</span> <span class="ow">in</span> <span class="n">s1s</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">s2</span> <span class="ow">in</span> <span class="n">s2s</span><span class="p">:</span>
+
+                    <span class="c1"># new code: add hydrogens to both common-core-on-molecule-projections</span>
+                    <span class="c1"># set with all common core atom indices for both molecules</span>
+                    <span class="n">hit_ats1_compl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+                    <span class="n">hit_ats2_compl</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+
+                    <span class="c1"># check for each common core atom whether hydrogen atoms are in its neighbourhood</span>
+                    <span class="c1"># s1/s2 contain the mapping of the common core (without hydrogens) to both molecules</span>
+                    <span class="c1"># iterating over all mapped atoms, the number of hydrogens attached to the common core atom is determined</span>
+                    <span class="c1"># the minimum number (i.e. if the atom of molecule 1 has one hydrogen bond, the atom of molecule 2 zero hydrogen bonds, it is zero) gives the number of hydrogen atoms to add to the common core</span>
+
+                    <span class="k">for</span> <span class="n">indexpos</span><span class="p">,</span> <span class="n">indexnr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">s1</span><span class="p">):</span>
+                        <span class="c1"># get mapped atoms</span>
+                        <span class="n">atom1</span> <span class="o">=</span> <span class="n">m1</span><span class="o">.</span><span class="n">GetAtomWithIdx</span><span class="p">(</span><span class="n">s1</span><span class="p">[</span><span class="n">indexpos</span><span class="p">])</span>
+                        <span class="n">atom2</span> <span class="o">=</span> <span class="n">m2</span><span class="o">.</span><span class="n">GetAtomWithIdx</span><span class="p">(</span><span class="n">s2</span><span class="p">[</span><span class="n">indexpos</span><span class="p">])</span>
+
+                        <span class="c1"># determine number of hydrogens in the neighbourhood of the atom from molecule1</span>
+                        <span class="n">h_atoms1</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">atom1</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
+                                <span class="n">h_atoms1</span> <span class="o">=</span> <span class="n">h_atoms1</span> <span class="o">+</span> <span class="mi">1</span>
+
+                        <span class="c1"># determine number of hydrogens in the neighbourhood of the atom from molecule2</span>
+                        <span class="n">h_atoms2</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">atom2</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
+                                <span class="n">h_atoms2</span> <span class="o">=</span> <span class="n">h_atoms2</span> <span class="o">+</span> <span class="mi">1</span>
+
+                        <span class="c1"># find minimum number of hydrogens</span>
+                        <span class="n">min_h_atoms</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">h_atoms1</span><span class="p">,</span> <span class="n">h_atoms2</span><span class="p">)</span>
+
+                        <span class="c1"># add minimum number of hydrogens to the ccore for molecule1</span>
+                        <span class="n">h_atoms1</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">atom1</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span> <span class="ow">and</span> <span class="n">h_atoms1</span> <span class="o">&lt;</span> <span class="n">min_h_atoms</span><span class="p">:</span>
+                                <span class="n">hit_ats1_compl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+                                <span class="n">h_atoms1</span> <span class="o">=</span> <span class="n">h_atoms1</span> <span class="o">+</span> <span class="mi">1</span>
+
+                        <span class="c1"># add minimum number of hydrogens to the ccore for molecule2</span>
+                        <span class="n">h_atoms2</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">atom2</span><span class="o">.</span><span class="n">GetNeighbors</span><span class="p">():</span>
+                            <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span> <span class="ow">and</span> <span class="n">h_atoms2</span> <span class="o">&lt;</span> <span class="n">min_h_atoms</span><span class="p">:</span>
+                                <span class="n">hit_ats2_compl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+                                <span class="n">h_atoms2</span> <span class="o">=</span> <span class="n">h_atoms2</span> <span class="o">+</span> <span class="mi">1</span>
+
+                    <span class="c1"># count whether the new common cores are bigger (i.e. contain more hydrogens) than the previous common cores</span>
+                    <span class="c1"># if this is the case, the current substructure matches are chosen</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hit_ats1_compl</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">curr_size_of_ccores</span><span class="p">:</span>
+                        <span class="n">curr_size_of_ccores</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">hit_ats1_compl</span><span class="p">)</span>
+                        <span class="n">hit_ats1_compl_final</span> <span class="o">=</span> <span class="n">hit_ats1_compl</span>
+                        <span class="n">hit_ats2_compl_final</span> <span class="o">=</span> <span class="n">hit_ats2_compl</span>
+
+            <span class="c1"># create new tuple of common core atom indices with additional hydrogens (molecule 1)</span>
+            <span class="n">hit_ats1</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">hit_ats1_compl_final</span><span class="p">)</span>
+
+            <span class="c1"># create new tuple of common core atom indices with additional hydrogens (molecule 2)</span>
+            <span class="n">hit_ats2</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">hit_ats2_compl_final</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol1_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">hit_ats1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_substructure_match</span><span class="p">[</span><span class="n">mol2_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">hit_ats2</span><span class="p">)</span>
+
+            <span class="c1"># self._substructure_match[mol1_name] = list(s1)</span>
+            <span class="c1"># self._substructure_match[mol2_name] = list(s2)</span>
+
+            <span class="k">return</span> <span class="n">mcs</span></div>
 
     <span class="k">def</span> <span class="nf">_return_atom_idx_from_bond_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span><span class="p">,</span> <span class="n">bond_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>

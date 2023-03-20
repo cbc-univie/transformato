@@ -11,7 +11,6 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
@@ -465,7 +464,7 @@ to the dummy region and assign it into the sorted list accordingly.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._find_mcs">
-<span class="sig-name descname"><span class="pre">_find_mcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol1_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol2_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._find_mcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._find_mcs" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_find_mcs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mol1_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol2_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterate_over_matches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_matches</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._find_mcs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._find_mcs" title="Permalink to this definition"></a></dt>
 <dd><p>A class that proposes the mutation route between two molecules with a
 common core (same atom types) based on two mols and generates the mutation
 objects to perform the mutation on the psf objects.
@@ -478,6 +477,8 @@ objects to perform the mutation on the psf objects.
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mol1_name</strong> (<em>str</em>) – </p></li>
 <li><p><strong>mol2_name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>iterate_over_matches</strong> (<em>bool</em>) – </p></li>
+<li><p><strong>max_matches</strong> (<em>int</em>) – </p></li>
 </ul>
 </dd>
 </dl>
