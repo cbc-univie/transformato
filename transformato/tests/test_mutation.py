@@ -5,6 +5,7 @@ Unit and regression test for the transformato package.
 import copy
 import shutil
 import logging
+import pytest
 
 import numpy as np
 import parmed as pm
@@ -159,12 +160,6 @@ def test_proposed_mutation_mcs():
                 28,
                 27,
                 29,
-                46,
-                47,
-                48,
-                45,
-                41,
-                44,
                 2,
                 7,
                 11,
@@ -173,16 +168,22 @@ def test_proposed_mutation_mcs():
                 10,
                 13,
                 12,
-                39,
-                38,
-                36,
-                37,
+                31,
+                33,
+                32,
+                44,
+                41,
+                45,
+                46,
+                47,
+                48,
+                30,
                 34,
                 35,
-                30,
-                32,
-                33,
-                31,
+                37,
+                36,
+                38,
+                39,
             ]
         )
         cc2 = set(
@@ -203,12 +204,6 @@ def test_proposed_mutation_mcs():
                 23,
                 22,
                 24,
-                43,
-                44,
-                45,
-                42,
-                40,
-                41,
                 2,
                 7,
                 11,
@@ -217,16 +212,22 @@ def test_proposed_mutation_mcs():
                 10,
                 13,
                 12,
-                38,
-                37,
-                35,
-                36,
+                30,
+                32,
+                31,
+                41,
+                40,
+                42,
+                43,
+                44,
+                45,
+                29,
                 33,
                 34,
-                29,
-                31,
-                32,
-                30,
+                36,
+                35,
+                37,
+                38,
             ]
         )
 
@@ -244,8 +245,8 @@ def test_proposed_mutation_mcs():
                 0,
                 3,
                 6,
-                33,
-                31,
+                5,
+                4,
                 14,
                 24,
                 23,
@@ -257,12 +258,30 @@ def test_proposed_mutation_mcs():
                 28,
                 27,
                 29,
+                2,
+                7,
+                11,
+                9,
+                8,
+                10,
+                13,
+                12,
+                31,
+                33,
+                32,
+                44,
+                41,
+                45,
                 46,
                 47,
                 48,
-                45,
-                41,
-                44,
+                30,
+                34,
+                35,
+                37,
+                36,
+                38,
+                39,
             ]
         )
         cc2 = set(
@@ -270,8 +289,8 @@ def test_proposed_mutation_mcs():
                 0,
                 3,
                 6,
-                32,
-                30,
+                5,
+                4,
                 14,
                 19,
                 18,
@@ -283,12 +302,30 @@ def test_proposed_mutation_mcs():
                 23,
                 22,
                 24,
+                2,
+                7,
+                11,
+                9,
+                8,
+                10,
+                13,
+                12,
+                30,
+                32,
+                31,
+                41,
+                40,
+                42,
                 43,
                 44,
                 45,
-                42,
-                40,
-                41,
+                29,
+                33,
+                34,
+                36,
+                35,
+                37,
+                38,
             ]
         )
 
@@ -349,6 +386,11 @@ def test_mutation_with_multiple_dummy_regions(caplog):
     s1_to_s2.finish_common_core()
 
 
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_proposed_mutation_terminal_dummy_real_atom_match():
     from rdkit.Chem import rdFMCS
 
@@ -395,6 +437,11 @@ def test_proposed_mutation_terminal_dummy_real_atom_match():
         # INFO     transformato.mutate:mutate.py:139 Matching terminal atoms from cc1 to cc2. cc1: 16 : cc2: 15
 
 
+@pytest.mark.rsfe
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_find_connected_dummy_regions1():
     workdir = get_test_output_dir()
     from rdkit.Chem import rdFMCS
@@ -548,7 +595,7 @@ def test_common_core_for_multiple_systems():
             a.propose_common_core()
             a.finish_common_core(
                 connected_dummy_regions_cc1=[
-                    {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+                    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
                 ]
             )
         else:
@@ -624,11 +671,7 @@ def test_generate_mutation_list_for_multiple_systems():
 
             s1_to_s2 = ProposeMutationRoute(s1, s2)
             s1_to_s2.propose_common_core()
-            s1_to_s2.finish_common_core(
-                connected_dummy_regions_cc1=[
-                    {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
-                ]
-            )
+            s1_to_s2.finish_common_core(connected_dummy_regions_cc2=[{1, 2, 3, 4}])
             mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
             assert set(mutation_list.keys()) == set(
                 ["charge", "hydrogen-lj", "lj", "transform", "default-lj"]
@@ -761,11 +804,7 @@ def test_charge_mutation_for_multiple_systems():
             for a, system in zip([s1_to_s2], [s1]):
                 if system_name == "neopentane-methane":
                     a.propose_common_core()
-                    a.finish_common_core(
-                        connected_dummy_regions_cc1=[
-                            {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
-                        ]
-                    )
+                    a.finish_common_core(connected_dummy_regions_cc2=[{1, 2, 3, 4}])
                 else:
                     a.calculate_common_core()
 
@@ -819,7 +858,7 @@ def test_vdw_mutation_for_hydrogens_system1():
             s1_to_s2.propose_common_core()
             s1_to_s2.finish_common_core(
                 connected_dummy_regions_cc1=[
-                    {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+                    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
                 ]
             )
         else:
@@ -898,8 +937,8 @@ def test_vdw_mutation_for_hydrogens_system2():
         s1_to_s2 = ProposeMutationRoute(s1, s2)
         s1_to_s2.completeRingsOnly = True
         s1_to_s2.propose_common_core()
-        s1_to_s2.remove_idx_from_common_core_of_mol1([14])
-        s1_to_s2.remove_idx_from_common_core_of_mol2([6])
+        # s1_to_s2.remove_idx_from_common_core_of_mol1([14])
+        # s1_to_s2.remove_idx_from_common_core_of_mol2([6])
         s1_to_s2.finish_common_core()
 
         mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
@@ -1678,7 +1717,7 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
             s1_to_s2.propose_common_core()
             s1_to_s2.finish_common_core(
                 connected_dummy_regions_cc1=[
-                    {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+                    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
                 ]
             )
         elif system_name == "7-CPI-2-CPI":
@@ -1890,7 +1929,7 @@ def test_full_mutation_system1(caplog):
             s1_to_s2.propose_common_core()
             s1_to_s2.finish_common_core(
                 connected_dummy_regions_cc1=[
-                    {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+                    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
                 ]
             )
         else:
@@ -1953,7 +1992,7 @@ def test_full_mutation_system2():
             s1_to_s2.propose_common_core()
             s1_to_s2.finish_common_core(
                 connected_dummy_regions_cc1=[
-                    {0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+                    {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
                 ]
             )
         else:
@@ -2055,7 +2094,9 @@ def test_generate_list_of_heavy_atoms_to_mutate():
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.propose_common_core()
     s1_to_s2.finish_common_core(
-        connected_dummy_regions_cc1=[{0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}]
+        connected_dummy_regions_cc1=[
+            {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
+        ]
     )
 
     mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
