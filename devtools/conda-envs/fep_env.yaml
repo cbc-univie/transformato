@@ -10,7 +10,7 @@ dependencies:
   - ipython
   - pymbar=3
   - rdkit
-  - parmed
+  - parmed=4
   - pyyaml
   - mdtraj
   - mdanalysis
