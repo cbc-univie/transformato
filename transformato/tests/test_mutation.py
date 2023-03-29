@@ -6,6 +6,7 @@ import copy
 import shutil
 import logging
 import pytest
+import os
 
 import numpy as np
 import parmed as pm
