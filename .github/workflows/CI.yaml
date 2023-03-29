@@ -32,11 +32,24 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        # os: [macOS-latest, ubuntu-latest]
         os: [ubuntu-latest]
         python-version: [3.9]
+        include:
+          - os: ubuntu-latest
+            label: linux-64
+            # prefix: /usr/share/miniconda3/envs/openmm7.6
+            environment-file: devtools/conda-envs/fep_env.yaml
+            miniforge-variant: Mambaforge
+            miniforge-version: 4.9.2-4
+          #- os: macos-latest
+          #  label: osx-64
+          #  # prefix: /Users/runner/miniconda3/envs/openmm7.6
+          #  environment-file: devtools/conda-envs/openmm7.6.yaml
+          #  miniforge-variant: Mambaforge-pypy3
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
     - name: Additional info about the build
       shell: bash
@@ -50,7 +63,7 @@ jobs:
       
     - name: Make Cache (no worflow_dispatch)
       if: ${{ github.event_name != 'workflow_dispatch' }}
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
         # Increase the last number (0) to reset cache manually
@@ -70,12 +83,17 @@ jobs:
     - uses: conda-incubator/setup-miniconda@v2
       with:
         python-version: ${{ matrix.python-version }}
-        environment-file: devtools/conda-envs/fep_env.yaml
-
+        condarc-file: ${{ matrix.condarc-file }}
+        environment-file: ${{ matrix.environment-file }}
+        miniforge-variant: ${{ matrix.miniforge-variant }}
+        miniforge-version: ${{ matrix.miniforge-version }}
+        use-mamba: true
+        # mamba-version: "*"
+        # environment-file: devtools/conda-envs/fep_env.yaml
         channels: conda-forge,defaults
-
-        activate-environment: test
-        auto-update-conda: false
+        # channel-priority: true
+        activate-environment: fep
+        #auto-update-conda: false
         auto-activate-base: false
         #show-channel-urls: true
         use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
@@ -89,7 +107,11 @@ jobs:
       shell: bash -l {0}
       run: |
         python -m pip install . --no-deps
+        conda info
         conda list
+        conda config --show-sources
+        conda config --show
+        printenv | sort
 
 
     - name: Run tests
