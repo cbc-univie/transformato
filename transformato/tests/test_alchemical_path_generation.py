@@ -230,7 +230,7 @@ def test_generate_alchemical_path_for_2_CPI_to_common_core():
     )
 
     output_files = mutate_2_CPI_to_7_CPI_cc(configuration=configuration)
-    assert len(output_files) == 18
+    assert len(output_files) == 17
 
 
 @pytest.mark.rsfe
@@ -244,7 +244,7 @@ def test_generate_alchemical_path_for_7_CPI_to_common_core():
     )
 
     output_files = mutate_7_CPI_to_2_CPI_cc(configuration=configuration)
-    assert len(output_files) == 13
+    assert len(output_files) == 12
 
 
 @pytest.mark.rsfe
