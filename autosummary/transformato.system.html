@@ -140,6 +140,18 @@ Everything is constructed automatically from the charmm-gui folder.
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="transformato.system.SystemStructure._create_sdf_file">
+<span class="sig-name descname"><span class="pre">_create_sdf_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._create_sdf_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._create_sdf_file" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a sdf file, if none is available
+useful for point mutations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties">
 <span class="sig-name descname"><span class="pre">_determine_offset_and_set_possible_dummy_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._determine_offset_and_set_possible_dummy_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties" title="Permalink to this definition"></a></dt>
 <dd><p>Determines the offset and sets possible properties on the psf.
@@ -182,6 +194,18 @@ Everything is constructed automatically from the charmm-gui folder.
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="transformato.system.SystemStructure._get_tlc">
+<span class="sig-name descname"><span class="pre">_get_tlc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._get_tlc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._get_tlc" title="Permalink to this definition"></a></dt>
+<dd><p>If no information about a small ligend is available this function will try to find
+all residues which are in the first chain</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="transformato.system.SystemStructure._initialize_system">
 <span class="sig-name descname"><span class="pre">_initialize_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">configuration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._initialize_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._initialize_system" title="Permalink to this definition"></a></dt>
 <dd><p>Generates the psf file and sets the coordinates from the CHARMM-GUI files.
@@ -207,10 +231,12 @@ Everything is constructed automatically from the charmm-gui folder.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.system.SystemStructure._read_parameters">
-<span class="sig-name descname"><span class="pre">_read_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._read_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._read_parameters" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_read_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._read_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._read_parameters" title="Permalink to this definition"></a></dt>
 <dd><p>Reads in topparameters from a toppar dir and ligand specific parameters.
 :param env: waterbox,complex or vacuum
-:type env: str</p>
+:type env: str
+:param full_set: wheather all files mentioned in the openmm/toppar.str should be read in, default is False
+:type full_set: bool</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>parameter</strong> – parameters obtained from the CHARMM-GUI output dir.</p>
@@ -219,7 +245,10 @@ Everything is constructed automatically from the charmm-gui folder.
 <dd class="field-even"><p>pm.charmm.CharmmParameterSet</p>
 </dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>env</strong> (<em>str</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>env</strong> (<em>str</em>) – </p></li>
+<li><p><strong>full_set</strong> (<em>bool</em>) – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
