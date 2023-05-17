@@ -23,6 +23,7 @@ import transformato.restraints as tfrs
 import transformato.utils as tfut
 import yaml
 from transformato_testsystems.testsystems import get_testsystems_dir
+import MDAnalysis
 
 PATH_2OJ9 = f"{get_testsystems_dir()}/2OJ9-original/complex/openmm/step3_input.pdb"
 PATH_2OJ9_DIR = f"{get_testsystems_dir()}/2OJ9-original/complex/openmm/"
@@ -36,13 +37,16 @@ logger = logging.getLogger(__name__)
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
 def test_create_restraints_from_config():
-
     with open(
         f"{get_testsystems_dir()}/config/test-2oj9-restraints.yaml", "r"
     ) as stream:
         config = yaml.safe_load(stream)
 
     assert type(config) == dict  # checks if config yaml is properly loaded
+
+    # Modify the imported config to check duplicate restraint atom handling
+    config["simulation"]["restraints"] = "auto k=100 scaling extremities=5 manual"
+
     restraints = tfrs.create_restraints_from_config(config, PATH_2OJ9)
     assert type(restraints) == list
     for restraint in restraints:
@@ -52,15 +56,17 @@ def test_create_restraints_from_config():
 @pytest.mark.restraints
 @pytest.mark.restraints_unittest
 def test_restraints():
-
     testrestraint = tfrs.Restraint(
-        "resname BMI and type C", "protein and name CA", PATH_2OJ9, 14
+        "resname BMI and type C",
+        "protein and name CA",
+        MDAnalysis.Universe(PATH_2OJ9),
+        14,
     )
 
     testrestraint_fb = tfrs.Restraint(
         "resname BMI and type C",
         "protein and name CA",
-        PATH_2OJ9,
+        MDAnalysis.Universe(PATH_2OJ9),
         14,
         shape="flatbottom",
         wellsize=0.12,
@@ -171,6 +177,7 @@ def test_integration():
 
     prop = dict()
     pdbpath = PATH_2OJ9
+    universe = MDAnalysis.Universe(PATH_2OJ9)
     with open(
         f"{get_testsystems_dir()}/config/test-2oj9-restraints.yaml", "r"
     ) as stream:
@@ -193,9 +200,9 @@ def test_integration():
 
     # Test an additional, simple restraint
     logger.debug("generating simple selection")
-    selstr = tfrs.generate_simple_selection(configuration, pdbpath)
+    selstr = tfrs.generate_simple_selection(configuration)
     tlc = configuration["system"]["structure"]["tlc"]
-    restraintList.append(tfrs.Restraint(f"resname {tlc} and type C", selstr, pdbpath))
+    restraintList.append(tfrs.Restraint(f"resname {tlc} and type C", selstr, universe))
 
     logger.debug(
         "****************** ALL RESTRAINTS CREATED SUCCESSFULLY ***************************"

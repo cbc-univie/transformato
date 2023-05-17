@@ -292,7 +292,6 @@ class FreeEnergyCalculator(object):
         return pot_energies
 
     def calculate_dG_using_mbar(self, u_kn: np.array, N_k: dict, env: str):
-
         logger.debug("#######################################")
         logger.debug("Pairwise Free Energy Estimate")
         logger.debug("#######################################")
@@ -453,7 +452,6 @@ class FreeEnergyCalculator(object):
         energies = []
 
         for lambda_state in range(1, self.nr_of_states + 1):
-
             if not multiple_runs:
                 dcd_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.dcd"
             else:
@@ -518,7 +516,6 @@ class FreeEnergyCalculator(object):
         multiple_runs: int,
         in_memory: bool = False,
     ):
-
         logger.info(f"Evaluating with {engine}, using {num_proc} CPUs")
         if not os.path.isdir(self.base_path):
             sys.exit(f"{self.base_path} does not exist")
@@ -579,7 +576,6 @@ class FreeEnergyCalculator(object):
         save_results: bool,
         engine: str,
     ):
-
         logger.debug(f"Evaluating with {engine}")
 
         if engine == "openMM":
@@ -599,7 +595,7 @@ class FreeEnergyCalculator(object):
         elif engine == "CHARMM":
             confs = []
             # write out traj in self.base_path
-            for (dcd, psf) in self.traj_files[env]:
+            for dcd, psf in self.traj_files[env]:
                 traj = mdtraj.load(
                     f"{dcd}",
                     top=f"{psf}",
@@ -801,7 +797,7 @@ class FreeEnergyCalculator(object):
         plt.close()
 
     def plot_free_energy(self, env: str):
-        plt.figure(figsize=[4, 4], dpi=300)
+        plt.figure(figsize=[8, 8], dpi=300)
         if env == "vacuum":
             x = [
                 a
@@ -865,7 +861,6 @@ class FreeEnergyCalculator(object):
             raise RuntimeError()
 
     def show_summary(self):
-
         if (
             self.configuration["simulation"]["free-energy-type"] == "rsfe"
             or self.configuration["simulation"]["free-energy-type"] == "asfe"
@@ -886,7 +881,6 @@ class FreeEnergyCalculator(object):
         )
 
     def detailed_overlap(self, env):
-
         mbar_matrix = self.free_energy_overlap(env=env)
         upper = np.diagonal(mbar_matrix, offset=1)
         lower = np.diagonal(mbar_matrix, offset=-1)

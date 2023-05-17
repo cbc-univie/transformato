@@ -202,7 +202,6 @@ def test_setup_system_for_methane_common_core_with_HMR():
 
 
 def generate_openMM_system_using_cgui_scripts(base: str):
-
     # change working directory
     current_dir = os.curdir
     os.chdir(base)
@@ -233,14 +232,7 @@ def generate_openMM_system_using_cgui_scripts(base: str):
     return system, psf
 
 
-@pytest.mark.rbfe
-@pytest.mark.requires_parmed_supporting_lp
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_lonepairs_in_dummy_region():
-
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/jnk1-17124-18631.yaml",
         input_dir=get_testsystems_dir(),
@@ -269,14 +261,7 @@ def test_lonepairs_in_dummy_region():
     assert s1_to_s2.dummy_region_cc2.connected_dummy_regions == [[39], [40]]
 
 
-@pytest.mark.rbfe
-@pytest.mark.requires_parmed_supporting_lp
-@pytest.mark.skipif(
-    os.getenv("CI") == "true",
-    reason="Skipping tests that cannot pass in github actions",
-)
 def test_lonepairs_in_common_core():
-
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/tyk2-ejm_45_ejm_42.yaml",
         input_dir=get_testsystems_dir(),

@@ -183,7 +183,6 @@ def vfswitch(system, psf, inputs):
 
 
 def restraints(system, crd, inputs):
-
     boxlx = system.getDefaultPeriodicBoxVectors()[0][0].value_in_unit(nanometers)
     boxly = system.getDefaultPeriodicBoxVectors()[1][1].value_in_unit(nanometers)
     boxlz = system.getDefaultPeriodicBoxVectors()[2][2].value_in_unit(nanometers)
@@ -585,7 +584,6 @@ def read_inputs(inputFile):
 
 
 def barostat(system, inputs):
-
     if inputs.p_type == "isotropic":
         barostat = MonteCarloBarostat(inputs.p_ref * bar, inputs.temp * kelvin)
     if inputs.p_type == "membrane":

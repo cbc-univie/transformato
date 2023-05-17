@@ -7,9 +7,9 @@ from typing import List, Tuple
 import numpy as np
 import networkx as nx
 import parmed as pm
-from IPython.core.display import display
+from IPython.display import display, SVG
 from rdkit import Chem
-from rdkit.Chem import AllChem, Draw, rdFMCS
+from rdkit.Chem import AllChem, Draw, rdFMCS, rdCoordGen
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem.Draw import IPythonConsole
 
@@ -32,7 +32,6 @@ def _performe_linear_charge_scaling(
     intermediate_factory,
     mutation,
 ):
-
     for lambda_value in np.linspace(1, 0, nr_of_steps + 1)[1:]:
         print("####################")
         print(
@@ -50,7 +49,6 @@ def _performe_linear_cc_scaling(
     intermediate_factory,
     mutation,
 ) -> int:
-
     for lambda_value in np.linspace(1, 0, nr_of_steps + 1)[1:]:
         print("####################")
         print(
@@ -192,7 +190,6 @@ def perform_mutations(
             == list_of_heavy_atoms_to_be_mutated[-1]
             and configuration["simulation"]["free-energy-type"] == "asfe"
         ):
-
             for lambda_value in np.linspace(
                 0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
             ):
@@ -236,7 +233,6 @@ def perform_mutations(
     # generate terminal LJ
     ######################################
     if not configuration["simulation"]["free-energy-type"] == "asfe":
-
         print("####################")
         print(
             f"Generate terminal LJ particle in step: {i.current_step} on atoms: {[v.vdw_atom_idx for v in mutation_list['default-lj']]}"
@@ -280,7 +276,6 @@ class DummyRegion:
     lj_default: list
 
     def return_connecting_real_atom(self, dummy_atoms: list):
-
         for real_atom in self.match_termin_real_and_dummy_atoms:
             for dummy_atom in self.match_termin_real_and_dummy_atoms[real_atom]:
                 if dummy_atom in dummy_atoms:
@@ -300,7 +295,6 @@ class MutationDefinition:
     steric_mutation_to_default: bool = False
 
     def print_details(self):
-
         print("####################")
         print(f"Atoms to be mutated: {self.atoms_to_be_mutated}")
         print(f"Mutated on common core: {self.common_core}")
@@ -380,7 +374,6 @@ class ProposeMutationRoute(object):
             self.dummy_region_cc1: DummyRegion
 
     def _check_cgenff_versions(self):
-
         cgenff_sys1 = self.system["system1"].cgenff_version
         cgenff_sys2 = self.system["system2"].cgenff_version
         if cgenff_sys1 == cgenff_sys2:
@@ -493,7 +486,6 @@ class ProposeMutationRoute(object):
         match_terminal_atoms_cc1: dict,
         match_terminal_atoms_cc2: dict,
     ) -> Tuple[list, list]:
-
         cc1_idx = self._substructure_match["m1"]
         cc2_idx = self._substructure_match["m2"]
 
@@ -502,13 +494,11 @@ class ProposeMutationRoute(object):
 
         # iterate through the common core substracter (the order represents the matched atoms)
         for idx1, idx2 in zip(cc1_idx, cc2_idx):
-
             # if both atoms are terminal atoms connected dummy regions can be identified
             if (
                 idx1 in match_terminal_atoms_cc1.keys()
                 and idx2 in match_terminal_atoms_cc2.keys()
             ):
-
                 connected_dummy_cc1 = list(match_terminal_atoms_cc1[idx1])
                 connected_dummy_cc2 = list(match_terminal_atoms_cc2[idx2])
 
@@ -543,7 +533,6 @@ class ProposeMutationRoute(object):
         match_terminal_atoms: dict,
         G: nx.Graph,
     ) -> list:
-
         try:
             from tf_routes.routes import (
                 _calculate_order_of_LJ_mutations_new as _calculate_order_of_LJ_mutations_with_bfs,
@@ -685,7 +674,6 @@ class ProposeMutationRoute(object):
         """
 
         if not self.asfe:
-
             # set the teriminal real/dummy atom indices
             self._set_common_core_parameters()
             # match the real/dummy atoms
@@ -783,7 +771,6 @@ class ProposeMutationRoute(object):
             self.charge_compensated_ligand2_psf = psf2
 
         else:
-
             # all atoms should become dummy atoms in the end
             central_atoms = nx.center(self.graphs["m1"])
 
@@ -821,7 +808,6 @@ class ProposeMutationRoute(object):
             )
 
     def calculate_common_core(self):
-
         self.propose_common_core()
         self.finish_common_core()
 
@@ -840,7 +826,6 @@ class ProposeMutationRoute(object):
             [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
             [self.dummy_region_cc1, self.dummy_region_cc2],
         ):
-
             # set `initial_charge` parameter for Mutation
             for atom in psf.view[f":{tlc}"].atoms:
                 # charge, epsilon and rmin are directly modiefied
@@ -939,7 +924,6 @@ class ProposeMutationRoute(object):
         return self._get_idx_not_in_common_core_for_mol("m2")
 
     def _get_idx_not_in_common_core_for_mol(self, mol_name: str) -> list:
-
         dummy_list_mol = [
             atom.GetIdx()
             for atom in self.mols[mol_name].GetAtoms()
@@ -975,6 +959,8 @@ class ProposeMutationRoute(object):
         self,
         mol1_name: str,
         mol2_name: str,
+        iterate_over_matches: bool = False,
+        max_matches: int = 10,
     ):
         """
         A class that proposes the mutation route between two molecules with a
@@ -996,6 +982,17 @@ class ProposeMutationRoute(object):
 
         m1, m2 = [deepcopy(self.mols[mol1_name]), deepcopy(self.mols[mol2_name])]
 
+        # second copy of mols - to use as representation with removed hydrogens
+        remmol1 = deepcopy(m1)
+        remmol2 = deepcopy(m2)
+
+        # removal of hydrogens - if not removed, common core for molecule + hydrogens is computed!
+        remmol1 = Chem.rdmolops.RemoveAllHs(remmol1)
+        remmol2 = Chem.rdmolops.RemoveAllHs(remmol2)
+
+        # remmols contains both molecules with removed hydrogens
+        remmols = [remmol1, remmol2]
+
         for m in [m1, m2]:
             logger.debug("Mol in SMILES format: {}.".format(Chem.MolToSmiles(m, True)))
 
@@ -1003,8 +1000,15 @@ class ProposeMutationRoute(object):
         changed_mols = [Chem.Mol(x) for x in [m1, m2]]
 
         # find substructure match (ignore bond order but enforce element matching)
+
+        # findmcs-function is called for mol-objects with removed hydrogens
+
+        # original Transformato-parameters (yield bad / for Transformato not usable results for molecules with cyclic structures, e.g., ccores between 2-CPI and 7-CPI)
+        # especially because completeRingsOnly is set to False
+        """
         mcs = rdFMCS.FindMCS(
-            changed_mols,
+            #changed_mols,
+            remmols,
             bondCompare=self.bondCompare,
             timeout=120,
             atomCompare=self.atomCompare,
@@ -1013,21 +1017,180 @@ class ProposeMutationRoute(object):
             completeRingsOnly=self.completeRingsOnly,
             ringMatchesRingOnly=self.ringMatchesRingOnly,
         )
+        """
+
+        # find_mcs-function from tf_routes:
+        # yields more reasonable common cores (e.g. for 2-CPI/7-CPI )
+        # in particular, completeRingsOnly=True is important
+
+        mcs = rdFMCS.FindMCS(
+            remmols,
+            timeout=120,
+            ringMatchesRingOnly=True,
+            completeRingsOnly=True,
+            ringCompare=Chem.rdFMCS.RingCompare.StrictRingFusion,
+            bondCompare=rdFMCS.BondCompare.CompareAny,
+            matchValences=False,
+        )
+
         logger.debug("Substructure match: {}".format(mcs.smartsString))
         # convert from SMARTS
         mcsp = Chem.MolFromSmarts(mcs.smartsString, False)
 
-        s1 = m1.GetSubstructMatch(mcsp)
-        logger.debug("Substructere match idx: {}".format(s1))
-        self._display_mol(m1)
-        s2 = m2.GetSubstructMatch(mcsp)
-        logger.debug("Substructere match idx: {}".format(s2))
-        self._display_mol(m2)
+        # iterate_over_matches == False: the common core atoms for a single stubstructure match are determined
+        # possibly a different match yields a bigger ccore - i.e. a ccore with more hydrogens (neopentane - methane)
+        if iterate_over_matches == False:
+            s1 = m1.GetSubstructMatch(mcsp)
+            logger.debug("Substructere match idx: {}".format(s1))
+            self._show_common_core(
+                m1, self.get_common_core_idx_mol1(), show_atom_type=False, internal=True
+            )
+            s2 = m2.GetSubstructMatch(mcsp)
+            logger.debug("Substructere match idx: {}".format(s2))
+            self._show_common_core(
+                m2, self.get_common_core_idx_mol2(), show_atom_type=False, internal=True
+            )
 
-        self._substructure_match[mol1_name] = list(s1)
-        self._substructure_match[mol2_name] = list(s2)
+            # new code: add hydrogens to both common-core-on-molecule-projections
+            # set with all common core atom indices for both molecules
+            hit_ats1_compl = list(s1)
+            hit_ats2_compl = list(s2)
 
-        return mcs
+            # check for each common core atom whether hydrogen atoms are in its neighbourhood
+            # s1/s2 contain the mapping of the common core (without hydrogens) to both molecules
+            # iterating over all mapped atoms, the number of hydrogens attached to the common core atom is determined
+            # the minimum number (i.e. if the atom of molecule 1 has one hydrogen bond, the atom of molecule 2 zero hydrogen bonds, it is zero) gives the number of hydrogen atoms to add to the common core
+
+            for indexpos, indexnr in enumerate(s1):
+                # get mapped atoms
+                atom1 = m1.GetAtomWithIdx(s1[indexpos])
+                atom2 = m2.GetAtomWithIdx(s2[indexpos])
+
+                # determine number of hydrogens in the neighbourhood of the atom from molecule1
+                h_atoms1 = 0
+                for x in atom1.GetNeighbors():
+                    if x.GetSymbol() == "H":
+                        h_atoms1 = h_atoms1 + 1
+
+                # determine number of hydrogens in the neighbourhood of the atom from molecule2
+                h_atoms2 = 0
+                for x in atom2.GetNeighbors():
+                    if x.GetSymbol() == "H":
+                        h_atoms2 = h_atoms2 + 1
+
+                # find minimum number of hydrogens
+                min_h_atoms = min(h_atoms1, h_atoms2)
+
+                # add minimum number of hydrogens to the ccore for molecule1
+                h_atoms1 = 0
+                for x in atom1.GetNeighbors():
+                    if x.GetSymbol() == "H" and h_atoms1 < min_h_atoms:
+                        hit_ats1_compl.append(x.GetIdx())
+                        h_atoms1 = h_atoms1 + 1
+
+                # add minimum number of hydrogens to the ccore for molecule2
+                h_atoms2 = 0
+                for x in atom2.GetNeighbors():
+                    if x.GetSymbol() == "H" and h_atoms2 < min_h_atoms:
+                        hit_ats2_compl.append(x.GetIdx())
+                        h_atoms2 = h_atoms2 + 1
+
+            # create new tuple of common core atom indices with additional hydrogens (molecule 1)
+            hit_ats1 = tuple(hit_ats1_compl)
+
+            # create new tuple of common core atom indices with additional hydrogens (molecule 2)
+            hit_ats2 = tuple(hit_ats2_compl)
+
+            self._substructure_match[mol1_name] = list(hit_ats1)
+            self._substructure_match[mol2_name] = list(hit_ats2)
+
+            # self._substructure_match[mol1_name] = list(s1)
+            # self._substructure_match[mol2_name] = list(s2)
+
+            return mcs
+
+        # iterate_over_matches == True: it is iterated over all pairs of substructure matches
+        # the substructure matches with the biggest emering common cores are finally chosen
+        # the common cores for different substructure match pairs contain the same heavy atoms, but differ in the number of hydrogens, i.e. the finally chosen matches have the common cores with most hydrogens
+        else:
+            s1s = m1.GetSubstructMatches(mcsp, maxMatches=max_matches)
+            logger.debug("Substructere match idx: {}".format(s1s))
+            self._show_common_core(
+                m1, self.get_common_core_idx_mol1(), show_atom_type=False, internal=True
+            )
+            s2s = m2.GetSubstructMatches(mcsp, maxMatches=max_matches)
+            logger.debug("Substructere match idx: {}".format(s2s))
+            self._show_common_core(
+                m2, self.get_common_core_idx_mol2(), show_atom_type=False, internal=True
+            )
+
+            curr_size_of_ccores = 0
+            for s1 in s1s:
+                for s2 in s2s:
+                    # new code: add hydrogens to both common-core-on-molecule-projections
+                    # set with all common core atom indices for both molecules
+                    hit_ats1_compl = list(s1)
+                    hit_ats2_compl = list(s2)
+
+                    # check for each common core atom whether hydrogen atoms are in its neighbourhood
+                    # s1/s2 contain the mapping of the common core (without hydrogens) to both molecules
+                    # iterating over all mapped atoms, the number of hydrogens attached to the common core atom is determined
+                    # the minimum number (i.e. if the atom of molecule 1 has one hydrogen bond, the atom of molecule 2 zero hydrogen bonds, it is zero) gives the number of hydrogen atoms to add to the common core
+
+                    for indexpos, indexnr in enumerate(s1):
+                        # get mapped atoms
+                        atom1 = m1.GetAtomWithIdx(s1[indexpos])
+                        atom2 = m2.GetAtomWithIdx(s2[indexpos])
+
+                        # determine number of hydrogens in the neighbourhood of the atom from molecule1
+                        h_atoms1 = 0
+                        for x in atom1.GetNeighbors():
+                            if x.GetSymbol() == "H":
+                                h_atoms1 = h_atoms1 + 1
+
+                        # determine number of hydrogens in the neighbourhood of the atom from molecule2
+                        h_atoms2 = 0
+                        for x in atom2.GetNeighbors():
+                            if x.GetSymbol() == "H":
+                                h_atoms2 = h_atoms2 + 1
+
+                        # find minimum number of hydrogens
+                        min_h_atoms = min(h_atoms1, h_atoms2)
+
+                        # add minimum number of hydrogens to the ccore for molecule1
+                        h_atoms1 = 0
+                        for x in atom1.GetNeighbors():
+                            if x.GetSymbol() == "H" and h_atoms1 < min_h_atoms:
+                                hit_ats1_compl.append(x.GetIdx())
+                                h_atoms1 = h_atoms1 + 1
+
+                        # add minimum number of hydrogens to the ccore for molecule2
+                        h_atoms2 = 0
+                        for x in atom2.GetNeighbors():
+                            if x.GetSymbol() == "H" and h_atoms2 < min_h_atoms:
+                                hit_ats2_compl.append(x.GetIdx())
+                                h_atoms2 = h_atoms2 + 1
+
+                    # count whether the new common cores are bigger (i.e. contain more hydrogens) than the previous common cores
+                    # if this is the case, the current substructure matches are chosen
+                    if len(hit_ats1_compl) > curr_size_of_ccores:
+                        curr_size_of_ccores = len(hit_ats1_compl)
+                        hit_ats1_compl_final = hit_ats1_compl
+                        hit_ats2_compl_final = hit_ats2_compl
+
+            # create new tuple of common core atom indices with additional hydrogens (molecule 1)
+            hit_ats1 = tuple(hit_ats1_compl_final)
+
+            # create new tuple of common core atom indices with additional hydrogens (molecule 2)
+            hit_ats2 = tuple(hit_ats2_compl_final)
+
+            self._substructure_match[mol1_name] = list(hit_ats1)
+            self._substructure_match[mol2_name] = list(hit_ats2)
+
+            # self._substructure_match[mol1_name] = list(s1)
+            # self._substructure_match[mol2_name] = list(s2)
+
+            return mcs
 
     def _return_atom_idx_from_bond_idx(self, mol: Chem.Mol, bond_idx: int):
         return (
@@ -1036,7 +1199,6 @@ class ProposeMutationRoute(object):
         )
 
     def _find_connected_dummy_regions(self, mol_name: str) -> List[set]:
-
         sub = self._get_common_core(mol_name)
         #############################
         # start
@@ -1064,33 +1226,15 @@ class ProposeMutationRoute(object):
 
         return unique_subgraphs
 
-    def _display_mol(self, mol: Chem.Mol):
-        """
-        Gets mol as input and displays its 2D Structure using IPythonConsole.
-        Parameters
-        ----------
-        mol: Chem.Mol
-            a rdkit mol object
-        """
-
-        def mol_with_atom_index(mol):
-            atoms = mol.GetNumAtoms()
-            for idx in range(atoms):
-                mol.GetAtomWithIdx(idx).SetProp(
-                    "molAtomMapNumber", str(mol.GetAtomWithIdx(idx).GetIdx())
-                )
-            return mol
-
-        mol = mol_with_atom_index(mol)
-        AllChem.Compute2DCoords(mol)
-        display(mol)
-
     def show_common_core_on_mol1(self, show_atom_types: bool = False):
         """
         Shows common core on mol1
         """
         return self._show_common_core(
-            self.mols["m1"], self.get_common_core_idx_mol1(), show_atom_types
+            self.mols["m1"],
+            self.get_common_core_idx_mol1(),
+            show_atom_types,
+            internal=False,
         )
 
     def show_common_core_on_mol2(self, show_atom_types: bool = False):
@@ -1098,10 +1242,15 @@ class ProposeMutationRoute(object):
         Shows common core on mol2
         """
         return self._show_common_core(
-            self.mols["m2"], self.get_common_core_idx_mol2(), show_atom_types
+            self.mols["m2"],
+            self.get_common_core_idx_mol2(),
+            show_atom_types,
+            internal=False,
         )
 
-    def _show_common_core(self, mol, highlight: list, show_atom_type: bool):
+    def _show_common_core(
+        self, mol, highlight: list, show_atom_type: bool, internal: bool
+    ):
         """
         Helper function - do not call directly.
         Show common core.
@@ -1109,9 +1258,8 @@ class ProposeMutationRoute(object):
         # https://rdkit.blogspot.com/2015/02/new-drawing-code.html
 
         mol = deepcopy(mol)
-        AllChem.Compute2DCoords(mol)
 
-        drawer = rdMolDraw2D.MolDraw2DSVG(800, 800)
+        drawer = rdMolDraw2D.MolDraw2DSVG(500, 500)
         drawer.SetFontSize(6)
 
         opts = drawer.drawOptions()
@@ -1121,16 +1269,21 @@ class ProposeMutationRoute(object):
                 opts.atomLabels[i.GetIdx()] = (
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_type")
                 )
-        else:
+        elif mol.GetNumAtoms() < 30:
             for i in mol.GetAtoms():
                 opts.atomLabels[i.GetIdx()] = (
                     str(i.GetProp("atom_index")) + ":" + i.GetProp("atom_name")
                 )
 
+        rdCoordGen.AddCoords(mol)  # Create Cordinates
+
         drawer.DrawMolecule(mol, highlightAtoms=highlight)
-        Draw.DrawingOptions.includeAtomNumbers = False
         drawer.FinishDrawing()
         svg = drawer.GetDrawingText().replace("svg:", "")
+
+        if internal:
+            display(SVG(svg))
+
         return svg
 
     def generate_mutations_to_common_core_for_mol1(self) -> dict:
@@ -1187,7 +1340,6 @@ class ProposeMutationRoute(object):
             self.get_common_core_idx_mol1() + self.dummy_region_cc1.lj_default,
             self.get_common_core_idx_mol2() + self.dummy_region_cc2.lj_default,
         ):
-
             # did atom type change? if not don't add BondedMutations
             atom1 = self.psfs["m1"][cc1]
             atom2 = self.psfs["m2"][cc2]
@@ -1219,6 +1371,15 @@ class ProposeMutationRoute(object):
         if bonded_terms_mutation or charge_mutation:
             logger.warning(f"Bonded parameters mutation: {bonded_terms_mutation}.")
             logger.warning(f"Charge parameters mutation: {charge_mutation}.")
+
+            # in point mutations all residues are in the tlc section -> we want only
+            # the one where the mutation happens (should be only necessary for s1_tlc)
+            if len(self.s1_tlc) > 4:
+                self.s1_tlc = (
+                    self.psf1["waterbox"]
+                    .atoms[self.get_idx_not_in_common_core_for_mol1()[0]]
+                    .residue.name
+                )
 
             t = CommonCoreTransformation(
                 self.get_common_core_idx_mol1(),
@@ -1506,10 +1667,55 @@ class CommonCoreTransformation(object):
         #     "H3T": "H3T",
         # }
 
+        # match_atom_names_cc1_to_cc2 = {
+        #     "C5'": "C5'",
+        #     "O5'": "O5'",
+        #     "C4'": "C4'",
+        #     "C3'": "C3'",
+        #     "C2'": "C2'",
+        #     "C1'": "C1'",
+        #     "O4'": "O4'",
+        #     "N9": "N9",
+        #     "C8": "C8",
+        #     "N7": "N7",
+        #     "C5": "C5",
+        #     "C4": "C4",
+        #     "N3": "N3",
+        #     "C2": "C2",
+        #     "N1": "N1",
+        #     "C6": "C6",
+        #     "N6": "N6",
+        #     "O2'": "O2'",
+        #     "O3'": "O3'",
+        #     "P": "P",
+        #     "O2P": "O2P",
+        #     "O1P": "O1P",
+        #     "O2": "O2",
+        #     "O4": "O4",
+        #     "N4": "N4",
+        #     "H5''": "H5''",
+        #     "H5'": "H5'",
+        #     "H5T": "H5T",
+        #     "H4'": "H4'",
+        #     "H3'": "H3'",
+        #     "H2''": "H2''",
+        #     "H1'": "H1'",
+        #     "H8": "H8",
+        #     "H2": "H2",
+        #     "H61": "H6",
+        #     "H2'": "H2'",
+        #     "H51": "H5",
+        #     "H3": "H3",
+        #     "H6": "H6",
+        #     "H5": "H5",
+        #     "H42": "H42",
+        #     "H41": "H41",
+        #     "H3T": "H3T",
+        # }
+
         return match_atom_names_cc1_to_cc2
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
-
         # common core of psf 1 is transformed to psf 2
         for ligand1_atom in psf.view[f":{self.tlc_cc1}"]:
             if ligand1_atom.name not in self.atom_names_mapping:
@@ -1644,13 +1850,11 @@ class CommonCoreTransformation(object):
                 raise RuntimeError("No corresponding atom in cc2 found")
 
     def _mutate_bonds(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
-
         logger.debug("#######################")
         logger.debug("mutate_bonds")
 
         mod_type = namedtuple("Bond", "k, req")
-        for ligand1_bond in psf.view[f":{self.tlc_cc1}"].bonds:
-
+        for ligand1_bond in psf.view[f":H2U"].bonds:
             ligand1_atom1_name = ligand1_bond.atom1.name
             ligand1_atom2_name = ligand1_bond.atom2.name
             # all atoms of the bond must be in cc
@@ -1717,16 +1921,15 @@ class CommonCoreTransformation(object):
                     ligand1_bond.mod_type = mod_type(modified_k, modified_req)
                     logger.debug(ligand1_bond.mod_type)
 
-            if not found:
+            if not found and ligand2_bond.atom1.residue.name == "H2U":
                 logger.critical(ligand1_bond)
                 raise RuntimeError(
                     "No corresponding bond in cc2 found: {}".format(ligand1_bond)
                 )
 
     def _mutate_angles(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
-
         mod_type = namedtuple("Angle", "k, theteq")
-        for cc1_angle in psf.view[f":{self.tlc_cc1}"].angles:
+        for cc1_angle in psf.view[f":H2U"].angles:
             ligand1_atom1_name = cc1_angle.atom1.name
             ligand1_atom2_name = cc1_angle.atom2.name
             cc1_a3 = cc1_angle.atom3.name
@@ -1802,17 +2005,15 @@ class CommonCoreTransformation(object):
 
                     cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
 
-            if not found:
+            if not found and cc2_angle.atom1.residue.name == "H2U":
                 logger.critical(cc1_angle)
                 raise RuntimeError("No corresponding angle in cc2 found")
 
     def _mutate_torsions(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
-
         mod_type = namedtuple("Torsion", "phi_k, per, phase, scee, scnb")
 
         # get all torsions present in initial topology
-        for original_torsion in psf.view[f":{self.tlc_cc1}"].dihedrals:
-
+        for original_torsion in psf.view[f":H2U"].dihedrals:
             found: bool = False
             original_atom1_name = original_torsion.atom1.name
             original_atom2_name = original_torsion.atom2.name
@@ -1926,7 +2127,7 @@ class CommonCoreTransformation(object):
 
                     original_torsion.mod_type = mod_types
 
-            if not found:
+            if not found and new_torsion.atom1.residue.name == "H2U":
                 logger.critical(original_torsion)
                 raise RuntimeError("No corresponding torsion in cc2 found")
 
@@ -1963,7 +2164,6 @@ class CommonCoreTransformation(object):
 
     @staticmethod
     def _modify_type_in_cc(atom: pm.Atom, psf: pm.charmm.CharmmPsfFile):
-
         if hasattr(atom, "initial_type"):
             # only change parameters
             pass
@@ -1979,7 +2179,6 @@ class CommonCoreTransformation(object):
 
 class Mutation(object):
     def __init__(self, atoms_to_be_mutated: list, dummy_region: DummyRegion):
-
         assert type(atoms_to_be_mutated) == list
         self.atoms_to_be_mutated = atoms_to_be_mutated
         self.dummy_region = dummy_region
@@ -1988,7 +2187,6 @@ class Mutation(object):
     def _mutate_charge(
         self, psf: pm.charmm.CharmmPsfFile, lambda_value: float, offset: int
     ):
-
         total_charge = int(
             round(sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms]))
         )
@@ -2019,7 +2217,6 @@ class Mutation(object):
         offset: int,
         to_default: bool,
     ):
-
         if not set(vdw_atom_idx).issubset(set(self.atoms_to_be_mutated)):
             raise RuntimeError(
                 f"Specified atom {vdw_atom_idx} is not in atom_idx list {self.atoms_to_be_mutated}. Aborting."
@@ -2168,7 +2365,6 @@ class Mutation(object):
 
     @staticmethod
     def _modify_type(atom, psf, atom_type_suffix: str):
-
         if hasattr(atom, "initial_type"):
             # only change parameters
             pass
@@ -2195,7 +2391,6 @@ def mutate_pure_tautomers(
     single_state=False,
     nr_of_bonded_windows: int = 4,
 ):
-
     from transformato import (
         IntermediateStateFactory,
     )

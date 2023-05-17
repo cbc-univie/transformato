@@ -139,7 +139,6 @@ class SystemStructure(object):
 
             return preprocessing._mol_to_nx_full_weight(mol)
         except ModuleNotFoundError:
-
             G = nx.Graph()
 
             for atom in mol.GetAtoms():
