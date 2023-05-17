@@ -30,7 +30,6 @@ warnings.filterwarnings("ignore", module="parmed")
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_point_mutation_2():
-
     configuration = load_config_yaml(
         config=f"/site/raid3/johannes/h2u/data/config/H2U_1_cano-H2U_1_mod.yaml",
         input_dir="/site/raid3/johannes/h2u/data",

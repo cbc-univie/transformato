@@ -396,7 +396,6 @@ class SystemStructure(object):
         return f"{file_path}/step3_input_reduced.sdf"
 
     def _return_small_molecule(self) -> Chem.rdchem.Mol:
-
         charmm_gui_env = self.charmm_gui_base + "waterbox"
         possible_files = []
         for ending in ["sdf", "mol", "mol2"]:
