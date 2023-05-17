@@ -29,8 +29,42 @@ warnings.filterwarnings("ignore", module="parmed")
     os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
-def test_setting_up_point_mutation():
+def test_point_mutation_reduced_system():
+    configuration = load_config_yaml(
+        config=f"/site/raid3/johannes/h2u/data/config/H2U_1_cano-H2U_1_mod.yaml",
+        input_dir="/site/raid3/johannes/h2u/data",
+        output_dir=f"/site/raid3/johannes",
+    )
 
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+    )
+
+    perform_mutations(
+        configuration=configuration,
+        nr_of_mutation_steps_charge=3,
+        nr_of_mutation_steps_cc=3,
+        i=i,
+        mutation_list=mutation_list,
+    )
+
+    assert s1_to_s2.get_idx_not_in_common_core_for_mol1() == [40, 43]
+
+
+@pytest.mark.point_mutation
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_setting_up_point_mutation():
     configuration = load_config_yaml(
         config=f"/site/raid3/johannes/bioinfo/data/config/cano10-psu10.yaml",
         input_dir="/site/raid3/johannes/bioinfo/data/psul",
