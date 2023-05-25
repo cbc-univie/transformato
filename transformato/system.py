@@ -139,7 +139,6 @@ class SystemStructure(object):
 
             return preprocessing._mol_to_nx_full_weight(mol)
         except ModuleNotFoundError:
-
             G = nx.Graph()
 
             for atom in mol.GetAtoms():
@@ -245,9 +244,8 @@ class SystemStructure(object):
             parameter_files += (f"{toppar_dir}/par_all36_lipid.prm",)
             parameter_files += (f"{toppar_dir}/top_all36_lipid.rtf",)
             parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
-            parameter_files += (
-                f"{toppar_dir}/toppar_all36_prot_na_combined.str",
-            )  # if modified aminoacids are needed
+            parameter_files += (f"{toppar_dir}/toppar_all36_prot_na_combined.str",)
+            parameter_files += (f"{toppar_dir}/toppar_all36_na_rna_modified.str",)
             # if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
             #     parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
 
@@ -397,7 +395,6 @@ class SystemStructure(object):
         return f"{file_path}/step3_input_reduced.sdf"
 
     def _return_small_molecule(self) -> Chem.rdchem.Mol:
-
         charmm_gui_env = self.charmm_gui_base + "waterbox"
         possible_files = []
         for ending in ["sdf", "mol", "mol2"]:
