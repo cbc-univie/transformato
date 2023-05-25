@@ -354,7 +354,6 @@ class ProposeMutationRoute(object):
             self.asfe: bool = False
 
         except AttributeError:
-
             logger.info(
                 "Only information about one structure, assume an ASFE simulation is requested"
             )

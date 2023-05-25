@@ -30,7 +30,6 @@ warnings.filterwarnings("ignore", module="parmed")
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_point_mutation_reduced_system():
-
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/H2U_1_mod-H2U_1_cano.yaml",
         input_dir=get_testsystems_dir(),

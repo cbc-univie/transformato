@@ -130,7 +130,6 @@ class IntermediateStateFactory(object):
                     )
 
                 else:
-
                     logger.debug(f"Lambda electrostatics: {lambda_value_electrostatic}")
                     logger.debug(f"Lambda vdw: {lambda_value_vdw}")
 
@@ -1023,7 +1022,6 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
         shutil.copytree(toppar_source, toppar_target, dirs_exist_ok=True)
 
     def _write_toppar_str(self, output_file_base):
-
         from transformato.system import parameter_files
 
         base = "../../toppar"
