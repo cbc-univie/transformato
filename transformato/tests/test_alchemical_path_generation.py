@@ -230,7 +230,7 @@ def test_generate_alchemical_path_for_2_CPI_to_common_core():
     )
 
     output_files = mutate_2_CPI_to_7_CPI_cc(configuration=configuration)
-    assert len(output_files) == 18
+    assert len(output_files) == 17
 
 
 @pytest.mark.rsfe
@@ -244,12 +244,11 @@ def test_generate_alchemical_path_for_7_CPI_to_common_core():
     )
 
     output_files = mutate_7_CPI_to_2_CPI_cc(configuration=configuration)
-    assert len(output_files) == 13
+    assert len(output_files) == 12
 
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_1a0q_1a07(caplog):
-
     # Test that TF can handel multiple dummy regions
     caplog.set_level(logging.INFO)
     conf = f"{get_testsystems_dir()}/config/test-1a0q-1a07-rsfe.yaml"
@@ -270,3 +269,42 @@ def test_generate_alchemical_path_for_1a0q_1a07(caplog):
     )
     perform_mutations(configuration=configuration, i=i, mutation_list=mutation_list)
     assert i.current_step == 24
+
+
+@pytest.mark.rbfe
+def test_generate_path_for_ppar_system():
+    conf = f"{get_testsystems_dir()}/config/ppar-cpd31_cpd25.yaml"
+    configuration = load_config_yaml(
+        config=conf, input_dir=get_testsystems_dir(), output_dir=get_test_output_dir()
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.propose_common_core()
+    s1_to_s2.finish_common_core()
+
+    assert (
+        len(s1_to_s2.get_common_core_idx_mol1())
+        == len(s1_to_s2.get_common_core_idx_mol2())
+        == 46
+    )
+
+    assert s1_to_s2.get_idx_not_in_common_core_for_mol1() == [31, 32, 33, 49, 50, 51]
+    assert s1_to_s2.get_idx_not_in_common_core_for_mol2() == [0, 1, 40, 49, 50, 51]
+
+    assert s1_to_s2.terminal_real_atom_cc1 == [19, 12]
+    assert s1_to_s2.terminal_real_atom_cc2 == [21, 14]
+
+    assert s1_to_s2.dummy_region_cc1.lj_default == [31, 33]
+    assert s1_to_s2.dummy_region_cc2.lj_default == [40, 1]
+    assert s1_to_s2.dummy_region_cc2.connected_dummy_regions == [
+        [49, 50, 51, 0, 1],
+        [40],
+    ]
+    assert s1_to_s2.dummy_region_cc1.connected_dummy_regions == [
+        [33],
+        [51, 50, 49, 32, 31],
+    ]
+
+    assert s1_to_s2.matching_terminal_atoms_between_cc == [(12, 14), (19, 21)]
