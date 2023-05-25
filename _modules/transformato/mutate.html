@@ -10,6 +10,8 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -429,9 +431,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="p">:</span> <span class="n">DummyRegion</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">asfe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="c1"># self._check_cgenff_versions()</span>
 
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s2">&quot;Only information about one structure, assume an ASFE simulation is requested&quot;</span>
             <span class="p">)</span>
@@ -1451,6 +1453,8 @@
 
             <span class="c1"># in point mutations all residues are in the tlc section -&gt; we want only</span>
             <span class="c1"># the one where the mutation happens (should be only necessary for s1_tlc)</span>
+            <span class="c1"># TODO: make an assert statement which checks that all atoms of dummy region</span>
+            <span class="c1"># belong to the same residue!</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">]</span>
@@ -1744,52 +1748,6 @@
         <span class="c1">#     &quot;H3T&quot;: &quot;H3T&quot;,</span>
         <span class="c1"># }</span>
 
-        <span class="c1"># match_atom_names_cc1_to_cc2 = {</span>
-        <span class="c1">#     &quot;C5&#39;&quot;: &quot;C5&#39;&quot;,</span>
-        <span class="c1">#     &quot;O5&#39;&quot;: &quot;O5&#39;&quot;,</span>
-        <span class="c1">#     &quot;C4&#39;&quot;: &quot;C4&#39;&quot;,</span>
-        <span class="c1">#     &quot;C3&#39;&quot;: &quot;C3&#39;&quot;,</span>
-        <span class="c1">#     &quot;C2&#39;&quot;: &quot;C2&#39;&quot;,</span>
-        <span class="c1">#     &quot;C1&#39;&quot;: &quot;C1&#39;&quot;,</span>
-        <span class="c1">#     &quot;O4&#39;&quot;: &quot;O4&#39;&quot;,</span>
-        <span class="c1">#     &quot;N9&quot;: &quot;N9&quot;,</span>
-        <span class="c1">#     &quot;C8&quot;: &quot;C8&quot;,</span>
-        <span class="c1">#     &quot;N7&quot;: &quot;N7&quot;,</span>
-        <span class="c1">#     &quot;C5&quot;: &quot;C5&quot;,</span>
-        <span class="c1">#     &quot;C4&quot;: &quot;C4&quot;,</span>
-        <span class="c1">#     &quot;N3&quot;: &quot;N3&quot;,</span>
-        <span class="c1">#     &quot;C2&quot;: &quot;C2&quot;,</span>
-        <span class="c1">#     &quot;N1&quot;: &quot;N1&quot;,</span>
-        <span class="c1">#     &quot;C6&quot;: &quot;C6&quot;,</span>
-        <span class="c1">#     &quot;N6&quot;: &quot;N6&quot;,</span>
-        <span class="c1">#     &quot;O2&#39;&quot;: &quot;O2&#39;&quot;,</span>
-        <span class="c1">#     &quot;O3&#39;&quot;: &quot;O3&#39;&quot;,</span>
-        <span class="c1">#     &quot;P&quot;: &quot;P&quot;,</span>
-        <span class="c1">#     &quot;O2P&quot;: &quot;O2P&quot;,</span>
-        <span class="c1">#     &quot;O1P&quot;: &quot;O1P&quot;,</span>
-        <span class="c1">#     &quot;O2&quot;: &quot;O2&quot;,</span>
-        <span class="c1">#     &quot;O4&quot;: &quot;O4&quot;,</span>
-        <span class="c1">#     &quot;N4&quot;: &quot;N4&quot;,</span>
-        <span class="c1">#     &quot;H5&#39;&#39;&quot;: &quot;H5&#39;&#39;&quot;,</span>
-        <span class="c1">#     &quot;H5&#39;&quot;: &quot;H5&#39;&quot;,</span>
-        <span class="c1">#     &quot;H5T&quot;: &quot;H5T&quot;,</span>
-        <span class="c1">#     &quot;H4&#39;&quot;: &quot;H4&#39;&quot;,</span>
-        <span class="c1">#     &quot;H3&#39;&quot;: &quot;H3&#39;&quot;,</span>
-        <span class="c1">#     &quot;H2&#39;&#39;&quot;: &quot;H2&#39;&#39;&quot;,</span>
-        <span class="c1">#     &quot;H1&#39;&quot;: &quot;H1&#39;&quot;,</span>
-        <span class="c1">#     &quot;H8&quot;: &quot;H8&quot;,</span>
-        <span class="c1">#     &quot;H2&quot;: &quot;H2&quot;,</span>
-        <span class="c1">#     &quot;H61&quot;: &quot;H6&quot;,</span>
-        <span class="c1">#     &quot;H2&#39;&quot;: &quot;H2&#39;&quot;,</span>
-        <span class="c1">#     &quot;H51&quot;: &quot;H5&quot;,</span>
-        <span class="c1">#     &quot;H3&quot;: &quot;H3&quot;,</span>
-        <span class="c1">#     &quot;H6&quot;: &quot;H6&quot;,</span>
-        <span class="c1">#     &quot;H5&quot;: &quot;H5&quot;,</span>
-        <span class="c1">#     &quot;H42&quot;: &quot;H42&quot;,</span>
-        <span class="c1">#     &quot;H41&quot;: &quot;H41&quot;,</span>
-        <span class="c1">#     &quot;H3T&quot;: &quot;H3T&quot;,</span>
-        <span class="c1"># }</span>
-
         <span class="k">return</span> <span class="n">match_atom_names_cc1_to_cc2</span></div>
 
     <span class="k">def</span> <span class="nf">_mutate_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
@@ -1931,7 +1889,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;mutate_bonds&quot;</span><span class="p">)</span>
 
         <span class="n">mod_type</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Bond&quot;</span><span class="p">,</span> <span class="s2">&quot;k, req&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">ligand1_bond</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:H2U&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">bonds</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ligand1_bond</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">bonds</span><span class="p">:</span>
             <span class="n">ligand1_atom1_name</span> <span class="o">=</span> <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">name</span>
             <span class="n">ligand1_atom2_name</span> <span class="o">=</span> <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">name</span>
             <span class="c1"># all atoms of the bond must be in cc</span>
@@ -1998,7 +1956,11 @@
                     <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_type</span><span class="p">(</span><span class="n">modified_k</span><span class="p">,</span> <span class="n">modified_req</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">mod_type</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;H2U&quot;</span><span class="p">:</span>
+            <span class="c1"># AND statement because in point mutations the atom_names_mapping check</span>
+            <span class="c1"># might mislead. There are situations where two atom names are both in</span>
+            <span class="c1"># the CC and in the dummy regions. E.g. in tlc1: C6-H62(is the dummy atom),</span>
+            <span class="c1"># in tlc2: C6-N7-H62. Now it would search for a C6-H62 bond in cc2!</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                     <span class="s2">&quot;No corresponding bond in cc2 found: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="p">)</span>
@@ -2006,7 +1968,7 @@
 
     <span class="k">def</span> <span class="nf">_mutate_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="n">mod_type</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Angle&quot;</span><span class="p">,</span> <span class="s2">&quot;k, theteq&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">cc1_angle</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:H2U&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">angles</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">cc1_angle</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">angles</span><span class="p">:</span>
             <span class="n">ligand1_atom1_name</span> <span class="o">=</span> <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">name</span>
             <span class="n">ligand1_atom2_name</span> <span class="o">=</span> <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">name</span>
             <span class="n">cc1_a3</span> <span class="o">=</span> <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">name</span>
@@ -2081,8 +2043,8 @@
                     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New k: </span><span class="si">{</span><span class="n">modified_theteq</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                     <span class="n">cc1_angle</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_type</span><span class="p">(</span><span class="n">modified_k</span><span class="p">,</span> <span class="n">modified_theteq</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;H2U&quot;</span><span class="p">:</span>
+            <span class="c1"># AND statement is explained in bond section</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">cc1_angle</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding angle in cc2 found&quot;</span><span class="p">)</span>
 
@@ -2090,7 +2052,7 @@
         <span class="n">mod_type</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Torsion&quot;</span><span class="p">,</span> <span class="s2">&quot;phi_k, per, phase, scee, scnb&quot;</span><span class="p">)</span>
 
         <span class="c1"># get all torsions present in initial topology</span>
-        <span class="k">for</span> <span class="n">original_torsion</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:H2U&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dihedrals</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">original_torsion</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dihedrals</span><span class="p">:</span>
             <span class="n">found</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">original_atom1_name</span> <span class="o">=</span> <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">name</span>
             <span class="n">original_atom2_name</span> <span class="o">=</span> <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">name</span>
@@ -2203,8 +2165,8 @@
                                 <span class="p">)</span>
 
                     <span class="n">original_torsion</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_types</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;H2U&quot;</span><span class="p">:</span>
+            <span class="c1"># AND section is explained in bond section anologon</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">original_torsion</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding torsion in cc2 found&quot;</span><span class="p">)</span>
 

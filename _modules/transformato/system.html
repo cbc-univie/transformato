@@ -10,6 +10,8 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
@@ -321,9 +323,8 @@
             <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/par_all36_lipid.prm&quot;</span><span class="p">,)</span>
             <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/top_all36_lipid.rtf&quot;</span><span class="p">,)</span>
             <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_water_ions.str&quot;</span><span class="p">,)</span>
-            <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_prot_na_combined.str&quot;</span><span class="p">,</span>
-            <span class="p">)</span>  <span class="c1"># if modified aminoacids are needed</span>
+            <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_prot_na_combined.str&quot;</span><span class="p">,)</span>
+            <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_na_rna_modified.str&quot;</span><span class="p">,)</span>
             <span class="c1"># if os.path.isfile(f&quot;{toppar_dir}/toppar_all36_moreions.str&quot;):</span>
             <span class="c1">#     parameter_files += (f&quot;{toppar_dir}/toppar_all36_moreions.str&quot;,)</span>
 
@@ -473,7 +474,6 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reduced.sdf&quot;</span></div>
 
     <span class="k">def</span> <span class="nf">_return_small_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">:</span>
-
         <span class="n">charmm_gui_env</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span> <span class="o">+</span> <span class="s2">&quot;waterbox&quot;</span>
         <span class="n">possible_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ending</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sdf&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;mol2&quot;</span><span class="p">]:</span>
