@@ -1902,7 +1902,7 @@ class CommonCoreTransformation(object):
                             original_torsion.atom1.type,
                             original_torsion.atom2.type,
                             original_torsion.atom3.type,
-                            original_torsion.atom3.type,
+                            original_torsion.atom4.type,
                         ]
                     ) == sorted(
                         [

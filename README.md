@@ -16,9 +16,6 @@ transformato can be easily installed from conda-forge:
 ```
 conda install transformato -c conda-forge
 ```
-:warning: **When installing from conda-forge, lone-pairs are not supported!** :bangbang:
-
-for lone-pair support install transformato directly from github following this [instructions](https://wiederm.github.io/transformato/Installation.html)
 
 ## Usage
 
