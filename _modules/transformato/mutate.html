@@ -431,13 +431,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="p">:</span> <span class="n">DummyRegion</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">asfe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_cgenff_versions</span><span class="p">()</span>
 
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-
+        <span class="k">except</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s2">&quot;Only information about one structure, assume an ASFE simulation is requested&quot;</span>
             <span class="p">)</span>
-
             <span class="n">mol1_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;m1&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;system1&quot;</span><span class="p">:</span> <span class="n">s1</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">mol1_name</span><span class="p">:</span> <span class="n">s1</span><span class="o">.</span><span class="n">mol</span><span class="p">}</span>
@@ -673,6 +672,7 @@
 
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;die Atome </span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">flat_ordered_connected_dummy_regions</span><span class="p">:</span>
                     <span class="n">lp_dict_dummy_region</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
 
@@ -1451,20 +1451,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bonded parameters mutation: </span><span class="si">{</span><span class="n">bonded_terms_mutation</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Charge parameters mutation: </span><span class="si">{</span><span class="n">charge_mutation</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
-            <span class="c1"># in point mutations all residues are in the tlc section -&gt; we want only</span>
-            <span class="c1"># the one where the mutation happens (should be only necessary for s1_tlc)</span>
-            <span class="c1"># TODO: make an assert statement which checks that all atoms of dummy region</span>
-            <span class="c1"># belong to the same residue!</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">]</span>
-                    <span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_idx_not_in_common_core_for_mol1</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span>
-                    <span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span>
-                <span class="p">)</span>
-
             <span class="n">t</span> <span class="o">=</span> <span class="n">CommonCoreTransformation</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="o">.</span><span class="n">lj_default</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="o">.</span><span class="n">lj_default</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;m2&quot;</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="p">,</span>
@@ -1699,55 +1688,8 @@
             <span class="n">cc_names_struc1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">cc_names_struc2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc1: </span><span class="si">{</span><span class="n">cc_names_struc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc2: </span><span class="si">{</span><span class="n">cc_names_struc2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="c1">### DANGER ONLY FOR ONE MUTATION NEEEDS TO BE FIXED #####</span>
-        <span class="c1"># match_atom_names_cc1_to_cc2 = {</span>
-        <span class="c1">#     &quot;O5&#39;&quot;: &quot;O5&#39;&quot;,</span>
-        <span class="c1">#     &quot;H5T&quot;: &quot;H5T&quot;,</span>
-        <span class="c1">#     &quot;C5&#39;&quot;: &quot;C5&#39;&quot;,</span>
-        <span class="c1">#     &quot;H5&#39;&#39;&quot;: &quot;H5&#39;&#39;&quot;,</span>
-        <span class="c1">#     &quot;H5&#39;&quot;: &quot;H5&#39;&quot;,</span>
-        <span class="c1">#     &quot;C4&#39;&quot;: &quot;C4&#39;&quot;,</span>
-        <span class="c1">#     &quot;H4&#39;&quot;: &quot;H4&#39;&quot;,</span>
-        <span class="c1">#     &quot;O4&#39;&quot;: &quot;O4&#39;&quot;,</span>
-        <span class="c1">#     &quot;C1&#39;&quot;: &quot;C1&#39;&quot;,</span>
-        <span class="c1">#     &quot;C2&#39;&quot;: &quot;C2&#39;&quot;,</span>
-        <span class="c1">#     &quot;C3&#39;&quot;: &quot;C3&#39;&quot;,</span>
-        <span class="c1">#     &quot;H3&#39;&quot;: &quot;H3&#39;&quot;,</span>
-        <span class="c1">#     &quot;O3&#39;&quot;: &quot;O3&#39;&quot;,</span>
-        <span class="c1">#     &quot;P&quot;: &quot;P&quot;,</span>
-        <span class="c1">#     &quot;O2P&quot;: &quot;O2P&quot;,</span>
-        <span class="c1">#     &quot;O1P&quot;: &quot;O1P&quot;,</span>
-        <span class="c1">#     &quot;H1&#39;&quot;: &quot;H1&#39;&quot;,</span>
-        <span class="c1">#     &quot;H2&#39;&#39;&quot;: &quot;H2&#39;&#39;&quot;,</span>
-        <span class="c1">#     &quot;O2&#39;&quot;: &quot;O2&#39;&quot;,</span>
-        <span class="c1">#     &quot;H2&#39;&quot;: &quot;H2&#39;&quot;,</span>
-        <span class="c1">#     &quot;N1&quot;: &quot;N1&quot;,</span>
-        <span class="c1">#     &quot;C6&quot;: &quot;C6&quot;,</span>
-        <span class="c1">#     &quot;H6&quot;: &quot;H6&quot;,</span>
-        <span class="c1">#     &quot;C5&quot;: &quot;C5&quot;,</span>
-        <span class="c1">#     &quot;H5&quot;: &quot;H5&quot;,</span>
-        <span class="c1">#     &quot;C4&quot;: &quot;C4&quot;,</span>
-        <span class="c1">#     &quot;N3&quot;: &quot;N3&quot;,</span>
-        <span class="c1">#     &quot;C2&quot;: &quot;C2&quot;,</span>
-        <span class="c1">#     &quot;O2&quot;: &quot;O2&quot;,</span>
-        <span class="c1">#     &quot;N4&quot;: &quot;N4&quot;,</span>
-        <span class="c1">#     &quot;H42&quot;: &quot;H42&quot;,</span>
-        <span class="c1">#     &quot;H41&quot;: &quot;H41&quot;,</span>
-        <span class="c1">#     &quot;N9&quot;: &quot;N9&quot;,</span>
-        <span class="c1">#     &quot;N7&quot;: &quot;N7&quot;,</span>
-        <span class="c1">#     &quot;C8&quot;: &quot;C8&quot;,</span>
-        <span class="c1">#     &quot;H8&quot;: &quot;H8&quot;,</span>
-        <span class="c1">#     &quot;N2&quot;: &quot;N2&quot;,</span>
-        <span class="c1">#     &quot;H21&quot;: &quot;H21&quot;,</span>
-        <span class="c1">#     &quot;H22&quot;: &quot;H22&quot;,</span>
-        <span class="c1">#     &quot;H1&quot;: &quot;H1&quot;,</span>
-        <span class="c1">#     &quot;O6&quot;: &quot;O6&quot;,</span>
-        <span class="c1">#     &quot;H3T&quot;: &quot;H3T&quot;,</span>
-        <span class="c1"># }</span>
-
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc1: </span><span class="si">{</span><span class="n">cc_names_struc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc2: </span><span class="si">{</span><span class="n">cc_names_struc2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">match_atom_names_cc1_to_cc2</span></div>
 
     <span class="k">def</span> <span class="nf">_mutate_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
@@ -1759,18 +1701,7 @@
 
             <span class="c1"># compare to charge compenstated psf 2</span>
             <span class="k">for</span> <span class="n">ligand2_atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_compensated_ligand2_psf</span><span class="p">:</span>
-                <span class="c1"># Assure that only atoms from the same resdiue are compared, and only atoms belonging to the same chain!</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span>
-                    <span class="c1"># and ligand1_atom.residue.name == ligand2_atom.residue.name</span>
-                    <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span>
-                    <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span>  <span class="c1"># residue names are not unique</span>
-                    <span class="c1"># and ligand1_atom.type == ligand2_atom.type</span>
-                    <span class="c1"># and len(ligand1_atom.residue.atoms)</span>
-                    <span class="c1"># == len(ligand2_atom.residue.atoms)</span>
-                    <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span>
-                    <span class="ow">and</span> <span class="s2">&quot;DD&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span>
-                <span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="c1"># are the atoms different?</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modifying atom: </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1786,36 +1717,7 @@
                     <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">modified_charge</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">ligand2_atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_compensated_ligand2_psf</span><span class="p">:</span>
-                        <span class="c1"># make sure resdiue PSU which is like CYT are nevertheless found</span>
-                        <span class="k">if</span> <span class="p">(</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-                            <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span>
-                            <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-                            <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-                            <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span>
-                            <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span>
-                            <span class="ow">and</span> <span class="s2">&quot;DD&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span>
-                        <span class="p">):</span>
-                            <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
-                            <span class="c1"># are the atoms different?</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modifying atom: </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Template atom: </span><span class="si">{</span><span class="n">ligand2_atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-                            <span class="c1"># scale epsilon</span>
-                            <span class="n">modified_charge</span> <span class="o">=</span> <span class="p">(</span>
-                                <span class="n">scale</span> <span class="o">*</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">charge</span>
-                                <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">scale</span><span class="p">)</span> <span class="o">*</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">charge</span>
-                            <span class="p">)</span>
-                            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Current charge: </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2">; target charge: </span><span class="si">{</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2">; modified charge: </span><span class="si">{</span><span class="n">modified_charge</span><span class="si">}</span><span class="s2">&quot;</span>
-                            <span class="p">)</span>
-                            <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">modified_charge</span>
-                <span class="k">except</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;No corresponding atom for </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="si">}</span><span class="s2"> in cc2 found&quot;</span>
-                    <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding atom in cc2 found&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CommonCoreTransformation._mutate_atoms"><a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.CommonCoreTransformation._mutate_atoms">[docs]</a>    <span class="k">def</span> <span class="nf">_mutate_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1843,17 +1745,11 @@
                 <span class="c1"># is there a match up?</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_names_mapping</span><span class="p">[</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="c1"># are the atoms different? and assure that only atomtypes in the same residue are compared</span>
-                    <span class="k">if</span> <span class="p">(</span>
-                        <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span>
-                        <span class="c1"># and len(ligand1_atom.residue.atoms)</span>
-                        <span class="c1"># == len(ligand2_atom.residue.atoms)</span>
-                        <span class="ow">and</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">number</span>
-                    <span class="p">):</span>
-                        <span class="c1">## ATTENTION compare only the same residue with the same NUMBER!</span>
-                        <span class="k">if</span> <span class="s2">&quot;DD&quot;</span> <span class="ow">in</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                    <span class="c1"># are the atoms different?</span>
+                    <span class="k">if</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">ligand2_atom</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">in</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
                             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                                <span class="s2">&quot;Dummy atoms should not change their atomtypes&quot;</span>
+                                <span class="s2">&quot;This is the terminal LJ atom. If everything went correct, this does not have to change atom types.&quot;</span>
                             <span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_modify_type_in_cc</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">)</span>
@@ -1921,17 +1817,9 @@
                 <span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">ligand2_atom1_name</span><span class="p">,</span> <span class="n">ligand2_atom2_name</span><span class="p">]):</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="c1"># are the bonds different?</span>
-                    <span class="n">all_types</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                    <span class="p">]</span>
                     <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span>
                         <span class="p">[</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
-                    <span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">])</span> <span class="ow">or</span> <span class="p">(</span>
-                        <span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span>
-                    <span class="p">):</span>
+                    <span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">]):</span>
                         <span class="k">continue</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modifying bond: </span><span class="si">{</span><span class="n">ligand1_bond</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -1956,11 +1844,7 @@
                     <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_type</span><span class="p">(</span><span class="n">modified_k</span><span class="p">,</span> <span class="n">modified_req</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">mod_type</span><span class="p">)</span>
 
-            <span class="c1"># AND statement because in point mutations the atom_names_mapping check</span>
-            <span class="c1"># might mislead. There are situations where two atom names are both in</span>
-            <span class="c1"># the CC and in the dummy regions. E.g. in tlc1: C6-H62(is the dummy atom),</span>
-            <span class="c1"># in tlc2: C6-N7-H62. Now it would search for a C6-H62 bond in cc2!</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">ligand2_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                     <span class="s2">&quot;No corresponding bond in cc2 found: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="p">)</span>
@@ -1999,14 +1883,6 @@
                     <span class="p">]</span>
                 <span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">ligand2_atom1_name</span><span class="p">,</span> <span class="n">ligand2_atom2_name</span><span class="p">,</span> <span class="n">cc2_a3</span><span class="p">]):</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">all_types</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                    <span class="p">]</span>
                     <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
@@ -2019,8 +1895,6 @@
                             <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
                             <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
                         <span class="p">]</span>
-                    <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-                        <span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span>
                     <span class="p">):</span>
                         <span class="k">continue</span>
 
@@ -2043,8 +1917,8 @@
                     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New k: </span><span class="si">{</span><span class="n">modified_theteq</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                     <span class="n">cc1_angle</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_type</span><span class="p">(</span><span class="n">modified_k</span><span class="p">,</span> <span class="n">modified_theteq</span><span class="p">)</span>
-            <span class="c1"># AND statement is explained in bond section</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">cc2_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">cc1_angle</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding angle in cc2 found&quot;</span><span class="p">)</span>
 
@@ -2102,16 +1976,6 @@
                     <span class="p">[</span><span class="n">new_atom1_name</span><span class="p">,</span> <span class="n">new_atom2_name</span><span class="p">,</span> <span class="n">new_atom3_name</span><span class="p">,</span> <span class="n">new_atom4_name</span><span class="p">]</span>
                 <span class="p">):</span>
                     <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
-                    <span class="n">all_types</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                        <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
-                    <span class="p">]</span>
                     <span class="k">if</span> <span class="nb">sorted</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="n">original_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
@@ -2126,8 +1990,6 @@
                             <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
                             <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
                         <span class="p">]</span>
-                    <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
-                        <span class="s2">&quot;DDD&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;DDX&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">all_types</span><span class="p">)</span>
                     <span class="p">):</span>
                         <span class="k">continue</span>
 
@@ -2165,8 +2027,8 @@
                                 <span class="p">)</span>
 
                     <span class="n">original_torsion</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_types</span>
-            <span class="c1"># AND section is explained in bond section anologon</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span> <span class="ow">and</span> <span class="n">new_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">original_torsion</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding torsion in cc2 found&quot;</span><span class="p">)</span>
 
@@ -2204,9 +2066,6 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_modify_type_in_cc</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">Atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">):</span>
-            <span class="c1"># only change parameters</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span> <span class="o">==</span> <span class="s2">&quot;RNAB&quot;</span><span class="p">:</span>
             <span class="c1"># only change parameters</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2376,19 +2235,17 @@
 
             <span class="n">compensating_on_this_real_atom</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">connecting_real_atom_for_this_dummy_region</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
 
         <span class="c1"># check if rest charge is missing</span>
-        <span class="c1"># new and total charge is differen because new_charge considers all strands (RNAA and RNAB) but only RNAA is modified</span>
+        <span class="n">new_charge</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">charge</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">]</span>
+        <span class="p">)</span>
 
-    <span class="c1">#         new_charge = sum(</span>
-    <span class="c1">#             [atom.charge for atom in psf.view[f&quot;:{self.tlc.upper()}&quot;].atoms]</span>
-    <span class="c1">#         )</span>
-
-    <span class="c1">#         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):</span>
-    <span class="c1">#             raise RuntimeError(</span>
-    <span class="c1">#                 f&quot;Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}.&quot;</span>
-    <span class="c1">#             )</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">new_charge</span><span class="p">,</span> <span class="n">total_charge</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Charge compensation failed. Introducing non integer total charge: </span><span class="si">{</span><span class="n">new_charge</span><span class="si">}</span><span class="s2">. Target total charge: </span><span class="si">{</span><span class="n">total_charge</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_scale_epsilon</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
@@ -2405,9 +2262,6 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_modify_type</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">atom_type_suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">):</span>
-            <span class="c1"># only change parameters</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">atom</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">chain</span> <span class="o">==</span> <span class="s2">&quot;RNAB&quot;</span><span class="p">:</span>
             <span class="c1"># only change parameters</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
