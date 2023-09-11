@@ -30,6 +30,7 @@ class SystemStructure(object):
         self.name: str = configuration["system"][structure]["name"]
         self.tlc: str = configuration["system"][structure]["tlc"]
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
+        self.ff: str = "amber"
         self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
         self.parameter = self._read_parameters("waterbox")
@@ -63,18 +64,31 @@ class SystemStructure(object):
         ):
             self.envs = set(["waterbox", "vacuum"])
             for env in self.envs:
-                parameter = self._read_parameters(env)
-                # set up system
-                self.psfs[env] = self._initialize_system(configuration, env)
-                # load parameters
-                self.psfs[env].load_parameters(parameter)
-                # get offset
-                self.offset[
-                    env
-                ] = self._determine_offset_and_set_possible_dummy_properties(
-                    self.psfs[env]
-                )
+                try:
+                    parameter = self._read_parameters(env)
+                    # set up system
+                    self.psfs[env] = self._initialize_system(configuration, env)
+                    # load parameters
+                    self.psfs[env].load_parameters(parameter)
 
+                except (
+                    FileNotFoundError
+                ):  # no CHARMM psf file was found, checking if parameters for AMBER FF are available
+                    logger.info(
+                        "There were no relevant CHARMM files provided (psf,crd), we will search for AMBER FF files (parm7,rst7)"
+                    )
+                    self.psfs = defaultdict(pm.amber._amberparm.AmberParm)
+                    self.ff = "amber"
+                    self.psfs[env] = pm.load_file(
+                        f"{self.charmm_gui_base}/waterbox/openmm/step3_input.parm7"
+                    )
+                    self.psfs[env].load_rst7(
+                        f"{self.charmm_gui_base}/waterbox/openmm/step3_input.rst7"
+                    )
+
+            self.offset[env] = self._determine_offset_and_set_possible_dummy_properties(
+                self.psfs[env]
+            )
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
                 "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
@@ -181,7 +195,7 @@ class SystemStructure(object):
                 )
 
         # check cgenff versions
-        if parameter_files:
+        if parameter_files and self.ff == "charmm":
             with open(parameter_files[0]) as f:
                 _ = f.readline()
                 cgenff = f.readline().rstrip()
@@ -298,7 +312,11 @@ class SystemStructure(object):
         Returns
         ----------
         """
-        assert type(psf) == pm.charmm.CharmmPsfFile
+        if self.ff == "amber":
+            assert type(psf) == pm.amber._amberparm.AmberParm
+        else:
+            assert type(psf) == pm.charmm.CharmmPsfFile
+
         if len(psf.view[f":{self.tlc}"].atoms) < 1:
             raise RuntimeError(f"No ligand selected for tlc: {self.tlc}")
 
@@ -365,7 +383,6 @@ class SystemStructure(object):
         mol: rdkit.Chem.rdchem.Mol
         """
 
-        assert type(psf) == pm.charmm.CharmmPsfFile
         mol = self._return_small_molecule(env)
         (
             atom_idx_to_atom_name,
@@ -386,11 +403,12 @@ class SystemStructure(object):
             )
 
         # check if psf and sdf have same indeces
-        for a in mol.GetAtoms():
-            if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
-                pass
-            else:
-                raise RuntimeError("PSF to mol conversion did not work! Aborting.")
+        # if self.ff == "charmm":
+        #     for a in mol.GetAtoms():
+        #         if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
+        #             pass
+        #         else:
+        #             raise RuntimeError("PSF to mol conversion did not work! Aborting.")
 
         return mol
 

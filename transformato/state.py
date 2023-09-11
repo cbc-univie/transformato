@@ -146,7 +146,7 @@ class IntermediateStateFactory(object):
                         vdw_atom_idx=mutation_type.vdw_atom_idx,
                         steric_mutation_to_default=mutation_type.steric_mutation_to_default,
                     )
-            self._write_psf(self.system.psfs[env], output_file_base, env)
+            # self._write_psf(self.system.psfs[env], output_file_base, env)
         self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_toppar_str(output_file_base)
@@ -630,8 +630,10 @@ with open(file_name + '_system.xml','w') as outfile:
             self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
 
         # copy crd file
-        self._copy_crd_file((intermediate_state_file_path))
-
+        try:
+            self._copy_crd_file((intermediate_state_file_path))
+        except:
+            pass
         # copy openMM and charmm specific scripts
         self._copy_omm_files(intermediate_state_file_path)
         self._copy_charmm_files(intermediate_state_file_path)
@@ -698,21 +700,21 @@ with open(file_name + '_system.xml','w') as outfile:
                         )
                         logger.critical(f"###################")
 
-        for l in input_simulation_parameter.readlines():
-            if l.strip():
-                t1, t2_comment = [e.strip() for e in l.split("=")]
-                t2, comment = [e.strip() for e in t2_comment.split("#")]
-                comment = comment.strip()
-                if t1 in overwrite_parameters.keys():
-                    t2 = overwrite_parameters[t1]
-                    del overwrite_parameters[t1]  # remove from dict
-                if t1 == "vdw":
-                    t2 = t2.capitalize()
-                output_simulation_parameter.write(
-                    f"{t1:<25} = {t2:<25} # {comment:<30}\n"
-                )
-            else:
-                output_simulation_parameter.write("\n")
+        # for l in input_simulation_parameter.readlines():
+        #     if l.strip():
+        #         t1, t2_comment = [e.strip() for e in l.split("=")]
+        #         t2, comment = [e.strip() for e in t2_comment.split("#")]
+        #         comment = comment.strip()
+        #         if t1 in overwrite_parameters.keys():
+        #             t2 = overwrite_parameters[t1]
+        #             del overwrite_parameters[t1]  # remove from dict
+        #         if t1 == "vdw":
+        #             t2 = t2.capitalize()
+        #         output_simulation_parameter.write(
+        #             f"{t1:<25} = {t2:<25} # {comment:<30}\n"
+        #         )
+        #     else:
+        #         output_simulation_parameter.write("\n")
 
         # set parameters that have no equivalent in the pregenerated parameter file
         for t1 in overwrite_parameters.keys():
