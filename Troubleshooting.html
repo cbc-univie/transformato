@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=bbec6902"></script>
+        <script src="_static/documentation_options.js?v=8ce96065"></script>
+        <script src="_static/doctools.js?v=92e14aea"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -89,9 +89,9 @@
            <div itemprop="articleBody">
              
   <section id="troubleshooting">
-<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this heading"></a></h1>
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
 <section id="getting-debug-information">
-<h2>Getting debug information<a class="headerlink" href="#getting-debug-information" title="Permalink to this heading"></a></h2>
+<h2>Getting debug information<a class="headerlink" href="#getting-debug-information" title="Link to this heading"></a></h2>
 <p>For the simulation:</p>
 <ul class="simple">
 <li><p>in the output file of your worload manager (e.g. <cite>slurm-812311.out</cite>)</p></li>
@@ -103,9 +103,9 @@
 </ul>
 </section>
 <section id="error-messages-and-common-causes">
-<h2>Error messages and common causes:<a class="headerlink" href="#error-messages-and-common-causes" title="Permalink to this heading"></a></h2>
+<h2>Error messages and common causes:<a class="headerlink" href="#error-messages-and-common-causes" title="Link to this heading"></a></h2>
 <section id="errors-during-system-setup">
-<h3>Errors during system setup:<a class="headerlink" href="#errors-during-system-setup" title="Permalink to this heading"></a></h3>
+<h3>Errors during system setup:<a class="headerlink" href="#errors-during-system-setup" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">load_config_yaml</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
      <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
          <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
@@ -131,14 +131,14 @@
 </ol>
 </section>
 <section id="errors-during-simulation">
-<h3>Errors during simulation:<a class="headerlink" href="#errors-during-simulation" title="Permalink to this heading"></a></h3>
+<h3>Errors during simulation:<a class="headerlink" href="#errors-during-simulation" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="ne">FileNotFoundError</span><span class="p">:</span> <span class="p">[</span><span class="n">Errno</span> <span class="mi">2</span><span class="p">]</span> <span class="n">No</span> <span class="n">such</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">directory</span><span class="p">:</span> <span class="s1">&#39;/site/raid4/student4/production_transformato/tablit_24to25/run1/2oj9_tablit_struc24-2oj9_tablit_struc25-rbfe/2oj9_tablit_struc24//intst1/lig_in_complex.rst&#39;</span>
 </pre></div>
 </div>
 <p>Occurs if no .rst restart file was outputted during equilibration, either due to the equilibration not running correctly (or at all) or due to no output file specified.</p>
 </section>
 <section id="errors-during-analysis">
-<h3>Errors during analysis:<a class="headerlink" href="#errors-during-analysis" title="Permalink to this heading"></a></h3>
+<h3>Errors during analysis:<a class="headerlink" href="#errors-during-analysis" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
 <span class="n">File</span> <span class="s2">&quot;/site/raid4/student4/alex/production_transformato/taapdb_24to25/analysis.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">23</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
     <span class="n">ddG_openMM</span><span class="p">,</span> <span class="n">dddG</span><span class="p">,</span> <span class="n">f_openMM</span> <span class="o">=</span> <span class="n">postprocessing</span><span class="p">(</span>

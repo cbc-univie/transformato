@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=bbec6902"></script>
+        <script src="_static/documentation_options.js?v=8ce96065"></script>
+        <script src="_static/doctools.js?v=92e14aea"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -88,7 +88,7 @@
            <div itemprop="articleBody">
              
   <section id="theoretical-background">
-<h1>Theoretical background<a class="headerlink" href="#theoretical-background" title="Permalink to this heading"></a></h1>
+<h1>Theoretical background<a class="headerlink" href="#theoretical-background" title="Link to this heading"></a></h1>
 <p><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> <a class="footnote-reference brackets" href="#fspeedlimits" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> is a python package designed to calculate
 either <strong>relative binding free energies</strong> (RBFE) or <strong>relative solvation free energies</strong> (RSFE) between two similar
 ligands. The two ligands are the two physical endstates which are mutated to a common core structure.</p>
@@ -103,18 +103,18 @@ Each folder will contain a plain MD simulation, which can be run individually fr
 each ligand the free energy according to the common core structure can be calculated. Since both common core structures
 are the same, the resulting free energy difference <span class="math notranslate nohighlight">\(\Delta\Delta G^{bind}_{L1\rightarrow L2}\)</span> can  be obtained.</p>
 <section id="interplay-with-charmm-gui">
-<h2>Interplay with CHARMM-GUI<a class="headerlink" href="#interplay-with-charmm-gui" title="Permalink to this heading"></a></h2>
+<h2>Interplay with CHARMM-GUI<a class="headerlink" href="#interplay-with-charmm-gui" title="Link to this heading"></a></h2>
 <p><span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> works closely together with CHARMM-GUI. For starting RBFE simulations, one needs output from the CHARMM-GUI
 solution builder.</p>
 <figure class="align-default" id="id10">
 <a class="reference internal image-reference" href="_images/tf_overview_v3.png"><img alt="scheme of transformato" src="_images/tf_overview_v3.png" style="width: 400.72px; height: 538.16px;" /></a>
 <figcaption>
-<p><span class="caption-text">Figure: Interplay between <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> and CHARMM-GUI.</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Figure: Interplay between <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> and CHARMM-GUI.</span><a class="headerlink" href="#id10" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="the-common-core-approach">
-<h2>The common-core approach<a class="headerlink" href="#the-common-core-approach" title="Permalink to this heading"></a></h2>
+<h2>The common-core approach<a class="headerlink" href="#the-common-core-approach" title="Link to this heading"></a></h2>
 <p>With standard alchemical FES, the two endpoints are generally transformed directly into each other,
 with nonbonded forces (electrostatics) scaled according to the coupling parameter <span class="math notranslate nohighlight">\(\lambda\)</span>,
 and bonded LJ interactions being turned off on an atom by atom basis. <a class="footnote-reference brackets" href="#fshirts" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
@@ -133,22 +133,22 @@ being the sum of free energies necessary to reach the common core:</p>
 Free energies are calculated relative to a common core structure in the
 two environments (for RBFE: ligand solvated in water and ligand bound to a protein and solvated in water).
 This common core structure of the two ligands differs only in the number of dummy atoms,
-thus, the contribution cancels out when calculating relative free energies.</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+thus, the contribution cancels out when calculating relative free energies.</span><a class="headerlink" href="#id11" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="serial-atom-insertion-approach">
-<h2>Serial-Atom-Insertion approach<a class="headerlink" href="#serial-atom-insertion-approach" title="Permalink to this heading"></a></h2>
+<h2>Serial-Atom-Insertion approach<a class="headerlink" href="#serial-atom-insertion-approach" title="Link to this heading"></a></h2>
 <p>Lennard-Jones interactions are turned off on an atom-by-atom basis. This means that LJ parameters are either fully
 interacting (1) or non-interacting (0). For the heavy atoms (non hydrogen atoms) the interaction is turned off
 for each atom one by one.</p>
 </section>
 <section id="citations-license-and-contact">
-<h2>Citations, License and Contact<a class="headerlink" href="#citations-license-and-contact" title="Permalink to this heading"></a></h2>
+<h2>Citations, License and Contact<a class="headerlink" href="#citations-license-and-contact" title="Link to this heading"></a></h2>
 <p>Transformato is released under the MIT License. For further information, visit the <a class="reference external" href="https://github.com/wiederm/transformato/blob/master/LICENSE">repository license page</a>.</p>
 </section>
 <section id="acknowledgements">
-<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this heading"></a></h2>
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading"></a></h2>
 <p>Apart from the default python packages, <span class="math notranslate nohighlight">\(\texttt{TRANSFORMATO}\)</span> relies in large parts on the following packages:</p>
 <ul class="simple">
 <li><p>MDAnalysis<a class="footnote-reference brackets" href="#fmdanalysis1" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#fmdanalysis2" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> : Used for general purpose protein and ligand analysis, atom selection and especially trajectory analysis.</p></li>

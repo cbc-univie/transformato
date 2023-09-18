@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=bbec6902"></script>
+        <script src="_static/documentation_options.js?v=8ce96065"></script>
+        <script src="_static/doctools.js?v=92e14aea"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -84,7 +84,7 @@
            <div itemprop="articleBody">
              
   <section id="running-simulations">
-<h1>Running Simulations<a class="headerlink" href="#running-simulations" title="Permalink to this heading"></a></h1>
+<h1>Running Simulations<a class="headerlink" href="#running-simulations" title="Link to this heading"></a></h1>
 <div class="admonition seealso" id="rst-submitfiledesc">
 <p class="admonition-title">See also</p>
 <p>If you are unsure or need inspiration,
@@ -106,7 +106,7 @@ folder has a number of detailed examples.</p>
 waterbox in each of the intermediary states. This will generate the trajcetory files to be analysed later.</p>
 </div></blockquote>
 <section id="step-3-creating-intermediary-states">
-<h2>Step 3 - Creating intermediary states<a class="headerlink" href="#step-3-creating-intermediary-states" title="Permalink to this heading"></a></h2>
+<h2>Step 3 - Creating intermediary states<a class="headerlink" href="#step-3-creating-intermediary-states" title="Link to this heading"></a></h2>
 <p>We are now following the notebook shown here XXXXXXXXXXXXXXXX</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -135,19 +135,19 @@ These folders are where to find your structures and where to write your intermed
 <dd><p>These parameters need to be adjusted by the user</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-config">
-<span class="sig-name descname"><span class="pre">config</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-config" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">config</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-config" title="Link to this definition"></a></dt>
 <dd><p>path to your config yaml file</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-input_dir">
-<span id="cmdoption-arg-input-dir"></span><span class="sig-name descname"><span class="pre">input_dir</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-input_dir" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">input_dir</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-input_dir" title="Link to this definition"></a></dt>
 <dd><p>The path where your input structures are stored</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-output_dir">
-<span id="cmdoption-arg-output-dir"></span><span class="sig-name descname"><span class="pre">output_dir</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-output_dir" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">output_dir</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-output_dir" title="Link to this definition"></a></dt>
 <dd><p>The path to a folder where you want to write your intermediat states and later run the simulations</p>
 </dd></dl>
 
@@ -214,14 +214,14 @@ the changes you made.</p>
 <dd><p>If needed, you can adjust the amount of intermediate steps here</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nr_of_mutation_steps_charge">
-<span id="cmdoption-arg-nr-of-mutation-steps-charge"></span><span class="sig-name descname"><span class="pre">nr_of_mutation_steps_charge</span></span><span class="sig-prename descclassname"> <span class="pre">(default:</span> <span class="pre">5)</span></span><a class="headerlink" href="#cmdoption-arg-nr_of_mutation_steps_charge" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">nr_of_mutation_steps_charge</span></span><span class="sig-prename descclassname"> <span class="pre">(default:</span> <span class="pre">5)</span></span><a class="headerlink" href="#cmdoption-arg-nr_of_mutation_steps_charge" title="Link to this definition"></a></dt>
 <dd><p>how many intermediate states should be created to scale
 the charges of the atoms in the dummy region</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nr_of_mutation_steps_cc">
-<span id="cmdoption-arg-nr-of-mutation-steps-cc"></span><span class="sig-name descname"><span class="pre">nr_of_mutation_steps_cc</span></span><span class="sig-prename descclassname"> <span class="pre">(default:</span> <span class="pre">5)</span></span><a class="headerlink" href="#cmdoption-arg-nr_of_mutation_steps_cc" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">nr_of_mutation_steps_cc</span></span><span class="sig-prename descclassname"> <span class="pre">(default:</span> <span class="pre">5)</span></span><a class="headerlink" href="#cmdoption-arg-nr_of_mutation_steps_cc" title="Link to this definition"></a></dt>
 <dd><p>how many intermediate states should be created to interpolate
 parameters between the two common core regions. This is only necessary for
 ligand 1!</p>

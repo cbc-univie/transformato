@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=bbec6902"></script>
+        <script src="../../_static/documentation_options.js?v=8ce96065"></script>
+        <script src="../../_static/doctools.js?v=92e14aea"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -114,8 +114,12 @@
 <span class="c1"># logger.setLevel(logging.DEBUG)</span>
 
 
-<div class="viewcode-block" id="Restraint"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint">[docs]</a><span class="k">class</span> <span class="nc">Restraint</span><span class="p">:</span>
-<div class="viewcode-block" id="Restraint.__init__"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="Restraint">
+<a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint">[docs]</a>
+<span class="k">class</span> <span class="nc">Restraint</span><span class="p">:</span>
+<div class="viewcode-block" id="Restraint.__init__">
+<a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">selligand</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">selprotein</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -164,7 +168,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wellsize</span> <span class="o">=</span> <span class="n">wellsize</span> <span class="o">*</span> <span class="n">angstrom</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span></div>
 
-<div class="viewcode-block" id="Restraint.createForce"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.createForce">[docs]</a>    <span class="k">def</span> <span class="nf">createForce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">common_core_names</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Restraint.createForce">
+<a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.createForce">[docs]</a>
+    <span class="k">def</span> <span class="nf">createForce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">common_core_names</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Actually creates the force, after dismissing all idxs not in the common core from the molecule.</span>
 
 <span class="sd">        Args:</span>
@@ -254,10 +261,13 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span>  <span class="c1"># delete the enormous no longer needed universe asap</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">force</span></div>
 
+
     <span class="k">def</span> <span class="nf">get_force</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">force</span>
 
-<div class="viewcode-block" id="Restraint._add_flatbottom_parameters"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint._add_flatbottom_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_add_flatbottom_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Restraint._add_flatbottom_parameters">
+<a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint._add_flatbottom_parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">_add_flatbottom_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Takes care of the initial setup of an openMM CustomCentroidBondForce with a flatbottom shape</span>
 
 <span class="sd">        Args:</span>
@@ -282,13 +292,18 @@
             <span class="sa">f</span><span class="s2">&quot;Restraint force (centroid/bonded), shape is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, Parameters: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="o">.</span><span class="n">getBondParameters</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Restraint.applyForce"><a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.applyForce">[docs]</a>    <span class="k">def</span> <span class="nf">applyForce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Restraint.applyForce">
+<a class="viewcode-back" href="../../autosummary/transformato.restraints.html#transformato.restraints.Restraint.applyForce">[docs]</a>
+    <span class="k">def</span> <span class="nf">applyForce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies the force to the openMM system</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            system (openMM.system): The openMM system to which to apply the Force</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">system</span><span class="o">.</span><span class="n">addForce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="p">)</span></div></div>
+        <span class="n">system</span><span class="o">.</span><span class="n">addForce</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="p">)</span></div>
+</div>
+
 
 
 <span class="k">def</span> <span class="nf">get3DDistance</span><span class="p">(</span><span class="n">pos1</span><span class="p">,</span> <span class="n">pos2</span><span class="p">):</span>

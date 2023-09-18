@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=bbec6902"></script>
+        <script src="../../_static/documentation_options.js?v=8ce96065"></script>
+        <script src="../../_static/doctools.js?v=92e14aea"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -92,8 +92,12 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SystemStructure"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure">[docs]</a><span class="k">class</span> <span class="nc">SystemStructure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="SystemStructure.__init__"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemStructure">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure">[docs]</a>
+<span class="k">class</span> <span class="nc">SystemStructure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SystemStructure.__init__">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A class that contains all informations for a single small ligand in different environments.</span>
 <span class="sd">        Everything is constructed automatically from the charmm-gui folder.</span>
@@ -109,6 +113,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;charmm_gui_dir&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ff</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;amber&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="s2">&quot;waterbox&quot;</span><span class="p">)</span>
@@ -142,18 +147,31 @@
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;waterbox&quot;</span><span class="p">,</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
-                <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-                <span class="c1"># set up system</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_system</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
-                <span class="c1"># load parameters</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
-                <span class="c1"># get offset</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span>
-                    <span class="n">env</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
-                <span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+                    <span class="c1"># set up system</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_system</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+                    <span class="c1"># load parameters</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
 
+                <span class="k">except</span> <span class="p">(</span>
+                    <span class="ne">FileNotFoundError</span>
+                <span class="p">):</span>  <span class="c1"># no CHARMM psf file was found, checking if parameters for AMBER FF are available</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;There were no relevant CHARMM files provided (psf,crd), we will search for AMBER FF files (parm7,rst7)&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">_amberparm</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">=</span> <span class="s2">&quot;amber&quot;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/openmm/step3_input.parm7&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_rst7</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/openmm/step3_input.rst7&quot;</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+            <span class="p">)</span>
             <span class="c1"># generate rdkit mol object of small molecule</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_rdkit_mol</span><span class="p">(</span>
                 <span class="s2">&quot;waterbox&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
@@ -163,6 +181,7 @@
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                 <span class="s2">&quot;only binding and solvation free energy implemented.&quot;</span>
             <span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_set_hmr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># check if HMR is set</span>
@@ -218,7 +237,9 @@
 
             <span class="k">return</span> <span class="n">G</span>
 
-<div class="viewcode-block" id="SystemStructure._read_parameters"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._read_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_read_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmParameterSet</span><span class="p">:</span>
+<div class="viewcode-block" id="SystemStructure._read_parameters">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._read_parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">_read_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmParameterSet</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads in topparameters from a toppar dir and ligand specific parameters.</span>
 <span class="sd">        Parameters</span>
@@ -260,7 +281,7 @@
                 <span class="p">)</span>
 
         <span class="c1"># check cgenff versions</span>
-        <span class="k">if</span> <span class="n">parameter_files</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">parameter_files</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;charmm&quot;</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">parameter_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">_</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
                 <span class="n">cgenff</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
@@ -286,7 +307,10 @@
         <span class="n">parameter</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmParameterSet</span><span class="p">(</span><span class="o">*</span><span class="n">parameter_files</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parameter</span></div>
 
-<div class="viewcode-block" id="SystemStructure._initialize_system"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._initialize_system">[docs]</a>    <span class="k">def</span> <span class="nf">_initialize_system</span><span class="p">(</span>
+
+<div class="viewcode-block" id="SystemStructure._initialize_system">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._initialize_system">[docs]</a>
+    <span class="k">def</span> <span class="nf">_initialize_system</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -364,7 +388,10 @@
 
         <span class="k">return</span> <span class="n">psf</span></div>
 
-<div class="viewcode-block" id="SystemStructure._determine_offset_and_set_possible_dummy_properties"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties">[docs]</a>    <span class="k">def</span> <span class="nf">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
+
+<div class="viewcode-block" id="SystemStructure._determine_offset_and_set_possible_dummy_properties">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties">[docs]</a>
+    <span class="k">def</span> <span class="nf">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -377,7 +404,11 @@
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;amber&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">_amberparm</span><span class="o">.</span><span class="n">AmberParm</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No ligand selected for tlc: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -394,6 +425,7 @@
             <span class="n">atom</span><span class="o">.</span><span class="n">initial_rmin</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">rmin</span>
 
         <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">idx_list</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_return_small_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">glob</span>
@@ -429,7 +461,9 @@
                 <span class="s2">&quot;Could not load small molecule sdf file in </span><span class="si">{charmm_gui_env}</span><span class="s2">. Aborting.&quot;</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="SystemStructure._generate_rdkit_mol"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._generate_rdkit_mol">[docs]</a>    <span class="k">def</span> <span class="nf">_generate_rdkit_mol</span><span class="p">(</span>
+<div class="viewcode-block" id="SystemStructure._generate_rdkit_mol">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._generate_rdkit_mol">[docs]</a>
+    <span class="k">def</span> <span class="nf">_generate_rdkit_mol</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -444,7 +478,6 @@
 <span class="sd">        mol: rdkit.Chem.rdchem.Mol</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_small_molecule</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
         <span class="p">(</span>
             <span class="n">atom_idx_to_atom_name</span><span class="p">,</span>
@@ -465,15 +498,19 @@
             <span class="p">)</span>
 
         <span class="c1"># check if psf and sdf have same indeces</span>
-        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;PSF to mol conversion did not work! Aborting.&quot;</span><span class="p">)</span>
+        <span class="c1"># if self.ff == &quot;charmm&quot;:</span>
+        <span class="c1">#     for a in mol.GetAtoms():</span>
+        <span class="c1">#         if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):</span>
+        <span class="c1">#             pass</span>
+        <span class="c1">#         else:</span>
+        <span class="c1">#             raise RuntimeError(&quot;PSF to mol conversion did not work! Aborting.&quot;)</span>
 
         <span class="k">return</span> <span class="n">mol</span></div>
 
-<div class="viewcode-block" id="SystemStructure.generate_atom_tables_from_psf"><a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure.generate_atom_tables_from_psf">[docs]</a>    <span class="k">def</span> <span class="nf">generate_atom_tables_from_psf</span><span class="p">(</span>
+
+<div class="viewcode-block" id="SystemStructure.generate_atom_tables_from_psf">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure.generate_atom_tables_from_psf">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_atom_tables_from_psf</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -507,7 +544,9 @@
             <span class="n">atom_name_to_atom_idx</span><span class="p">,</span>
             <span class="n">atom_name_to_atom_type</span><span class="p">,</span>
             <span class="n">atom_idx_to_atom_partial_charge</span><span class="p">,</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>

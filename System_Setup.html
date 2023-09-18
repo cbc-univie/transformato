@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=bbec6902"></script>
+        <script src="_static/documentation_options.js?v=8ce96065"></script>
+        <script src="_static/doctools.js?v=92e14aea"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -85,7 +85,7 @@
            <div itemprop="articleBody">
              
   <section id="system-setup">
-<h1>System Setup<a class="headerlink" href="#system-setup" title="Permalink to this heading"></a></h1>
+<h1>System Setup<a class="headerlink" href="#system-setup" title="Link to this heading"></a></h1>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <p>In this section we are only talking about <strong>RBFE</strong>, this means we do always have a complex and
@@ -104,7 +104,7 @@ an <em>analysis.py</em> script - this is covered on the <a class="reference inte
 <p>The overall structure on how everything needs to be set up and where which file has to be stored is given in
 the Figure below. During the following steps, this Figure might be interesting to look at.</p>
 <img alt="transformato-tree" src="_images/transformato-tree.svg" /><section id="step-1-creating-systems-using-charmm-gui">
-<h2>Step 1 – creating Systems using CHARMM-GUI<a class="headerlink" href="#step-1-creating-systems-using-charmm-gui" title="Permalink to this heading"></a></h2>
+<h2>Step 1 – creating Systems using CHARMM-GUI<a class="headerlink" href="#step-1-creating-systems-using-charmm-gui" title="Link to this heading"></a></h2>
 <p>First, one needs input files for the physical endstates. It is strongly encouraged to use CHARMM-GUI (specifically
 the solution builder) to create them. For running CHARMM-GUI you need a pdb file of your ligand as well as a pdb
 file of your ligand bound to the protein. In addition, you might need to provide CHARMM-GUI with a sdf or mol2 file
@@ -154,7 +154,7 @@ can generate this yourself using <a class="reference external" href="https://cge
 </div>
 </section>
 <section id="step-2-modifying-the-yaml-file">
-<h2>Step 2 – modifying the yaml file<a class="headerlink" href="#step-2-modifying-the-yaml-file" title="Permalink to this heading"></a></h2>
+<h2>Step 2 – modifying the yaml file<a class="headerlink" href="#step-2-modifying-the-yaml-file" title="Link to this heading"></a></h2>
 <p>The config.yaml provides all information necessary for setting up a mutation between two ligands.
 It contains:</p>
 <ol class="arabic simple">
@@ -236,20 +236,20 @@ directories.)</p>
 <dd><p>Should not be changed</p>
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-name">
-<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-name" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-name" title="Link to this definition"></a></dt>
 <dd><p>The name of the folder containing the <strong>waterbox</strong>/ <strong>complex</strong> folders for that structure
 (<em>in this example, the folder needs to be called vim2_zn148</em>)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-tlc">
-<span class="sig-name descname"><span class="pre">tlc</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-tlc" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">tlc</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-tlc" title="Link to this definition"></a></dt>
 <dd><p>The residue name (resname) of the structure. When using CHARMM-GUI output, it is often called UNK</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-other">
-<span class="sig-name descname"><span class="pre">other</span></span><span class="sig-prename descclassname"> <span class="pre">parameters</span></span><a class="headerlink" href="#cmdoption-arg-other" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">other</span></span><span class="sig-prename descclassname"> <span class="pre">parameters</span></span><a class="headerlink" href="#cmdoption-arg-other" title="Link to this definition"></a></dt>
 <dd><p>These refer to the various files in the /openmm/ subfolder (e.g. the psf and crd files).</p>
 </dd></dl>
 
@@ -267,31 +267,31 @@ The <em>simulation</em> container contains the simulation parameters you want to
 <span class="sig-name descname"><span class="pre">parameters</span></span></dt>
 <dd><dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nstep">
-<span class="sig-name descname"><span class="pre">nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstep" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstep" title="Link to this definition"></a></dt>
 <dd><p>How many calculation steps you want to simulate</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nstdcd">
-<span class="sig-name descname"><span class="pre">nstdcd:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstdcd" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">nstdcd:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstdcd" title="Link to this definition"></a></dt>
 <dd><p>Writing coordinates trajectory frequency (steps)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-nstout">
-<span class="sig-name descname"><span class="pre">nstout:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstout" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">nstout:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-nstout" title="Link to this definition"></a></dt>
 <dd><p>Writing output frequency (steps)</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-cons">
-<span id="cmdoption-arg-None"></span><span id="cmdoption-arg-none"></span><span class="sig-name descname"><span class="pre">cons:</span></span><span class="sig-prename descclassname"> <span class="pre">[&quot;HBonds&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">None]</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-cons" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-arg-None"></span><span class="sig-name descname"><span class="pre">cons:</span></span><span class="sig-prename descclassname"> <span class="pre">[&quot;HBonds&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">None]</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-cons" title="Link to this definition"></a></dt>
 <dd><p>Whether you want to use constraints or not.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-dt">
-<span class="sig-name descname"><span class="pre">dt:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-dt" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dt:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-dt" title="Link to this definition"></a></dt>
 <dd><p>The timestep in picoseconds.</p>
 <blockquote>
 <div><div class="admonition attention">
@@ -305,31 +305,31 @@ see <a class="reference internal" href="Additional_Settings.html"><span class="d
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-switch">
-<span id="cmdoption-arg-switch"></span><span class="sig-name descname"><span class="pre">switch:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;vfswitch&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;switch&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-switch" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-arg-switch"></span><span class="sig-name descname"><span class="pre">switch:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;vfswitch&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;switch&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-switch" title="Link to this definition"></a></dt>
 <dd><p>vdW cut-off method</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-mini_nstep">
-<span id="cmdoption-arg-mini-nstep"></span><span class="sig-name descname"><span class="pre">mini_nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-mini_nstep" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">mini_nstep:</span></span><span class="sig-prename descclassname"> <span class="pre">(int)</span></span><a class="headerlink" href="#cmdoption-arg-mini_nstep" title="Link to this definition"></a></dt>
 <dd><p>Steps for minimization</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-GPU">
-<span id="cmdoption-arg-gpu"></span><span id="cmdoption-arg-False"></span><span id="cmdoption-arg-false"></span><span class="sig-name descname"><span class="pre">GPU:</span></span><span class="sig-prename descclassname"> <span class="pre">([True</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">False])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-GPU" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-arg-False"></span><span class="sig-name descname"><span class="pre">GPU:</span></span><span class="sig-prename descclassname"> <span class="pre">([True</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">False])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-GPU" title="Link to this definition"></a></dt>
 <dd><p>Whether you want to use GPU support or not. It’s strongly recommended to enable GPU support if possible.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-workload-manager">
-<span id="cmdoption-arg-SGE"></span><span id="cmdoption-arg-sge"></span><span class="sig-name descname"><span class="pre">workload-manager:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;slurm&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;SGE&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-workload-manager" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-arg-SGE"></span><span class="sig-name descname"><span class="pre">workload-manager:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;slurm&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;SGE&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-workload-manager" title="Link to this definition"></a></dt>
 <dd><p>For which workload-manager the script files should be output.</p>
 </dd></dl>
 
 <dl class="std option">
 <dt class="sig sig-object std" id="cmdoption-arg-free-energy-type">
-<span id="cmdoption-arg-rsfe"></span><span class="sig-name descname"><span class="pre">free-energy-type:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;rbfe&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;rsfe&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-free-energy-type" title="Permalink to this definition"></a></dt>
+<span id="cmdoption-arg-rsfe"></span><span class="sig-name descname"><span class="pre">free-energy-type:</span></span><span class="sig-prename descclassname"> <span class="pre">([&quot;rbfe&quot;</span></span><span class="sig-prename descclassname"><span class="pre">,</span> </span><span class="sig-name descname"><span class="pre">&quot;rsfe&quot;])</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-arg-free-energy-type" title="Link to this definition"></a></dt>
 <dd><p>Calculate relative <strong>binding</strong> free energy or relative <strong>solvation</strong> free energy</p>
 </dd></dl>
 

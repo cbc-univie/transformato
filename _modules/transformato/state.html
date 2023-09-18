@@ -10,11 +10,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=bbec6902"></script>
+        <script src="../../_static/documentation_options.js?v=8ce96065"></script>
+        <script src="../../_static/doctools.js?v=92e14aea"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -95,8 +95,12 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="IntermediateStateFactory"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory">[docs]</a><span class="k">class</span> <span class="nc">IntermediateStateFactory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="IntermediateStateFactory.__init__"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="IntermediateStateFactory">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory">[docs]</a>
+<span class="k">class</span> <span class="nc">IntermediateStateFactory</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="IntermediateStateFactory.__init__">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">system</span><span class="p">:</span> <span class="n">transformato</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">SystemStructure</span><span class="p">,</span>
         <span class="n">configuration</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
@@ -125,6 +129,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">output_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span> <span class="o">=</span> <span class="n">multiple_runs</span></div>
+
 
     <span class="k">def</span> <span class="nf">endstate_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Will create script for endstate correction&quot;</span><span class="p">)</span>
@@ -171,7 +176,9 @@
         <span class="n">fin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<div class="viewcode-block" id="IntermediateStateFactory.write_state"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory.write_state">[docs]</a>    <span class="k">def</span> <span class="nf">write_state</span><span class="p">(</span>
+<div class="viewcode-block" id="IntermediateStateFactory.write_state">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory.write_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">write_state</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">mutation_conf</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
         <span class="n">lambda_value_electrostatic</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
@@ -225,7 +232,7 @@
                         <span class="n">vdw_atom_idx</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">vdw_atom_idx</span><span class="p">,</span>
                         <span class="n">steric_mutation_to_default</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">steric_mutation_to_default</span><span class="p">,</span>
                     <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_write_psf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+            <span class="c1"># self._write_psf(self.system.psfs[env], output_file_base, env)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_rtf_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_prm_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_toppar_str</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
@@ -255,6 +262,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
+
     <span class="k">def</span> <span class="nf">_add_serializer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
         <span class="c1"># adding serializer functions</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -276,7 +284,9 @@
             <span class="n">prms</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">prms</span>
 
-<div class="viewcode-block" id="IntermediateStateFactory._write_workload_preamble"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_workload_preamble">[docs]</a>    <span class="k">def</span> <span class="nf">_write_workload_preamble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+<div class="viewcode-block" id="IntermediateStateFactory._write_workload_preamble">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_workload_preamble">[docs]</a>
+    <span class="k">def</span> <span class="nf">_write_workload_preamble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepends the preamble of the selected workload manager in the file specified by filepath</span>
 
@@ -298,7 +308,10 @@
             <span class="n">script_to_prepend_to</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">script_to_prepend_to</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">preamble</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntermediateStateFactory._copy_charmm_files"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_charmm_files">[docs]</a>    <span class="k">def</span> <span class="nf">_copy_charmm_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="IntermediateStateFactory._copy_charmm_files">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_charmm_files">[docs]</a>
+    <span class="k">def</span> <span class="nf">_copy_charmm_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _copy_charmm_files Copy CHARMM specific files in running directories</span>
 
@@ -446,6 +459,7 @@
                     <span class="sa">f</span><span class="s2">&quot;No restart file found for </span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2"> -- starting simulation from crd file.&quot;</span>
                 <span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">_modify_submit_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shFile</span><span class="p">):</span>
         <span class="c1"># submit script is modified to loop over all runs depending on the number defined in the consecutive</span>
         <span class="c1"># runs</span>
@@ -471,7 +485,9 @@
         <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">fout</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">shFile</span><span class="p">)</span>
 
-<div class="viewcode-block" id="IntermediateStateFactory._copy_omm_files"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_omm_files">[docs]</a>    <span class="k">def</span> <span class="nf">_copy_omm_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="IntermediateStateFactory._copy_omm_files">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_omm_files">[docs]</a>
+    <span class="k">def</span> <span class="nf">_copy_omm_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _copy_omm_files Copyies the files needed for the production runs with openMM in the intst* directories</span>
 
@@ -602,7 +618,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_serializer</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntermediateStateFactory._check_hmr"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._check_hmr">[docs]</a>    <span class="k">def</span> <span class="nf">_check_hmr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+
+<div class="viewcode-block" id="IntermediateStateFactory._check_hmr">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._check_hmr">[docs]</a>
+    <span class="k">def</span> <span class="nf">_check_hmr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
         <span class="s2">&quot;add hmr if requested in config file&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;HMR&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -617,6 +636,7 @@
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">g</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">_tmp&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_change_platform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
         <span class="c1"># changin input script</span>
@@ -694,7 +714,9 @@
                 <span class="n">crd_file_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.crd&quot;</span>
                 <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmCrdFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">crd_file_target</span><span class="p">)</span>
 
-<div class="viewcode-block" id="IntermediateStateFactory._copy_files"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_files">[docs]</a>    <span class="k">def</span> <span class="nf">_copy_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="IntermediateStateFactory._copy_files">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._copy_files">[docs]</a>
+    <span class="k">def</span> <span class="nf">_copy_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Copy the files from the original CHARMM-GUI output folder in the intermediate directories.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -709,13 +731,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_copy_ligand_specific_str</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">)</span>
 
         <span class="c1"># copy crd file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_copy_crd_file</span><span class="p">((</span><span class="n">intermediate_state_file_path</span><span class="p">))</span>
-
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_copy_crd_file</span><span class="p">((</span><span class="n">intermediate_state_file_path</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
         <span class="c1"># copy openMM and charmm specific scripts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_copy_omm_files</span><span class="p">(</span><span class="n">intermediate_state_file_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_copy_charmm_files</span><span class="p">(</span><span class="n">intermediate_state_file_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntermediateStateFactory._overwrite_simulation_script_parameters"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._overwrite_simulation_script_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">_overwrite_simulation_script_parameters</span><span class="p">(</span>
+
+<div class="viewcode-block" id="IntermediateStateFactory._overwrite_simulation_script_parameters">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._overwrite_simulation_script_parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">_overwrite_simulation_script_parameters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">omm_simulation_parameter_source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">omm_simulation_parameter_target</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -777,21 +804,21 @@
                         <span class="p">)</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;###################&quot;</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-                <span class="n">t1</span><span class="p">,</span> <span class="n">t2_comment</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)]</span>
-                <span class="n">t2</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">t2_comment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)]</span>
-                <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">overwrite_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="n">t2</span> <span class="o">=</span> <span class="n">overwrite_parameters</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span>
-                    <span class="k">del</span> <span class="n">overwrite_parameters</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span>  <span class="c1"># remove from dict</span>
-                <span class="k">if</span> <span class="n">t1</span> <span class="o">==</span> <span class="s2">&quot;vdw&quot;</span><span class="p">:</span>
-                    <span class="n">t2</span> <span class="o">=</span> <span class="n">t2</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
-                <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t1</span><span class="si">:</span><span class="s2">&lt;25</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">t2</span><span class="si">:</span><span class="s2">&lt;25</span><span class="si">}</span><span class="s2"> # </span><span class="si">{</span><span class="n">comment</span><span class="si">:</span><span class="s2">&lt;30</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># for l in input_simulation_parameter.readlines():</span>
+        <span class="c1">#     if l.strip():</span>
+        <span class="c1">#         t1, t2_comment = [e.strip() for e in l.split(&quot;=&quot;)]</span>
+        <span class="c1">#         t2, comment = [e.strip() for e in t2_comment.split(&quot;#&quot;)]</span>
+        <span class="c1">#         comment = comment.strip()</span>
+        <span class="c1">#         if t1 in overwrite_parameters.keys():</span>
+        <span class="c1">#             t2 = overwrite_parameters[t1]</span>
+        <span class="c1">#             del overwrite_parameters[t1]  # remove from dict</span>
+        <span class="c1">#         if t1 == &quot;vdw&quot;:</span>
+        <span class="c1">#             t2 = t2.capitalize()</span>
+        <span class="c1">#         output_simulation_parameter.write(</span>
+        <span class="c1">#             f&quot;{t1:&lt;25} = {t2:&lt;25} # {comment:&lt;30}\n&quot;</span>
+        <span class="c1">#         )</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         output_simulation_parameter.write(&quot;\n&quot;)</span>
 
         <span class="c1"># set parameters that have no equivalent in the pregenerated parameter file</span>
         <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">overwrite_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -803,7 +830,10 @@
         <span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="IntermediateStateFactory._write_rtf_file"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_rtf_file">[docs]</a>    <span class="k">def</span> <span class="nf">_write_rtf_file</span><span class="p">(</span>
+
+<div class="viewcode-block" id="IntermediateStateFactory._write_rtf_file">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_rtf_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">_write_rtf_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="n">tlc</span>
     <span class="p">):</span>  <span class="c1"># NOTE: this needs some refactoring!</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -830,6 +860,7 @@
                 <span class="c1"># TODO: check the  rtf_file_handler.write vs</span>
 
         <span class="n">rtf_file_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">_write_prm_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="n">tlc</span><span class="p">):</span>
         <span class="n">header_prm</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;* Parameters generated by analogy by</span>
@@ -1071,7 +1102,9 @@
         <span class="n">prm_file_handler</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">)</span>
         <span class="n">prm_file_handler</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<div class="viewcode-block" id="IntermediateStateFactory._init_base_dir"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._init_base_dir">[docs]</a>    <span class="k">def</span> <span class="nf">_init_base_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IntermediateStateFactory._init_base_dir">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._init_base_dir">[docs]</a>
+    <span class="k">def</span> <span class="nf">_init_base_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the base directory in which all intermediate states are located</span>
 <span class="sd">        and create the central toppar dir.</span>
@@ -1099,6 +1132,7 @@
 
         <span class="n">toppar_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;system_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/toppar&quot;</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">toppar_source</span><span class="p">,</span> <span class="n">toppar_target</span><span class="p">,</span> <span class="n">dirs_exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="nf">_write_toppar_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">):</span>
         <span class="n">toppar_format</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
@@ -1157,7 +1191,9 @@
         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">charmm_toppar</span><span class="p">)</span>
         <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<div class="viewcode-block" id="IntermediateStateFactory._write_psf"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_psf">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="IntermediateStateFactory._write_psf">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_psf">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_write_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the new psf and pdb file.</span>
@@ -1175,7 +1211,10 @@
         <span class="c1"># write pdb</span>
         <span class="n">psf</span><span class="o">.</span><span class="n">write_pdb</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.pdb&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntermediateStateFactory._init_intermediate_state_dir"><a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._init_intermediate_state_dir">[docs]</a>    <span class="k">def</span> <span class="nf">_init_intermediate_state_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+
+<div class="viewcode-block" id="IntermediateStateFactory._init_intermediate_state_dir">
+<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._init_intermediate_state_dir">[docs]</a>
+    <span class="k">def</span> <span class="nf">_init_intermediate_state_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nr</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generates the intermediate state directory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1184,7 +1223,9 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - Created directory: - </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; - Writing in - </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">output_file_base</span></div></div>
+        <span class="k">return</span> <span class="n">output_file_base</span></div>
+</div>
+
 </pre></div>
 
            </div>
