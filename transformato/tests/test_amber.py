@@ -1,12 +1,15 @@
-
-from transformato import load_config_yaml, SystemStructure, IntermediateStateFactory, ProposeMutationRoute
+from transformato import (
+    load_config_yaml,
+    SystemStructure,
+    IntermediateStateFactory,
+    ProposeMutationRoute,
+)
 from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
 
 def test_full_amber_test():
-
     molecule = "ethane-methanol"
 
     configuration = load_config_yaml(
