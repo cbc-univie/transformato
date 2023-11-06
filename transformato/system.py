@@ -30,10 +30,18 @@ class SystemStructure(object):
         self.name: str = configuration["system"][structure]["name"]
         self.tlc: str = configuration["system"][structure]["tlc"]
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
-        self.ff: str = "amber"
-        self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
+
+        self.ff: str = "charmm"
+        if self.ff == "amber":
+            self.psfs: defaultdict = defaultdict(pm.amber._amberparm.AmberParm)
+            # self.psfs: defaultdict = defaultdict()
+        elif self.ff == "charmm":
+            self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
+            self.parameter = self._read_parameters(
+                "waterbox"
+            )  # not sure if this is really needed
+
         self.offset: defaultdict = defaultdict(int)
-        self.parameter = self._read_parameters("waterbox")
         self.cgenff_version: float
         self.envs = set()
         # running a binding-free energy calculation?
@@ -64,30 +72,33 @@ class SystemStructure(object):
         ):
             self.envs = set(["waterbox", "vacuum"])
             for env in self.envs:
-                try:
+                if self.ff == "charmm":
                     parameter = self._read_parameters(env)
                     # set up system
                     self.psfs[env] = self._initialize_system(configuration, env)
                     # load parameters
                     self.psfs[env].load_parameters(parameter)
 
-                except (
-                    FileNotFoundError
-                ):  # no CHARMM psf file was found, checking if parameters for AMBER FF are available
+                elif self.ff == "amber":
                     logger.info(
                         "There were no relevant CHARMM files provided (psf,crd), we will search for AMBER FF files (parm7,rst7)"
                     )
-                    self.psfs = defaultdict(pm.amber._amberparm.AmberParm)
-                    self.ff = "amber"
                     self.psfs[env] = pm.load_file(
                         f"{self.charmm_gui_base}/waterbox/openmm/step3_input.parm7"
                     )
                     self.psfs[env].load_rst7(
                         f"{self.charmm_gui_base}/waterbox/openmm/step3_input.rst7"
                     )
+                    self.offset[
+                        env
+                    ] = self._determine_offset_and_set_possible_dummy_properties(
+                        self.psfs[env]
+                    )
+                    if env == "vacuum":
+                        self.psfs["vacuum"] = self.psfs["waterbox"][f":{self.tlc}"]
 
-            self.offset[env] = self._determine_offset_and_set_possible_dummy_properties(
-                self.psfs[env]
+            print(
+                f"so sehen die PSFSjetzt aus {self.psfs['waterbox']} und im Vakuum {self.psfs['vacuum']}"
             )
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
