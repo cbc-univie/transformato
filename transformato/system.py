@@ -30,20 +30,20 @@ class SystemStructure(object):
         self.name: str = configuration["system"][structure]["name"]
         self.tlc: str = configuration["system"][structure]["tlc"]
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
+        self.offset: defaultdict = defaultdict(int)
+        self.envs = set()
 
-        self.ff: str = "amber"
-        if self.ff == "amber":
+        try:
+            self.ff: str = str.lower(configuration["simulation"]["forcefield"])
             self.psfs: defaultdict = defaultdict(pm.amber.AmberParm)
-            # self.psfs: defaultdict = defaultdict()
-        elif self.ff == "charmm":
+        except KeyError:
+            self.ff: str = "charmm"
             self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
             self.parameter = self._read_parameters(
                 "waterbox"
             )  # not sure if this is really needed
+            self.cgenff_version: float
 
-        self.offset: defaultdict = defaultdict(int)
-        self.cgenff_version: float
-        self.envs = set()
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "rbfe":
             self.envs = set(["complex", "waterbox"])
@@ -78,11 +78,13 @@ class SystemStructure(object):
                     self.psfs[env] = self._initialize_system(configuration, env)
                     # load parameters
                     self.psfs[env].load_parameters(parameter)
+                    self.offset[
+                        env
+                    ] = self._determine_offset_and_set_possible_dummy_properties(
+                        self.psfs[env]
+                    )
 
                 elif self.ff == "amber":
-                    logger.info(
-                        "There were no relevant CHARMM files provided (psf,crd), we will search for AMBER FF files (parm7,rst7)"
-                    )
                     self.psfs[env] = pm.load_file(
                         f"{self.charmm_gui_base}/waterbox/openmm/step3_input.parm7"
                     )
@@ -95,11 +97,8 @@ class SystemStructure(object):
                         self.psfs[env]
                     )
                     # if env == "vacuum":
-                    #   self.psfs["vacuum"] = self.psfs["waterbox"][f":{self.tlc}"]
+                    #     self.psfs["vacuum"] = self.psfs["waterbox"][f":{self.tlc}"]
 
-            print(
-                f"so sehen die PSFS {self.psfs} jetzt aus {self.psfs['waterbox']} und im Vakuum {self.psfs['vacuum']}"
-            )
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
                 "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
