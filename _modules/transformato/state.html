@@ -294,21 +294,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_add_serializer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
-        <span class="c1"># adding serializer functions</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd"># mw: adding xml serializer to the simulation script</span>
-<span class="sd">file_name = str(args.psffile).replace(&#39;.psf&#39;, &#39;&#39;)</span>
-<span class="sd">print(file_name)</span>
-<span class="sd">with open(file_name + &#39;_integrator.xml&#39;,&#39;w&#39;) as outfile:</span>
-<span class="sd">    outfile.write(XmlSerializer.serialize(integrator))</span>
-<span class="sd">with open(file_name + &#39;_system.xml&#39;,&#39;w&#39;) as outfile:</span>
-<span class="sd">    outfile.write(XmlSerializer.serialize(system))</span>
-<span class="sd">&quot;&quot;&quot;</span>
-            <span class="p">)</span>
-
     <span class="k">def</span> <span class="nf">_get_simulations_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">prms</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;parameters&quot;</span><span class="p">]:</span>
@@ -629,7 +614,6 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">omm_simulation_script_source</span><span class="p">,</span> <span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="c1"># add serialization</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_hmr</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_serializer</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="n">check_switching_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="p">)</span>
 
@@ -646,7 +630,6 @@
             <span class="p">)</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">omm_simulation_script_source</span><span class="p">,</span> <span class="n">omm_simulation_script_target</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_check_hmr</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_add_serializer</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span></div>
 
 
