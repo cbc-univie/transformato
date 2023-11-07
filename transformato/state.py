@@ -204,21 +204,6 @@ class IntermediateStateFactory(object):
 
         self.current_step += 1
 
-    def _add_serializer(self, file):
-        # adding serializer functions
-        with open(file, "a") as f:
-            f.write(
-                """
-# mw: adding xml serializer to the simulation script
-file_name = str(args.psffile).replace('.psf', '')
-print(file_name)
-with open(file_name + '_integrator.xml','w') as outfile:
-    outfile.write(XmlSerializer.serialize(integrator))
-with open(file_name + '_system.xml','w') as outfile:
-    outfile.write(XmlSerializer.serialize(system))
-"""
-            )
-
     def _get_simulations_parameters(self):
         prms = {}
         for key in self.configuration["simulation"]["parameters"]:
@@ -531,7 +516,6 @@ with open(file_name + '_system.xml','w') as outfile:
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
         self._check_hmr(omm_simulation_script_target)
-        self._add_serializer(omm_simulation_script_target)
         self._change_platform(omm_simulation_script_target)
         check_switching_function(self.vdw_switch)
 
@@ -548,7 +532,6 @@ with open(file_name + '_system.xml','w') as outfile:
             )
             shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
             self._check_hmr(omm_simulation_script_target)
-            self._add_serializer(omm_simulation_script_target)
             self._change_platform(omm_simulation_script_target)
 
     def _check_hmr(self, file):
