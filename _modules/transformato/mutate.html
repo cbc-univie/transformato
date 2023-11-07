@@ -2130,8 +2130,11 @@
 <span class="sd">        lambda_value : float</span>
 <span class="sd">            lambda_value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span>
 
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_mutation</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; -- Charge parameters from cc1 are transformed to cc2.&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lambda value:</span><span class="si">{</span><span class="n">lambda_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

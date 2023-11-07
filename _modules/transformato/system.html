@@ -113,10 +113,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;tlc&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">][</span><span class="n">structure</span><span class="p">][</span><span class="s2">&quot;charmm_gui_dir&quot;</span><span class="p">]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ff</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;amber&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;amber&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">)</span>
+            <span class="c1"># self.psfs: defaultdict = defaultdict()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;charmm&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span>
+                <span class="s2">&quot;waterbox&quot;</span>
+            <span class="p">)</span>  <span class="c1"># not sure if this is really needed</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="s2">&quot;waterbox&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cgenff_version</span><span class="p">:</span> <span class="nb">float</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="c1"># running a binding-free energy calculation?</span>
@@ -147,30 +155,33 @@
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;waterbox&quot;</span><span class="p">,</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">])</span>
             <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;charmm&quot;</span><span class="p">:</span>
                     <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
                     <span class="c1"># set up system</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_system</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
                     <span class="c1"># load parameters</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
 
-                <span class="k">except</span> <span class="p">(</span>
-                    <span class="ne">FileNotFoundError</span>
-                <span class="p">):</span>  <span class="c1"># no CHARMM psf file was found, checking if parameters for AMBER FF are available</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;amber&quot;</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                         <span class="s2">&quot;There were no relevant CHARMM files provided (psf,crd), we will search for AMBER FF files (parm7,rst7)&quot;</span>
                     <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">_amberparm</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">=</span> <span class="s2">&quot;amber&quot;</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/openmm/step3_input.parm7&quot;</span>
                     <span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_rst7</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/openmm/step3_input.rst7&quot;</span>
                     <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span>
+                        <span class="n">env</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="c1"># if env == &quot;vacuum&quot;:</span>
+                    <span class="c1">#   self.psfs[&quot;vacuum&quot;] = self.psfs[&quot;waterbox&quot;][f&quot;:{self.tlc}&quot;]</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;so sehen die PSFS </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="si">}</span><span class="s2"> jetzt aus </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s1">&#39;waterbox&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> und im Vakuum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="s1">&#39;vacuum&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="c1"># generate rdkit mol object of small molecule</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_rdkit_mol</span><span class="p">(</span>

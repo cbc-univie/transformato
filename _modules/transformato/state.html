@@ -224,7 +224,7 @@
                         <span class="n">atoms_to_be_mutated</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="p">,</span>
                         <span class="n">dummy_region</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">dummy_region</span><span class="p">,</span>
                     <span class="p">)</span>
-
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;So sieht es hier aus </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">mutator</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span>
                         <span class="n">psf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span>
                         <span class="n">lambda_value_electrostatic</span><span class="o">=</span><span class="n">lambda_value_electrostatic</span><span class="p">,</span>
@@ -233,8 +233,8 @@
                         <span class="n">steric_mutation_to_default</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">steric_mutation_to_default</span><span class="p">,</span>
                     <span class="p">)</span>
             <span class="c1"># self._write_psf(self.system.psfs[env], output_file_base, env)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_write_rtf_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_write_prm_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
+        <span class="c1"># self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)</span>
+        <span class="c1"># self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_toppar_str</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_copy_files</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
 
