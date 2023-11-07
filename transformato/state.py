@@ -92,6 +92,21 @@ class IntermediateStateFactory(object):
         fin.close()
         fout.close()
 
+    def _write_amber_files(
+        self, psf: pm.amber.AmberParm, output_file_base: str, tlc: str, env: str
+    ):
+        """
+        Write a parm7 and rst7 file for each intermediate step, including information about the dummy atoms
+        """
+        if env == "waterbox":
+            psf.write_parm(f"{output_file_base}/lig_in_{env}.parm7")
+            psf.write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
+        elif env == "vacuum":
+            psf[f":{tlc}"].write_parm(f"{output_file_base}/lig_in_{env}.parm7")
+            psf[f":{tlc}"].write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
+        else:
+            logger.critical(f"Environment {env} not supported")
+
     def write_state(
         self,
         mutation_conf: List,
@@ -123,7 +138,7 @@ class IntermediateStateFactory(object):
             for mutation_type in mutation_conf:
                 if (
                     common_core_transformation < 1.0
-                ):  # NOTE: THis is inconsisten -- the mutatino_type is the actual mutation in this case
+                ):  # NOTE: THis is inconsistent -- the mutatino_type is the actual mutation in this case
                     mutation_type.mutate(
                         psf=self.system.psfs[env],
                         lambda_value=common_core_transformation,
@@ -138,7 +153,6 @@ class IntermediateStateFactory(object):
                         atoms_to_be_mutated=mutation_type.atoms_to_be_mutated,
                         dummy_region=mutation_type.dummy_region,
                     )
-                    print(f"So sieht es hier aus {self.system.psfs}")
                     mutator.mutate(
                         psf=self.system.psfs[env],
                         lambda_value_electrostatic=lambda_value_electrostatic,
@@ -146,10 +160,24 @@ class IntermediateStateFactory(object):
                         vdw_atom_idx=mutation_type.vdw_atom_idx,
                         steric_mutation_to_default=mutation_type.steric_mutation_to_default,
                     )
-            # self._write_psf(self.system.psfs[env], output_file_base, env)
-        # self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
-        # self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
-        self._write_toppar_str(output_file_base)
+            if self.system.ff == "amber":
+                # needed for each environment
+                self._write_amber_files(
+                    self.system.psfs[env], output_file_base, self.system.tlc, env
+                )
+            elif self.system.ff == "charmm":
+                self._write_psf(self.system.psfs[env], output_file_base, env)
+
+        if self.system.ff == "charmm":
+            # needed only once per intermediate state
+            self._write_rtf_file(
+                self.system.psfs[env], output_file_base, self.system.tlc
+            )
+            self._write_prm_file(
+                self.system.psfs[env], output_file_base, self.system.tlc
+            )
+            self._write_toppar_str(output_file_base)
+
         self._copy_files(output_file_base)
 
         # Create run folder for dcd output for each intst state

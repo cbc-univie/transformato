@@ -37,17 +37,17 @@ def test_full_amber_test():
         nr_of_mutation_steps_cc=2,
     )
 
-    # mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
-    # print(mutation_list.keys())
-    # i = IntermediateStateFactory(
-    #     system=s2,
-    #     configuration=configuration,
-    #     multiple_runs=3,
-    # )
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    print(mutation_list.keys())
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+        multiple_runs=3,
+    )
 
-    # perform_mutations(
-    #     configuration=configuration,
-    #     i=i,
-    #     mutation_list=mutation_list,
-    #     nr_of_mutation_steps_charge=2,
-    # )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=2,
+    )
