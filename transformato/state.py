@@ -138,7 +138,7 @@ class IntermediateStateFactory(object):
                         atoms_to_be_mutated=mutation_type.atoms_to_be_mutated,
                         dummy_region=mutation_type.dummy_region,
                     )
-
+                    print(f"So sieht es hier aus {self.system.psfs}")
                     mutator.mutate(
                         psf=self.system.psfs[env],
                         lambda_value_electrostatic=lambda_value_electrostatic,
@@ -147,8 +147,8 @@ class IntermediateStateFactory(object):
                         steric_mutation_to_default=mutation_type.steric_mutation_to_default,
                     )
             # self._write_psf(self.system.psfs[env], output_file_base, env)
-        self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
-        self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
+        # self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
+        # self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
         self._write_toppar_str(output_file_base)
         self._copy_files(output_file_base)
 

@@ -1963,8 +1963,11 @@ class CommonCoreTransformation(object):
         lambda_value : float
             lambda_value
         """
+        try:
+            assert type(psf) == pm.charmm.CharmmPsfFile
+        except AssertionError:
+            assert type(psf) == pm.amber.AmberParm
 
-        assert type(psf) == pm.charmm.CharmmPsfFile
         if self.charge_mutation:
             logger.info(f" -- Charge parameters from cc1 are transformed to cc2.")
             logger.info(f"Lambda value:{lambda_value}")

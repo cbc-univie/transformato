@@ -31,9 +31,9 @@ class SystemStructure(object):
         self.tlc: str = configuration["system"][structure]["tlc"]
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
 
-        self.ff: str = "charmm"
+        self.ff: str = "amber"
         if self.ff == "amber":
-            self.psfs: defaultdict = defaultdict(pm.amber._amberparm.AmberParm)
+            self.psfs: defaultdict = defaultdict(pm.amber.AmberParm)
             # self.psfs: defaultdict = defaultdict()
         elif self.ff == "charmm":
             self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
@@ -94,11 +94,11 @@ class SystemStructure(object):
                     ] = self._determine_offset_and_set_possible_dummy_properties(
                         self.psfs[env]
                     )
-                    if env == "vacuum":
-                        self.psfs["vacuum"] = self.psfs["waterbox"][f":{self.tlc}"]
+                    # if env == "vacuum":
+                    #   self.psfs["vacuum"] = self.psfs["waterbox"][f":{self.tlc}"]
 
             print(
-                f"so sehen die PSFSjetzt aus {self.psfs['waterbox']} und im Vakuum {self.psfs['vacuum']}"
+                f"so sehen die PSFS {self.psfs} jetzt aus {self.psfs['waterbox']} und im Vakuum {self.psfs['vacuum']}"
             )
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
