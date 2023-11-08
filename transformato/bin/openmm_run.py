@@ -34,6 +34,7 @@ if os.path.isfile(f"lig_in_{env}.parm7"):
     crd = AmberInpcrdFile(f"lig_in_{env}.rst7")
     fftype = "amber"
 else:
+    fftype = "charmm"
     params = read_params("toppar.str")
     top = CharmmPsfFile(f"lig_in_{env}.psf")
     crd = read_crd(f"lig_in_{env}.crd")
