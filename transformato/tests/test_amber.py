@@ -7,8 +7,16 @@ from transformato import (
 from transformato.mutate import perform_mutations
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
+import pytest
+import os
 
 
+@pytest.mark.rbfe
+@pytest.mark.charmm
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
 def test_full_amber_test():
     molecule = "ethane-methanol"
 

@@ -18,14 +18,15 @@ from openmm import *
 from openmm.app import *
 
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "-odcd", metavar="DCDFILE", dest="odcd", help="Output trajectory file (optional)"
-)
+parser.add_argument("-odcd", metavar="DCDFILE", dest="odcd")
+parser.add_argument("-env", metavar="ENVIRONMENT", dest="env")
 args = parser.parse_args()
 
 # Load parameters
-print("Loading parameters")
-env = "waterbox"
+env = args.env
+print(f"Loading parameters in this environment {env}")
+
+
 inputs = read_inputs(f"lig_in_{env}.inp")
 
 if os.path.isfile(f"lig_in_{env}.parm7"):
@@ -63,8 +64,9 @@ else:
 if inputs.vdw == "Force-switch" and fftype != "amber" and env != "vacuum":
     system = vfswitch(system, top, inputs)
 
-barostat = MonteCarloBarostat(inputs.p_ref * bar, inputs.temp * kelvin)
-system.addForce(barostat)
+if env != "vacuum":
+    barostat = MonteCarloBarostat(inputs.p_ref * bar, inputs.temp * kelvin)
+    system.addForce(barostat)
 
 integrator = LangevinIntegrator(
     inputs.temp * kelvin, 1 / unit.picosecond, inputs.dt * unit.picoseconds

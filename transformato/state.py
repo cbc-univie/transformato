@@ -104,6 +104,32 @@ class IntermediateStateFactory(object):
         elif env == "vacuum":
             psf[f":{tlc}"].write_parm(f"{output_file_base}/lig_in_{env}.parm7")
             psf[f":{tlc}"].write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
+            ### This is only necessary, because we create the parm7 and rst7 by slicing the corresponding waterbox
+            ### In this case there is one flag left which tells openmm when reading in the parm7 file, that there is
+            ### a box (PBC). For that reason we have to manually set this flag to False (0).
+            lines_left = 0
+            with open(f"{output_file_base}/lig_in_{env}.parm7", "r") as file:
+                with open(
+                    f"{output_file_base}/lig_in_{env}_temp.parm7", "w"
+                ) as tempFile:
+                    for line in file:
+                        if line.startswith("%FLAG POINTERS"):
+                            lines_left = 6
+                        if lines_left > 0:
+                            lines_left -= 1
+                        if lines_left == 1:
+                            newLine = line[:63] + "0" + line[64:]
+                            assert (
+                                line.split()[7] == "1"
+                            )  # in this position it is usually 1 indicating a box, if we change it to 0, openmm thinks there is no box (see: https://ambermd.org/FileFormats.php#topo.cntrl)
+                            tempFile.write(newLine)
+                        else:
+                            tempFile.write(line)
+                    else:
+                        tempFile.write(line)
+
+            shutil.move(tempFile.name, file.name)
+
         else:
             logger.critical(f"Environment {env} not supported")
 
@@ -388,11 +414,11 @@ class IntermediateStateFactory(object):
         fout = open(f"{shFile}.tmp", "wt")
         with open(f"{shFile}", "r+") as f:
             for line in f:
-                if line.startswith(f"input=lig_in_"):
+                if line.startswith(f"istep=lig_in_"):
                     fout.write("for i in {1.." + f"{self.multiple_runs}" + "};\n")
                     fout.write("do \n")
                     fout.write(line)
-                elif line.startswith("python -u openmm"):
+                elif line.startswith("python openmm"):
                     line = line.replace("${istep}.dcd", "run_${i}/${istep}.dcd")
                     fout.write(
                         line.replace(
