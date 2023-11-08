@@ -2080,9 +2080,9 @@ class Mutation(object):
 
         logger.debug(f"LJ scaling factor: {lambda_value_electrostatic}")
         logger.debug(f"VDW scaling factor: {lambda_value_vdw}")
-        print(f"Irgendwas stimmt hier nicht {len(psf.atoms)}")
-        # offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
-        offset = 0
+
+        offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
+        
         if lambda_value_electrostatic < 1.0:
             self._mutate_charge(psf, lambda_value_electrostatic, offset)
 
