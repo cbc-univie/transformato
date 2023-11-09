@@ -21,6 +21,7 @@ from transformato.annihilation import calculate_order_of_LJ_mutations_asfe
 
 
 logger = logging.getLogger(__name__)
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 def _flattened(list_of_lists: list) -> list:
@@ -1698,6 +1699,25 @@ class CommonCoreTransformation(object):
                                 modified_epsilon, modified_rmin
                             )
 
+                            pm.tools.actions.changeLJSingleType(
+                                psf,
+                                f":{self.tlc_cc1}@{ligand1_atom.idx+1}",
+                                modified_rmin,
+                                modified_epsilon,
+                            ).execute()
+
+                            print(
+                                f"Setting epsilon of {ligand1_atom} from {ligand1_atom.epsilon} to {modified_epsilon}"
+                            )
+                            ligand1_atom.epsilon = modified_epsilon
+                            print(f"Did it work?: {ligand1_atom.epsilon}")
+
+                            print(
+                                f"Setting rmin of {ligand1_atom} from {ligand1_atom.rmin} to {modified_rmin}"
+                            )
+                            ligand1_atom.rmin = modified_rmin
+                            print(f"Did it work?: {ligand1_atom.rmin}")
+
             if not found:
                 raise RuntimeError("No corresponding atom in cc2 found")
 
@@ -1764,6 +1784,28 @@ class CommonCoreTransformation(object):
 
                     ligand1_bond.mod_type = mod_type(modified_k, modified_req)
                     logger.debug(ligand1_bond.mod_type)
+                    print(
+                        "we need to testsomething:",
+                        ligand1_bond.atom1.name,
+                        ligand1_bond.atom1.idx,
+                    )
+                    print(
+                        f"und nummer zwei",
+                        ligand1_bond.atom2.name,
+                        ligand1_bond.atom2.idx,
+                    )
+                    print(psf.view[f":{self.tlc_cc1}@{ligand1_bond.atom1.idx+1}"].atoms)
+                    print(psf.view[f":{self.tlc_cc1}@{ligand1_bond.atom2.idx+1}"].atoms)
+                    print("k", modified_k)
+                    print("req", modified_req)
+
+                    pm.tools.actions.setBond(
+                        psf,
+                        f":{self.tlc_cc1}@{ligand1_bond.atom1.idx+1}",
+                        f":{self.tlc_cc1}@{ligand1_bond.atom2.idx+1}",
+                        modified_k,
+                        modified_req,
+                    ).execute()
 
             if not found:
                 logger.critical(ligand1_bond)
@@ -1838,6 +1880,15 @@ class CommonCoreTransformation(object):
                     logging.debug(f"New k: {modified_theteq}")
 
                     cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
+
+                    pm.tools.actions.setAngle(
+                        psf,
+                        f":{self.tlc_cc1}@{cc1_angle.atom1.idx+1}",
+                        f":{self.tlc_cc1}@{cc1_angle.atom2.idx+1}",
+                        f":{self.tlc_cc1}@{cc1_angle.atom3.idx+1}",
+                        modified_k,
+                        modified_theteq,
+                    ).execute()
 
             if not found:
                 logger.critical(cc1_angle)
@@ -1949,6 +2000,19 @@ class CommonCoreTransformation(object):
 
                     original_torsion.mod_type = mod_types
 
+                    pm.tools.actions.addDihedral(
+                        psf,
+                        f":{self.tlc_cc1}@{original_torsion.atom1.idx+1}",
+                        f":{self.tlc_cc1}@{original_torsion.atom2.idx+1}",
+                        f":{self.tlc_cc1}@{original_torsion.atom3.idx+1}",
+                        f":{self.tlc_cc1}@{original_torsion.atom4.idx+1}",
+                        modified_phi_k,
+                        torsion_t.per,
+                        torsion_t.phase,
+                        torsion_t.scnb,
+                        torsion_t.see,
+                    ).execute()
+
             if not found:
                 logger.critical(original_torsion)
                 raise RuntimeError("No corresponding torsion in cc2 found")
@@ -2039,6 +2103,9 @@ class Mutation(object):
         offset: int,
         to_default: bool,
     ):
+        """
+        This is used to scale the LJ parameters of the DDD and DDX atoms to zero
+        """
         if not set(vdw_atom_idx).issubset(set(self.atoms_to_be_mutated)):
             raise RuntimeError(
                 f"Specified atom {vdw_atom_idx} is not in atom_idx list {self.atoms_to_be_mutated}. Aborting."
@@ -2054,11 +2121,31 @@ class Mutation(object):
                 atom_type_suffix = "DDX"
                 atom.rmin = 1.5
                 atom.epsilon = -0.15
+                print(
+                    f"We are selecting this atoms {atom},{atom.type}, {atom.atom_type},{atom.idx}, {atom.rmin},{atom.epsilon}"
+                )
+                print(psf[f":{self.tlc}@{atom.idx+1}"].atoms)
+                pm.tools.actions.changeLJSingleType(
+                    psf,
+                    f":{self.tlc}@{atom.idx+1}",
+                    1.5,
+                    0.15,  ### ATTENTION: This should be -0.15 but somehow GAFF does not like negative values
+                ).execute()
+
             else:
                 logger.info("Mutate to dummy")
                 atom_type_suffix = f"DDD"
                 self._scale_epsilon(atom, lambda_value)
                 self._scale_rmin(atom, lambda_value)
+
+                ##### ATTENTION: this only works if no scaling is requeste this needs to be put into a function or something!!!!!!!!!!!!!
+                pm.tools.actions.changeLJSingleType(
+                    psf,
+                    f":{self.tlc}@{atom.idx+1}",
+                    0,
+                    0,
+                ).execute()
+
             # NOTEthere is always a type change
             self._modify_type(atom, psf, atom_type_suffix)
 
@@ -2082,7 +2169,7 @@ class Mutation(object):
         logger.debug(f"VDW scaling factor: {lambda_value_vdw}")
 
         offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
-        
+
         if lambda_value_electrostatic < 1.0:
             self._mutate_charge(psf, lambda_value_electrostatic, offset)
 
