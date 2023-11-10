@@ -332,7 +332,7 @@ that connects the specific dummy group to the real region.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.mutate.Mutation._mutate_vdw">
 <span class="sig-name descname"><span class="pre">_mutate_vdw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vdw_atom_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_default</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#Mutation._mutate_vdw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.Mutation._mutate_vdw" title="Link to this definition"></a></dt>
-<dd><p>This is used to scale the LJ parameters of the DDD and DDX atoms to zero</p>
+<dd><p>This is used to scale the LJ parameters of the DDD and DDX atoms to zero in phase II and III</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -344,6 +344,14 @@ that connects the specific dummy group to the real region.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformato.mutate.Mutation._scale_epsilon_and_rmin">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_scale_epsilon_and_rmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tlc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#Mutation._scale_epsilon_and_rmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.Mutation._scale_epsilon_and_rmin" title="Link to this definition"></a></dt>
+<dd><p>This scales the LJ interactions (epsilon and rmin) from non-interacting DDD atom (no charge)
+to ‘real’ dummy atom (no LJ!), typically this is performed in one step, but to be sure
+we offer scalling possibility here as well</p>
 </dd></dl>
 
 <dl class="py method">
