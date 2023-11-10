@@ -618,13 +618,9 @@
 
         <span class="c1"># copy diverse set of helper functions for openMM</span>
         <span class="n">FILES</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;omm_barostat.py&quot;</span><span class="p">,</span>
             <span class="s2">&quot;omm_readinputs.py&quot;</span><span class="p">,</span>
             <span class="s2">&quot;omm_readparams.py&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;omm_restraints.py&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;omm_rewrap.py&quot;</span><span class="p">,</span>
             <span class="s2">&quot;omm_vfswitch.py&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;omm_hmr.py&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">FILES</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -635,29 +631,13 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find file: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># copy omm simulation script</span>
-        <span class="c1"># start with waterbox</span>
         <span class="n">omm_simulation_script_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/openmm_run.py&quot;</span>
         <span class="n">omm_simulation_script_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/openmm_run.py&quot;</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">omm_simulation_script_source</span><span class="p">,</span> <span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="c1"># add serialization</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_hmr</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
-        <span class="n">check_switching_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span>
-            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span>
-        <span class="p">):</span>
-            <span class="c1"># add vacuum scripts</span>
-            <span class="n">omm_simulation_script_source</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/openmm_run_vacuum.py&quot;</span>
-            <span class="p">)</span>
-            <span class="n">omm_simulation_script_target</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/openmm_run_vacuum.py&quot;</span>
-            <span class="p">)</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">omm_simulation_script_source</span><span class="p">,</span> <span class="n">omm_simulation_script_target</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_check_hmr</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span></div>
+        <span class="n">check_switching_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="IntermediateStateFactory._check_hmr">
