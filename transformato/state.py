@@ -718,21 +718,25 @@ class IntermediateStateFactory(object):
                         )
                         logger.critical(f"###################")
 
-        # for l in input_simulation_parameter.readlines():
-        #     if l.strip():
-        #         t1, t2_comment = [e.strip() for e in l.split("=")]
-        #         t2, comment = [e.strip() for e in t2_comment.split("#")]
-        #         comment = comment.strip()
-        #         if t1 in overwrite_parameters.keys():
-        #             t2 = overwrite_parameters[t1]
-        #             del overwrite_parameters[t1]  # remove from dict
-        #         if t1 == "vdw":
-        #             t2 = t2.capitalize()
-        #         output_simulation_parameter.write(
-        #             f"{t1:<25} = {t2:<25} # {comment:<30}\n"
-        #         )
-        #     else:
-        #         output_simulation_parameter.write("\n")
+        try:
+            for l in input_simulation_parameter.readlines():
+                if l.strip():
+                    t1, t2_comment = [e.strip() for e in l.split("=")]
+                    t2, comment = [e.strip() for e in t2_comment.split("#")]
+                    comment = comment.strip()
+                    if t1 in overwrite_parameters.keys():
+                        t2 = overwrite_parameters[t1]
+                        del overwrite_parameters[t1]  # remove from dict
+                    if t1 == "vdw":
+                        t2 = t2.capitalize()
+                    output_simulation_parameter.write(
+                        f"{t1:<25} = {t2:<25} # {comment:<30}\n"
+                    )
+                else:
+                    output_simulation_parameter.write("\n")
+        except ValueError:
+            logger.critical(f"The original inp {input_simulation_parameter.name} file  contains a line without a comment ")
+            raise SystemExit
 
         # set parameters that have no equivalent in the pregenerated parameter file
         for t1 in overwrite_parameters.keys():
