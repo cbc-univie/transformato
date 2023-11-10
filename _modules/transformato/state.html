@@ -254,6 +254,7 @@
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">common_core_transformation</span> <span class="o">&lt;</span> <span class="mf">1.0</span>
                 <span class="p">):</span>  <span class="c1"># NOTE: THis is inconsistent -- the mutatino_type is the actual mutation in this case</span>
+                    <span class="c1"># This happens only for one ligand and starts the process of changing cc1 into cc2</span>
                     <span class="n">mutation_type</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span>
                         <span class="n">psf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span>
                         <span class="n">lambda_value</span><span class="o">=</span><span class="n">common_core_transformation</span><span class="p">,</span>

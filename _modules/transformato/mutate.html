@@ -132,7 +132,7 @@
     <span class="k">for</span> <span class="n">lambda_value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nr_of_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Perform paramteter scaling on cc in step: </span><span class="si">{</span><span class="n">intermediate_factory</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2"> with lamb: </span><span class="si">{</span><span class="n">lambda_value</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Perform parameter scaling on cc in step: </span><span class="si">{</span><span class="n">intermediate_factory</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2"> with lamb: </span><span class="si">{</span><span class="n">lambda_value</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
         <span class="n">intermediate_factory</span><span class="o">.</span><span class="n">write_state</span><span class="p">(</span>
@@ -695,7 +695,6 @@
 
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;die Atome </span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">flat_ordered_connected_dummy_regions</span><span class="p">:</span>
                     <span class="n">lp_dict_dummy_region</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
 
@@ -1771,8 +1770,6 @@
             <span class="n">cc_names_struc1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">cc_names_struc2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc1: </span><span class="si">{</span><span class="n">cc_names_struc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc2: </span><span class="si">{</span><span class="n">cc_names_struc2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">match_atom_names_cc1_to_cc2</span></div>
 
 
@@ -1877,18 +1874,6 @@
                                     <span class="n">modified_epsilon</span><span class="p">,</span>
                                 <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
 
-                            <span class="nb">print</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Setting epsilon of </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">epsilon</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">modified_epsilon</span><span class="si">}</span><span class="s2">&quot;</span>
-                            <span class="p">)</span>
-                            <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">modified_epsilon</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Did it work?: </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">epsilon</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-                            <span class="nb">print</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;Setting rmin of </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">rmin</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">modified_rmin</span><span class="si">}</span><span class="s2">&quot;</span>
-                            <span class="p">)</span>
-                            <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">rmin</span> <span class="o">=</span> <span class="n">modified_rmin</span>
-                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Did it work?: </span><span class="si">{</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">rmin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding atom in cc2 found&quot;</span><span class="p">)</span></div>
 
@@ -1956,20 +1941,6 @@
 
                     <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_type</span><span class="p">(</span><span class="n">modified_k</span><span class="p">,</span> <span class="n">modified_req</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">mod_type</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="s2">&quot;we need to testsomething:&quot;</span><span class="p">,</span>
-                        <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;und nummer zwei&quot;</span><span class="p">,</span>
-                        <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                        <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">idx</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">modified_k</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;req&quot;</span><span class="p">,</span> <span class="n">modified_req</span><span class="p">)</span>
 
                     <span class="c1"># do this only when using GAFF</span>
                     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
@@ -2312,9 +2283,6 @@
                 <span class="n">atom_type_suffix</span> <span class="o">=</span> <span class="s2">&quot;DDX&quot;</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">rmin</span> <span class="o">=</span> <span class="mf">1.5</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.15</span>
-                <span class="nb">print</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;We are selecting this atoms </span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">atom_type</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">rmin</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">epsilon</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
                 <span class="c1"># do this only when using GAFF</span>
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
                     <span class="k">assert</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span>
