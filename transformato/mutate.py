@@ -1698,13 +1698,20 @@ class CommonCoreTransformation(object):
                             ligand1_atom.mod_type = mod_type(
                                 modified_epsilon, modified_rmin
                             )
-
-                            pm.tools.actions.changeLJSingleType(
-                                psf,
-                                f":{self.tlc_cc1}@{ligand1_atom.idx+1}",
-                                modified_rmin,
-                                modified_epsilon,
-                            ).execute()
+                            # do this only when using GAFF
+                            if type(psf) == pm.amber.AmberParm:
+                                assert (
+                                    psf[f":{self.tlc_cc1}@{ligand1_atom.idx+1}"]
+                                    .atoms[0]
+                                    .name
+                                    == ligand1_atom.name
+                                )
+                                pm.tools.actions.changeLJSingleType(
+                                    psf,
+                                    f":{self.tlc_cc1}@{ligand1_atom.idx+1}",
+                                    modified_rmin,
+                                    modified_epsilon,
+                                ).execute()
 
                             print(
                                 f"Setting epsilon of {ligand1_atom} from {ligand1_atom.epsilon} to {modified_epsilon}"
@@ -1799,13 +1806,15 @@ class CommonCoreTransformation(object):
                     print("k", modified_k)
                     print("req", modified_req)
 
-                    pm.tools.actions.setBond(
-                        psf,
-                        f":{self.tlc_cc1}@{ligand1_bond.atom1.idx+1}",
-                        f":{self.tlc_cc1}@{ligand1_bond.atom2.idx+1}",
-                        modified_k,
-                        modified_req,
-                    ).execute()
+                    # do this only when using GAFF
+                    if type(psf) == pm.amber.AmberParm:
+                        pm.tools.actions.setBond(
+                            psf,
+                            f":{self.tlc_cc1}@{ligand1_bond.atom1.idx+1}",
+                            f":{self.tlc_cc1}@{ligand1_bond.atom2.idx+1}",
+                            modified_k,
+                            modified_req,
+                        ).execute()
 
             if not found:
                 logger.critical(ligand1_bond)
@@ -1881,14 +1890,16 @@ class CommonCoreTransformation(object):
 
                     cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
 
-                    pm.tools.actions.setAngle(
-                        psf,
-                        f":{self.tlc_cc1}@{cc1_angle.atom1.idx+1}",
-                        f":{self.tlc_cc1}@{cc1_angle.atom2.idx+1}",
-                        f":{self.tlc_cc1}@{cc1_angle.atom3.idx+1}",
-                        modified_k,
-                        modified_theteq,
-                    ).execute()
+                    # do this only when using GAFF
+                    if type(psf) == pm.amber.AmberParm:
+                        pm.tools.actions.setAngle(
+                            psf,
+                            f":{self.tlc_cc1}@{cc1_angle.atom1.idx+1}",
+                            f":{self.tlc_cc1}@{cc1_angle.atom2.idx+1}",
+                            f":{self.tlc_cc1}@{cc1_angle.atom3.idx+1}",
+                            modified_k,
+                            modified_theteq,
+                        ).execute()
 
             if not found:
                 logger.critical(cc1_angle)
@@ -2000,18 +2011,20 @@ class CommonCoreTransformation(object):
 
                     original_torsion.mod_type = mod_types
 
-                    pm.tools.actions.addDihedral(
-                        psf,
-                        f":{self.tlc_cc1}@{original_torsion.atom1.idx+1}",
-                        f":{self.tlc_cc1}@{original_torsion.atom2.idx+1}",
-                        f":{self.tlc_cc1}@{original_torsion.atom3.idx+1}",
-                        f":{self.tlc_cc1}@{original_torsion.atom4.idx+1}",
-                        modified_phi_k,
-                        torsion_t.per,
-                        torsion_t.phase,
-                        torsion_t.scnb,
-                        torsion_t.see,
-                    ).execute()
+                    # do this only when using GAFF
+                    if type(psf) == pm.amber.AmberParm:
+                        pm.tools.actions.addDihedral(
+                            psf,
+                            f":{self.tlc_cc1}@{original_torsion.atom1.idx+1}",
+                            f":{self.tlc_cc1}@{original_torsion.atom2.idx+1}",
+                            f":{self.tlc_cc1}@{original_torsion.atom3.idx+1}",
+                            f":{self.tlc_cc1}@{original_torsion.atom4.idx+1}",
+                            modified_phi_k,
+                            torsion_t.per,
+                            torsion_t.phase,
+                            torsion_t.scnb,
+                            torsion_t.see,
+                        ).execute()
 
             if not found:
                 logger.critical(original_torsion)
@@ -2073,8 +2086,10 @@ class Mutation(object):
     def _mutate_charge(
         self, psf: pm.charmm.CharmmPsfFile, lambda_value: float, offset: int
     ):
-        total_charge = int(
-            round(sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms]))
+        total_charge = float(
+            round(
+                sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms]), 4
+            ),
         )
         # scale the charge of all atoms
         print(f"Scaling charge on: {self.atoms_to_be_mutated}")
@@ -2104,7 +2119,7 @@ class Mutation(object):
         to_default: bool,
     ):
         """
-        This is used to scale the LJ parameters of the DDD and DDX atoms to zero
+        This is used to scale the LJ parameters of the DDD and DDX atoms to zero in phase II and III
         """
         if not set(vdw_atom_idx).issubset(set(self.atoms_to_be_mutated)):
             raise RuntimeError(
@@ -2124,27 +2139,20 @@ class Mutation(object):
                 print(
                     f"We are selecting this atoms {atom},{atom.type}, {atom.atom_type},{atom.idx}, {atom.rmin},{atom.epsilon}"
                 )
-                print(psf[f":{self.tlc}@{atom.idx+1}"].atoms)
-                pm.tools.actions.changeLJSingleType(
-                    psf,
-                    f":{self.tlc}@{atom.idx+1}",
-                    1.5,
-                    0.15,  ### ATTENTION: This should be -0.15 but somehow GAFF does not like negative values
-                ).execute()
+                # do this only when using GAFF
+                if type(psf) == pm.amber.AmberParm:
+                    assert psf[f":{self.tlc}@{atom.idx+1}"].atoms[0].name == atom.name
+                    pm.tools.actions.changeLJSingleType(
+                        psf,
+                        f":{self.tlc}@{atom.idx+1}",
+                        1.5,
+                        0.15,  ### ATTENTION: This should be -0.15 but somehow GAFF does not like negative values
+                    ).execute()
 
             else:
                 logger.info("Mutate to dummy")
                 atom_type_suffix = f"DDD"
-                self._scale_epsilon(atom, lambda_value)
-                self._scale_rmin(atom, lambda_value)
-
-                ##### ATTENTION: this only works if no scaling is requeste this needs to be put into a function or something!!!!!!!!!!!!!
-                pm.tools.actions.changeLJSingleType(
-                    psf,
-                    f":{self.tlc}@{atom.idx+1}",
-                    0,
-                    0,
-                ).execute()
+                self._scale_epsilon_and_rmin(atom, lambda_value, psf, self.tlc)
 
             # NOTEthere is always a type change
             self._modify_type(atom, psf, atom_type_suffix)
@@ -2248,27 +2256,42 @@ class Mutation(object):
                 connecting_real_atom_for_this_dummy_region
             )
 
-        # check if rest charge is missing
-        # new_charge = sum(
-        #     [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
-        # )
+        #### check if rest charge is missing
+        new_charge = sum(
+            [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
+        )
 
-        # if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
-        #     raise RuntimeError(
-        #         f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
-        #     )
+        if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
+            raise RuntimeError(
+                f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
+            )
 
     @staticmethod
-    def _scale_epsilon(atom, lambda_value: float):
+    def _scale_epsilon_and_rmin(atom, lambda_value, psf, tlc):
+        """
+        This scales the LJ interactions (epsilon and rmin) from non-interacting DDD atom (no charge)
+        to 'real' dummy atom (no LJ!), typically this is performed in one step, but to be sure
+        we offer scalling possibility here as well
+        """
         logger.debug(atom)
         logger.debug(atom.initial_epsilon)
-        atom.epsilon = atom.initial_epsilon * lambda_value
-
-    @staticmethod
-    def _scale_rmin(atom, lambda_value: float):
-        logger.debug(atom)
         logger.debug(atom.initial_rmin)
+
+        atom.epsilon = atom.initial_epsilon * lambda_value
         atom.rmin = atom.initial_rmin * lambda_value
+
+        ### do this only when using GAFF
+        if type(psf) == pm.amber.AmberParm:
+            # Quick check, if selected atom via AMBER mask is the same as the atom
+            # we want to modify
+            assert psf[f":{tlc}@{atom.idx+1}"].atoms[0].type == atom.type
+
+            pm.tools.actions.changeLJSingleType(
+                psf,
+                f":{tlc}@{atom.idx+1}",
+                0,
+                0,
+            ).execute()
 
     @staticmethod
     def _modify_type(atom, psf, atom_type_suffix: str):
