@@ -520,13 +520,9 @@ class IntermediateStateFactory(object):
 
         # copy diverse set of helper functions for openMM
         FILES = [
-            "omm_barostat.py",
             "omm_readinputs.py",
             "omm_readparams.py",
-            "omm_restraints.py",
-            "omm_rewrap.py",
             "omm_vfswitch.py",
-            "omm_hmr.py",
         ]
         for f in FILES:
             try:
@@ -537,7 +533,6 @@ class IntermediateStateFactory(object):
                 logger.critical(f"Could not find file: {f}")
 
         # copy omm simulation script
-        # start with waterbox
         omm_simulation_script_source = f"{self.configuration['bin_dir']}/openmm_run.py"
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
@@ -545,21 +540,6 @@ class IntermediateStateFactory(object):
         self._check_hmr(omm_simulation_script_target)
         self._change_platform(omm_simulation_script_target)
         check_switching_function(self.vdw_switch)
-
-        if (
-            self.configuration["simulation"]["free-energy-type"] == "rsfe"
-            or self.configuration["simulation"]["free-energy-type"] == "asfe"
-        ):
-            # add vacuum scripts
-            omm_simulation_script_source = (
-                f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
-            )
-            omm_simulation_script_target = (
-                f"{intermediate_state_file_path}/openmm_run_vacuum.py"
-            )
-            shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
-            self._check_hmr(omm_simulation_script_target)
-            self._change_platform(omm_simulation_script_target)
 
     def _check_hmr(self, file):
         "add hmr if requested in config file"
