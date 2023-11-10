@@ -53,7 +53,7 @@ def _performe_linear_cc_scaling(
     for lambda_value in np.linspace(1, 0, nr_of_steps + 1)[1:]:
         print("####################")
         print(
-            f"Perform paramteter scaling on cc in step: {intermediate_factory.current_step} with lamb: {lambda_value}"
+            f"Perform parameter scaling on cc in step: {intermediate_factory.current_step} with lamb: {lambda_value}"
         )
         print("####################")
         intermediate_factory.write_state(
@@ -594,7 +594,6 @@ class ProposeMutationRoute(object):
 
         for atom in psf.view[f":{tlc}"].atoms:
             if atom.name.find("LP") == False:
-                print(f"die Atome {atom}")
                 if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
                     lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
 
@@ -1610,8 +1609,6 @@ class CommonCoreTransformation(object):
             cc_names_struc1.append(ligand1_atom.name)
             cc_names_struc2.append(ligand2_atom.name)
 
-        print(f"CC Struc1: {cc_names_struc1}")
-        print(f"CC Struc2: {cc_names_struc2}")
         return match_atom_names_cc1_to_cc2
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
@@ -1713,18 +1710,6 @@ class CommonCoreTransformation(object):
                                     modified_epsilon,
                                 ).execute()
 
-                            print(
-                                f"Setting epsilon of {ligand1_atom} from {ligand1_atom.epsilon} to {modified_epsilon}"
-                            )
-                            ligand1_atom.epsilon = modified_epsilon
-                            print(f"Did it work?: {ligand1_atom.epsilon}")
-
-                            print(
-                                f"Setting rmin of {ligand1_atom} from {ligand1_atom.rmin} to {modified_rmin}"
-                            )
-                            ligand1_atom.rmin = modified_rmin
-                            print(f"Did it work?: {ligand1_atom.rmin}")
-
             if not found:
                 raise RuntimeError("No corresponding atom in cc2 found")
 
@@ -1791,20 +1776,6 @@ class CommonCoreTransformation(object):
 
                     ligand1_bond.mod_type = mod_type(modified_k, modified_req)
                     logger.debug(ligand1_bond.mod_type)
-                    print(
-                        "we need to testsomething:",
-                        ligand1_bond.atom1.name,
-                        ligand1_bond.atom1.idx,
-                    )
-                    print(
-                        f"und nummer zwei",
-                        ligand1_bond.atom2.name,
-                        ligand1_bond.atom2.idx,
-                    )
-                    print(psf.view[f":{self.tlc_cc1}@{ligand1_bond.atom1.idx+1}"].atoms)
-                    print(psf.view[f":{self.tlc_cc1}@{ligand1_bond.atom2.idx+1}"].atoms)
-                    print("k", modified_k)
-                    print("req", modified_req)
 
                     # do this only when using GAFF
                     if type(psf) == pm.amber.AmberParm:
@@ -2136,9 +2107,6 @@ class Mutation(object):
                 atom_type_suffix = "DDX"
                 atom.rmin = 1.5
                 atom.epsilon = -0.15
-                print(
-                    f"We are selecting this atoms {atom},{atom.type}, {atom.atom_type},{atom.idx}, {atom.rmin},{atom.epsilon}"
-                )
                 # do this only when using GAFF
                 if type(psf) == pm.amber.AmberParm:
                     assert psf[f":{self.tlc}@{atom.idx+1}"].atoms[0].name == atom.name

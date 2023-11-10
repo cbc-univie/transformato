@@ -165,6 +165,7 @@ class IntermediateStateFactory(object):
                 if (
                     common_core_transformation < 1.0
                 ):  # NOTE: THis is inconsistent -- the mutatino_type is the actual mutation in this case
+                    # This happens only for one ligand and starts the process of changing cc1 into cc2
                     mutation_type.mutate(
                         psf=self.system.psfs[env],
                         lambda_value=common_core_transformation,
