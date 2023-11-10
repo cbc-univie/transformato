@@ -825,21 +825,25 @@
                         <span class="p">)</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;###################&quot;</span><span class="p">)</span>
 
-        <span class="c1"># for l in input_simulation_parameter.readlines():</span>
-        <span class="c1">#     if l.strip():</span>
-        <span class="c1">#         t1, t2_comment = [e.strip() for e in l.split(&quot;=&quot;)]</span>
-        <span class="c1">#         t2, comment = [e.strip() for e in t2_comment.split(&quot;#&quot;)]</span>
-        <span class="c1">#         comment = comment.strip()</span>
-        <span class="c1">#         if t1 in overwrite_parameters.keys():</span>
-        <span class="c1">#             t2 = overwrite_parameters[t1]</span>
-        <span class="c1">#             del overwrite_parameters[t1]  # remove from dict</span>
-        <span class="c1">#         if t1 == &quot;vdw&quot;:</span>
-        <span class="c1">#             t2 = t2.capitalize()</span>
-        <span class="c1">#         output_simulation_parameter.write(</span>
-        <span class="c1">#             f&quot;{t1:&lt;25} = {t2:&lt;25} # {comment:&lt;30}\n&quot;</span>
-        <span class="c1">#         )</span>
-        <span class="c1">#     else:</span>
-        <span class="c1">#         output_simulation_parameter.write(&quot;\n&quot;)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                    <span class="n">t1</span><span class="p">,</span> <span class="n">t2_comment</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)]</span>
+                    <span class="n">t2</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">t2_comment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)]</span>
+                    <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">overwrite_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">t2</span> <span class="o">=</span> <span class="n">overwrite_parameters</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span>
+                        <span class="k">del</span> <span class="n">overwrite_parameters</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span>  <span class="c1"># remove from dict</span>
+                    <span class="k">if</span> <span class="n">t1</span> <span class="o">==</span> <span class="s2">&quot;vdw&quot;</span><span class="p">:</span>
+                        <span class="n">t2</span> <span class="o">=</span> <span class="n">t2</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+                    <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t1</span><span class="si">:</span><span class="s2">&lt;25</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">t2</span><span class="si">:</span><span class="s2">&lt;25</span><span class="si">}</span><span class="s2"> # </span><span class="si">{</span><span class="n">comment</span><span class="si">:</span><span class="s2">&lt;30</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The original inp </span><span class="si">{</span><span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> file  contains a line without a comment &quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">SystemExit</span>
 
         <span class="c1"># set parameters that have no equivalent in the pregenerated parameter file</span>
         <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">overwrite_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
