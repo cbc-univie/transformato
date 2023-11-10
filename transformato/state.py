@@ -735,7 +735,9 @@ class IntermediateStateFactory(object):
                 else:
                     output_simulation_parameter.write("\n")
         except ValueError:
-            logger.critical(f"The original inp {input_simulation_parameter.name} file  contains a line without a comment ")
+            logger.critical(
+                f"The original inp {input_simulation_parameter.name} file  contains a line without a comment "
+            )
             raise SystemExit
 
         # set parameters that have no equivalent in the pregenerated parameter file
