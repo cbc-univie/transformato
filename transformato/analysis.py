@@ -99,9 +99,11 @@ class FreeEnergyCalculator(object):
         self.thinning: int = 0
         self.save_results_to_path: str = f"{self.configuration['system_dir']}/results/"
         self.traj_files = defaultdict(list)
-        self.forcefield = "charmm"
-        if self.configuration["simulation"]["forcefield"] == "amber":
-            self.forcefield = "amber"
+        ff = self.configuration["simulation"].get("forcefield")
+        if ff is None:
+            self.forcefield = "charmm"
+        else:
+            self.forcefield = ff
 
     def load_trajs(self, nr_of_max_snapshots: int = 300, multiple_runs: int = 0):
         """
