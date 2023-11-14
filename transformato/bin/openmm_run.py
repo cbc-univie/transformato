@@ -158,7 +158,9 @@ simulation.step(inputs.nstep)
 
 # needed for later analysis
 file_name = f"lig_in_{env}"
-print(file_name)
+state = simulation.context.getState(getPositions=True, getVelocities=True)
+with open(file_name + ".rst", "w") as f:
+    f.write(XmlSerializer.serialize(state))
 with open(file_name + "_integrator.xml", "w") as outfile:
     outfile.write(XmlSerializer.serialize(integrator))
 with open(file_name + "_system.xml", "w") as outfile:
