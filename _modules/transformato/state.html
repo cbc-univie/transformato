@@ -842,7 +842,9 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The original inp </span><span class="si">{</span><span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> file  contains a line without a comment &quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The original inp </span><span class="si">{</span><span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> file  contains a line without a comment &quot;</span>
+            <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">SystemExit</span>
 
         <span class="c1"># set parameters that have no equivalent in the pregenerated parameter file</span>
