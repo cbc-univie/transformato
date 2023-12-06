@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>transformato.mutate &mdash; transformato  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=31edadca" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=8209df7b" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -2438,12 +2440,18 @@
             <span class="c1"># Quick check, if selected atom via AMBER mask is the same as the atom</span>
             <span class="c1"># we want to modify</span>
             <span class="k">assert</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span>
-
+            <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">addLJType</span><span class="p">(</span>
+                <span class="n">psf</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">radius</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_rmin</span> <span class="o">*</span> <span class="n">lambda_value</span><span class="p">,</span>
+                <span class="n">epsilon</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_epsilon</span> <span class="o">*</span> <span class="n">lambda_value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+            <span class="c1">### Only necessary to rename the atomtype to DDDn !!!</span>
             <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">changeLJSingleType</span><span class="p">(</span>
                 <span class="n">psf</span><span class="p">,</span>
                 <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="mi">0</span><span class="p">,</span>
-                <span class="mi">0</span><span class="p">,</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">initial_rmin</span> <span class="o">*</span> <span class="n">lambda_value</span><span class="p">,</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">initial_epsilon</span> <span class="o">*</span> <span class="n">lambda_value</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span></div>
 
 
