@@ -2253,12 +2253,18 @@ class Mutation(object):
             # Quick check, if selected atom via AMBER mask is the same as the atom
             # we want to modify
             assert psf[f":{tlc}@{atom.idx+1}"].atoms[0].type == atom.type
-
+            pm.tools.actions.addLJType(
+                psf,
+                f":{tlc}@{atom.idx+1}",
+                radius=atom.initial_rmin * lambda_value,
+                epsilon=atom.initial_epsilon * lambda_value,
+            ).execute()
+            ### Only necessary to rename the atomtype to DDDn !!!
             pm.tools.actions.changeLJSingleType(
                 psf,
                 f":{tlc}@{atom.idx+1}",
-                0,
-                0,
+                atom.initial_rmin * lambda_value,
+                atom.initial_epsilon * lambda_value,
             ).execute()
 
     @staticmethod
