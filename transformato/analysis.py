@@ -301,8 +301,12 @@ class FreeEnergyCalculator(object):
             nr_of_snapshots = N_k[env][d] + N_k[env][d + 1]
             u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
             m = mbar.MBAR(u_kn_, N_k[env][d : d + 2])
-            logger.debug(m.compute_free_energy_differences(return_dict=True)["Delta_f"][0, 1])
-            logger.debug(m.compute_free_energy_differences(return_dict=True)["dDelta_f"][0, 1])
+            logger.debug(
+                m.compute_free_energy_differences(return_dict=True)["Delta_f"][0, 1]
+            )
+            logger.debug(
+                m.compute_free_energy_differences(return_dict=True)["dDelta_f"][0, 1]
+            )
 
             start += N_k[env][d]
 
@@ -690,9 +694,9 @@ class FreeEnergyCalculator(object):
     def free_energy_differences(self, env="vacuum"):
         """matrix of free energy differences"""
         try:
-            r = self.mbar_results[env].compute_free_energy_differences(return_dict=True)[
-                "Delta_f"
-            ]
+            r = self.mbar_results[env].compute_free_energy_differences(
+                return_dict=True
+            )["Delta_f"]
         except KeyError:
             raise KeyError(f"Free energy difference not obtained for : {env}")
         return r
@@ -700,7 +704,6 @@ class FreeEnergyCalculator(object):
     def free_energy_overlap(self, env="vacuum"):
         """overlap of lambda states"""
         try:
-        
             r = self.mbar_results[env].computeOverlap(return_dict=True)["matrix"]
         except KeyError:
             raise KeyError(f"Free energy overlap not obtained for : {env}")
@@ -710,9 +713,9 @@ class FreeEnergyCalculator(object):
     def free_energy_difference_uncertainties(self, env="vacuum"):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
         try:
-            r = self.mbar_results[env].compute_free_energy_differences(return_dict=True)[
-                "dDelta_f"
-            ]
+            r = self.mbar_results[env].compute_free_energy_differences(
+                return_dict=True
+            )["dDelta_f"]
         except KeyError:
             raise KeyError(f"Free energy uncertanties not obtained for : {env}")
         return r
