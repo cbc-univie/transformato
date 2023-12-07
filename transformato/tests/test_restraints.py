@@ -230,7 +230,7 @@ def test_integration():
     )
 
     simulation.minimizeEnergy(
-        tolerance=inputs.mini_Tol * kilojoule / mole, maxIterations=10
+        tolerance=inputs.mini_Tol * kilojoule / (openmm.unit.nanometer * mole), maxIterations=10
     )
     logger.info(
         f"Potential energy after 1-iter minimization {simulation.context.getState(getEnergy=True).getPotentialEnergy()}"
