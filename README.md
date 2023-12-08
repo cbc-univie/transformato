@@ -39,6 +39,6 @@ Project based on the
 
 
 [^1]:  Wieder, M., Fleck, M., Braunsfeld, B., Boresch, S., *J. Comput. Chem.* 2022, 1. [DOI](https://doi.org/10.1002/jcc.26877)
-[^2]:  Karwounopoulos, J.,Kaupang, A., Wieder, M., Boresch, S., *JCTC* 2022, 9, 954638 [DOI](https://doi.org/10.1021/acs.jctc.3c00691)
+[^2]:  Karwounopoulos, J.,Kaupang, A., Wieder, M., Boresch, S., *JCTC* 2023, 9, 954638 [DOI](https://doi.org/10.1021/acs.jctc.3c00691)
 [^3]:  Karwounopoulos, J., Wieder, M., Boresch, S., *Front. Mol. Biosci.* 2022, 9, 954638 [DOI](https://doi.org/10.3389/fmolb.2022.954638
 )
