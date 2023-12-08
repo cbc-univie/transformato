@@ -752,7 +752,6 @@ class ProposeMutationRoute(object):
         match_terminal_atoms: dict,
         G: nx.Graph,
     ) -> list:
-
         return self._calculate_order_of_LJ_mutations_with_bfs(
             connected_dummy_regions, match_terminal_atoms, G
         )
