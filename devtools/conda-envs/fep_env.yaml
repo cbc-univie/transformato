@@ -8,7 +8,7 @@ dependencies:
   - openmmtools
   - numpy
   - ipython
-  - pymbar=3
+  - pymbar
   - rdkit
   - parmed
   - pyyaml
@@ -25,5 +25,4 @@ dependencies:
   - codecov
   - pip:
     - git+https://github.com/wiederm/tf_routes.git
-    - git+https://github.com/ParmEd/ParmEd.git
     - git+https://github.com/wiederm/transformato_testsystems.git
