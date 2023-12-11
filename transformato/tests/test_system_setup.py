@@ -26,6 +26,7 @@ from transformato_testsystems.testsystems import get_testsystems_dir
 
 warnings.filterwarnings("ignore", module="parmed")
 
+
 def perform_generic_mutation(configuration: dict):
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -47,6 +48,7 @@ def perform_generic_mutation(configuration: dict):
     )
 
     return i.output_files
+
 
 def test_read_yaml():
     """Sample test, will check ability to read yaml files"""
@@ -141,7 +143,6 @@ def test_initialize_systems(caplog):
 
 @pytest.mark.rsfe
 def test_setup_system_for_methane_common_core():
-
     print(get_testsystems_dir())
 
     configuration = load_config_yaml(
@@ -191,7 +192,6 @@ def test_setup_system_for_toluene_common_core_with_HMR():
 
 @pytest.mark.rsfe
 def test_setup_system_for_methane_common_core_with_HMR():
-
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe-HMR.yaml",
         input_dir=get_testsystems_dir(),
