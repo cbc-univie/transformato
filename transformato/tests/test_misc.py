@@ -1,7 +1,7 @@
 """
 Unit and regression test for the transformato package.
 """
-from transformato.constants import temperature as T
+from transformato.helper_functions import temperature
 from openmm import unit
 import numpy as np
 import mdtraj as md
@@ -17,20 +17,20 @@ from transformato_testsystems.testsystems import (
 def test_reduced_energy():
     # with openMM generated traj evaluated with openMM
     e = -41264.39524669979 * unit.kilojoule_per_mole
-    rE = return_reduced_potential(e, volume=0, temperature=T)
+    rE = return_reduced_potential(e, volume=0, temperature=temperature)
     print(rE)
     assert np.isclose(rE, -16371.30301422)
 
     # with openMM generated traj evaluated with CHARMM
     e = -1099.41855 * unit.kilocalorie_per_mole
-    rE = return_reduced_potential(e, volume=0, temperature=T)
+    rE = return_reduced_potential(e, volume=0, temperature=temperature)
     print(rE)
     assert np.isclose(rE, -1824.9982986086145)
 
     # energy term in CHARMM traj
     # DYNA>        0      0.00000  -7775.74490   1914.51007  -9690.25498    377.14828
     e = -9690.25498 * unit.kilocalorie_per_mole  # ENERGgy
-    rE = return_reduced_potential(e, volume=0, temperature=T)
+    rE = return_reduced_potential(e, volume=0, temperature=temperature)
     print(rE)
     assert np.isclose(rE, -16085.501605902184)
 
@@ -42,37 +42,6 @@ def test_convert_to_kT():
     e = -41264.39524669979 * unit.kilojoule_per_mole
     rE = e * beta
     assert np.isclose(rE, -16371.30301422)
-
-
-def test_change_platform():
-    from transformato.constants import (
-        change_platform_to_test_platform,
-        test_platform_openMM,
-        test_platform_CHARMM,
-    )
-
-    configuration = load_config_yaml(
-        config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe.yaml",
-        input_dir=".",
-        output_dir=get_test_output_dir(),
-    )
-
-    change_platform_to_test_platform(configuration, engine="openMM")
-    print(configuration["simulation"]["GPU"])
-    print(test_platform_openMM)
-    if test_platform_openMM.upper() == "CPU":
-        assert configuration["simulation"]["GPU"] == False
-    else:
-        assert configuration["simulation"]["GPU"] == True
-
-    change_platform_to_test_platform(configuration, engine="CHARMM")
-    print(configuration["simulation"]["GPU"])
-    print(test_platform_openMM)
-    if test_platform_CHARMM.upper() == "CPU":
-        assert configuration["simulation"]["GPU"] == False
-    else:
-        assert configuration["simulation"]["GPU"] == True
-
 
 def test_scaling():
     for i in np.linspace(1, 0, 11):

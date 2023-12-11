@@ -17,7 +17,13 @@ IPythonConsole.molSize = (900, 900)  # Change image size
 IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
-from transformato.annihilation import calculate_order_of_LJ_mutations_asfe
+from transformato.helper_functions import (
+    calculate_order_of_LJ_mutations_asfe,
+    cycle_checks_nx,
+    cycle_checks,
+    exclude_Hs_from_mutations,
+    change_route_cycles,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -526,144 +532,7 @@ class ProposeMutationRoute(object):
 
         return (lj_default_cc1, lj_default_cc2)
 
-    def change_route_cycles(route, cycledict, degreedict, weightdict, G):
-        """
-        preliminary mutation list is sorted using cycle and degree dictionary
-        currently used in _calculate_order_of_LJ_mutations_new
-        ----
-        Args:
-            route: original mutation route
-            cycledict: dict of cycle participation of atoms
-            degreedict: dict of  degree of atoms
-            weightdict: dict of  weight of atoms
-            G: nx-graph of molecule
-        ----
-        returns reordered array of the mutation route
-        """
-
-        for i in range(len(route) - 1):
-            routedict = route[i]
-            routeweight = weightdict.get(route[i])
-
-            routecycleval = cycledict.get(route[i])
-            routedegreeval = degreedict.get(route[i])
-
-            for j in range(i, len(route)):
-                if routeweight == weightdict[route[j]]:
-                    # if nodes have same weight (i.e. distance from root), the node participating in more cycles is removed later
-
-                    if routecycleval > cycledict[route[j]] or (
-                        routecycleval == cycledict[route[j]]
-                        and routedegreeval > degreedict[route[j]]
-                    ):
-                        idx1 = route.index(route[i])
-                        idx2 = route.index(route[j])
-                        route[idx1], route[idx2] = route[idx2], route[idx1]
-                        continue
-
-                    # if nodes have same weight (i.e. distance from root) and same cycle participation number, the node which has more neighbours already removed is removed earlier
-
-                    if routecycleval == cycledict[route[j]]:
-                        edgesi = G.edges(routedict)
-                        edgesj = G.edges(route[j])
-
-                        iedgecounter = 0
-                        for edge in edgesi:
-                            if edge[1] in route[0:i] or edge[0] in route[0:i]:
-                                iedgecounter = iedgecounter + 1
-
-                        jedgecounter = 0
-                        for edge in edgesj:
-                            if edge[1] in route[0:i] or edge[0] in route[0:i]:
-                                jedgecounter = jedgecounter + 1
-
-                        if iedgecounter < jedgecounter:
-                            idx1 = route.index(route[i])
-                            idx2 = route.index(route[j])
-                            route[idx1], route[idx2] = route[idx2], route[idx1]
-
-        return route
-
-    def cycle_checks_nx(G, use_actual_weight_for_mod=False):
-        """
-        cycle processing, can be used in _calculate_order_of_LJ_mutations_new_iter and ..._new_iter_change (default is cycle_checks_nx_v2)
-        --------
-        returns nx-graph-object with updated weights (according to cycle participation of the atom)
-        """
-
-        # search cycles using networkx
-        cycles = nx.cycle_basis(G)
-
-        from collections import Counter
-
-        cdict = Counter(x for xs in cycles for x in set(xs))
-
-        # modify weighted graph: nodes participating in many cycles get lower weight
-        for i in cdict:
-            edg = G.edges(i)
-            for el in edg:
-                if use_actual_weight_for_mod == True:
-                    G[el[0]][el[1]]["weight"] = G[el[0]][el[1]]["weight"] - cdict[i] * (
-                        G[el[0]][el[1]]["weight"] ** (1 / 2)
-                    )
-                else:
-                    G[el[0]][el[1]]["weight"] = G[el[0]][el[1]]["weight"] - cdict[i] * 5
-
-        return G
-
-    def cycle_checks(G):
-        """
-        cycle processing dictionary and degree dictionary for preferential removal (atoms which neighbours already have been removed are removed earlier), currently used in _calculate_order_of_LJ_mutations_new (via change_route_cycles)
-        ----
-        returns dictionary containing number of cycle participation (cdict) and dict containing degree of atom (degreedict)
-        """
-
-        # search cycles using networkx
-        cycles = nx.cycle_basis(G)
-
-        # alternatively, using rdkit
-        # ri = mol.GetRingInfo()
-        # cyclesrdkit = ri.AtomRings()
-
-        import collections
-        from collections import Counter
-
-        cdict = Counter(x for xs in cycles for x in set(xs))
-        # cdictrdkit = Counter(x for xs in cyclesrdkit for x in set(xs))
-
-        # add atoms with no cycle participation
-        for key in G.nodes:
-            if key not in cdict:
-                cdict[key] = 0
-
-        degreedict = G.degree()
-        degreedict = {node: val for (node, val) in degreedict}
-
-        return cdict, degreedict
-
-    def exclude_Hs_from_mutations(connected_dummy_regions: list, G: nx.Graph):
-        """
-        hydrogens are removed from the networkx-graph-representation and the list of connected dummy regions
-        ----
-        Args:
-            connected_dummy_regions: list of connected dummy regions
-            G: nx-graph of molecule
-        ----
-        returns list of connected dummy regions and networkx-graph without hydrogens
-        """
-
-        G_hydrogens = [x for x, y in G.nodes(data=True) if y["atom_type"] == "H"]
-
-        G.remove_nodes_from(G_hydrogens)
-        connected_dummy_regions_copy = connected_dummy_regions
-        for hydroindex in G_hydrogens:
-            for indexregion, region in enumerate(connected_dummy_regions):
-                if hydroindex in region:
-                    connected_dummy_regions_copy[indexregion].remove(hydroindex)
-
-        return connected_dummy_regions_copy, G
-
-    def _calculate_order_of_LJ_mutations_with_bfs(
+    def _calculate_order_of_LJ_mutations(
         self,
         connected_dummy_regions: list,
         match_terminal_atoms: dict,
@@ -673,15 +542,16 @@ class ProposeMutationRoute(object):
         exclude_Hs=True,
     ) -> list:
         """
-        bfs/djikstra-algorithm applied once for route (without iterations)
+        bfs/djikstra-algorithm applied to calculate the ordere for turning of the LJ interactions of the heavy atoms
         -----
+        most functions for theses options are imported from the helper_functions file
         cyclecheck: updates weights according to cycle participation (should always be set to True)
         ordercheck: if there is no possibility to decide between two nodes - i.e. the weight would be the exactly the same - weight updating according to preferential removal decides that the node in which neighbourhood nodes already have been removed is removed next
         exclude_Hs: if True, hydrogens are removed before the mutation algorithm is applied - necessary for usual Transformato workflow
         """
 
         if exclude_Hs == True:
-            connected_dummy_regions, G = self.exclude_Hs_from_mutations(
+            connected_dummy_regions, G = exclude_Hs_from_mutations(
                 connected_dummy_regions, G
             )
 
@@ -707,11 +577,11 @@ class ProposeMutationRoute(object):
 
                     # process cycles
                     if cyclecheck == True and ordercycles == False:
-                        G_dummy = self.cycle_checks_nx(G_dummy)
+                        G_dummy = cycle_checks_nx(G_dummy)
 
                     # process cycles and correct order (according to 'preferential removal')
                     if cyclecheck == True and ordercycles == True:
-                        cycledict, degreedict = self.cycle_checks(G_dummy)
+                        cycledict, degreedict = cycle_checks(G_dummy)
 
                     # dijkstra
                     ssource = nx.single_source_dijkstra(
@@ -735,7 +605,7 @@ class ProposeMutationRoute(object):
 
                     # sort nodes according to degree, cycle participation and removal order
                     if cyclecheck == True and ordercycles == True:
-                        nodes = self.change_route_cycles(
+                        nodes = change_route_cycles(
                             nodes, cycledict, degreedict, sortedssource, G
                         )
 
@@ -744,17 +614,6 @@ class ProposeMutationRoute(object):
                     ordered_LJ_mutations.append(nodes)
 
         return ordered_LJ_mutations
-
-    @staticmethod
-    def _calculate_order_of_LJ_mutations(
-        self,
-        connected_dummy_regions: list,
-        match_terminal_atoms: dict,
-        G: nx.Graph,
-    ) -> list:
-        return self._calculate_order_of_LJ_mutations_with_bfs(
-            connected_dummy_regions, match_terminal_atoms, G
-        )
 
     def _check_for_lp(
         self,

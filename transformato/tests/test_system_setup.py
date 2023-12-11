@@ -26,6 +26,27 @@ from transformato_testsystems.testsystems import get_testsystems_dir
 
 warnings.filterwarnings("ignore", module="parmed")
 
+def perform_generic_mutation(configuration: dict):
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+    )
+
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=1,
+    )
+
+    return i.output_files
 
 def test_read_yaml():
     """Sample test, will check ability to read yaml files"""
@@ -120,7 +141,6 @@ def test_initialize_systems(caplog):
 
 @pytest.mark.rsfe
 def test_setup_system_for_methane_common_core():
-    from transformato_testsystems.testsystems import perform_generic_mutation
 
     print(get_testsystems_dir())
 
@@ -171,7 +191,6 @@ def test_setup_system_for_toluene_common_core_with_HMR():
 
 @pytest.mark.rsfe
 def test_setup_system_for_methane_common_core_with_HMR():
-    from transformato_testsystems.testsystems import perform_generic_mutation
 
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/test-toluene-methane-rsfe-HMR.yaml",
