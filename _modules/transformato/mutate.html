@@ -98,7 +98,13 @@
 <span class="n">IPythonConsole</span><span class="o">.</span><span class="n">ipython_useSVG</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Change output to SVG</span>
 
 <span class="kn">from</span> <span class="nn">transformato.system</span> <span class="kn">import</span> <span class="n">SystemStructure</span>
-<span class="kn">from</span> <span class="nn">transformato.annihilation</span> <span class="kn">import</span> <span class="n">calculate_order_of_LJ_mutations_asfe</span>
+<span class="kn">from</span> <span class="nn">transformato.helper_functions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">calculate_order_of_LJ_mutations_asfe</span><span class="p">,</span>
+    <span class="n">cycle_checks_nx</span><span class="p">,</span>
+    <span class="n">cycle_checks</span><span class="p">,</span>
+    <span class="n">exclude_Hs_from_mutations</span><span class="p">,</span>
+    <span class="n">change_route_cycles</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -627,158 +633,9 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">lj_default_cc1</span><span class="p">,</span> <span class="n">lj_default_cc2</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ProposeMutationRoute.change_route_cycles">
-<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.change_route_cycles">[docs]</a>
-    <span class="k">def</span> <span class="nf">change_route_cycles</span><span class="p">(</span><span class="n">route</span><span class="p">,</span> <span class="n">cycledict</span><span class="p">,</span> <span class="n">degreedict</span><span class="p">,</span> <span class="n">weightdict</span><span class="p">,</span> <span class="n">G</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        preliminary mutation list is sorted using cycle and degree dictionary</span>
-<span class="sd">        currently used in _calculate_order_of_LJ_mutations_new</span>
-<span class="sd">        ----</span>
-<span class="sd">        Args:</span>
-<span class="sd">            route: original mutation route</span>
-<span class="sd">            cycledict: dict of cycle participation of atoms</span>
-<span class="sd">            degreedict: dict of  degree of atoms</span>
-<span class="sd">            weightdict: dict of  weight of atoms</span>
-<span class="sd">            G: nx-graph of molecule</span>
-<span class="sd">        ----</span>
-<span class="sd">        returns reordered array of the mutation route</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">routedict</span> <span class="o">=</span> <span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">routeweight</span> <span class="o">=</span> <span class="n">weightdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-
-            <span class="n">routecycleval</span> <span class="o">=</span> <span class="n">cycledict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">routedegreeval</span> <span class="o">=</span> <span class="n">degreedict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">route</span><span class="p">)):</span>
-                <span class="k">if</span> <span class="n">routeweight</span> <span class="o">==</span> <span class="n">weightdict</span><span class="p">[</span><span class="n">route</span><span class="p">[</span><span class="n">j</span><span class="p">]]:</span>
-                    <span class="c1"># if nodes have same weight (i.e. distance from root), the node participating in more cycles is removed later</span>
-
-                    <span class="k">if</span> <span class="n">routecycleval</span> <span class="o">&gt;</span> <span class="n">cycledict</span><span class="p">[</span><span class="n">route</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span> <span class="ow">or</span> <span class="p">(</span>
-                        <span class="n">routecycleval</span> <span class="o">==</span> <span class="n">cycledict</span><span class="p">[</span><span class="n">route</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
-                        <span class="ow">and</span> <span class="n">routedegreeval</span> <span class="o">&gt;</span> <span class="n">degreedict</span><span class="p">[</span><span class="n">route</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
-                    <span class="p">):</span>
-                        <span class="n">idx1</span> <span class="o">=</span> <span class="n">route</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                        <span class="n">idx2</span> <span class="o">=</span> <span class="n">route</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-                        <span class="n">route</span><span class="p">[</span><span class="n">idx1</span><span class="p">],</span> <span class="n">route</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span> <span class="o">=</span> <span class="n">route</span><span class="p">[</span><span class="n">idx2</span><span class="p">],</span> <span class="n">route</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span>
-                        <span class="k">continue</span>
-
-                    <span class="c1"># if nodes have same weight (i.e. distance from root) and same cycle participation number, the node which has more neighbours already removed is removed earlier</span>
-
-                    <span class="k">if</span> <span class="n">routecycleval</span> <span class="o">==</span> <span class="n">cycledict</span><span class="p">[</span><span class="n">route</span><span class="p">[</span><span class="n">j</span><span class="p">]]:</span>
-                        <span class="n">edgesi</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">routedict</span><span class="p">)</span>
-                        <span class="n">edgesj</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-
-                        <span class="n">iedgecounter</span> <span class="o">=</span> <span class="mi">0</span>
-                        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edgesi</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="p">]:</span>
-                                <span class="n">iedgecounter</span> <span class="o">=</span> <span class="n">iedgecounter</span> <span class="o">+</span> <span class="mi">1</span>
-
-                        <span class="n">jedgecounter</span> <span class="o">=</span> <span class="mi">0</span>
-                        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edgesj</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="p">]</span> <span class="ow">or</span> <span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">route</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="p">]:</span>
-                                <span class="n">jedgecounter</span> <span class="o">=</span> <span class="n">jedgecounter</span> <span class="o">+</span> <span class="mi">1</span>
-
-                        <span class="k">if</span> <span class="n">iedgecounter</span> <span class="o">&lt;</span> <span class="n">jedgecounter</span><span class="p">:</span>
-                            <span class="n">idx1</span> <span class="o">=</span> <span class="n">route</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                            <span class="n">idx2</span> <span class="o">=</span> <span class="n">route</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">route</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-                            <span class="n">route</span><span class="p">[</span><span class="n">idx1</span><span class="p">],</span> <span class="n">route</span><span class="p">[</span><span class="n">idx2</span><span class="p">]</span> <span class="o">=</span> <span class="n">route</span><span class="p">[</span><span class="n">idx2</span><span class="p">],</span> <span class="n">route</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">route</span></div>
-
-
-<div class="viewcode-block" id="ProposeMutationRoute.cycle_checks_nx">
-<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.cycle_checks_nx">[docs]</a>
-    <span class="k">def</span> <span class="nf">cycle_checks_nx</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">use_actual_weight_for_mod</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        cycle processing, can be used in _calculate_order_of_LJ_mutations_new_iter and ..._new_iter_change (default is cycle_checks_nx_v2)</span>
-<span class="sd">        --------</span>
-<span class="sd">        returns nx-graph-object with updated weights (according to cycle participation of the atom)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># search cycles using networkx</span>
-        <span class="n">cycles</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">cycle_basis</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
-
-        <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
-
-        <span class="n">cdict</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">xs</span> <span class="ow">in</span> <span class="n">cycles</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span>
-
-        <span class="c1"># modify weighted graph: nodes participating in many cycles get lower weight</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cdict</span><span class="p">:</span>
-            <span class="n">edg</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">edg</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">use_actual_weight_for_mod</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                    <span class="n">G</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">cdict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span>
-                        <span class="n">G</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">G</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s2">&quot;weight&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">cdict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span>
-
-        <span class="k">return</span> <span class="n">G</span></div>
-
-
-<div class="viewcode-block" id="ProposeMutationRoute.cycle_checks">
-<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.cycle_checks">[docs]</a>
-    <span class="k">def</span> <span class="nf">cycle_checks</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        cycle processing dictionary and degree dictionary for preferential removal (atoms which neighbours already have been removed are removed earlier), currently used in _calculate_order_of_LJ_mutations_new (via change_route_cycles)</span>
-<span class="sd">        ----</span>
-<span class="sd">        returns dictionary containing number of cycle participation (cdict) and dict containing degree of atom (degreedict)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># search cycles using networkx</span>
-        <span class="n">cycles</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">cycle_basis</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
-
-        <span class="c1"># alternatively, using rdkit</span>
-        <span class="c1"># ri = mol.GetRingInfo()</span>
-        <span class="c1"># cyclesrdkit = ri.AtomRings()</span>
-
-        <span class="kn">import</span> <span class="nn">collections</span>
-        <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
-
-        <span class="n">cdict</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">xs</span> <span class="ow">in</span> <span class="n">cycles</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span>
-        <span class="c1"># cdictrdkit = Counter(x for xs in cyclesrdkit for x in set(xs))</span>
-
-        <span class="c1"># add atoms with no cycle participation</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cdict</span><span class="p">:</span>
-                <span class="n">cdict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="n">degreedict</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">()</span>
-        <span class="n">degreedict</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">degreedict</span><span class="p">}</span>
-
-        <span class="k">return</span> <span class="n">cdict</span><span class="p">,</span> <span class="n">degreedict</span></div>
-
-
-<div class="viewcode-block" id="ProposeMutationRoute.exclude_Hs_from_mutations">
-<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute.exclude_Hs_from_mutations">[docs]</a>
-    <span class="k">def</span> <span class="nf">exclude_Hs_from_mutations</span><span class="p">(</span><span class="n">connected_dummy_regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">G</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        hydrogens are removed from the networkx-graph-representation and the list of connected dummy regions</span>
-<span class="sd">        ----</span>
-<span class="sd">        Args:</span>
-<span class="sd">            connected_dummy_regions: list of connected dummy regions</span>
-<span class="sd">            G: nx-graph of molecule</span>
-<span class="sd">        ----</span>
-<span class="sd">        returns list of connected dummy regions and networkx-graph without hydrogens</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">G_hydrogens</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">y</span><span class="p">[</span><span class="s2">&quot;atom_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">]</span>
-
-        <span class="n">G</span><span class="o">.</span><span class="n">remove_nodes_from</span><span class="p">(</span><span class="n">G_hydrogens</span><span class="p">)</span>
-        <span class="n">connected_dummy_regions_copy</span> <span class="o">=</span> <span class="n">connected_dummy_regions</span>
-        <span class="k">for</span> <span class="n">hydroindex</span> <span class="ow">in</span> <span class="n">G_hydrogens</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">indexregion</span><span class="p">,</span> <span class="n">region</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">connected_dummy_regions</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">hydroindex</span> <span class="ow">in</span> <span class="n">region</span><span class="p">:</span>
-                    <span class="n">connected_dummy_regions_copy</span><span class="p">[</span><span class="n">indexregion</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">hydroindex</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">connected_dummy_regions_copy</span><span class="p">,</span> <span class="n">G</span></div>
-
-
-<div class="viewcode-block" id="ProposeMutationRoute._calculate_order_of_LJ_mutations_with_bfs">
-<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._calculate_order_of_LJ_mutations_with_bfs">[docs]</a>
-    <span class="k">def</span> <span class="nf">_calculate_order_of_LJ_mutations_with_bfs</span><span class="p">(</span>
+<div class="viewcode-block" id="ProposeMutationRoute._calculate_order_of_LJ_mutations">
+<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._calculate_order_of_LJ_mutations">[docs]</a>
+    <span class="k">def</span> <span class="nf">_calculate_order_of_LJ_mutations</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">connected_dummy_regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">match_terminal_atoms</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
@@ -788,15 +645,16 @@
         <span class="n">exclude_Hs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        bfs/djikstra-algorithm applied once for route (without iterations)</span>
+<span class="sd">        bfs/djikstra-algorithm applied to calculate the ordere for turning of the LJ interactions of the heavy atoms</span>
 <span class="sd">        -----</span>
+<span class="sd">        most functions for theses options are imported from the helper_functions file</span>
 <span class="sd">        cyclecheck: updates weights according to cycle participation (should always be set to True)</span>
 <span class="sd">        ordercheck: if there is no possibility to decide between two nodes - i.e. the weight would be the exactly the same - weight updating according to preferential removal decides that the node in which neighbourhood nodes already have been removed is removed next</span>
 <span class="sd">        exclude_Hs: if True, hydrogens are removed before the mutation algorithm is applied - necessary for usual Transformato workflow</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">exclude_Hs</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">connected_dummy_regions</span><span class="p">,</span> <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude_Hs_from_mutations</span><span class="p">(</span>
+            <span class="n">connected_dummy_regions</span><span class="p">,</span> <span class="n">G</span> <span class="o">=</span> <span class="n">exclude_Hs_from_mutations</span><span class="p">(</span>
                 <span class="n">connected_dummy_regions</span><span class="p">,</span> <span class="n">G</span>
             <span class="p">)</span>
 
@@ -822,11 +680,11 @@
 
                     <span class="c1"># process cycles</span>
                     <span class="k">if</span> <span class="n">cyclecheck</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">ordercycles</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-                        <span class="n">G_dummy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_checks_nx</span><span class="p">(</span><span class="n">G_dummy</span><span class="p">)</span>
+                        <span class="n">G_dummy</span> <span class="o">=</span> <span class="n">cycle_checks_nx</span><span class="p">(</span><span class="n">G_dummy</span><span class="p">)</span>
 
                     <span class="c1"># process cycles and correct order (according to &#39;preferential removal&#39;)</span>
                     <span class="k">if</span> <span class="n">cyclecheck</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">ordercycles</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="n">cycledict</span><span class="p">,</span> <span class="n">degreedict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycle_checks</span><span class="p">(</span><span class="n">G_dummy</span><span class="p">)</span>
+                        <span class="n">cycledict</span><span class="p">,</span> <span class="n">degreedict</span> <span class="o">=</span> <span class="n">cycle_checks</span><span class="p">(</span><span class="n">G_dummy</span><span class="p">)</span>
 
                     <span class="c1"># dijkstra</span>
                     <span class="n">ssource</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">single_source_dijkstra</span><span class="p">(</span>
@@ -850,7 +708,7 @@
 
                     <span class="c1"># sort nodes according to degree, cycle participation and removal order</span>
                     <span class="k">if</span> <span class="n">cyclecheck</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">ordercycles</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_route_cycles</span><span class="p">(</span>
+                        <span class="n">nodes</span> <span class="o">=</span> <span class="n">change_route_cycles</span><span class="p">(</span>
                             <span class="n">nodes</span><span class="p">,</span> <span class="n">cycledict</span><span class="p">,</span> <span class="n">degreedict</span><span class="p">,</span> <span class="n">sortedssource</span><span class="p">,</span> <span class="n">G</span>
                         <span class="p">)</span>
 
@@ -860,18 +718,6 @@
 
         <span class="k">return</span> <span class="n">ordered_LJ_mutations</span></div>
 
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_calculate_order_of_LJ_mutations</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">connected_dummy_regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-        <span class="n">match_terminal_atoms</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-        <span class="n">G</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_order_of_LJ_mutations_with_bfs</span><span class="p">(</span>
-            <span class="n">connected_dummy_regions</span><span class="p">,</span> <span class="n">match_terminal_atoms</span><span class="p">,</span> <span class="n">G</span>
-        <span class="p">)</span>
 
 <div class="viewcode-block" id="ProposeMutationRoute._check_for_lp">
 <a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._check_for_lp">[docs]</a>

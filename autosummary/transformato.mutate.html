@@ -446,11 +446,12 @@ objects to perform the mutation on the psf objects.
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._calculate_order_of_LJ_mutations_with_bfs">
-<span class="sig-name descname"><span class="pre">_calculate_order_of_LJ_mutations_with_bfs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connected_dummy_regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_terminal_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cyclecheck</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordercycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_Hs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._calculate_order_of_LJ_mutations_with_bfs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._calculate_order_of_LJ_mutations_with_bfs" title="Link to this definition"></a></dt>
-<dd><section id="bfs-djikstra-algorithm-applied-once-for-route-without-iterations">
-<h3>bfs/djikstra-algorithm applied once for route (without iterations)<a class="headerlink" href="#bfs-djikstra-algorithm-applied-once-for-route-without-iterations" title="Link to this heading"></a></h3>
-<p>cyclecheck: updates weights according to cycle participation (should always be set to True)
+<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute._calculate_order_of_LJ_mutations">
+<span class="sig-name descname"><span class="pre">_calculate_order_of_LJ_mutations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connected_dummy_regions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">match_terminal_atoms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cyclecheck</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ordercycles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_Hs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute._calculate_order_of_LJ_mutations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute._calculate_order_of_LJ_mutations" title="Link to this definition"></a></dt>
+<dd><section id="bfs-djikstra-algorithm-applied-to-calculate-the-ordere-for-turning-of-the-lj-interactions-of-the-heavy-atoms">
+<h3>bfs/djikstra-algorithm applied to calculate the ordere for turning of the LJ interactions of the heavy atoms<a class="headerlink" href="#bfs-djikstra-algorithm-applied-to-calculate-the-ordere-for-turning-of-the-lj-interactions-of-the-heavy-atoms" title="Link to this heading"></a></h3>
+<p>most functions for theses options are imported from the helper_functions file
+cyclecheck: updates weights according to cycle participation (should always be set to True)
 ordercheck: if there is no possibility to decide between two nodes - i.e. the weight would be the exactly the same - weight updating according to preferential removal decides that the node in which neighbourhood nodes already have been removed is removed next
 exclude_Hs: if True, hydrogens are removed before the mutation algorithm is applied - necessary for usual Transformato workflow</p>
 </section>
@@ -656,61 +657,6 @@ Show common core.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>idx_list</strong> (<em>list</em>) – Array of atom idxs to add</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.change_route_cycles">
-<span class="sig-name descname"><span class="pre">change_route_cycles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cycledict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degreedict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weightdict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.change_route_cycles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.change_route_cycles" title="Link to this definition"></a></dt>
-<dd><p>preliminary mutation list is sorted using cycle and degree dictionary
-currently used in _calculate_order_of_LJ_mutations_new
-—-
-:param route: original mutation route
-:param cycledict: dict of cycle participation of atoms
-:param degreedict: dict of  degree of atoms
-:param weightdict: dict of  weight of atoms
-:param G: nx-graph of molecule</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.cycle_checks">
-<span class="sig-name descname"><span class="pre">cycle_checks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.cycle_checks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.cycle_checks" title="Link to this definition"></a></dt>
-<dd><section id="cycle-processing-dictionary-and-degree-dictionary-for-preferential-removal-atoms-which-neighbours-already-have-been-removed-are-removed-earlier-currently-used-in-calculate-order-of-lj-mutations-new-via-change-route-cycles">
-<h3>cycle processing dictionary and degree dictionary for preferential removal (atoms which neighbours already have been removed are removed earlier), currently used in _calculate_order_of_LJ_mutations_new (via change_route_cycles)<a class="headerlink" href="#cycle-processing-dictionary-and-degree-dictionary-for-preferential-removal-atoms-which-neighbours-already-have-been-removed-are-removed-earlier-currently-used-in-calculate-order-of-lj-mutations-new-via-change-route-cycles" title="Link to this heading"></a></h3>
-<p>returns dictionary containing number of cycle participation (cdict) and dict containing degree of atom (degreedict)</p>
-</section>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.cycle_checks_nx">
-<span class="sig-name descname"><span class="pre">cycle_checks_nx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_actual_weight_for_mod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.cycle_checks_nx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.cycle_checks_nx" title="Link to this definition"></a></dt>
-<dd><section id="cycle-processing-can-be-used-in-calculate-order-of-lj-mutations-new-iter-and-new-iter-change-default-is-cycle-checks-nx-v2">
-<h3>cycle processing, can be used in _calculate_order_of_LJ_mutations_new_iter and …_new_iter_change (default is cycle_checks_nx_v2)<a class="headerlink" href="#cycle-processing-can-be-used-in-calculate-order-of-lj-mutations-new-iter-and-new-iter-change-default-is-cycle-checks-nx-v2" title="Link to this heading"></a></h3>
-<p>returns nx-graph-object with updated weights (according to cycle participation of the atom)</p>
-</section>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="transformato.mutate.ProposeMutationRoute.exclude_Hs_from_mutations">
-<span class="sig-name descname"><span class="pre">exclude_Hs_from_mutations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/mutate.html#ProposeMutationRoute.exclude_Hs_from_mutations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.mutate.ProposeMutationRoute.exclude_Hs_from_mutations" title="Link to this definition"></a></dt>
-<dd><section id="hydrogens-are-removed-from-the-networkx-graph-representation-and-the-list-of-connected-dummy-regions">
-<h3>hydrogens are removed from the networkx-graph-representation and the list of connected dummy regions<a class="headerlink" href="#hydrogens-are-removed-from-the-networkx-graph-representation-and-the-list-of-connected-dummy-regions" title="Link to this heading"></a></h3>
-<dl class="field-list simple">
-<dt class="field-odd">param connected_dummy_regions<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list of connected dummy regions</p>
-</dd>
-<dt class="field-even">param G<span class="colon">:</span></dt>
-<dd class="field-even"><p>nx-graph of molecule</p>
-</dd>
-</dl>
-</section>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>connected_dummy_regions</strong> (<em>list</em>) – </p></li>
-<li><p><strong>G</strong> (<em>Graph</em>) – </p></li>
-</ul>
 </dd>
 </dl>
 </dd></dl>
