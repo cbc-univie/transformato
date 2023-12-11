@@ -34,7 +34,7 @@ jobs:
       matrix:
         # os: [macOS-latest, ubuntu-latest]
         os: [ubuntu-latest]
-        python-version: [3.11]
+        python-version: [3.9, 3.11]
         include:
           - os: ubuntu-latest
             label: linux-64
