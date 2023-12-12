@@ -37,7 +37,7 @@ def test_reduced_energy():
 
 def test_convert_to_kT():
     kB = unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
-    beta = 1.0 / (kB * T)
+    beta = 1.0 / (kB * temperature)
 
     e = -41264.39524669979 * unit.kilojoule_per_mole
     rE = e * beta
