@@ -19,7 +19,6 @@ this = sys.modules[__name__]
 this.NUM_PROC = 1
 
 
-
 #####################################
 # config for tets
 test_platform_openMM = "GPU"

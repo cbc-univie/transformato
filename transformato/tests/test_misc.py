@@ -43,6 +43,7 @@ def test_convert_to_kT():
     rE = e * beta
     assert np.isclose(rE, -16371.30301422)
 
+
 def test_scaling():
     for i in np.linspace(1, 0, 11):
         f = max((1 - ((1 - i) * 2)), 0.0)

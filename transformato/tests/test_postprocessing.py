@@ -20,6 +20,7 @@ from transformato_testsystems.testsystems import (
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
+
 ###########################################
 # 2OJ9-tautomer system
 ###########################################
@@ -308,7 +309,6 @@ def test_2oj9_postprocessing_with_different_engines():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_2oj9_postprocessing_with_openMM():
-
     conf = f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
