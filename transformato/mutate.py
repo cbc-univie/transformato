@@ -532,14 +532,14 @@ class ProposeMutationRoute(object):
 
         return (lj_default_cc1, lj_default_cc2)
 
+    @staticmethod
     def _calculate_order_of_LJ_mutations(
-        self,
         connected_dummy_regions: list,
         match_terminal_atoms: dict,
         G: nx.Graph,
         cyclecheck=True,
         ordercycles=True,
-        exclude_Hs=True,
+        exclude_Hs=False,
     ) -> list:
         """
         bfs/djikstra-algorithm applied to calculate the ordere for turning of the LJ interactions of the heavy atoms
@@ -609,8 +609,8 @@ class ProposeMutationRoute(object):
                             nodes, cycledict, degreedict, sortedssource, G
                         )
 
-                    logger.info("Final mutation route:")
-                    logger.info(nodes)
+                    print("Final mutation route:")
+                    print(nodes)
                     ordered_LJ_mutations.append(nodes)
 
         return ordered_LJ_mutations
