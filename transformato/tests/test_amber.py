@@ -61,19 +61,17 @@ def test_full_amber_test():
     )
 
 
-@pytest.mark.rbfe
-@pytest.mark.charmm
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_asfe_amber_test():
-    molecule = "ethane"
+    molecule = "ethanol"
 
     configuration = load_config_yaml(
         config=f"/site/raid3/johannes/amber_tests/data/config/{molecule}_asfe.yaml",
         input_dir="/site/raid3/johannes/amber_tests/data/",
-        output_dir="/site/raid3/johannes/amber_tests/",
+        output_dir="/site/raid3/johannes/amber_tests/ethanol2/",
     )
 
     s1 = SystemStructure(configuration, "structure1")
