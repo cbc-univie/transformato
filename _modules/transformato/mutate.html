@@ -98,13 +98,7 @@
 <span class="n">IPythonConsole</span><span class="o">.</span><span class="n">ipython_useSVG</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Change output to SVG</span>
 
 <span class="kn">from</span> <span class="nn">transformato.system</span> <span class="kn">import</span> <span class="n">SystemStructure</span>
-<span class="kn">from</span> <span class="nn">transformato.helper_functions</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">calculate_order_of_LJ_mutations_asfe</span><span class="p">,</span>
-    <span class="n">cycle_checks_nx</span><span class="p">,</span>
-    <span class="n">cycle_checks</span><span class="p">,</span>
-    <span class="n">exclude_Hs_from_mutations</span><span class="p">,</span>
-    <span class="n">change_route_cycles</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">transformato.annihilation</span> <span class="kn">import</span> <span class="n">calculate_order_of_LJ_mutations_asfe</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -633,91 +627,49 @@
 
         <span class="k">return</span> <span class="p">(</span><span class="n">lj_default_cc1</span><span class="p">,</span> <span class="n">lj_default_cc2</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ProposeMutationRoute._calculate_order_of_LJ_mutations">
-<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._calculate_order_of_LJ_mutations">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_calculate_order_of_LJ_mutations</span><span class="p">(</span>
         <span class="n">connected_dummy_regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">match_terminal_atoms</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">G</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span>
-        <span class="n">cyclecheck</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">ordercycles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">exclude_Hs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        bfs/djikstra-algorithm applied to calculate the ordere for turning of the LJ interactions of the heavy atoms</span>
-<span class="sd">        -----</span>
-<span class="sd">        most functions for theses options are imported from the helper_functions file</span>
-<span class="sd">        cyclecheck: updates weights according to cycle participation (should always be set to True)</span>
-<span class="sd">        ordercheck: if there is no possibility to decide between two nodes - i.e. the weight would be the exactly the same - weight updating according to preferential removal decides that the node in which neighbourhood nodes already have been removed is removed next</span>
-<span class="sd">        exclude_Hs: if True, hydrogens are removed before the mutation algorithm is applied - necessary for usual Transformato workflow</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="n">exclude_Hs</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">connected_dummy_regions</span><span class="p">,</span> <span class="n">G</span> <span class="o">=</span> <span class="n">exclude_Hs_from_mutations</span><span class="p">(</span>
-                <span class="n">connected_dummy_regions</span><span class="p">,</span> <span class="n">G</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">tf_routes.routes</span> <span class="kn">import</span> <span class="p">(</span>
+                <span class="n">_calculate_order_of_LJ_mutations_new</span> <span class="k">as</span> <span class="n">_calculate_order_of_LJ_mutations_with_bfs</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="n">ordered_LJ_mutations</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">return</span> <span class="n">_calculate_order_of_LJ_mutations_with_bfs</span><span class="p">(</span>
+                <span class="n">connected_dummy_regions</span><span class="p">,</span> <span class="n">match_terminal_atoms</span><span class="p">,</span> <span class="n">G</span>
+            <span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">real_atom</span> <span class="ow">in</span> <span class="n">match_terminal_atoms</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">dummy_atom</span> <span class="ow">in</span> <span class="n">match_terminal_atoms</span><span class="p">[</span><span class="n">real_atom</span><span class="p">]:</span>
-                <span class="k">for</span> <span class="n">connected_dummy_region</span> <span class="ow">in</span> <span class="n">connected_dummy_regions</span><span class="p">:</span>
-                    <span class="c1"># stop at connected dummy region with specific dummy_atom in it</span>
-                    <span class="k">if</span> <span class="n">dummy_atom</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connected_dummy_region</span><span class="p">:</span>
-                        <span class="k">continue</span>
+        <span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+            <span class="n">ordered_LJ_mutations</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">real_atom</span> <span class="ow">in</span> <span class="n">match_terminal_atoms</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">dummy_atom</span> <span class="ow">in</span> <span class="n">match_terminal_atoms</span><span class="p">[</span><span class="n">real_atom</span><span class="p">]:</span>
+                    <span class="k">for</span> <span class="n">connected_dummy_region</span> <span class="ow">in</span> <span class="n">connected_dummy_regions</span><span class="p">:</span>
+                        <span class="c1"># stop at connected dummy region with specific dummy_atom in it</span>
+                        <span class="k">if</span> <span class="n">dummy_atom</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connected_dummy_region</span><span class="p">:</span>
+                            <span class="k">continue</span>
 
-                    <span class="n">G_dummy</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="c1"># delete all nodes not in dummy region</span>
-                    <span class="n">remove_nodes</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">node</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span> <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connected_dummy_region</span>
-                    <span class="p">]</span>
-                    <span class="k">for</span> <span class="n">remove_node</span> <span class="ow">in</span> <span class="n">remove_nodes</span><span class="p">:</span>
-                        <span class="n">G_dummy</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">remove_node</span><span class="p">)</span>
+                        <span class="n">G_dummy</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                        <span class="c1"># delete all nodes not in dummy region</span>
+                        <span class="n">remove_nodes</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="n">node</span>
+                            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">()</span>
+                            <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connected_dummy_region</span>
+                        <span class="p">]</span>
+                        <span class="k">for</span> <span class="n">remove_node</span> <span class="ow">in</span> <span class="n">remove_nodes</span><span class="p">:</span>
+                            <span class="n">G_dummy</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">remove_node</span><span class="p">)</span>
 
-                    <span class="c1"># root is the dummy atom that connects the real region with the dummy region</span>
-                    <span class="n">root</span> <span class="o">=</span> <span class="n">dummy_atom</span>
+                        <span class="c1"># root is the dummy atom that connects the real region with the dummy region</span>
+                        <span class="n">root</span> <span class="o">=</span> <span class="n">dummy_atom</span>
 
-                    <span class="c1"># process cycles</span>
-                    <span class="k">if</span> <span class="n">cyclecheck</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">ordercycles</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-                        <span class="n">G_dummy</span> <span class="o">=</span> <span class="n">cycle_checks_nx</span><span class="p">(</span><span class="n">G_dummy</span><span class="p">)</span>
+                        <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">dfs_edges</span><span class="p">(</span><span class="n">G_dummy</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">root</span><span class="p">))</span>
+                        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">root</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">]</span>
+                        <span class="n">nodes</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># NOTE: reverse the mutation</span>
+                        <span class="n">ordered_LJ_mutations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
 
-                    <span class="c1"># process cycles and correct order (according to &#39;preferential removal&#39;)</span>
-                    <span class="k">if</span> <span class="n">cyclecheck</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">ordercycles</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="n">cycledict</span><span class="p">,</span> <span class="n">degreedict</span> <span class="o">=</span> <span class="n">cycle_checks</span><span class="p">(</span><span class="n">G_dummy</span><span class="p">)</span>
-
-                    <span class="c1"># dijkstra</span>
-                    <span class="n">ssource</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">single_source_dijkstra</span><span class="p">(</span>
-                        <span class="n">G_dummy</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span>
-                    <span class="p">)</span>
-                    <span class="c1"># result of dijkstra algorithm is sorted</span>
-                    <span class="n">sortedssource</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
-                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ssource</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                    <span class="p">}</span>
-
-                    <span class="c1"># get keys of sorted dict</span>
-                    <span class="n">sortedssource_edges</span> <span class="o">=</span> <span class="n">sortedssource</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-
-                    <span class="n">sortedssource_edges_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sortedssource_edges</span><span class="p">)</span>
-                    <span class="c1"># sorted list contains the mutation route</span>
-                    <span class="n">nodes</span> <span class="o">=</span> <span class="n">sortedssource_edges_list</span>
-
-                    <span class="c1"># order has to be reversed - the most distant atom is the first to be removed</span>
-                    <span class="n">nodes</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-
-                    <span class="c1"># sort nodes according to degree, cycle participation and removal order</span>
-                    <span class="k">if</span> <span class="n">cyclecheck</span> <span class="o">==</span> <span class="kc">True</span> <span class="ow">and</span> <span class="n">ordercycles</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="n">nodes</span> <span class="o">=</span> <span class="n">change_route_cycles</span><span class="p">(</span>
-                            <span class="n">nodes</span><span class="p">,</span> <span class="n">cycledict</span><span class="p">,</span> <span class="n">degreedict</span><span class="p">,</span> <span class="n">sortedssource</span><span class="p">,</span> <span class="n">G</span>
-                        <span class="p">)</span>
-
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Final mutation route:&quot;</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-                    <span class="n">ordered_LJ_mutations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">ordered_LJ_mutations</span></div>
-
+            <span class="k">return</span> <span class="n">ordered_LJ_mutations</span>
 
 <div class="viewcode-block" id="ProposeMutationRoute._check_for_lp">
 <a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.ProposeMutationRoute._check_for_lp">[docs]</a>
