@@ -311,12 +311,8 @@ class FreeEnergyCalculator(object):
             nr_of_snapshots = N_k[env][d] + N_k[env][d + 1]
             u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
             m = mbar.MBAR(u_kn_, N_k[env][d : d + 2])
-            logger.debug(
-                m.compute_free_energy_differences()["Delta_f"][0, 1]
-            )
-            logger.debug(
-                m.compute_free_energy_differences()["dDelta_f"][0, 1]
-            )
+            logger.debug(m.compute_free_energy_differences()["Delta_f"][0, 1])
+            logger.debug(m.compute_free_energy_differences()["dDelta_f"][0, 1])
 
             start += N_k[env][d]
 
