@@ -19,7 +19,7 @@ conda install transformato -c conda-forge
 
 ## Usage
 
-For more information on how to use transformato please visit the [documentation](https://wiederm.github.io/transformato/)
+For more information on how to use transformato please visit the [documentation](https://cbc-univie.github.io/transformato/)
 
 ## Maintainers
 
