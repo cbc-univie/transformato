@@ -34,7 +34,7 @@ jobs:
       matrix:
         # os: [macOS-latest, ubuntu-latest]
         os: [ubuntu-latest]
-        python-version: [3.9]
+        python-version: [3.11]
         include:
           - os: ubuntu-latest
             label: linux-64
@@ -49,7 +49,7 @@ jobs:
           #  miniforge-variant: Mambaforge-pypy3
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.1.1
 
     - name: Additional info about the build
       shell: bash
@@ -63,7 +63,7 @@ jobs:
       
     - name: Make Cache (no worflow_dispatch)
       if: ${{ github.event_name != 'workflow_dispatch' }}
-      uses: actions/cache@v3
+      uses: actions/cache@v3.3.2
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
         # Increase the last number (0) to reset cache manually
@@ -72,7 +72,7 @@ jobs:
       
     - name: Make Cache (worflow_dispatch)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      uses: actions/cache@v2
+      uses: actions/cache@v3.3.2
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
         key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep_env.yaml') }}-${{ env.DATE }}-${{ inputs.CACHE_NUMBER }}
@@ -80,7 +80,7 @@ jobs:
 
 
     # More info on options: https://github.com/conda-incubator/setup-miniconda
-    - uses: conda-incubator/setup-miniconda@v2
+    - uses: conda-incubator/setup-miniconda@v3.0.1
       with:
         python-version: ${{ matrix.python-version }}
         condarc-file: ${{ matrix.condarc-file }}
@@ -124,7 +124,7 @@ jobs:
         pytest -v --cov=transformato --cov-report=xml --color=yes transformato/tests/
 
     - name: CodeCov
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v3.1.4
       with:
         file: ./coverage.xml
         flags: unittests

@@ -6,9 +6,6 @@ import os
 import numpy as np
 import pytest
 import logging
-from transformato.constants import (
-    initialize_NUM_PROC,
-)
 from transformato.utils import postprocessing
 
 # read in specific topology with parameters
@@ -22,8 +19,6 @@ from transformato_testsystems.testsystems import (
 )
 from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
-
-# rbfe_test_systemes_generated = os.path.isdir("data/2OJ9-original-2OJ9-tautomer-rbfe")
 
 
 ###########################################
@@ -314,8 +309,6 @@ def test_2oj9_postprocessing_with_different_engines():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_2oj9_postprocessing_with_openMM():
-    initialize_NUM_PROC(1)
-
     conf = f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rsfe.yaml"
     configuration = load_config_yaml(
         config=conf, input_dir="data/", output_dir="data"
@@ -598,7 +591,7 @@ def test_acetylacetone_postprocessing_different_engines():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_acetylacetone_calculate_rsfe_with_different_engines_only_vacuum():
-    from ..constants import kT
+    from transformato.helper_functions import kT
     from openmm import unit
 
     conf = f"{get_testsystems_dir()}/config/test-acetylacetone-tautomer-rsfe.yaml"

@@ -21,7 +21,7 @@ from openmm import Platform, XmlSerializer, vec3
 from openmm.app import CharmmPsfFile, Simulation, AmberPrmtopFile
 from tqdm import tqdm
 
-from transformato.constants import temperature
+from transformato.helper_functions import temperature
 from transformato.utils import get_structure_name, isnotebook
 
 logger = logging.getLogger(__name__)

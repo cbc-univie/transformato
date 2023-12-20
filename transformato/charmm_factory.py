@@ -1,5 +1,5 @@
 import datetime
-from transformato.constants import temperature, charmm_gpu
+from transformato.helper_functions import temperature, charmm_gpu
 from transformato.utils import check_switching_function
 from openmm import unit
 import os

@@ -193,8 +193,6 @@ def test_generate_alchemical_path_for_neopentane_common_core():
 
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_methanol_common_core():
-    from transformato_testsystems.testsystems import perform_generic_mutation
-
     configuration = load_config_yaml(
         config=f"{get_testsystems_dir()}/config/test-methanol-methane-rsfe.yaml",
         input_dir=get_testsystems_dir(),
