@@ -42,7 +42,6 @@ test:
     - transformato
     - transformato.mutate
     - transformato.analysis
-    - transformato.constants
     - transformato.restraints
     - transformato.state
     - transformato.system

@@ -10,7 +10,7 @@ import shutil
 from transformato import load_config_yaml
 from transformato.tests.paths import get_test_output_dir
 from transformato.utils import run_simulation
-from transformato.constants import change_platform_to_test_platform
+from transformato.helper_functions import change_platform_to_test_platform
 
 from transformato_testsystems.testsystems import get_testsystems_dir
 
@@ -225,7 +225,6 @@ def test_run_2OJ9_tautomer_pair_with_openMM(caplog):
 )
 def test_run_2OJ9_tautomer_pair_with_CHARMM(caplog):
     caplog.set_level(logging.WARNING)
-    from transformato.constants import change_platform_to
     from .test_mutation import setup_2OJ9_tautomer_pair_rsfe
 
     workdir = get_test_output_dir()

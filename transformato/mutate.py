@@ -17,7 +17,13 @@ IPythonConsole.molSize = (900, 900)  # Change image size
 IPythonConsole.ipython_useSVG = True  # Change output to SVG
 
 from transformato.system import SystemStructure
-from transformato.annihilation import calculate_order_of_LJ_mutations_asfe
+from transformato.helper_functions import (
+    calculate_order_of_LJ_mutations_asfe,
+    cycle_checks_nx,
+    cycle_checks,
+    exclude_Hs_from_mutations,
+    change_route_cycles,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -531,44 +537,83 @@ class ProposeMutationRoute(object):
         connected_dummy_regions: list,
         match_terminal_atoms: dict,
         G: nx.Graph,
+        cyclecheck=True,
+        ordercycles=True,
+        exclude_Hs=False,
     ) -> list:
-        try:
-            from tf_routes.routes import (
-                _calculate_order_of_LJ_mutations_new as _calculate_order_of_LJ_mutations_with_bfs,
+        """
+        bfs/djikstra-algorithm applied to calculate the ordere for turning of the LJ interactions of the heavy atoms
+        -----
+        most functions for theses options are imported from the helper_functions file
+        cyclecheck: updates weights according to cycle participation (should always be set to True)
+        ordercheck: if there is no possibility to decide between two nodes - i.e. the weight would be the exactly the same - weight updating according to preferential removal decides that the node in which neighbourhood nodes already have been removed is removed next
+        exclude_Hs: if True, hydrogens are removed before the mutation algorithm is applied - necessary for usual Transformato workflow
+        """
+
+        if exclude_Hs == True:
+            connected_dummy_regions, G = exclude_Hs_from_mutations(
+                connected_dummy_regions, G
             )
 
-            return _calculate_order_of_LJ_mutations_with_bfs(
-                connected_dummy_regions, match_terminal_atoms, G
-            )
+        ordered_LJ_mutations = []
 
-        except ModuleNotFoundError:
-            ordered_LJ_mutations = []
-            for real_atom in match_terminal_atoms:
-                for dummy_atom in match_terminal_atoms[real_atom]:
-                    for connected_dummy_region in connected_dummy_regions:
-                        # stop at connected dummy region with specific dummy_atom in it
-                        if dummy_atom not in connected_dummy_region:
-                            continue
+        for real_atom in match_terminal_atoms:
+            for dummy_atom in match_terminal_atoms[real_atom]:
+                for connected_dummy_region in connected_dummy_regions:
+                    # stop at connected dummy region with specific dummy_atom in it
+                    if dummy_atom not in connected_dummy_region:
+                        continue
 
-                        G_dummy = G.copy()
-                        # delete all nodes not in dummy region
-                        remove_nodes = [
-                            node
-                            for node in G.nodes()
-                            if node not in connected_dummy_region
-                        ]
-                        for remove_node in remove_nodes:
-                            G_dummy.remove_node(remove_node)
+                    G_dummy = G.copy()
+                    # delete all nodes not in dummy region
+                    remove_nodes = [
+                        node for node in G.nodes() if node not in connected_dummy_region
+                    ]
+                    for remove_node in remove_nodes:
+                        G_dummy.remove_node(remove_node)
 
-                        # root is the dummy atom that connects the real region with the dummy region
-                        root = dummy_atom
+                    # root is the dummy atom that connects the real region with the dummy region
+                    root = dummy_atom
 
-                        edges = list(nx.dfs_edges(G_dummy, source=root))
-                        nodes = [root] + [v for u, v in edges]
-                        nodes.reverse()  # NOTE: reverse the mutation
-                        ordered_LJ_mutations.append(nodes)
+                    # process cycles
+                    if cyclecheck == True and ordercycles == False:
+                        G_dummy = cycle_checks_nx(G_dummy)
 
-            return ordered_LJ_mutations
+                    # process cycles and correct order (according to 'preferential removal')
+                    if cyclecheck == True and ordercycles == True:
+                        cycledict, degreedict = cycle_checks(G_dummy)
+
+                    # dijkstra
+                    ssource = nx.single_source_dijkstra(
+                        G_dummy, source=root, weight="weight"
+                    )
+                    # result of dijkstra algorithm is sorted
+                    sortedssource = {
+                        k: v
+                        for k, v in sorted(ssource[0].items(), key=lambda item: item[1])
+                    }
+
+                    # get keys of sorted dict
+                    sortedssource_edges = sortedssource.keys()
+
+                    sortedssource_edges_list = list(sortedssource_edges)
+                    # sorted list contains the mutation route
+                    nodes = sortedssource_edges_list
+
+                    # order has to be reversed - the most distant atom is the first to be removed
+                    nodes.reverse()
+
+                    # sort nodes according to degree, cycle participation and removal order
+                    if cyclecheck == True and ordercycles == True:
+                        nodes = change_route_cycles(
+                            nodes, cycledict, degreedict, sortedssource, G
+                        )
+
+                    print("Final mutation route:")
+                    print(nodes)
+                    ordered_LJ_mutations.append(nodes)
+
+        return ordered_LJ_mutations
 
     def _check_for_lp(
         self,
