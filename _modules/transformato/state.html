@@ -178,50 +178,6 @@
         <span class="n">fin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="n">fout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<div class="viewcode-block" id="IntermediateStateFactory._write_amber_files">
-<a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory._write_amber_files">[docs]</a>
-    <span class="k">def</span> <span class="nf">_write_amber_files</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">,</span> <span class="n">output_file_base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tlc</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Write a parm7 and rst7 file for each intermediate step, including information about the dummy atoms</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;waterbox&quot;</span><span class="p">:</span>
-            <span class="n">psf</span><span class="o">.</span><span class="n">write_parm</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.parm7&quot;</span><span class="p">)</span>
-            <span class="n">psf</span><span class="o">.</span><span class="n">write_rst7</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.rst7&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
-            <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">write_parm</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.parm7&quot;</span><span class="p">)</span>
-            <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">write_rst7</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.rst7&quot;</span><span class="p">)</span>
-            <span class="c1">### This is only necessary, because we create the parm7 and rst7 by slicing the corresponding waterbox</span>
-            <span class="c1">### In this case there is one flag left which tells openmm when reading in the parm7 file, that there is</span>
-            <span class="c1">### a box (PBC). For that reason we have to manually set this flag to False (0).</span>
-            <span class="n">lines_left</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.parm7&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">_temp.parm7&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span>
-                <span class="p">)</span> <span class="k">as</span> <span class="n">tempFile</span><span class="p">:</span>
-                    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%F</span><span class="s2">LAG POINTERS&quot;</span><span class="p">):</span>
-                            <span class="n">lines_left</span> <span class="o">=</span> <span class="mi">6</span>
-                        <span class="k">if</span> <span class="n">lines_left</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                            <span class="n">lines_left</span> <span class="o">-=</span> <span class="mi">1</span>
-                        <span class="k">if</span> <span class="n">lines_left</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">newLine</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="mi">63</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;0&quot;</span> <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">64</span><span class="p">:]</span>
-                            <span class="k">assert</span> <span class="p">(</span>
-                                <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span>
-                            <span class="p">)</span>  <span class="c1"># in this position it is usually 1 indicating a box, if we change it to 0, openmm thinks there is no box (see: https://ambermd.org/FileFormats.php#topo.cntrl)</span>
-                            <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">newLine</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">tempFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-
-            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">tempFile</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Environment </span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span></div>
-
-
 <div class="viewcode-block" id="IntermediateStateFactory.write_state">
 <a class="viewcode-back" href="../../autosummary/transformato.state.html#transformato.state.IntermediateStateFactory.write_state">[docs]</a>
     <span class="k">def</span> <span class="nf">write_state</span><span class="p">(</span>
@@ -255,8 +211,7 @@
             <span class="k">for</span> <span class="n">mutation_type</span> <span class="ow">in</span> <span class="n">mutation_conf</span><span class="p">:</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">common_core_transformation</span> <span class="o">&lt;</span> <span class="mf">1.0</span>
-                <span class="p">):</span>  <span class="c1"># NOTE: THis is inconsistent -- the mutatino_type is the actual mutation in this case</span>
-                    <span class="c1"># This happens only for one ligand and starts the process of changing cc1 into cc2</span>
+                <span class="p">):</span>  <span class="c1"># NOTE: THis is inconsisten -- the mutatino_type is the actual mutation in this case</span>
                     <span class="n">mutation_type</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span>
                         <span class="n">psf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span>
                         <span class="n">lambda_value</span><span class="o">=</span><span class="n">common_core_transformation</span><span class="p">,</span>
@@ -271,6 +226,7 @@
                         <span class="n">atoms_to_be_mutated</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="p">,</span>
                         <span class="n">dummy_region</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">dummy_region</span><span class="p">,</span>
                     <span class="p">)</span>
+
                     <span class="n">mutator</span><span class="o">.</span><span class="n">mutate</span><span class="p">(</span>
                         <span class="n">psf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span>
                         <span class="n">lambda_value_electrostatic</span><span class="o">=</span><span class="n">lambda_value_electrostatic</span><span class="p">,</span>
@@ -278,24 +234,10 @@
                         <span class="n">vdw_atom_idx</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">vdw_atom_idx</span><span class="p">,</span>
                         <span class="n">steric_mutation_to_default</span><span class="o">=</span><span class="n">mutation_type</span><span class="o">.</span><span class="n">steric_mutation_to_default</span><span class="p">,</span>
                     <span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;amber&quot;</span><span class="p">:</span>
-                <span class="c1"># needed for each environment</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_write_amber_files</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">,</span> <span class="n">env</span>
-                <span class="p">)</span>
-            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;charmm&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_write_psf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;charmm&quot;</span><span class="p">:</span>
-            <span class="c1"># needed only once per intermediate state</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_write_rtf_file</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_write_prm_file</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_write_toppar_str</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_psf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_rtf_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_prm_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">],</span> <span class="n">output_file_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_toppar_str</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_copy_files</span><span class="p">(</span><span class="n">output_file_base</span><span class="p">)</span>
 
         <span class="c1"># Create run folder for dcd output for each intst state</span>
@@ -322,6 +264,21 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
+
+    <span class="k">def</span> <span class="nf">_add_serializer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">):</span>
+        <span class="c1"># adding serializer functions</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd"># mw: adding xml serializer to the simulation script</span>
+<span class="sd">file_name = str(args.psffile).replace(&#39;.psf&#39;, &#39;&#39;)</span>
+<span class="sd">print(file_name)</span>
+<span class="sd">with open(file_name + &#39;_integrator.xml&#39;,&#39;w&#39;) as outfile:</span>
+<span class="sd">    outfile.write(XmlSerializer.serialize(integrator))</span>
+<span class="sd">with open(file_name + &#39;_system.xml&#39;,&#39;w&#39;) as outfile:</span>
+<span class="sd">    outfile.write(XmlSerializer.serialize(system))</span>
+<span class="sd">&quot;&quot;&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_simulations_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">prms</span> <span class="o">=</span> <span class="p">{}</span>
@@ -513,11 +470,11 @@
         <span class="n">fout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shFile</span><span class="si">}</span><span class="s2">.tmp&quot;</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">shFile</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;r+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;istep=lig_in_&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input=lig_in_&quot;</span><span class="p">):</span>
                     <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;for i in {1..&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;};</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;do </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;python openmm&quot;</span><span class="p">):</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;python -u openmm&quot;</span><span class="p">):</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$</span><span class="si">{istep}</span><span class="s2">.dcd&quot;</span><span class="p">,</span> <span class="s2">&quot;run_$</span><span class="si">{i}</span><span class="s2">/$</span><span class="si">{istep}</span><span class="s2">.dcd&quot;</span><span class="p">)</span>
                     <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
                         <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
@@ -620,9 +577,13 @@
 
         <span class="c1"># copy diverse set of helper functions for openMM</span>
         <span class="n">FILES</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;omm_barostat.py&quot;</span><span class="p">,</span>
             <span class="s2">&quot;omm_readinputs.py&quot;</span><span class="p">,</span>
             <span class="s2">&quot;omm_readparams.py&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;omm_restraints.py&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;omm_rewrap.py&quot;</span><span class="p">,</span>
             <span class="s2">&quot;omm_vfswitch.py&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;omm_hmr.py&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">FILES</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -633,13 +594,31 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find file: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># copy omm simulation script</span>
+        <span class="c1"># start with waterbox</span>
         <span class="n">omm_simulation_script_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/openmm_run.py&quot;</span>
         <span class="n">omm_simulation_script_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/openmm_run.py&quot;</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">omm_simulation_script_source</span><span class="p">,</span> <span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="c1"># add serialization</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_hmr</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_serializer</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
-        <span class="n">check_switching_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="p">)</span></div>
+        <span class="n">check_switching_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vdw_switch</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rsfe&quot;</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span>
+        <span class="p">):</span>
+            <span class="c1"># add vacuum scripts</span>
+            <span class="n">omm_simulation_script_source</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/openmm_run_vacuum.py&quot;</span>
+            <span class="p">)</span>
+            <span class="n">omm_simulation_script_target</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/openmm_run_vacuum.py&quot;</span>
+            <span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">omm_simulation_script_source</span><span class="p">,</span> <span class="n">omm_simulation_script_target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_hmr</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_serializer</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_change_platform</span><span class="p">(</span><span class="n">omm_simulation_script_target</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="IntermediateStateFactory._check_hmr">
@@ -754,10 +733,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_copy_ligand_specific_str</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">)</span>
 
         <span class="c1"># copy crd file</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_copy_crd_file</span><span class="p">((</span><span class="n">intermediate_state_file_path</span><span class="p">))</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_copy_crd_file</span><span class="p">((</span><span class="n">intermediate_state_file_path</span><span class="p">))</span>
+
         <span class="c1"># copy openMM and charmm specific scripts</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_copy_omm_files</span><span class="p">(</span><span class="n">intermediate_state_file_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_copy_charmm_files</span><span class="p">(</span><span class="n">intermediate_state_file_path</span><span class="p">)</span></div>
@@ -827,27 +804,21 @@
                         <span class="p">)</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;###################&quot;</span><span class="p">)</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-                    <span class="n">t1</span><span class="p">,</span> <span class="n">t2_comment</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)]</span>
-                    <span class="n">t2</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">t2_comment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)]</span>
-                    <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">overwrite_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="n">t2</span> <span class="o">=</span> <span class="n">overwrite_parameters</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span>
-                        <span class="k">del</span> <span class="n">overwrite_parameters</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span>  <span class="c1"># remove from dict</span>
-                    <span class="k">if</span> <span class="n">t1</span> <span class="o">==</span> <span class="s2">&quot;vdw&quot;</span><span class="p">:</span>
-                        <span class="n">t2</span> <span class="o">=</span> <span class="n">t2</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
-                    <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t1</span><span class="si">:</span><span class="s2">&lt;25</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">t2</span><span class="si">:</span><span class="s2">&lt;25</span><span class="si">}</span><span class="s2"> # </span><span class="si">{</span><span class="n">comment</span><span class="si">:</span><span class="s2">&lt;30</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The original inp </span><span class="si">{</span><span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> file  contains a line without a comment &quot;</span>
-            <span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">SystemExit</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">input_simulation_parameter</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="n">t1</span><span class="p">,</span> <span class="n">t2_comment</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)]</span>
+                <span class="n">t2</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">t2_comment</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)]</span>
+                <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">overwrite_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">t2</span> <span class="o">=</span> <span class="n">overwrite_parameters</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="n">overwrite_parameters</span><span class="p">[</span><span class="n">t1</span><span class="p">]</span>  <span class="c1"># remove from dict</span>
+                <span class="k">if</span> <span class="n">t1</span> <span class="o">==</span> <span class="s2">&quot;vdw&quot;</span><span class="p">:</span>
+                    <span class="n">t2</span> <span class="o">=</span> <span class="n">t2</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+                <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">t1</span><span class="si">:</span><span class="s2">&lt;25</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">t2</span><span class="si">:</span><span class="s2">&lt;25</span><span class="si">}</span><span class="s2"> # </span><span class="si">{</span><span class="n">comment</span><span class="si">:</span><span class="s2">&lt;30</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">output_simulation_parameter</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># set parameters that have no equivalent in the pregenerated parameter file</span>
         <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">overwrite_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
