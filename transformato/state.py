@@ -403,7 +403,7 @@ class IntermediateStateFactory(object):
             try:
                 shutil.copyfile(rst_file_source, rst_file_target)
             except FileNotFoundError:
-                logger.warning(
+                logger.info(
                     f"No restart file found for {env} -- starting simulation from crd file."
                 )
 
@@ -538,7 +538,7 @@ class IntermediateStateFactory(object):
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
         self._check_hmr(omm_simulation_script_target)
-        self._change_platform(omm_simulation_script_target)
+        # self._change_platform(omm_simulation_script_target)
         check_switching_function(self.vdw_switch)
 
     def _check_hmr(self, file):

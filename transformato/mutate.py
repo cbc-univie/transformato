@@ -2118,6 +2118,16 @@ class Mutation(object):
             atom.charge = atom.initial_charge * lambda_value
             logger.debug(f"New charge: {atom.charge}")
 
+            # in the end, we save the topology for amber (lig_in_env.parm7) using parmed
+            # pm.save_parm(), this requires all changes applied via an action tool
+            if type(psf) == pm.amber.AmberParm:
+                pm.tools.actions.change(
+                    psf,
+                    "CHARGE",
+                    f":{self.tlc}@{idx+1}",
+                    atom.initial_charge * lambda_value,
+                ).execute()
+
         # check to avoid compensating charges when doing asfe
         if (
             lambda_value != 1
@@ -2168,7 +2178,7 @@ class Mutation(object):
                 self._scale_epsilon_and_rmin(atom, lambda_value, psf, self.tlc)
 
             # NOTEthere is always a type change
-            self._modify_type(atom, psf, atom_type_suffix)
+            self._modify_type(atom, psf, atom_type_suffix, self.tlc)
 
     def mutate(
         self,
@@ -2304,16 +2314,9 @@ class Mutation(object):
                 radius=atom.initial_rmin * lambda_value,
                 epsilon=atom.initial_epsilon * lambda_value,
             ).execute()
-            ### Only necessary to rename the atomtype to DDDn !!!
-            pm.tools.actions.changeLJSingleType(
-                psf,
-                f":{tlc}@{atom.idx+1}",
-                atom.initial_rmin * lambda_value,
-                atom.initial_epsilon * lambda_value,
-            ).execute()
 
     @staticmethod
-    def _modify_type(atom, psf, atom_type_suffix: str):
+    def _modify_type(atom, psf, atom_type_suffix, tlc):
         if hasattr(atom, "initial_type"):
             # only change parameters
             pass
@@ -2327,6 +2330,14 @@ class Mutation(object):
                 new_type = f"{atom_type_suffix}{psf.mutations_to_default}"
 
             atom.type = new_type
+
+            if type(psf) == pm.amber.AmberParm:
+                pm.tools.actions.change(
+                    psf,
+                    "AMBER_ATOM_TYPE",
+                    f":{tlc}@{atom.idx+1}",
+                    new_type,
+                ).execute()
 
 
 def mutate_pure_tautomers(

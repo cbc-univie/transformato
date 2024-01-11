@@ -55,7 +55,11 @@ elif env == "vacuum":
     )
 
 if inputs.vdw == "Switch" and env != "vacuum":
+    print(f"Setting the vdw switching function to the defalut Openmm Switch")
     nboptions["switchDistance"] = inputs.r_on * unit.nanometers
+if inputs.vdw == "LJPME" and env != "vacuum":
+    print(f"Using LJPME for the vdw long range interactions")
+    nboptions["nonbondedMethod"] = LJPME
 if fftype == "amber":
     system = top.createSystem(**nboptions)
 else:
@@ -63,7 +67,18 @@ else:
 
 
 if inputs.vdw == "Force-switch" and fftype != "amber" and env != "vacuum":
+    print(f"Setting the vdw switching function to: Force-switch")
     system = vfswitch(system, top, inputs)
+if hasattr(inputs, "lj_lrc") and inputs.lj_lrc == "yes" and env != "vacuum":
+    print(f"We will use LJ Long range correction (LRC)")
+    for force in system.getForces():
+        if isinstance(force, NonbondedForce):
+            force.setUseDispersionCorrection(True)
+        if (
+            isinstance(force, CustomNonbondedForce)
+            and force.getNumTabulatedFunctions() != 1
+        ):
+            force.setUseLongRangeCorrection(True)
 
 if env != "vacuum":
     barostat = MonteCarloBarostat(inputs.p_ref * bar, inputs.temp * kelvin)
@@ -74,8 +89,13 @@ integrator = LangevinIntegrator(
 )
 
 # Set platform
-platform = Platform.getPlatformByName("CUDA")
-prop = dict(CudaPrecision="mixed")
+if hasattr(inputs, "platform"):
+    platform = Platform.getPlatformByName(inputs.platform)
+    if inputs.platform == "OpenCL":
+        prop = dict(UseCpuPme="true")
+else:
+    platform = Platform.getPlatformByName("CUDA")
+    prop = dict(CudaPrecision="mixed")
 
 # Check if restraints.yaml exists - if it does, system uses restraints
 
