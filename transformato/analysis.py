@@ -715,7 +715,7 @@ class FreeEnergyCalculator(object):
     def free_energy_overlap(self, env="vacuum"):
         """overlap of lambda states"""
         try:
-            r = self.mbar_results[env].computeOverlap()["matrix"]
+            r = self.mbar_results[env].compute_overlap()["matrix"]
         except KeyError:
             raise KeyError(f"Free energy overlap not obtained for : {env}")
 
