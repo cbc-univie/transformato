@@ -131,32 +131,42 @@ class FreeEnergyCalculator(object):
             psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.parm7"
             psf = AmberPrmtopFile(psf_file_path)
         # generate simulations object and set states
-        if self.configuration["simulation"]["GPU"].upper() == "OPENCL":
-            try:
-                logger.info(
-                    "We are using the OpenCL platform for the analysis as specified in the yaml file"
-                )
-                platform = Platform.getPlatformByName("OpenCL")
-                platformProperties = {"UseCpuPme": "true"}
-                simulation = Simulation(
-                    psf.topology, system, integrator, platform, platformProperties
-                )
-            except:
-                logger.warning("We are falling back to CUDA as OpenCL does not workd")
-                platform = Platform.getPlatformByName("CUDA")
-                simulation = Simulation(psf.topology, system, integrator, platform)
-        elif self.configuration["simulation"]["GPU"].upper() == "CUDA":
-            logger.info("We are using CUDA")
-            platform = Platform.getPlatformByName("CUDA")
-            simulation = Simulation(psf.topology, system, integrator, platform)
-        elif self.configuration["simulation"]["GPU"] == True:
+        if self.configuration["simulation"]["GPU"] == True:
             logger.info("We are using CUDA")
             platform = Platform.getPlatformByName("CUDA")
             simulation = Simulation(psf.topology, system, integrator, platform)
         else:
-            logger.info("We are using CPU")
-            platform = Platform.getPlatformByName("CPU")
-            simulation = Simulation(psf.topology, system, integrator, platform)
+            try:
+                if self.configuration["simulation"]["GPU"].upper() == "OPENCL":
+                    try:
+                        logger.info(
+                            "We are using the OpenCL platform for the analysis as specified in the yaml file"
+                        )
+                        platform = Platform.getPlatformByName("OpenCL")
+                        platformProperties = {"UseCpuPme": "true"}
+                        simulation = Simulation(
+                            psf.topology,
+                            system,
+                            integrator,
+                            platform,
+                            platformProperties,
+                        )
+                    except:
+                        logger.warning(
+                            "We are falling back to CUDA as OpenCL does not workd"
+                        )
+                        platform = Platform.getPlatformByName("CUDA")
+                        simulation = Simulation(
+                            psf.topology, system, integrator, platform
+                        )
+                elif self.configuration["simulation"]["GPU"].upper() == "CUDA":
+                    logger.info("We are using CUDA")
+                    platform = Platform.getPlatformByName("CUDA")
+                    simulation = Simulation(psf.topology, system, integrator, platform)
+            except AttributeError:
+                logger.info("We are using CPU")
+                platform = Platform.getPlatformByName("CPU")
+                simulation = Simulation(psf.topology, system, integrator, platform)
 
         simulation.context.setState(
             XmlSerializer.deserialize(
