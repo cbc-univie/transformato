@@ -5,9 +5,8 @@ from transformato.helper_functions import temperature
 from openmm import unit
 import numpy as np
 import mdtraj as md
-from transformato.utils import load_config_yaml
+from transformato.utils import load_config_yaml, get_test_output_dir
 from transformato.analysis import return_reduced_potential
-from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import (
     get_testsystems_dir,
     get_output_files_2oj9_tautomer_pair,
