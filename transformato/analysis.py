@@ -119,7 +119,6 @@ class FreeEnergyCalculator(object):
 
     def _generate_openMM_system(self, env: str, lambda_state: int) -> Simulation:
         ### read in necessary xml (_system.xml and _integrator.xml) and topology files (charmm: psf and amber:parm7)
-
         conf_sub = self.configuration["system"][self.structure][env]
         file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_system.xml"
         system = XmlSerializer.deserialize(open(file_name).read())
@@ -131,21 +130,32 @@ class FreeEnergyCalculator(object):
         elif self.forcefield == "amber":
             psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.parm7"
             psf = AmberPrmtopFile(psf_file_path)
-
         # generate simulations object and set states
-        if self.configuration["simulation"]["GPU"] == True:
-            platform = Platform.getPlatformByName(
-                "CUDA"
-            )  # NOTE: FIXME: this needs to be set dynamically
-            platformProperties = {"CudaPrecision": "mixed"}
-
-            simulation = Simulation(
-                psf.topology, system, integrator, platform, platformProperties
-            )
+        if self.configuration["simulation"]["GPU"].upper() == "OPENCL":
+            try:
+                logger.info(
+                    "We are using the OpenCL platform for the analysis as specified in the yaml file"
+                )
+                platform = Platform.getPlatformByName("OpenCL")
+                platformProperties = {"UseCpuPme": "true"}
+                simulation = Simulation(
+                    psf.topology, system, integrator, platform, platformProperties
+                )
+            except:
+                logger.warning("We are falling back to CUDA as OpenCL does not workd")
+                platform = Platform.getPlatformByName("CUDA")
+                simulation = Simulation(psf.topology, system, integrator, platform)
+        elif self.configuration["simulation"]["GPU"].upper() == "CUDA":
+            logger.info("We are using CUDA")
+            platform = Platform.getPlatformByName("CUDA")
+            simulation = Simulation(psf.topology, system, integrator, platform)
+        elif self.configuration["simulation"]["GPU"] == True:
+            logger.info("We are using CUDA")
+            platform = Platform.getPlatformByName("CUDA")
+            simulation = Simulation(psf.topology, system, integrator, platform)
         else:
-            platform = Platform.getPlatformByName(
-                "CPU"
-            )  # NOTE: FIXME: this needs to be set dynamically
+            logger.info("We are using CPU")
+            platform = Platform.getPlatformByName("CPU")
             simulation = Simulation(psf.topology, system, integrator, platform)
 
         simulation.context.setState(
