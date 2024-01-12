@@ -538,7 +538,7 @@ class IntermediateStateFactory(object):
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
         self._check_hmr(omm_simulation_script_target)
-        # self._change_platform(omm_simulation_script_target)
+        self._change_platform(omm_simulation_script_target)
         check_switching_function(self.vdw_switch)
 
     def _check_hmr(self, file):
@@ -562,34 +562,60 @@ class IntermediateStateFactory(object):
         f = open(file, "r")
         g = open(f"{file}_tmp", "w+")
         i = 0  # counting lines
-
-        if self.configuration["simulation"]["GPU"]:
-            logger.debug("Preparing for CUDA")
-            for line in f.readlines():
-                if "# Set platform" in line and i == 0:
-                    i += 1
-                    g.write(line)
-                elif i == 1:
-                    i += 1
-                    g.write("platform = Platform.getPlatformByName('CUDA')\n")
-                elif i == 2:
-                    i += 2
-                    g.write("prop = dict(CudaPrecision='mixed')\n")
-                else:
-                    g.write(line)
-        else:
-            for line in f.readlines():
-                if "# Set platform" in line and i == 0:
-                    i += 1
-                    g.write(line)
-                elif i == 1:
-                    i += 1
-                    g.write("platform = Platform.getPlatformByName('CPU')\n")
-                elif i == 2:
-                    i += 2
-                    g.write("prop = dict()\n")
-                else:
-                    g.write(line)
+        try:
+            if self.configuration["simulation"]["GPU"].upper() == "OPENCL":
+                for line in f.readlines():
+                    if "# Set platform" in line and i == 0:
+                        i += 1
+                        g.write(line)
+                    elif i == 1:
+                        i += 1
+                        g.write("platform = Platform.getPlatformByName('OpenCL')\n")
+                    elif i == 2:
+                        i += 2
+                        g.write("prop = dict(UseCpuPme='true')\n")
+                    else:
+                        g.write(line)
+            elif self.configuration["simulation"]["GPU"].upper() == "CUDA":
+                for line in f.readlines():
+                    if "# Set platform" in line and i == 0:
+                        i += 1
+                        g.write(line)
+                    elif i == 1:
+                        i += 1
+                        g.write("platform = Platform.getPlatformByName('CUDA')\n")
+                    elif i == 2:
+                        i += 2
+                        g.write("prop = dict()\n")
+                    else:
+                        g.write(line)
+        except AttributeError:
+            if self.configuration["simulation"]["GPU"] == True:
+                for line in f.readlines():
+                    if "# Set platform" in line and i == 0:
+                        i += 1
+                        g.write(line)
+                    elif i == 1:
+                        i += 1
+                        g.write("platform = Platform.getPlatformByName('CUDA')\n")
+                    elif i == 2:
+                        i += 2
+                        g.write("prop = dict()\n")
+                    else:
+                        g.write(line)
+            else:
+                for line in f.readlines():
+                    if "# Set platform" in line and i == 0:
+                        i += 1
+                        g.write(line)
+                    elif i == 1:
+                        i += 1
+                        g.write("platform = Platform.getPlatformByName('CPU')\n")
+                    elif i == 2:
+                        i += 2
+                        g.write("prop = dict()\n")
+                    else:
+                        g.write(line)
 
         f.close()
         g.close()

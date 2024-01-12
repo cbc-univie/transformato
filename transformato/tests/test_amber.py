@@ -66,12 +66,12 @@ def test_full_amber_test():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_asfe_amber_test():
-    molecule = "ethanol"
+    molecule = "methanol"
 
     configuration = load_config_yaml(
         config=f"/site/raid3/johannes/amber_tests/data/config/{molecule}_asfe.yaml",
         input_dir="/site/raid3/johannes/amber_tests/data/",
-        output_dir="/site/raid3/johannes/amber_tests/ethanol2/",
+        output_dir="/site/raid3/johannes/amber_tests/",
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -83,6 +83,7 @@ def test_asfe_amber_test():
     i = IntermediateStateFactory(
         system=s1,
         configuration=configuration,
+        multiple_runs=5,
     )
     perform_mutations(
         configuration=configuration,
@@ -99,7 +100,7 @@ def test_asfe_amber_test():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_amber_analysis():
-    molecule = "ethane"
+    molecule = "ethanol"
     configuration = load_config_yaml(
         config=f"/site/raid3/johannes/amber_tests/data/config/{molecule}_asfe.yaml",
         input_dir="/site/raid3/johannes/amber_tests/data/",
@@ -108,12 +109,13 @@ def test_amber_analysis():
 
     ddG_openMM, dddG, f_openMM = postprocessing(
         configuration,
-        name="ethane_amber",
+        name="ethanol_amber",
         engine="openMM",
         max_snapshots=10000,
         num_proc=6,
         analyze_traj_with="mda",
         show_summary=True,
+        multiple_runs=2,
     )
 
     print(f"Free energy is {ddG_openMM} +- {dddG} kT")

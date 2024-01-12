@@ -89,13 +89,7 @@ integrator = LangevinIntegrator(
 )
 
 # Set platform
-if hasattr(inputs, "platform"):
-    platform = Platform.getPlatformByName(inputs.platform)
-    if inputs.platform == "OpenCL":
-        prop = dict(UseCpuPme="true")
-else:
-    platform = Platform.getPlatformByName("CUDA")
-    prop = dict(CudaPrecision="mixed")
+platform = Platform.getPlatformByName("CUDA")
 
 # Check if restraints.yaml exists - if it does, system uses restraints
 
