@@ -11,8 +11,7 @@ from transformato import (
     SystemStructure,
     load_config_yaml,
 )
-from transformato.tests.paths import get_test_output_dir
-from transformato.utils import postprocessing, run_simulation
+from transformato.utils import postprocessing, run_simulation, get_test_output_dir
 from transformato.mutate import perform_mutations
 from transformato_testsystems.testsystems import get_testsystems_dir
 

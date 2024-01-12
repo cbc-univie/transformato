@@ -5,8 +5,7 @@ from transformato import (
     ProposeMutationRoute,
 )
 from transformato.mutate import perform_mutations
-from transformato.utils import postprocessing
-from transformato.tests.paths import get_test_output_dir
+from transformato.utils import postprocessing, get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 import pytest
 import os
