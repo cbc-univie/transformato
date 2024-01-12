@@ -121,6 +121,12 @@ def get_toppar_dir():
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "toppar"))
 
 
+def get_test_output_dir():
+    f = "/tmp/tf-tests"
+    os.makedirs(f, exist_ok=True)
+    return f
+
+
 def map_lj_mutations_to_atom_idx(lj_mutations: list) -> dict:
     """
     map_lj_mutations_to_atom_idx
@@ -141,21 +147,6 @@ def map_lj_mutations_to_atom_idx(lj_mutations: list) -> dict:
         d[key] = lj
 
     return d
-
-
-def print_mutations(mutation: dict):
-    # TODO: this needs to be finished!
-    if "charge" in mutation.keys():
-        for charge_mutation in mutation["charge"]:
-            print("Charge mutation")
-            print(f"Atoms to be mutated: {charge_mutation.atoms_to_be_mutated}")
-    if "hydrogen-lj" in mutation.keys():
-        print("Hydrogen LJ mutation")
-        print(f"Atoms to be mutated: {charge_mutation.atoms_to_be_mutated}")
-        print(f"LJ mutation to default:")
-
-    if "transform" in mutation.keys():
-        pass
 
 
 def load_config_yaml(config, input_dir, output_dir) -> dict:

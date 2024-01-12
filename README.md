@@ -1,4 +1,4 @@
-Transformato
+transformato
 ==============================
 [//]: # (Badges)
 [![GitHub Actions Build Status](https://github.com/wiederm/transformato/workflows/CI/badge.svg)](https://github.com/wiederm/transformato/actions?query=workflow%3ACI)
@@ -29,7 +29,7 @@ For more information on how to use transformato please visit the [documentation]
 
 ### Copyright
 
-:copyright: 2023, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch
+:copyright: 2024, Marcus Wieder, Johannes Karwounopoulos, Stefan Boresch
 
 
 #### Acknowledgements

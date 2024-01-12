@@ -6,18 +6,14 @@ import os
 import numpy as np
 import pytest
 import logging
-from transformato.utils import postprocessing
+from transformato.utils import postprocessing, load_config_yaml, get_test_output_dir
 
-# read in specific topology with parameters
-from transformato import (
-    load_config_yaml,
-)
 from transformato_testsystems.testsystems import (
     get_output_files_2oj9_tautomer_pair,
     get_output_files_acetylaceton_tautomer_pair,
     get_output_files_toluene_methane_pair,
 )
-from transformato.tests.paths import get_test_output_dir
+
 from transformato_testsystems.testsystems import get_testsystems_dir
 
 

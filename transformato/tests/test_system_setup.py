@@ -11,17 +11,9 @@ from io import StringIO
 import parmed as pm
 import pytest
 
-# read in specific topology with parameters
-# read in specific topology with parameters
-from transformato import (
-    SystemStructure,
-    IntermediateStateFactory,
-    ProposeMutationRoute,
-    load_config_yaml,
-    psf_correction,
-)
+from transformato import SystemStructure, IntermediateStateFactory, ProposeMutationRoute
 from transformato.mutate import perform_mutations
-from transformato.tests.paths import get_test_output_dir
+from transformato.utils import get_test_output_dir, psf_correction, load_config_yaml
 from transformato_testsystems.testsystems import get_testsystems_dir
 
 warnings.filterwarnings("ignore", module="parmed")
