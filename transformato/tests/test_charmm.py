@@ -2,7 +2,7 @@ import os
 import pytest
 import warnings
 
-from transformato.tests.paths import get_test_output_dir
+from transformato.utils import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
 warnings.filterwarnings("ignore", module="parmed")

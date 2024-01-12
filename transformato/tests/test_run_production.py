@@ -7,9 +7,7 @@ import logging
 
 import pytest
 import shutil
-from transformato import load_config_yaml
-from transformato.tests.paths import get_test_output_dir
-from transformato.utils import run_simulation
+from transformato.utils import run_simulation, get_test_output_dir, load_config_yaml
 from transformato.helper_functions import change_platform_to_test_platform
 
 from transformato_testsystems.testsystems import get_testsystems_dir

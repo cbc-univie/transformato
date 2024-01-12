@@ -4,9 +4,8 @@ from transformato import (
     IntermediateStateFactory,
 )
 
-from transformato.utils import run_simulation, postprocessing
+from transformato.utils import run_simulation, postprocessing, get_test_output_dir
 from transformato.mutate import ProposeMutationRoute, perform_mutations
-from transformato.tests.paths import get_test_output_dir
 from transformato_testsystems.testsystems import get_testsystems_dir
 
 from random import randint
