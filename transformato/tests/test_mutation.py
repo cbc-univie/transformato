@@ -17,11 +17,7 @@ from openmm import unit
 
 # read in specific topology with parameters
 from parmed.charmm.parameters import CharmmParameterSet
-from transformato import (
-    IntermediateStateFactory,
-    ProposeMutationRoute,
-    SystemStructure
-)
+from transformato import IntermediateStateFactory, ProposeMutationRoute, SystemStructure
 
 from transformato.utils import get_test_output_dir, load_config_yaml
 from transformato_testsystems.testsystems import (
