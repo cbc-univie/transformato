@@ -26,6 +26,78 @@ from transformato_testsystems.testsystems import (
 )
 
 
+def mutate_pure_tautomers(
+    s1_to_s2: ProposeMutationRoute,
+    system1: SystemStructure,
+    system2: SystemStructure,
+    configuration,
+    single_state=False,
+    nr_of_bonded_windows: int = 4,
+):
+    from transformato import (
+        IntermediateStateFactory,
+    )
+
+    # setup mutation and StateFactory
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i_tautomer1 = IntermediateStateFactory(
+        system=system1,
+        configuration=configuration,
+    )
+
+    # write out states
+    # start with charge
+    charges = mutation_list["charge"]
+    for lambda_value in np.linspace(1, 0, 2):
+        # turn off charges
+        i_tautomer1.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+        )
+        if single_state:
+            return (i_tautomer1.output_files, [])
+
+    # turn off the lj of the hydrogen
+    lj = mutation_list["lj"]
+    i_tautomer1.write_state(
+        mutation_conf=lj,
+        lambda_value_vdw=0.0,
+    )
+
+    # transform common core
+    for lambda_value in np.linspace(1, 0, nr_of_bonded_windows + 1)[1:]:
+        # turn off charges
+        i_tautomer1.write_state(
+            mutation_conf=mutation_list["transform"],
+            common_core_transformation=lambda_value,
+        )
+
+    # setup other tautomer
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    i_tautomer2 = IntermediateStateFactory(
+        system=system2,
+        configuration=configuration,
+    )
+    # write out states
+    # start with charge
+    charges = mutation_list["charge"]
+    for lambda_value in np.linspace(1, 0, 2):
+        # turn off charges
+        i_tautomer2.write_state(
+            mutation_conf=charges,
+            lambda_value_electrostatic=lambda_value,
+        )
+
+    # turn off the lj of the hydrogen
+    lj = mutation_list["lj"]
+    i_tautomer2.write_state(
+        mutation_conf=lj,
+        lambda_value_vdw=0.0,
+    )
+
+    return (i_tautomer1.output_files, i_tautomer2.output_files)
+
+
 def read_params(output_file_base):
     extlist = ["rtf", "prm", "str"]
     print(output_file_base)
@@ -97,7 +169,6 @@ def generate_system(output_file_base, env):
 def setup_acetylacetone_tautomer_pair(
     configuration: dict, single_state=False, nr_of_bonded_windows=4
 ):
-    from ..mutate import mutate_pure_tautomers
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -380,6 +451,34 @@ def test_mutation_with_multiple_dummy_regions(caplog):
     s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.propose_common_core()
     s1_to_s2.finish_common_core()
+
+
+@pytest.mark.rbfe
+def test_rbfe_mutate_2oj9():
+
+    conf = f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rbfe.yaml"
+
+    configuration = load_config_yaml(
+        config=conf,
+        input_dir=get_testsystems_dir(),
+        output_dir=get_test_output_dir(),
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+    s1_to_s2.calculate_common_core()
+    return (
+        mutate_pure_tautomers(
+            s1_to_s2,
+            s1,
+            s2,
+            configuration,
+            nr_of_bonded_windows=4,
+        ),
+        configuration,
+        s1_to_s2,
+    )
 
 
 @pytest.mark.rsfe
@@ -1833,7 +1932,6 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 def setup_2OJ9_tautomer_pair_rsfe(
     configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
-    from ..mutate import mutate_pure_tautomers
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -1856,7 +1954,6 @@ def setup_2OJ9_tautomer_pair_rsfe(
 def setup_2OJ9_tautomer_pair_rbfe(
     configuration: dict, single_state: bool = False, nr_of_bonded_windows: int = 4
 ):
-    from ..mutate import mutate_pure_tautomers
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")

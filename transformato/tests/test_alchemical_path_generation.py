@@ -44,38 +44,6 @@ def test_generate_alchemical_path_acetylaceton_methyl_common_core():
 
     mutate_acetylaceton_methyl_common_core(configuration=configuration)
 
-
-@pytest.mark.rbfe
-def test_rbfe_mutate_2oj9():
-    from transformato import ProposeMutationRoute, SystemStructure, load_config_yaml
-
-    from ..mutate import mutate_pure_tautomers
-
-    conf = f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rbfe.yaml"
-
-    configuration = load_config_yaml(
-        config=conf,
-        input_dir=get_testsystems_dir(),
-        output_dir=get_test_output_dir(),
-    )
-
-    s1 = SystemStructure(configuration, "structure1")
-    s2 = SystemStructure(configuration, "structure2")
-    s1_to_s2 = ProposeMutationRoute(s1, s2)
-    s1_to_s2.calculate_common_core()
-    return (
-        mutate_pure_tautomers(
-            s1_to_s2,
-            s1,
-            s2,
-            configuration,
-            nr_of_bonded_windows=4,
-        ),
-        configuration,
-        s1_to_s2,
-    )
-
-
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
     caplog.set_level(logging.WARNING)
