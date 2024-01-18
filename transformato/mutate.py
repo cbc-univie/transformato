@@ -2331,7 +2331,6 @@ class Mutation(object):
 
             atom.type = new_type
 
-
             if type(psf) == pm.amber.AmberParm:
                 pm.tools.actions.change(
                     psf,
