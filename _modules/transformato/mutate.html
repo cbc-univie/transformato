@@ -108,6 +108,7 @@
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_flattened</span><span class="p">(</span><span class="n">list_of_lists</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -139,7 +140,7 @@
     <span class="k">for</span> <span class="n">lambda_value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nr_of_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Perform paramteter scaling on cc in step: </span><span class="si">{</span><span class="n">intermediate_factory</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2"> with lamb: </span><span class="si">{</span><span class="n">lambda_value</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Perform parameter scaling on cc in step: </span><span class="si">{</span><span class="n">intermediate_factory</span><span class="o">.</span><span class="n">current_step</span><span class="si">}</span><span class="s2"> with lamb: </span><span class="si">{</span><span class="n">lambda_value</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
         <span class="n">intermediate_factory</span><span class="o">.</span><span class="n">write_state</span><span class="p">(</span>
@@ -449,7 +450,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="p">:</span> <span class="n">DummyRegion</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">asfe</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_check_cgenff_versions</span><span class="p">()</span>
+            <span class="c1"># self._check_cgenff_versions()</span>
 
         <span class="k">except</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
@@ -744,7 +745,6 @@
 
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;die Atome </span><span class="si">{</span><span class="n">atom</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">flat_ordered_connected_dummy_regions</span><span class="p">:</span>
                     <span class="n">lp_dict_dummy_region</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
 
@@ -1820,8 +1820,6 @@
             <span class="n">cc_names_struc1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">cc_names_struc2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ligand2_atom</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc1: </span><span class="si">{</span><span class="n">cc_names_struc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CC Struc2: </span><span class="si">{</span><span class="n">cc_names_struc2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">match_atom_names_cc1_to_cc2</span></div>
 
 
@@ -1911,6 +1909,20 @@
                             <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_type</span><span class="p">(</span>
                                 <span class="n">modified_epsilon</span><span class="p">,</span> <span class="n">modified_rmin</span>
                             <span class="p">)</span>
+                            <span class="c1"># do this only when using GAFF</span>
+                            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
+                                <span class="k">assert</span> <span class="p">(</span>
+                                    <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+                                    <span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                                    <span class="o">.</span><span class="n">name</span>
+                                    <span class="o">==</span> <span class="n">ligand1_atom</span><span class="o">.</span><span class="n">name</span>
+                                <span class="p">)</span>
+                                <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">changeLJSingleType</span><span class="p">(</span>
+                                    <span class="n">psf</span><span class="p">,</span>
+                                    <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">ligand1_atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                                    <span class="n">modified_rmin</span><span class="p">,</span>
+                                    <span class="n">modified_epsilon</span><span class="p">,</span>
+                                <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding atom in cc2 found&quot;</span><span class="p">)</span></div>
@@ -1979,6 +1991,16 @@
 
                     <span class="n">ligand1_bond</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_type</span><span class="p">(</span><span class="n">modified_k</span><span class="p">,</span> <span class="n">modified_req</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">mod_type</span><span class="p">)</span>
+
+                    <span class="c1"># do this only when using GAFF</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
+                        <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">setBond</span><span class="p">(</span>
+                            <span class="n">psf</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">ligand1_bond</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">modified_k</span><span class="p">,</span>
+                            <span class="n">modified_req</span><span class="p">,</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">ligand1_bond</span><span class="p">)</span>
@@ -2053,6 +2075,17 @@
                     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New k: </span><span class="si">{</span><span class="n">modified_theteq</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                     <span class="n">cc1_angle</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_type</span><span class="p">(</span><span class="n">modified_k</span><span class="p">,</span> <span class="n">modified_theteq</span><span class="p">)</span>
+
+                    <span class="c1"># do this only when using GAFF</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
+                        <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">setAngle</span><span class="p">(</span>
+                            <span class="n">psf</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">cc1_angle</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">modified_k</span><span class="p">,</span>
+                            <span class="n">modified_theteq</span><span class="p">,</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">cc1_angle</span><span class="p">)</span>
@@ -2164,6 +2197,21 @@
 
                     <span class="n">original_torsion</span><span class="o">.</span><span class="n">mod_type</span> <span class="o">=</span> <span class="n">mod_types</span>
 
+                    <span class="c1"># do this only when using GAFF</span>
+                    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
+                        <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">addDihedral</span><span class="p">(</span>
+                            <span class="n">psf</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">original_torsion</span><span class="o">.</span><span class="n">atom1</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">original_torsion</span><span class="o">.</span><span class="n">atom2</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">original_torsion</span><span class="o">.</span><span class="n">atom3</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc_cc1</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">original_torsion</span><span class="o">.</span><span class="n">atom4</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">modified_phi_k</span><span class="p">,</span>
+                            <span class="n">torsion_t</span><span class="o">.</span><span class="n">per</span><span class="p">,</span>
+                            <span class="n">torsion_t</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span>
+                            <span class="n">torsion_t</span><span class="o">.</span><span class="n">scnb</span><span class="p">,</span>
+                            <span class="n">torsion_t</span><span class="o">.</span><span class="n">see</span><span class="p">,</span>
+                        <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
             <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">original_torsion</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No corresponding torsion in cc2 found&quot;</span><span class="p">)</span>
@@ -2180,8 +2228,11 @@
 <span class="sd">        lambda_value : float</span>
 <span class="sd">            lambda_value</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span>
 
-        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">charge_mutation</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot; -- Charge parameters from cc1 are transformed to cc2.&quot;</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lambda value:</span><span class="si">{</span><span class="n">lambda_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2230,8 +2281,10 @@
     <span class="k">def</span> <span class="nf">_mutate_charge</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">):</span>
-        <span class="n">total_charge</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-            <span class="nb">round</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_charge</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">]))</span>
+        <span class="n">total_charge</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="nb">round</span><span class="p">(</span>
+                <span class="nb">sum</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_charge</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">]),</span> <span class="mi">4</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="c1"># scale the charge of all atoms</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scaling charge on: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -2244,6 +2297,16 @@
             <span class="n">atom</span><span class="o">.</span><span class="n">charge</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">initial_charge</span> <span class="o">*</span> <span class="n">lambda_value</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New charge: </span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">charge</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+            <span class="c1"># in the end, we save the topology for amber (lig_in_env.parm7) using parmed</span>
+            <span class="c1"># pm.save_parm(), this requires all changes applied via an action tool</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
+                <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">change</span><span class="p">(</span>
+                    <span class="n">psf</span><span class="p">,</span>
+                    <span class="s2">&quot;CHARGE&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">atom</span><span class="o">.</span><span class="n">initial_charge</span> <span class="o">*</span> <span class="n">lambda_value</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
         <span class="c1"># check to avoid compensating charges when doing asfe</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">lambda_value</span> <span class="o">!=</span> <span class="mi">1</span>
@@ -2252,6 +2315,8 @@
             <span class="c1"># compensate for the total change in charge the terminal atom</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_compensate_charge</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">total_charge</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Mutation._mutate_vdw">
+<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation._mutate_vdw">[docs]</a>
     <span class="k">def</span> <span class="nf">_mutate_vdw</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span>
@@ -2260,6 +2325,9 @@
         <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">to_default</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is used to scale the LJ parameters of the DDD and DDX atoms to zero in phase II and III</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">vdw_atom_idx</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Specified atom </span><span class="si">{</span><span class="n">vdw_atom_idx</span><span class="si">}</span><span class="s2"> is not in atom_idx list </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms_to_be_mutated</span><span class="si">}</span><span class="s2">. Aborting.&quot;</span>
@@ -2275,13 +2343,24 @@
                 <span class="n">atom_type_suffix</span> <span class="o">=</span> <span class="s2">&quot;DDX&quot;</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">rmin</span> <span class="o">=</span> <span class="mf">1.5</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.15</span>
+                <span class="c1"># do this only when using GAFF</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span>
+                    <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">changeLJSingleType</span><span class="p">(</span>
+                        <span class="n">psf</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="mf">1.5</span><span class="p">,</span>
+                        <span class="mf">0.15</span><span class="p">,</span>  <span class="c1">### ATTENTION: This should be -0.15 but somehow GAFF does not like negative values</span>
+                    <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Mutate to dummy&quot;</span><span class="p">)</span>
                 <span class="n">atom_type_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;DDD&quot;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_scale_epsilon</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_scale_rmin</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scale_epsilon_and_rmin</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
+
             <span class="c1"># NOTEthere is always a type change</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_modify_type</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">atom_type_suffix</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_modify_type</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">atom_type_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Mutation.mutate">
 <a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation.mutate">[docs]</a>
@@ -2387,7 +2466,7 @@
                 <span class="n">connecting_real_atom_for_this_dummy_region</span>
             <span class="p">)</span>
 
-        <span class="c1"># check if rest charge is missing</span>
+        <span class="c1">#### check if rest charge is missing</span>
         <span class="n">new_charge</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">charge</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">]</span>
         <span class="p">)</span>
@@ -2398,20 +2477,37 @@
             <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Mutation._scale_epsilon_and_rmin">
+<a class="viewcode-back" href="../../autosummary/transformato.mutate.html#transformato.mutate.Mutation._scale_epsilon_and_rmin">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_scale_epsilon</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_scale_epsilon_and_rmin</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">tlc</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This scales the LJ interactions (epsilon and rmin) from non-interacting DDD atom (no charge)</span>
+<span class="sd">        to &#39;real&#39; dummy atom (no LJ!), typically this is performed in one step, but to be sure</span>
+<span class="sd">        we offer scalling possibility here as well</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_epsilon</span><span class="p">)</span>
-        <span class="n">atom</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">initial_epsilon</span> <span class="o">*</span> <span class="n">lambda_value</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_scale_rmin</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_rmin</span><span class="p">)</span>
+
+        <span class="n">atom</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">initial_epsilon</span> <span class="o">*</span> <span class="n">lambda_value</span>
         <span class="n">atom</span><span class="o">.</span><span class="n">rmin</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">initial_rmin</span> <span class="o">*</span> <span class="n">lambda_value</span>
 
+        <span class="c1">### do this only when using GAFF</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
+            <span class="c1"># Quick check, if selected atom via AMBER mask is the same as the atom</span>
+            <span class="c1"># we want to modify</span>
+            <span class="k">assert</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span>
+            <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">addLJType</span><span class="p">(</span>
+                <span class="n">psf</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">radius</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_rmin</span> <span class="o">*</span> <span class="n">lambda_value</span><span class="p">,</span>
+                <span class="n">epsilon</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">initial_epsilon</span> <span class="o">*</span> <span class="n">lambda_value</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span></div>
+
+
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_modify_type</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">atom_type_suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_modify_type</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">psf</span><span class="p">,</span> <span class="n">atom_type_suffix</span><span class="p">,</span> <span class="n">tlc</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">):</span>
             <span class="c1"># only change parameters</span>
             <span class="k">pass</span>
@@ -2424,7 +2520,16 @@
                 <span class="n">psf</span><span class="o">.</span><span class="n">mutations_to_default</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">new_type</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_type_suffix</span><span class="si">}{</span><span class="n">psf</span><span class="o">.</span><span class="n">mutations_to_default</span><span class="si">}</span><span class="s2">&quot;</span>
 
-            <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">new_type</span></div>
+            <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">new_type</span>
+
+
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">:</span>
+                <span class="n">pm</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">actions</span><span class="o">.</span><span class="n">change</span><span class="p">(</span>
+                    <span class="n">psf</span><span class="p">,</span>
+                    <span class="s2">&quot;AMBER_ATOM_TYPE&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">new_type</span><span class="p">,</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span></div>
 
 </pre></div>
 
