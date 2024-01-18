@@ -2331,6 +2331,7 @@ class Mutation(object):
 
             atom.type = new_type
 
+
             if type(psf) == pm.amber.AmberParm:
                 pm.tools.actions.change(
                     psf,
@@ -2338,75 +2339,3 @@ class Mutation(object):
                     f":{tlc}@{atom.idx+1}",
                     new_type,
                 ).execute()
-
-
-def mutate_pure_tautomers(
-    s1_to_s2: ProposeMutationRoute,
-    system1: SystemStructure,
-    system2: SystemStructure,
-    configuration,
-    single_state=False,
-    nr_of_bonded_windows: int = 4,
-):
-    from transformato import (
-        IntermediateStateFactory,
-    )
-
-    # setup mutation and StateFactory
-    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-    i_tautomer1 = IntermediateStateFactory(
-        system=system1,
-        configuration=configuration,
-    )
-
-    # write out states
-    # start with charge
-    charges = mutation_list["charge"]
-    for lambda_value in np.linspace(1, 0, 2):
-        # turn off charges
-        i_tautomer1.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-        )
-        if single_state:
-            return (i_tautomer1.output_files, [])
-
-    # turn off the lj of the hydrogen
-    lj = mutation_list["lj"]
-    i_tautomer1.write_state(
-        mutation_conf=lj,
-        lambda_value_vdw=0.0,
-    )
-
-    # transform common core
-    for lambda_value in np.linspace(1, 0, nr_of_bonded_windows + 1)[1:]:
-        # turn off charges
-        i_tautomer1.write_state(
-            mutation_conf=mutation_list["transform"],
-            common_core_transformation=lambda_value,
-        )
-
-    # setup other tautomer
-    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
-    i_tautomer2 = IntermediateStateFactory(
-        system=system2,
-        configuration=configuration,
-    )
-    # write out states
-    # start with charge
-    charges = mutation_list["charge"]
-    for lambda_value in np.linspace(1, 0, 2):
-        # turn off charges
-        i_tautomer2.write_state(
-            mutation_conf=charges,
-            lambda_value_electrostatic=lambda_value,
-        )
-
-    # turn off the lj of the hydrogen
-    lj = mutation_list["lj"]
-    i_tautomer2.write_state(
-        mutation_conf=lj,
-        lambda_value_vdw=0.0,
-    )
-
-    return (i_tautomer1.output_files, i_tautomer2.output_files)
