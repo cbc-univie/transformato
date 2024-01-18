@@ -60,8 +60,6 @@ Functions
 
 
 
-.. automethod:: transformato.mutate.mutate_pure_tautomers
-
 .. automethod:: transformato.mutate.perform_mutations
 
 
