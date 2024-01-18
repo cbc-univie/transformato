@@ -413,12 +413,11 @@ class SystemStructure(object):
             )
 
         # check if psf and sdf have same indeces
-        # if self.ff == "charmm":
-        #     for a in mol.GetAtoms():
-        #         if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
-        #             pass
-        #         else:
-        #             raise RuntimeError("PSF to mol conversion did not work! Aborting.")
+        for a in mol.GetAtoms():
+            if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
+                pass
+            else:
+                raise RuntimeError("PSF to mol conversion did not work! Aborting.")
 
         return mol
 
