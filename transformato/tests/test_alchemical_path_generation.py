@@ -44,6 +44,7 @@ def test_generate_alchemical_path_acetylaceton_methyl_common_core():
 
     mutate_acetylaceton_methyl_common_core(configuration=configuration)
 
+
 @pytest.mark.rsfe
 def test_generate_alchemical_path_for_acetylacetone_tautomer_pair(caplog):
     caplog.set_level(logging.WARNING)

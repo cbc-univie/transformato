@@ -169,7 +169,6 @@ def generate_system(output_file_base, env):
 def setup_acetylacetone_tautomer_pair(
     configuration: dict, single_state=False, nr_of_bonded_windows=4
 ):
-
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
@@ -455,7 +454,6 @@ def test_mutation_with_multiple_dummy_regions(caplog):
 
 @pytest.mark.rbfe
 def test_rbfe_mutate_2oj9():
-
     conf = f"{get_testsystems_dir()}/config/test-2oj9-tautomer-pair-rbfe.yaml"
 
     configuration = load_config_yaml(
@@ -1932,7 +1930,6 @@ def test_vdw_mutation_for_hydrogens_and_heavy_atoms():
 def setup_2OJ9_tautomer_pair_rsfe(
     configuration: dict, single_state=False, nr_of_bonded_windows: int = 4
 ):
-
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
@@ -1954,7 +1951,6 @@ def setup_2OJ9_tautomer_pair_rsfe(
 def setup_2OJ9_tautomer_pair_rbfe(
     configuration: dict, single_state: bool = False, nr_of_bonded_windows: int = 4
 ):
-
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
