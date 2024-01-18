@@ -510,12 +510,11 @@
             <span class="p">)</span>
 
         <span class="c1"># check if psf and sdf have same indeces</span>
-        <span class="c1"># if self.ff == &quot;charmm&quot;:</span>
-        <span class="c1">#     for a in mol.GetAtoms():</span>
-        <span class="c1">#         if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):</span>
-        <span class="c1">#             pass</span>
-        <span class="c1">#         else:</span>
-        <span class="c1">#             raise RuntimeError(&quot;PSF to mol conversion did not work! Aborting.&quot;)</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;PSF to mol conversion did not work! Aborting.&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">mol</span></div>
 
