@@ -118,3 +118,38 @@ def test_amber_analysis():
     )
 
     print(f"Free energy is {ddG_openMM} +- {dddG} kT")
+
+
+@pytest.mark.rbfe
+@pytest.mark.charmm
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_amber_rbfe():
+    molecule = "jmc_28_ejm_31"
+    configuration = load_config_yaml(
+        config=f"/site/raid3/johannes/amber_tests/data/config/{molecule}.yaml",
+        input_dir="/site/raid3/johannes/amber_tests/data/",
+        output_dir="/site/raid3/johannes/amber_tests/",
+    )
+
+    s1 = SystemStructure(configuration, "structure1")
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
+
+    # s1_to_s2.propose_common_core()
+    # s1_to_s2.finish_common_core()
+
+    # mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    # i = IntermediateStateFactory(
+    #     system=s1,
+    #     configuration=configuration,
+    #     multiple_runs=5,
+    # )
+    # perform_mutations(
+    #     configuration=configuration,
+    #     i=i,
+    #     mutation_list=mutation_list,
+    #     nr_of_mutation_steps_charge=3,
+    # )
