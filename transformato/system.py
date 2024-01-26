@@ -55,10 +55,10 @@ class SystemStructure(object):
                     # load parameters
                     self.psfs[env].load_parameters(parameter)
                     # get offset
-                    self.offset[
-                        env
-                    ] = self._determine_offset_and_set_possible_dummy_properties(
-                        self.psfs[env]
+                    self.offset[env] = (
+                        self._determine_offset_and_set_possible_dummy_properties(
+                            self.psfs[env]
+                        )
                     )
             elif self.ff == "amber":
                 for env in self.envs:
@@ -68,10 +68,10 @@ class SystemStructure(object):
                     self.psfs[env].load_rst7(
                         f"{self.charmm_gui_base}/waterbox/openmm/step3_input.rst7"
                     )
-                    self.offset[
-                        env
-                    ] = self._determine_offset_and_set_possible_dummy_properties(
-                        self.psfs[env]
+                    self.offset[env] = (
+                        self._determine_offset_and_set_possible_dummy_properties(
+                            self.psfs[env]
+                        )
                     )
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
@@ -91,10 +91,10 @@ class SystemStructure(object):
                     self.psfs[env] = self._initialize_system(configuration, env)
                     # load parameters
                     self.psfs[env].load_parameters(parameter)
-                    self.offset[
-                        env
-                    ] = self._determine_offset_and_set_possible_dummy_properties(
-                        self.psfs[env]
+                    self.offset[env] = (
+                        self._determine_offset_and_set_possible_dummy_properties(
+                            self.psfs[env]
+                        )
                     )
 
                 elif self.ff == "amber":
@@ -104,10 +104,10 @@ class SystemStructure(object):
                     self.psfs[env].load_rst7(
                         f"{self.charmm_gui_base}/waterbox/openmm/step3_input.rst7"
                     )
-                    self.offset[
-                        env
-                    ] = self._determine_offset_and_set_possible_dummy_properties(
-                        self.psfs[env]
+                    self.offset[env] = (
+                        self._determine_offset_and_set_possible_dummy_properties(
+                            self.psfs[env]
+                        )
                     )
                     # if env == "vacuum":
                     #     self.psfs["vacuum"] = self.psfs["waterbox"][f":{self.tlc}"]
