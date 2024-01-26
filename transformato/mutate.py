@@ -358,12 +358,12 @@ class ProposeMutationRoute(object):
             self.dummy_region_cc2: DummyRegion
 
             self.asfe: bool = False
-            self._check_cgenff_versions()
 
-        except:
+        except AttributeError:
             logger.info(
                 "Only information about one structure, assume an ASFE simulation is requested"
             )
+
             mol1_name: str = "m1"
             self.system: dict = {"system1": s1}
             self.mols: dict = {mol1_name: s1.mol}
@@ -638,7 +638,6 @@ class ProposeMutationRoute(object):
 
         for atom in psf.view[f":{tlc}"].atoms:
             if atom.name.find("LP") == False:
-                print(f"die Atome {atom}")
                 if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
                     lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
 
@@ -1417,9 +1416,20 @@ class ProposeMutationRoute(object):
             logger.warning(f"Bonded parameters mutation: {bonded_terms_mutation}.")
             logger.warning(f"Charge parameters mutation: {charge_mutation}.")
 
+            # in point mutations all residues are in the tlc section -> we want only
+            # the one where the mutation happens (should be only necessary for s1_tlc)
+            # TODO: make an assert statement which checks that all atoms of dummy region
+            # belong to the same residue!
+            if len(self.s1_tlc) > 4:
+                self.s1_tlc = (
+                    self.psf1["waterbox"]
+                    .atoms[self.get_idx_not_in_common_core_for_mol1()[0]]
+                    .residue.name
+                )
+
             t = CommonCoreTransformation(
-                self.get_common_core_idx_mol1() + self.dummy_region_cc1.lj_default,
-                self.get_common_core_idx_mol2() + self.dummy_region_cc2.lj_default,
+                self.get_common_core_idx_mol1(),
+                self.get_common_core_idx_mol2(),
                 self.psfs["m1"],
                 self.psfs["m2"],
                 self.s1_tlc,
@@ -1654,8 +1664,55 @@ class CommonCoreTransformation(object):
             cc_names_struc1.append(ligand1_atom.name)
             cc_names_struc2.append(ligand2_atom.name)
 
-        print(f"CC Struc1: {cc_names_struc1}")
-        print(f"CC Struc2: {cc_names_struc2}")
+        logger.info(f"CC Struc1: {cc_names_struc1}")
+        logger.info(f"CC Struc2: {cc_names_struc2}")
+
+        ### DANGER ONLY FOR ONE MUTATION NEEEDS TO BE FIXED #####
+        # match_atom_names_cc1_to_cc2 = {
+        #     "O5'": "O5'",
+        #     "H5T": "H5T",
+        #     "C5'": "C5'",
+        #     "H5''": "H5''",
+        #     "H5'": "H5'",
+        #     "C4'": "C4'",
+        #     "H4'": "H4'",
+        #     "O4'": "O4'",
+        #     "C1'": "C1'",
+        #     "C2'": "C2'",
+        #     "C3'": "C3'",
+        #     "H3'": "H3'",
+        #     "O3'": "O3'",
+        #     "P": "P",
+        #     "O2P": "O2P",
+        #     "O1P": "O1P",
+        #     "H1'": "H1'",
+        #     "H2''": "H2''",
+        #     "O2'": "O2'",
+        #     "H2'": "H2'",
+        #     "N1": "N1",
+        #     "C6": "C6",
+        #     "H6": "H6",
+        #     "C5": "C5",
+        #     "H5": "H5",
+        #     "C4": "C4",
+        #     "N3": "N3",
+        #     "C2": "C2",
+        #     "O2": "O2",
+        #     "N4": "N4",
+        #     "H42": "H42",
+        #     "H41": "H41",
+        #     "N9": "N9",
+        #     "N7": "N7",
+        #     "C8": "C8",
+        #     "H8": "H8",
+        #     "N2": "N2",
+        #     "H21": "H21",
+        #     "H22": "H22",
+        #     "H1": "H1",
+        #     "O6": "O6",
+        #     "H3T": "H3T",
+        # }
+
         return match_atom_names_cc1_to_cc2
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
@@ -1667,7 +1724,18 @@ class CommonCoreTransformation(object):
 
             # compare to charge compenstated psf 2
             for ligand2_atom in self.charge_compensated_ligand2_psf:
-                if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name:
+                # Assure that only atoms from the same resdiue are compared, and only atoms belonging to the same chain!
+                if (
+                    self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name
+                    # and ligand1_atom.residue.name == ligand2_atom.residue.name
+                    and ligand1_atom.residue.number
+                    == ligand2_atom.residue.number  # residue names are not unique
+                    # and ligand1_atom.type == ligand2_atom.type
+                    # and len(ligand1_atom.residue.atoms)
+                    # == len(ligand2_atom.residue.atoms)
+                    and ligand1_atom.residue.chain == ligand2_atom.residue.chain
+                    and "DD" not in ligand1_atom.type
+                ):
                     found = True
                     # are the atoms different?
                     logger.debug(f"Modifying atom: {ligand1_atom}")
@@ -1683,7 +1751,36 @@ class CommonCoreTransformation(object):
                     ligand1_atom.charge = modified_charge
 
             if not found:
-                raise RuntimeError("No corresponding atom in cc2 found")
+                try:
+                    for ligand2_atom in self.charge_compensated_ligand2_psf:
+                        # make sure resdiue PSU which is like CYT are nevertheless found
+                        if (
+                            self.atom_names_mapping[ligand1_atom.name]
+                            == ligand2_atom.name
+                            and len(ligand1_atom.residue.atoms)
+                            == len(ligand2_atom.residue.atoms)
+                            and ligand1_atom.residue.chain == ligand2_atom.residue.chain
+                            and ligand1_atom.type == ligand2_atom.type
+                            and "DD" not in ligand1_atom.type
+                        ):
+                            found = True
+                            # are the atoms different?
+                            logger.debug(f"Modifying atom: {ligand1_atom}")
+                            logger.debug(f"Template atom: {ligand2_atom}")
+
+                            # scale epsilon
+                            modified_charge = (
+                                scale * ligand1_atom.charge
+                                + (1 - scale) * ligand2_atom.charge
+                            )
+                            logger.debug(
+                                f"Current charge: {ligand1_atom.charge}; target charge: {ligand2_atom.charge}; modified charge: {modified_charge}"
+                            )
+                            ligand1_atom.charge = modified_charge
+                except:
+                    raise RuntimeError(
+                        f"No corresponding atom for {ligand1_atom} in cc2 found"
+                    )
 
     def _mutate_atoms(self, psf: pm.charmm.CharmmPsfFile, lambda_value: float):
         """
@@ -1711,11 +1808,17 @@ class CommonCoreTransformation(object):
                 # is there a match up?
                 if self.atom_names_mapping[ligand1_atom.name] == ligand2_atom.name:
                     found = True
-                    # are the atoms different?
-                    if ligand1_atom.type != ligand2_atom.type:
-                        if "DDX" in ligand1_atom.type:
+                    # are the atoms different? and assure that only atomtypes in the same residue are compared
+                    if (
+                        ligand1_atom.type != ligand2_atom.type
+                        # and len(ligand1_atom.residue.atoms)
+                        # == len(ligand2_atom.residue.atoms)
+                        and ligand1_atom.residue.number == ligand2_atom.residue.number
+                    ):
+                        ## ATTENTION compare only the same residue with the same NUMBER!
+                        if "DD" in ligand1_atom.type:
                             logger.warning(
-                                "This is the terminal LJ atom. If everything went correct, this does not have to change atom types."
+                                "Dummy atoms should not change their atomtypes"
                             )
                         else:
                             self._modify_type_in_cc(ligand1_atom, psf)
@@ -1783,9 +1886,17 @@ class CommonCoreTransformation(object):
                 ) == sorted([ligand2_atom1_name, ligand2_atom2_name]):
                     found = True
                     # are the bonds different?
+                    all_types = [
+                        ligand1_bond.atom1.type,
+                        ligand1_bond.atom2.type,
+                        ligand2_bond.atom1.type,
+                        ligand2_bond.atom2.type,
+                    ]
                     if sorted(
                         [ligand1_bond.atom1.type, ligand1_bond.atom2.type]
-                    ) == sorted([ligand2_bond.atom1.type, ligand2_bond.atom2.type]):
+                    ) == sorted([ligand2_bond.atom1.type, ligand2_bond.atom2.type]) or (
+                        "DDD" in str(all_types) and "DDX" not in str(all_types)
+                    ):
                         continue
                     logger.debug(f"Modifying bond: {ligand1_bond}")
 
@@ -1810,7 +1921,11 @@ class CommonCoreTransformation(object):
                     ligand1_bond.mod_type = mod_type(modified_k, modified_req)
                     logger.debug(ligand1_bond.mod_type)
 
-            if not found:
+            # AND statement because in point mutations the atom_names_mapping check
+            # might mislead. There are situations where two atom names are both in
+            # the CC and in the dummy regions. E.g. in tlc1: C6-H62(is the dummy atom),
+            # in tlc2: C6-N7-H62. Now it would search for a C6-H62 bond in cc2!
+            if not found and ligand2_bond.atom1.residue.name == self.tlc_cc1:
                 logger.critical(ligand1_bond)
                 raise RuntimeError(
                     "No corresponding bond in cc2 found: {}".format(ligand1_bond)
@@ -1849,6 +1964,14 @@ class CommonCoreTransformation(object):
                     ]
                 ) == sorted([ligand2_atom1_name, ligand2_atom2_name, cc2_a3]):
                     found = True
+                    all_types = [
+                        cc1_angle.atom1.type,
+                        cc1_angle.atom2.type,
+                        cc1_angle.atom3.type,
+                        cc2_angle.atom1.type,
+                        cc2_angle.atom2.type,
+                        cc2_angle.atom3.type,
+                    ]
                     if sorted(
                         [
                             cc1_angle.atom1.type,
@@ -1861,6 +1984,8 @@ class CommonCoreTransformation(object):
                             cc2_angle.atom2.type,
                             cc2_angle.atom3.type,
                         ]
+                    ) or (
+                        "DDD" in str(all_types) and "DDX" not in str(all_types)
                     ):
                         continue
 
@@ -1883,8 +2008,8 @@ class CommonCoreTransformation(object):
                     logging.debug(f"New k: {modified_theteq}")
 
                     cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
-
-            if not found:
+            # AND statement is explained in bond section
+            if not found and cc2_angle.atom1.residue.name == self.tlc_cc1:
                 logger.critical(cc1_angle)
                 raise RuntimeError("No corresponding angle in cc2 found")
 
@@ -1942,6 +2067,16 @@ class CommonCoreTransformation(object):
                     [new_atom1_name, new_atom2_name, new_atom3_name, new_atom4_name]
                 ):
                     found = True
+                    all_types = [
+                        original_torsion.atom1.type,
+                        original_torsion.atom2.type,
+                        original_torsion.atom3.type,
+                        original_torsion.atom4.type,
+                        new_torsion.atom1.type,
+                        new_torsion.atom2.type,
+                        new_torsion.atom3.type,
+                        new_torsion.atom4.type,
+                    ]
                     if sorted(
                         [
                             original_torsion.atom1.type,
@@ -1956,6 +2091,8 @@ class CommonCoreTransformation(object):
                             new_torsion.atom3.type,
                             new_torsion.atom4.type,
                         ]
+                    ) or (
+                        "DDD" in str(all_types) and "DDX" not in str(all_types)
                     ):
                         continue
 
@@ -1993,8 +2130,8 @@ class CommonCoreTransformation(object):
                                 )
 
                     original_torsion.mod_type = mod_types
-
-            if not found:
+            # AND section is explained in bond section anologon
+            if not found and new_torsion.atom1.residue.name == self.tlc_cc1:
                 logger.critical(original_torsion)
                 raise RuntimeError("No corresponding torsion in cc2 found")
 
@@ -2032,6 +2169,9 @@ class CommonCoreTransformation(object):
     @staticmethod
     def _modify_type_in_cc(atom: pm.Atom, psf: pm.charmm.CharmmPsfFile):
         if hasattr(atom, "initial_type"):
+            # only change parameters
+            pass
+        elif atom.residue.chain == "RNAB":
             # only change parameters
             pass
         else:
@@ -2204,14 +2344,16 @@ class Mutation(object):
             )
 
         # check if rest charge is missing
-        new_charge = sum(
-            [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
-        )
+        # new and total charge is differen because new_charge considers all strands (RNAA and RNAB) but only RNAA is modified
 
-        if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
-            raise RuntimeError(
-                f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
-            )
+    #         new_charge = sum(
+    #             [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
+    #         )
+
+    #         if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
+    #             raise RuntimeError(
+    #                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
+    #             )
 
     @staticmethod
     def _scale_epsilon(atom, lambda_value: float):
@@ -2228,6 +2370,9 @@ class Mutation(object):
     @staticmethod
     def _modify_type(atom, psf, atom_type_suffix: str):
         if hasattr(atom, "initial_type"):
+            # only change parameters
+            pass
+        elif atom.residue.chain == "RNAB":
             # only change parameters
             pass
         else:

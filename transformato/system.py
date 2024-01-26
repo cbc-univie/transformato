@@ -1,5 +1,6 @@
 import logging
 import os
+import glob
 import re
 from collections import defaultdict
 from typing import Tuple
@@ -32,58 +33,79 @@ class SystemStructure(object):
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
         self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
-        self.parameter = self._read_parameters("waterbox")
+        # self.parameter = self._read_parameters("waterbox")
         self.cgenff_version: float
         self.envs = set()
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "rbfe":
             self.envs = set(["complex", "waterbox"])
-            for env in self.envs:
-                parameter = self._read_parameters(env)
-                # set up system
-                self.psfs[env] = self._initialize_system(configuration, env)
-                # load parameters
-                self.psfs[env].load_parameters(parameter)
-                # get offset
-                self.offset[
-                    env
-                ] = self._determine_offset_and_set_possible_dummy_properties(
-                    self.psfs[env]
-                )
-
-            # generate rdkit mol object of small molecule
-            self.mol: Chem.Mol = self._generate_rdkit_mol(
-                "complex", self.psfs["complex"][f":{self.tlc}"]
-            )
-            self.graph: nx.Graph = self.mol_to_nx(self.mol)
-
         elif (
             configuration["simulation"]["free-energy-type"] == "rsfe"
             or configuration["simulation"]["free-energy-type"] == "asfe"
         ):
             self.envs = set(["waterbox", "vacuum"])
-            for env in self.envs:
-                parameter = self._read_parameters(env)
-                # set up system
-                self.psfs[env] = self._initialize_system(configuration, env)
-                # load parameters
-                self.psfs[env].load_parameters(parameter)
-                # get offset
-                self.offset[
-                    env
-                ] = self._determine_offset_and_set_possible_dummy_properties(
-                    self.psfs[env]
-                )
-
-            # generate rdkit mol object of small molecule
-            self.mol: Chem.Mol = self._generate_rdkit_mol(
-                "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
-            )
-            self.graph: nx.Graph = self.mol_to_nx(self.mol)
         else:
             raise NotImplementedError(
                 "only binding and solvation free energy implemented."
             )
+
+        for env in self.envs:
+            # set up system
+            self.psfs[env] = self._initialize_system(configuration, env)
+            # load parameters, by default only the most important toppar files are loaded
+            try:
+                parameter = self._read_parameters(env)
+                self.psfs[env].load_parameters(parameter)
+            except pm.exceptions.ParameterError:
+                parameter = self._read_parameters(env, full_set=True)
+                self.psfs[env].load_parameters(parameter)
+
+            # for point mutation, expects TIP3P water and NaCl as ions
+            if not self.tlc:
+                self.tlc = str(self._get_tlc(self.psfs[env]))
+
+            # get offset
+            self.offset[env] = self._determine_offset_and_set_possible_dummy_properties(
+                self.psfs[env]
+            )
+
+        # generate rdkit mol object of small molecule
+        self.mol: Chem.Mol = self._generate_rdkit_mol(
+            "waterbox", self.psfs["waterbox"][f":{self.tlc}"]
+        )  # for RBFE this was called "complex"
+        self.graph: nx.Graph = self.mol_to_nx(self.mol)
+
+        # For RBFE:
+        # generate rdkit mol object of small molecule
+        # self.mol: Chem.Mol = self._generate_rdkit_mol(
+        #     "complex", self.psfs["complex"][f":{self.tlc}"]
+        # )
+        # self.graph: nx.Graph = self.mol_to_nx(self.mol)
+
+    def _get_tlc(self, psf) -> str:
+        """
+        If no information about a small ligend is available this function will try to find
+        all residues which are in the first chain
+        """
+
+        # This works only if TIP3 water and NaCl as ions is used
+        # it will consider other ions as residue as well
+        # It first checks for the chains and will always take the FIRST
+        # chain
+        chains = []
+        for atom in psf.view:
+            if atom.residue.name not in chains:
+                chains.append(atom.residue.chain)
+
+        tlc = ""
+        for atom in psf.view["!(:TIP3:SOD:POT:CLA)"]:
+            if atom.residue.name not in tlc and atom.residue.chain == chains[0]:
+                tlc += f":{atom.residue.name}"
+
+        assert len(tlc) < 25
+
+        # Remove first colon so it looks e.g. like this: GUA:CYT:URA
+        return tlc[1:]
 
     def _set_hmr(self, configuration: dict, env: str):
         # check if HMR is set
@@ -139,35 +161,46 @@ class SystemStructure(object):
 
             return G
 
-    def _read_parameters(self, env: str) -> pm.charmm.CharmmParameterSet:
+    def _read_parameters(
+        self, env: str, full_set: bool = False
+    ) -> pm.charmm.CharmmParameterSet:
         """
         Reads in topparameters from a toppar dir and ligand specific parameters.
         Parameters
         ----------
         env: str
             waterbox,complex or vacuum
+        full_set: bool
+            wheather all files mentioned in the openmm/toppar.str should be read in, default is False
         Returns
         ----------
         parameter : pm.charmm.CharmmParameterSet
             parameters obtained from the CHARMM-GUI output dir.
         """
+        # save list of files for creation of toppar.str
+        global parameter_files
+        parameter_files = tuple()
 
         # the parameters for the vacuum system is parsed from the waterbox charmm-gui directory
         if env == "vacuum":
             env = "waterbox"
 
         charmm_gui_env = self.charmm_gui_base + env
-        tlc = self.tlc
-        tlc_lower = str(tlc).lower()
+        tlc_lower = str(self.tlc).lower()
         toppar_dir = f"{charmm_gui_env}/toppar"
 
+        # check if toppar dir is available in CHARMM-GUI folder, if not fall back to toppar dir from transformato
         if os.path.isdir(toppar_dir):
-            pass
+            logger.info(
+                f"Using the toppar directory from the CHARMM-GUI folder; {toppar_dir}"
+            )
         else:
             toppar_dir = get_toppar_dir()
+            logger.info(
+                f"Using the toppar directory provided in the transformato package; {toppar_dir}"
+            )
 
         # if custom parameter are added they are located in l1,l2
-        parameter_files = tuple()
         l1 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.rtf"
         l2 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.prm"
         l3 = f"{charmm_gui_env}/{tlc_lower}/{tlc_lower}.str"
@@ -189,21 +222,34 @@ class SystemStructure(object):
                 cgenff_version = re.findall("\d+\.\d+", cgenff)[0]
                 self.cgenff_version = float(cgenff_version)
 
-        parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
-        parameter_files += (f"{toppar_dir}/par_all36m_prot.prm",)
-        parameter_files += (f"{toppar_dir}/par_all36_na.prm",)
-        parameter_files += (f"{toppar_dir}/top_all36_na.rtf",)
-        parameter_files += (f"{toppar_dir}/top_all36_cgenff.rtf",)
-        parameter_files += (f"{toppar_dir}/par_all36_cgenff.prm",)
-        parameter_files += (f"{toppar_dir}/par_all36_lipid.prm",)
-        parameter_files += (f"{toppar_dir}/top_all36_lipid.rtf",)
-        parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
-        parameter_files += (
-            f"{toppar_dir}/toppar_all36_prot_na_combined.str",
-        )  # if modified aminoacids are needed
-        if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
-            parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
-        # set up parameter objec
+        if full_set:
+            with open(f"{charmm_gui_env}/openmm/toppar.str", "r") as ommtopparstream:
+                for line in ommtopparstream:
+                    if tlc_lower:
+                        if line.strip() != "" and not tlc_lower in line:
+                            filename = line.strip("\n").split("/")[-1]
+                            parameter_files += (f"{toppar_dir}/{filename}",)
+                    else:
+                        if line.strip() != "":
+                            filename = line.strip("\n").split("/")[-1]
+                            parameter_files += (f"{toppar_dir}/{filename}",)
+
+        else:
+            parameter_files += (f"{toppar_dir}/top_all36_prot.rtf",)
+            parameter_files += (f"{toppar_dir}/par_all36m_prot.prm",)
+            parameter_files += (f"{toppar_dir}/par_all36_na.prm",)
+            parameter_files += (f"{toppar_dir}/top_all36_na.rtf",)
+            parameter_files += (f"{toppar_dir}/top_all36_cgenff.rtf",)
+            parameter_files += (f"{toppar_dir}/par_all36_cgenff.prm",)
+            parameter_files += (f"{toppar_dir}/par_all36_lipid.prm",)
+            parameter_files += (f"{toppar_dir}/top_all36_lipid.rtf",)
+            parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
+            parameter_files += (f"{toppar_dir}/toppar_all36_prot_na_combined.str",)
+            parameter_files += (f"{toppar_dir}/toppar_all36_na_rna_modified.str",)
+            # if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
+            #     parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
+
+        # set up parameter object
         parameter = pm.charmm.CharmmParameterSet(*parameter_files)
         return parameter
 
@@ -316,10 +362,40 @@ class SystemStructure(object):
 
         return min(idx_list)
 
-    def _return_small_molecule(self, env: str) -> Chem.rdchem.Mol:
-        import glob
+    def _create_sdf_file(self) -> str:
+        """
+        Creates a sdf file, if none is available
+        useful for point mutations
+        """
 
-        charmm_gui_env = self.charmm_gui_base + env
+        file_path = f"{self.charmm_gui_base}/waterbox/openmm/"
+
+        pdb = pm.read_PDB(f"{file_path}/step3_input.pdb")
+
+        deletedatoms = 0
+        atomid = 0
+        length = len(pdb.atoms)
+        while deletedatoms + atomid < length:
+            if pdb.atoms[atomid].residue.segid != "RNAA":
+                pdb.atoms.remove(pdb.atoms[atomid])
+                deletedatoms += 1
+            else:
+                atomid += 1
+
+        pdb.write_pdb(f"{file_path}/step3_input_tmp.pdb")
+
+        from openbabel import openbabel
+
+        obConversion = openbabel.OBConversion()
+        obConversion.SetInAndOutFormats("pdb", "sdf")
+        mol = openbabel.OBMol()
+        obConversion.ReadFile(mol, f"{file_path}/step3_input_tmp.pdb")
+        obConversion.WriteFile(mol, f"{file_path}/step3_input_reduced.sdf")
+
+        return f"{file_path}/step3_input_reduced.sdf"
+
+    def _return_small_molecule(self) -> Chem.rdchem.Mol:
+        charmm_gui_env = self.charmm_gui_base + "waterbox"
         possible_files = []
         for ending in ["sdf", "mol", "mol2"]:
             possible_files.extend(glob.glob(f"{charmm_gui_env}/*/*{ending}"))
@@ -366,7 +442,13 @@ class SystemStructure(object):
         """
 
         assert type(psf) == pm.charmm.CharmmPsfFile
-        mol = self._return_small_molecule(env)
+
+        try:
+            self._create_sdf_file()
+        except:
+            pass
+
+        mol = self._return_small_molecule()
         (
             atom_idx_to_atom_name,
             _,
