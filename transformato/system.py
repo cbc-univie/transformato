@@ -406,7 +406,30 @@ class SystemStructure(object):
         mol: rdkit.Chem.rdchem.Mol
         """
 
-        mol = self._return_small_molecule(env)
+        # mol = self._return_small_molecule(env)
+
+        mol = Chem.MolFromPDBFile(
+            f"{self.charmm_gui_base}/waterbox/openmm/step3_input.pdb", removeHs=False
+        )
+
+        mol_e = Chem.EditableMol(mol)
+
+        atoms = mol.GetNumAtoms()
+        cor = 0
+        for idx in range(atoms):
+            if mol.GetAtomWithIdx(
+                idx - cor
+            ).GetPDBResidueInfo().GetResidueName() not in ["UNK"]:
+                mol_e.RemoveAtom(idx - cor)
+                cor += 1
+
+        mol = mol_e.GetMol()
+
+        print(mol.GetNumAtoms())
+
+        Chem.AllChem.Compute2DCoords(mol)
+
+        print("wir sind hier", mol.GetNumAtoms())
         (
             atom_idx_to_atom_name,
             _,
@@ -428,8 +451,16 @@ class SystemStructure(object):
         # check if psf and sdf have same indeces
         for a in mol.GetAtoms():
             if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
+                print(
+                    "Vergleich", str(psf[a.GetIdx()].element_name), str(a.GetSymbol())
+                )
                 pass
             else:
+                print(
+                    "stimmt was nicht",
+                    str(psf[a.GetIdx()].element_name),
+                    str(a.GetSymbol()),
+                )
                 raise RuntimeError("PSF to mol conversion did not work! Aborting.")
 
         return mol

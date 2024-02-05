@@ -120,7 +120,6 @@ def test_amber_analysis():
     print(f"Free energy is {ddG_openMM} +- {dddG} kT")
 
 
-@pytest.mark.rbfe
 @pytest.mark.charmm
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
@@ -138,18 +137,22 @@ def test_amber_rbfe():
     s2 = SystemStructure(configuration, "structure2")
     s1_to_s2 = ProposeMutationRoute(s1, s2)
 
-    # s1_to_s2.propose_common_core()
-    # s1_to_s2.finish_common_core()
+    s1_to_s2.propose_common_core()
 
-    # mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
-    # i = IntermediateStateFactory(
-    #     system=s1,
-    #     configuration=configuration,
-    #     multiple_runs=5,
-    # )
-    # perform_mutations(
-    #     configuration=configuration,
-    #     i=i,
-    #     mutation_list=mutation_list,
-    #     nr_of_mutation_steps_charge=3,
-    # )
+    s1_to_s2.remove_idx_from_common_core_of_mol1([29, 28])
+    s1_to_s2.remove_idx_from_common_core_of_mol2([2, 3])
+
+    s1_to_s2.finish_common_core()
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol1()
+    i = IntermediateStateFactory(
+        system=s1,
+        configuration=configuration,
+        multiple_runs=5,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=3,
+    )

@@ -1071,9 +1071,9 @@ class ProposeMutationRoute(object):
         mcs = rdFMCS.FindMCS(
             remmols,
             timeout=120,
-            ringMatchesRingOnly=True,
-            completeRingsOnly=True,
-            ringCompare=Chem.rdFMCS.RingCompare.StrictRingFusion,
+            # ringMatchesRingOnly=True,
+            # completeRingsOnly=True,
+            # ringCompare=Chem.rdFMCS.RingCompare.StrictRingFusion,
             bondCompare=rdFMCS.BondCompare.CompareAny,
             matchValences=False,
         )
@@ -1997,6 +1997,7 @@ class CommonCoreTransformation(object):
                     f = max((1 - ((1 - lambda_value) * 2)), 0.0)
 
                     if f > 0.0 or lambda_value == 0.5:
+                        print("die Torsionen:", original_torsion)
                         for torsion_t in original_torsion.type:
                             modified_phi_k = torsion_t.phi_k * f
                             mod_types.append(
@@ -2284,7 +2285,7 @@ class Mutation(object):
             [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
         )
 
-        if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
+        if not (np.isclose(round(new_charge, 3), round(total_charge, 3), rtol=1e-4)):
             raise RuntimeError(
                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
             )
