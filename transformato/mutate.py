@@ -1997,8 +1997,16 @@ class CommonCoreTransformation(object):
                     f = max((1 - ((1 - lambda_value) * 2)), 0.0)
 
                     if f > 0.0 or lambda_value == 0.5:
-                        print("die Torsionen:", original_torsion)
-                        for torsion_t in original_torsion.type:
+                        ## Necessary, because in Amber topologies this is not a list
+                        if (
+                            type(original_torsion.type)
+                            == pm.topologyobjects.DihedralType
+                        ):
+                            orig_torsion_as_list = [original_torsion.type]
+                        else:
+                            orig_torsion_as_list = original_torsion.type
+
+                        for torsion_t in orig_torsion_as_list:
                             modified_phi_k = torsion_t.phi_k * f
                             mod_types.append(
                                 mod_type(
@@ -2013,7 +2021,14 @@ class CommonCoreTransformation(object):
                     # torsion present at cc2 needs to be fully turned on at lambda_value == 0.0
                     f = 1 - min((lambda_value) * 2, 1.0)
                     if f > 0.0:
-                        for torsion_t in new_torsion.type:
+
+                        ## Necessary, because in Amber topologies this is not a list
+                        if type(new_torsion.type) == pm.topologyobjects.DihedralType:
+                            new_torsion_as_list = [new_torsion.type]
+                        else:
+                            new_torsion_as_list = new_torsion.type
+
+                        for torsion_t in new_torsion_as_list:
                             modified_phi_k = torsion_t.phi_k * f
                             if modified_phi_k >= 0.0:
                                 mod_types.append(
@@ -2040,7 +2055,7 @@ class CommonCoreTransformation(object):
                             torsion_t.per,
                             torsion_t.phase,
                             torsion_t.scnb,
-                            torsion_t.see,
+                            torsion_t.scee,
                         ).execute()
 
             if not found:
