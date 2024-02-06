@@ -2039,7 +2039,7 @@ class CommonCoreTransformation(object):
                             torsion_t.per,
                             torsion_t.phase,
                             torsion_t.scnb,
-                            torsion_t.see,
+                            torsion_t.scee,
                         ).execute()
 
             if not found:
