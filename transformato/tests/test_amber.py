@@ -148,7 +148,20 @@ def test_amber_rbfe():
     i = IntermediateStateFactory(
         system=s1,
         configuration=configuration,
-        multiple_runs=5,
+        multiple_runs=3,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=3,
+    )
+
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+        multiple_runs=3,
     )
     perform_mutations(
         configuration=configuration,
