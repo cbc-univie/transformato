@@ -132,18 +132,33 @@
         <span class="c1"># running a binding-free energy calculation?</span>
         <span class="k">if</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rbfe&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;complex&quot;</span><span class="p">,</span> <span class="s2">&quot;waterbox&quot;</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
-                <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-                <span class="c1"># set up system</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_system</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
-                <span class="c1"># load parameters</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
-                <span class="c1"># get offset</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span>
-                    <span class="n">env</span>
-                <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
-                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;charmm&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
+                    <span class="n">parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_parameters</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+                    <span class="c1"># set up system</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_system</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+                    <span class="c1"># load parameters</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
+                    <span class="c1"># get offset</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;amber&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">/openmm/step3_input.parm7&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_rst7</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">/openmm/step3_input.rst7&quot;</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
 
             <span class="c1"># generate rdkit mol object of small molecule</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_rdkit_mol</span><span class="p">(</span>
@@ -163,10 +178,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_system</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
                     <span class="c1"># load parameters</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_parameters</span><span class="p">(</span><span class="n">parameter</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span>
-                        <span class="n">env</span>
-                    <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
 
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">==</span> <span class="s2">&quot;amber&quot;</span><span class="p">:</span>
@@ -176,10 +191,10 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span><span class="o">.</span><span class="n">load_rst7</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/openmm/step3_input.rst7&quot;</span>
                     <span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span>
-                        <span class="n">env</span>
-                    <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="n">env</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_determine_offset_and_set_possible_dummy_properties</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">[</span><span class="n">env</span><span class="p">]</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
                     <span class="c1"># if env == &quot;vacuum&quot;:</span>
                     <span class="c1">#     self.psfs[&quot;vacuum&quot;] = self.psfs[&quot;waterbox&quot;][f&quot;:{self.tlc}&quot;]</span>
@@ -473,6 +488,43 @@
                 <span class="s2">&quot;Could not load small molecule sdf file in </span><span class="si">{charmm_gui_env}</span><span class="s2">. Aborting.&quot;</span>
             <span class="p">)</span>
 
+<div class="viewcode-block" id="SystemStructure._create_sdf_from_pdb">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._create_sdf_from_pdb">[docs]</a>
+    <span class="k">def</span> <span class="nf">_create_sdf_from_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">topologyobjects</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function creates a sdf file from the file provided in openmm/step3_input.pdb</span>
+<span class="sd">        and reads in this sdf file. This should now have the same order as the psf topology object</span>
+<span class="sd">        and is from now on used as the rdkit mol object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        psf: pm.topologyobjects</span>
+<span class="sd">            a topology provided by parmed (either CHARMM type or AMBER)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mol : rdkit.Chem.rdchem.Mol</span>
+<span class="sd">            mol object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/openmm/&quot;</span>
+        <span class="n">psf</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reordered.pdb&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">openbabel</span> <span class="kn">import</span> <span class="n">openbabel</span>
+
+        <span class="n">obConversion</span> <span class="o">=</span> <span class="n">openbabel</span><span class="o">.</span><span class="n">OBConversion</span><span class="p">()</span>
+        <span class="n">obConversion</span><span class="o">.</span><span class="n">SetInAndOutFormats</span><span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">,</span> <span class="s2">&quot;sdf&quot;</span><span class="p">)</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="n">openbabel</span><span class="o">.</span><span class="n">OBMol</span><span class="p">()</span>
+        <span class="n">obConversion</span><span class="o">.</span><span class="n">ReadFile</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reordered.pdb&quot;</span><span class="p">)</span>
+        <span class="n">obConversion</span><span class="o">.</span><span class="n">WriteFile</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reduced.sdf&quot;</span><span class="p">)</span>
+
+        <span class="n">suppl</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">SDMolSupplier</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">/step3_input_reduced.sdf&quot;</span><span class="p">,</span> <span class="n">removeHs</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">suppl</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mol</span></div>
+
+
 <div class="viewcode-block" id="SystemStructure._generate_rdkit_mol">
 <a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure._generate_rdkit_mol">[docs]</a>
     <span class="k">def</span> <span class="nf">_generate_rdkit_mol</span><span class="p">(</span>
@@ -490,13 +542,84 @@
 <span class="sd">        mol: rdkit.Chem.rdchem.Mol</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_small_molecule</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-        <span class="p">(</span>
-            <span class="n">atom_idx_to_atom_name</span><span class="p">,</span>
-            <span class="n">_</span><span class="p">,</span>
-            <span class="n">atom_name_to_atom_type</span><span class="p">,</span>
-            <span class="n">atom_idx_to_atom_partial_charge</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_atom_tables_from_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_small_molecule</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+
+            <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sdf_from_pdb</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span>
+
+        <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_atom_tables_from_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">mol</span><span class="p">)</span>
+
+        <span class="c1"># check if psf and sdf have same indeces</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="s2">&quot;First PSF to mol conversion did not work, trying it with the pdb file&quot;</span>
+                    <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="c1"># It&#39;s possible, that there is a sdf file in the TCL folder but the order does not match</span>
+            <span class="c1"># in thuis case, we try to create a matching sdf file by using the pdb file in the openmm folder</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;It seems like the sdf file provided in the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2"> does not have the correct order, trying it again by using the pdb file&quot;</span>
+            <span class="p">)</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sdf_from_pdb</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_atom_tables_from_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">mol</span><span class="p">)</span>
+
+        <span class="c1"># final check if psf and sdf have same indeces</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">&quot;PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mol</span></div>
+
+
+<div class="viewcode-block" id="SystemStructure.generate_atom_tables_from_psf">
+<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure.generate_atom_tables_from_psf">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_atom_tables_from_psf</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span><span class="p">,</span> <span class="n">mol</span><span class="p">:</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdchem</span><span class="o">.</span><span class="n">Mol</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate mapping dictionaries for a molecule in a psf.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        psf: pm.charmm.CharmmPsfFile or parmed.amber._amberparm.AmberParm</span>
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mol: Chem.rdchem.Mol</span>
+<span class="sd">            mol object with atom name and type properties</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">atom_idx_to_atom_name</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">atom_name_to_atom_idx</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">atom_name_to_atom_type</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">atom_idx_to_atom_partial_charge</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1">## We need this for point mutations, because if we give a resid, the mol here</span>
+        <span class="c1">## consists only of on residue which resid is always 1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span>
+            <span class="n">tlc</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">tlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tlc</span>
+
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="n">atom_name</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">atom_index</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">idx</span>
+            <span class="n">atom_type</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span>
+            <span class="n">atom_charge</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">charge</span>
+
+            <span class="n">atom_idx_to_atom_name</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_name</span>
+            <span class="n">atom_name_to_atom_idx</span><span class="p">[</span><span class="n">atom_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_index</span>
+            <span class="n">atom_name_to_atom_type</span><span class="p">[</span><span class="n">atom_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_type</span>
+            <span class="n">atom_idx_to_atom_partial_charge</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_charge</span>
 
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
             <span class="n">atom</span><span class="o">.</span><span class="n">SetProp</span><span class="p">(</span><span class="s2">&quot;atom_name&quot;</span><span class="p">,</span> <span class="n">atom_idx_to_atom_name</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()])</span>
@@ -509,53 +632,7 @@
                 <span class="s2">&quot;atom_charge&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">atom_idx_to_atom_partial_charge</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()])</span>
             <span class="p">)</span>
 
-        <span class="c1"># check if psf and sdf have same indeces</span>
-        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;PSF to mol conversion did not work! Aborting.&quot;</span><span class="p">)</span>
-
         <span class="k">return</span> <span class="n">mol</span></div>
-
-
-<div class="viewcode-block" id="SystemStructure.generate_atom_tables_from_psf">
-<a class="viewcode-back" href="../../autosummary/transformato.system.html#transformato.system.SystemStructure.generate_atom_tables_from_psf">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_atom_tables_from_psf</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">psf</span><span class="p">:</span> <span class="n">pm</span><span class="o">.</span><span class="n">charmm</span><span class="o">.</span><span class="n">CharmmPsfFile</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate mapping dictionaries for a molecule in a psf.</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        psf: pm.charmm.CharmmPsfFile</span>
-<span class="sd">        Returns</span>
-<span class="sd">        ----------</span>
-<span class="sd">        dict&#39;s</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">atom_idx_to_atom_name</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">atom_name_to_atom_idx</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">atom_name_to_atom_type</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">atom_idx_to_atom_partial_charge</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
-            <span class="n">atom_name</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">atom_index</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">idx</span>
-            <span class="n">atom_type</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span>
-            <span class="n">atom_charge</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">charge</span>
-
-            <span class="n">atom_idx_to_atom_name</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_name</span>
-            <span class="n">atom_name_to_atom_idx</span><span class="p">[</span><span class="n">atom_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_index</span>
-            <span class="n">atom_name_to_atom_type</span><span class="p">[</span><span class="n">atom_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_type</span>
-            <span class="n">atom_idx_to_atom_partial_charge</span><span class="p">[</span><span class="n">atom_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom_charge</span>
-
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">atom_idx_to_atom_name</span><span class="p">,</span>
-            <span class="n">atom_name_to_atom_idx</span><span class="p">,</span>
-            <span class="n">atom_name_to_atom_type</span><span class="p">,</span>
-            <span class="n">atom_idx_to_atom_partial_charge</span><span class="p">,</span>
-        <span class="p">)</span></div>
 </div>
 
 </pre></div>

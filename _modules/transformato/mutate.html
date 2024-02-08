@@ -987,6 +987,13 @@
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol1</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_common_core_idx_mol2</span><span class="p">()],</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc2</span><span class="p">],</span>
         <span class="p">):</span>
+            <span class="c1">## We need this for point mutations, because if we give a resid, the mol here</span>
+            <span class="c1">## consists only of on residue which resid is always 1</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">int</span><span class="p">(</span><span class="n">tlc</span><span class="p">)</span>
+                <span class="n">tlc</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">tlc</span> <span class="o">=</span> <span class="n">tlc</span>
             <span class="c1"># set `initial_charge` parameter for Mutation</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
                 <span class="c1"># charge, epsilon and rmin are directly modiefied</span>
@@ -1631,8 +1638,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mutations</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-        <span class="n">tlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span>
-
+        <span class="c1">## We need this for point mutations, because if we give a resid, the mol here</span>
+        <span class="c1">## consists only of on residue which resid is always 1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="p">)</span>
+            <span class="n">tlc</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">tlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">asfe</span><span class="p">:</span>
             <span class="n">psf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">]</span>
             <span class="n">cc_idx</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># no CC in ASFE</span>
@@ -1653,7 +1665,13 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Terminal dummy atoms: </span><span class="si">{</span><span class="n">list_termin_dummy_atoms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">mol_name</span> <span class="o">==</span> <span class="s2">&quot;m2&quot;</span><span class="p">:</span>
-                <span class="n">tlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2_tlc</span>
+                <span class="c1">## We need this for point mutations, because if we give a resid, the mol here</span>
+                <span class="c1">## consists only of on residue which resid is always 1</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s2_tlc</span><span class="p">)</span>
+                    <span class="n">tlc</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">tlc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s2_tlc</span>
 
         <span class="c1"># iterate through atoms and select atoms that need to be mutated</span>
         <span class="n">atoms_to_be_mutated</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2167,7 +2185,16 @@
                     <span class="n">f</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">lambda_value</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)),</span> <span class="mf">0.0</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">lambda_value</span> <span class="o">==</span> <span class="mf">0.5</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">torsion_t</span> <span class="ow">in</span> <span class="n">original_torsion</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                        <span class="c1">## Necessary, because in Amber topologies this is not a list</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="nb">type</span><span class="p">(</span><span class="n">original_torsion</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+                            <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">topologyobjects</span><span class="o">.</span><span class="n">DihedralType</span>
+                        <span class="p">):</span>
+                            <span class="n">orig_torsion_as_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">original_torsion</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">orig_torsion_as_list</span> <span class="o">=</span> <span class="n">original_torsion</span><span class="o">.</span><span class="n">type</span>
+
+                        <span class="k">for</span> <span class="n">torsion_t</span> <span class="ow">in</span> <span class="n">orig_torsion_as_list</span><span class="p">:</span>
                             <span class="n">modified_phi_k</span> <span class="o">=</span> <span class="n">torsion_t</span><span class="o">.</span><span class="n">phi_k</span> <span class="o">*</span> <span class="n">f</span>
                             <span class="n">mod_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                                 <span class="n">mod_type</span><span class="p">(</span>
@@ -2182,7 +2209,14 @@
                     <span class="c1"># torsion present at cc2 needs to be fully turned on at lambda_value == 0.0</span>
                     <span class="n">f</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">min</span><span class="p">((</span><span class="n">lambda_value</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">f</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
-                        <span class="k">for</span> <span class="n">torsion_t</span> <span class="ow">in</span> <span class="n">new_torsion</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+
+                        <span class="c1">## Necessary, because in Amber topologies this is not a list</span>
+                        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">new_torsion</span><span class="o">.</span><span class="n">type</span><span class="p">)</span> <span class="o">==</span> <span class="n">pm</span><span class="o">.</span><span class="n">topologyobjects</span><span class="o">.</span><span class="n">DihedralType</span><span class="p">:</span>
+                            <span class="n">new_torsion_as_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_torsion</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">new_torsion_as_list</span> <span class="o">=</span> <span class="n">new_torsion</span><span class="o">.</span><span class="n">type</span>
+
+                        <span class="k">for</span> <span class="n">torsion_t</span> <span class="ow">in</span> <span class="n">new_torsion_as_list</span><span class="p">:</span>
                             <span class="n">modified_phi_k</span> <span class="o">=</span> <span class="n">torsion_t</span><span class="o">.</span><span class="n">phi_k</span> <span class="o">*</span> <span class="n">f</span>
                             <span class="k">if</span> <span class="n">modified_phi_k</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">:</span>
                                 <span class="n">mod_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
@@ -2383,7 +2417,12 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;LJ scaling factor: </span><span class="si">{</span><span class="n">lambda_value_electrostatic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;VDW scaling factor: </span><span class="si">{</span><span class="n">lambda_value_vdw</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">offset</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">idx</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">idx</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">])</span>
+        <span class="c1">### This give a ValueErrror for point mutation, where a resid is specified</span>
+        <span class="c1">### but here we have only one ligand or the residue, which should be mutated left</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">idx</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">lambda_value_electrostatic</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mutate_charge</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">lambda_value_electrostatic</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
@@ -2471,7 +2510,7 @@
             <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">charge</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">new_charge</span><span class="p">,</span> <span class="n">total_charge</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">new_charge</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">total_charge</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Charge compensation failed. Introducing non integer total charge: </span><span class="si">{</span><span class="n">new_charge</span><span class="si">}</span><span class="s2">. Target total charge: </span><span class="si">{</span><span class="n">total_charge</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span></div>

@@ -144,6 +144,25 @@ Everything is constructed automatically from the charmm-gui folder.
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="transformato.system.SystemStructure._create_sdf_from_pdb">
+<span class="sig-name descname"><span class="pre">_create_sdf_from_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._create_sdf_from_pdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._create_sdf_from_pdb" title="Link to this definition"></a></dt>
+<dd><p>This function creates a sdf file from the file provided in openmm/step3_input.pdb
+and reads in this sdf file. This should now have the same order as the psf topology object
+and is from now on used as the rdkit mol object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>psf</strong> (<em>pm.topologyobjects</em>) – a topology provided by parmed (either CHARMM type or AMBER)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>mol</strong> – mol object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>rdkit.Chem.rdchem.Mol</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties">
 <span class="sig-name descname"><span class="pre">_determine_offset_and_set_possible_dummy_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure._determine_offset_and_set_possible_dummy_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure._determine_offset_and_set_possible_dummy_properties" title="Link to this definition"></a></dt>
 <dd><p>Determines the offset and sets possible properties on the psf.
@@ -230,16 +249,22 @@ Everything is constructed automatically from the charmm-gui folder.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformato.system.SystemStructure.generate_atom_tables_from_psf">
-<span class="sig-name descname"><span class="pre">generate_atom_tables_from_psf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure.generate_atom_tables_from_psf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure.generate_atom_tables_from_psf" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generate_atom_tables_from_psf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/transformato/system.html#SystemStructure.generate_atom_tables_from_psf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#transformato.system.SystemStructure.generate_atom_tables_from_psf" title="Link to this definition"></a></dt>
 <dd><p>Generate mapping dictionaries for a molecule in a psf.
 :param psf:
-:type psf: pm.charmm.CharmmPsfFile</p>
+:type psf: pm.charmm.CharmmPsfFile or parmed.amber._amberparm.AmberParm</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict’s</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mol</strong> – mol object with atom name and type properties</p>
 </dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Chem.rdchem.Mol</p>
+</dd>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>psf</strong> (<em>CharmmPsfFile</em>) – </p></li>
+<li><p><strong>mol</strong> (<em>Mol</em>) – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

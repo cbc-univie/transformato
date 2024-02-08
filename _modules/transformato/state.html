@@ -189,6 +189,9 @@
         <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;waterbox&quot;</span><span class="p">:</span>
             <span class="n">psf</span><span class="o">.</span><span class="n">write_parm</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.parm7&quot;</span><span class="p">)</span>
             <span class="n">psf</span><span class="o">.</span><span class="n">write_rst7</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.rst7&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;complex&quot;</span><span class="p">:</span>
+            <span class="n">psf</span><span class="o">.</span><span class="n">write_parm</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.parm7&quot;</span><span class="p">)</span>
+            <span class="n">psf</span><span class="o">.</span><span class="n">write_rst7</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.rst7&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">env</span> <span class="o">==</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
             <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">write_parm</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.parm7&quot;</span><span class="p">)</span>
             <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">write_rst7</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_base</span><span class="si">}</span><span class="s2">/lig_in_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.rst7&quot;</span><span class="p">)</span>
@@ -478,7 +481,7 @@
 
         <span class="c1"># copy diverse set of helper files for CHARMM</span>
         <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">env</span> <span class="o">!=</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">env</span> <span class="o">!=</span> <span class="s2">&quot;vacuum&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">ff</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;amber&quot;</span><span class="p">:</span>
                 <span class="n">FILES</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="s2">&quot;crystal_image.str&quot;</span><span class="p">,</span>
                     <span class="s2">&quot;step3_pbcsetup.str&quot;</span><span class="p">,</span>
@@ -772,12 +775,13 @@
 
         <span class="n">basedir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">charmm_gui_base</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_copy_ligand_specific_top_and_par</span><span class="p">(</span>
-                <span class="n">basedir</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span>
-            <span class="p">)</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_copy_ligand_specific_str</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">ff</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;charmm&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_copy_ligand_specific_top_and_par</span><span class="p">(</span>
+                    <span class="n">basedir</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span>
+                <span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_copy_ligand_specific_str</span><span class="p">(</span><span class="n">basedir</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">)</span>
 
         <span class="c1"># copy crd file</span>
         <span class="k">try</span><span class="p">:</span>
