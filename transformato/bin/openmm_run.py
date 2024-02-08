@@ -41,7 +41,7 @@ else:
     top = gen_box(top, crd)
 
 # Build system
-if env == "waterbox":
+if env == "waterbox" or env == "complex":
     nboptions = dict(
         nonbondedMethod=inputs.coulomb,
         nonbondedCutoff=inputs.r_off * unit.nanometers,
@@ -53,6 +53,7 @@ elif env == "vacuum":
         nonbondedMethod=NoCutoff,
         constraints=inputs.cons,
     )
+print(f"Applying the following nonbonded options {nboptions}")
 
 if inputs.vdw == "Switch" and env != "vacuum":
     print(f"Setting the vdw switching function to the defalut Openmm Switch")

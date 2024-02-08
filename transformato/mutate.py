@@ -871,6 +871,13 @@ class ProposeMutationRoute(object):
             [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
             [self.dummy_region_cc1, self.dummy_region_cc2],
         ):
+            ## We need this for point mutations, because if we give a resid, the mol here
+            ## consists only of on residue which resid is always 1
+            try:
+                int(tlc)
+                tlc = "1"
+            except ValueError:
+                tlc = tlc
             # set `initial_charge` parameter for Mutation
             for atom in psf.view[f":{tlc}"].atoms:
                 # charge, epsilon and rmin are directly modiefied
@@ -1474,8 +1481,13 @@ class ProposeMutationRoute(object):
         """
 
         mutations = defaultdict(list)
-        tlc = self.s1_tlc
-
+        ## We need this for point mutations, because if we give a resid, the mol here
+        ## consists only of on residue which resid is always 1
+        try:
+            int(self.s1_tlc)
+            tlc = "1"
+        except ValueError:
+            tlc = self.s1_tlc
         if self.asfe:
             psf = self.psf1["waterbox"]
             cc_idx = []  # no CC in ASFE
@@ -1496,7 +1508,13 @@ class ProposeMutationRoute(object):
             logger.info(f"Terminal dummy atoms: {list_termin_dummy_atoms}")
 
             if mol_name == "m2":
-                tlc = self.s2_tlc
+                ## We need this for point mutations, because if we give a resid, the mol here
+                ## consists only of on residue which resid is always 1
+                try:
+                    int(self.s2_tlc)
+                    tlc = "1"
+                except ValueError:
+                    tlc = self.s2_tlc
 
         # iterate through atoms and select atoms that need to be mutated
         atoms_to_be_mutated = []
@@ -1997,7 +2015,16 @@ class CommonCoreTransformation(object):
                     f = max((1 - ((1 - lambda_value) * 2)), 0.0)
 
                     if f > 0.0 or lambda_value == 0.5:
-                        for torsion_t in original_torsion.type:
+                        ## Necessary, because in Amber topologies this is not a list
+                        if (
+                            type(original_torsion.type)
+                            == pm.topologyobjects.DihedralType
+                        ):
+                            orig_torsion_as_list = [original_torsion.type]
+                        else:
+                            orig_torsion_as_list = original_torsion.type
+
+                        for torsion_t in orig_torsion_as_list:
                             modified_phi_k = torsion_t.phi_k * f
                             mod_types.append(
                                 mod_type(
@@ -2012,7 +2039,14 @@ class CommonCoreTransformation(object):
                     # torsion present at cc2 needs to be fully turned on at lambda_value == 0.0
                     f = 1 - min((lambda_value) * 2, 1.0)
                     if f > 0.0:
-                        for torsion_t in new_torsion.type:
+
+                        ## Necessary, because in Amber topologies this is not a list
+                        if type(new_torsion.type) == pm.topologyobjects.DihedralType:
+                            new_torsion_as_list = [new_torsion.type]
+                        else:
+                            new_torsion_as_list = new_torsion.type
+
+                        for torsion_t in new_torsion_as_list:
                             modified_phi_k = torsion_t.phi_k * f
                             if modified_phi_k >= 0.0:
                                 mod_types.append(
@@ -2199,7 +2233,12 @@ class Mutation(object):
         logger.debug(f"LJ scaling factor: {lambda_value_electrostatic}")
         logger.debug(f"VDW scaling factor: {lambda_value_vdw}")
 
-        offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
+        try:
+            offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
+        ### This give a ValueErrror for point mutation, where a resid is specified
+        ### but here we have only one ligand or the residue, which should be mutated left
+        except ValueError:
+            offset = min([a.idx for a in psf.view[f":1"].atoms])
 
         if lambda_value_electrostatic < 1.0:
             self._mutate_charge(psf, lambda_value_electrostatic, offset)
@@ -2284,7 +2323,7 @@ class Mutation(object):
             [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
         )
 
-        if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
+        if not (np.isclose(round(new_charge, 3), round(total_charge, 3), rtol=1e-4)):
             raise RuntimeError(
                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
             )
