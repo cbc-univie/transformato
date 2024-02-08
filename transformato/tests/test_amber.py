@@ -65,16 +65,17 @@ def test_full_amber_test():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_asfe_amber_test():
-    molecule = "methanol"
+    molecule = "ethane-methanol_amber"
 
     configuration = load_config_yaml(
-        config=f"/site/raid3/johannes/amber_tests/data/config/{molecule}_asfe.yaml",
+        config=f"/site/raid3/johannes/amber_tests/data/config/{molecule}.yaml",
         input_dir="/site/raid3/johannes/amber_tests/data/",
         output_dir="/site/raid3/johannes/amber_tests/",
     )
 
     s1 = SystemStructure(configuration, "structure1")
-    s1_to_s2 = ProposeMutationRoute(s1)
+    s2 = SystemStructure(configuration, "structure2")
+    s1_to_s2 = ProposeMutationRoute(s1, s2)
     s1_to_s2.propose_common_core()
     s1_to_s2.finish_common_core()
 
@@ -82,7 +83,19 @@ def test_asfe_amber_test():
     i = IntermediateStateFactory(
         system=s1,
         configuration=configuration,
-        multiple_runs=5,
+        multiple_runs=3,
+    )
+    perform_mutations(
+        configuration=configuration,
+        i=i,
+        mutation_list=mutation_list,
+        nr_of_mutation_steps_charge=3,
+    )
+    mutation_list = s1_to_s2.generate_mutations_to_common_core_for_mol2()
+    i = IntermediateStateFactory(
+        system=s2,
+        configuration=configuration,
+        multiple_runs=3,
     )
     perform_mutations(
         configuration=configuration,
