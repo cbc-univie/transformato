@@ -485,9 +485,6 @@ class IntermediateStateFactory(object):
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
             for env in self.system.envs:
-                print(
-                    f" was geht hier schief: {basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}"
-                )
                 omm_simulation_parameter_source = f"{basedir}/{env}/openmm/{self.configuration['system'][self.system.structure][env]['simulation_parameter']}"
                 omm_simulation_parameter_target = f"{intermediate_state_file_path}/{self.configuration['system'][self.system.structure][env]['intermediate-filename']}"
                 self._overwrite_simulation_script_parameters(
