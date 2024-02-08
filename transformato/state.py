@@ -101,6 +101,9 @@ class IntermediateStateFactory(object):
         if env == "waterbox":
             psf.write_parm(f"{output_file_base}/lig_in_{env}.parm7")
             psf.write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
+        if env == "complex":
+            psf.write_parm(f"{output_file_base}/lig_in_{env}.parm7")
+            psf.write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
         elif env == "vacuum":
             psf[f":{tlc}"].write_parm(f"{output_file_base}/lig_in_{env}.parm7")
             psf[f":{tlc}"].write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
@@ -381,7 +384,7 @@ class IntermediateStateFactory(object):
 
         # copy diverse set of helper files for CHARMM
         for env in self.system.envs:
-            if env != "vacuum":
+            if env != "vacuum" and self.system.ff.lower() != "amber":
                 FILES = [
                     "crystal_image.str",
                     "step3_pbcsetup.str",
@@ -669,12 +672,13 @@ class IntermediateStateFactory(object):
 
         basedir = self.system.charmm_gui_base
 
-        try:
-            self._copy_ligand_specific_top_and_par(
-                basedir, intermediate_state_file_path
-            )
-        except:
-            self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
+        if self.system.ff.lower() == "charmm":
+            try:
+                self._copy_ligand_specific_top_and_par(
+                    basedir, intermediate_state_file_path
+                )
+            except:
+                self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
 
         # copy crd file
         try:

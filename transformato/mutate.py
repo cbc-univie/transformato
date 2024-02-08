@@ -871,6 +871,13 @@ class ProposeMutationRoute(object):
             [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
             [self.dummy_region_cc1, self.dummy_region_cc2],
         ):
+            ## We need this for point mutations, because if we give a resid, the mol here
+            ## consists only of on residue which resid is always 1
+            try:
+                int(tlc)
+                tlc = "1"
+            except ValueError:
+                tlc = tlc
             # set `initial_charge` parameter for Mutation
             for atom in psf.view[f":{tlc}"].atoms:
                 # charge, epsilon and rmin are directly modiefied
@@ -1071,9 +1078,9 @@ class ProposeMutationRoute(object):
         mcs = rdFMCS.FindMCS(
             remmols,
             timeout=120,
-            # ringMatchesRingOnly=True,
-            # completeRingsOnly=True,
-            # ringCompare=Chem.rdFMCS.RingCompare.StrictRingFusion,
+            ringMatchesRingOnly=True,
+            completeRingsOnly=True,
+            ringCompare=Chem.rdFMCS.RingCompare.StrictRingFusion,
             bondCompare=rdFMCS.BondCompare.CompareAny,
             matchValences=False,
         )
@@ -1474,8 +1481,13 @@ class ProposeMutationRoute(object):
         """
 
         mutations = defaultdict(list)
-        tlc = self.s1_tlc
-
+        ## We need this for point mutations, because if we give a resid, the mol here
+        ## consists only of on residue which resid is always 1
+        try:
+            int(self.s1_tlc)
+            tlc = "1"
+        except ValueError:
+            tlc = self.s1_tlc
         if self.asfe:
             psf = self.psf1["waterbox"]
             cc_idx = []  # no CC in ASFE
@@ -1496,7 +1508,13 @@ class ProposeMutationRoute(object):
             logger.info(f"Terminal dummy atoms: {list_termin_dummy_atoms}")
 
             if mol_name == "m2":
-                tlc = self.s2_tlc
+                ## We need this for point mutations, because if we give a resid, the mol here
+                ## consists only of on residue which resid is always 1
+                try:
+                    int(self.s2_tlc)
+                    tlc = "1"
+                except ValueError:
+                    tlc = self.s2_tlc
 
         # iterate through atoms and select atoms that need to be mutated
         atoms_to_be_mutated = []
@@ -2215,7 +2233,12 @@ class Mutation(object):
         logger.debug(f"LJ scaling factor: {lambda_value_electrostatic}")
         logger.debug(f"VDW scaling factor: {lambda_value_vdw}")
 
-        offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
+        try:
+            offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
+        ### This give a ValueErrror for point mutation, where a resid is specified
+        ### but here we have only one ligand or the residue, which should be mutated left
+        except ValueError:
+            offset = min([a.idx for a in psf.view[f":1"].atoms])
 
         if lambda_value_electrostatic < 1.0:
             self._mutate_charge(psf, lambda_value_electrostatic, offset)

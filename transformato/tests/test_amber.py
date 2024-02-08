@@ -126,12 +126,20 @@ def test_amber_analysis():
     reason="Skipping tests that cannot pass in github actions",
 )
 def test_amber_rbfe():
+
     molecule = "jmc_28_ejm_31"
     configuration = load_config_yaml(
         config=f"/site/raid3/johannes/amber_tests/data/config/{molecule}.yaml",
         input_dir="/site/raid3/johannes/amber_tests/data/",
         output_dir="/site/raid3/johannes/amber_tests/",
-    )
+    )   
+
+    # molecule = "1_cano-1_U" 
+    # configuration = load_config_yaml(
+    #     config=f"/site/raid3/johannes/amber_tests/data_GU/config/{molecule}.yaml",
+    #     input_dir="/site/raid3/johannes/amber_tests/data_GU/",
+    #     output_dir="/site/raid3/johannes/amber_tests/",
+    # )
 
     s1 = SystemStructure(configuration, "structure1")
     s2 = SystemStructure(configuration, "structure2")
@@ -139,8 +147,8 @@ def test_amber_rbfe():
 
     s1_to_s2.propose_common_core()
 
-    s1_to_s2.remove_idx_from_common_core_of_mol1([29, 28])
-    s1_to_s2.remove_idx_from_common_core_of_mol2([2, 3])
+    # # s1_to_s2.add_idx_to_common_core_of_mol1([31])
+    # # s1_to_s2.add_idx_to_common_core_of_mol2([30, 31])
 
     s1_to_s2.finish_common_core()
 
