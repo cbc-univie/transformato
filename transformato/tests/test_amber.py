@@ -145,9 +145,9 @@ def test_amber_rbfe():
         config=f"/site/raid3/johannes/amber_tests/data/config/{molecule}.yaml",
         input_dir="/site/raid3/johannes/amber_tests/data/",
         output_dir="/site/raid3/johannes/amber_tests/",
-    )   
+    )
 
-    # molecule = "1_cano-1_U" 
+    # molecule = "1_cano-1_U"
     # configuration = load_config_yaml(
     #     config=f"/site/raid3/johannes/amber_tests/data_GU/config/{molecule}.yaml",
     #     input_dir="/site/raid3/johannes/amber_tests/data_GU/",
