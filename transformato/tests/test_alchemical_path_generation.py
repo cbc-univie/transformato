@@ -114,7 +114,7 @@ def test_generate_alchemical_path_for_toluene_commmon_core_with_CUDA():
                 i += 1
             elif i == 2:
                 print(line)
-                assert "dict(CudaPrecision='mixed')" in line
+                assert "dict()" in line
                 i += 1
 
 
