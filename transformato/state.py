@@ -637,20 +637,19 @@ class IntermediateStateFactory(object):
 
         # copy ligand prm file
         ligand_prm = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
-        toppar_target = (
-            f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
-        )
+        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
         shutil.copyfile(ligand_prm, toppar_target)
-
 
     def _copy_ligand_specific_str(
         self, basedir: str, intermediate_state_file_path: str
     ):
         # If the tlc is no name, we assume that there is no str/rtf file (as for point mutations in RNAs)
         if len(self.system.tlc) > 3:
-        # copy ligand rtf file
+            # copy ligand rtf file
             ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
-            toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.str"
+            toppar_target = (
+                f"{intermediate_state_file_path}/{self.system.tlc.lower()}.str"
+            )
             shutil.copyfile(ligand_rtf, toppar_target)
 
     def _copy_crd_file(self, intermediate_state_file_path: str):
