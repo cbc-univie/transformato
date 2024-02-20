@@ -240,6 +240,7 @@ class SystemStructure(object):
         parameter_files += (
             f"{toppar_dir}/toppar_all36_prot_na_combined.str",
         )  # if modified aminoacids are needed
+        parameter_files += (f"{toppar_dir}/toppar_all36_na_rna_modified.str",)
         if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
             parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
         # set up parameter objec

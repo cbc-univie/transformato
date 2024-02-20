@@ -627,17 +627,23 @@ class IntermediateStateFactory(object):
     def _copy_ligand_specific_top_and_par(
         self, basedir: str, intermediate_state_file_path: str
     ):
-        # copy ligand rtf file
-        ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
-        toppar_target = (
-            f"{intermediate_state_file_path}/{self.system.tlc.lower()}_g.rtf"
-        )
-        shutil.copyfile(ligand_rtf, toppar_target)
+        # If the tlc is no name, we assume that there is no str/rtf file (as for point mutations in RNAs)
+        if len(self.system.tlc) > 3:
+            # copy ligand rtf file
+            ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
+            toppar_target = (
+                f"{intermediate_state_file_path}/{self.system.tlc.lower()}_g.rtf"
+            )
+            shutil.copyfile(ligand_rtf, toppar_target)
 
-        # copy ligand prm file
-        ligand_prm = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
-        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
-        shutil.copyfile(ligand_prm, toppar_target)
+            # copy ligand prm file
+            ligand_prm = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.prm"
+            toppar_target = (
+                f"{intermediate_state_file_path}/{self.system.tlc.lower()}.prm"
+            )
+            shutil.copyfile(ligand_prm, toppar_target)
+        else:
+            pass
 
     def _copy_ligand_specific_str(
         self, basedir: str, intermediate_state_file_path: str
@@ -1106,6 +1112,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 ../../toppar/toppar_all36_lipid_model.str
 ../../toppar/toppar_all36_lipid_prot.str
 ../../toppar/toppar_all36_lipid_sphingo.str
+../../toppar/toppar_all36_na_rna_modified.str
 """
         if os.path.isfile(
             f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
@@ -1115,8 +1122,13 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
-        else:
+        elif len(self.system.tlc) > 3:
             toppar_format += f"""{self.system.tlc.lower()}.str
+dummy_atom_definitions.rtf
+dummy_parameters.prm
+"""
+        else:
+            toppar_format += f"""
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
