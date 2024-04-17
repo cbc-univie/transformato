@@ -17,9 +17,9 @@ import os
 )
 def test_create_asfe_system():
     configuration = load_config_yaml(
-        config=f"{get_testsystems_dir()}/config/methanol-asfe.yaml",
-        input_dir=get_testsystems_dir(),
-        output_dir=get_test_output_dir(),
+        config=f"/scratch/data/marvin/polarizable/transformato_test/data/config/ethanol.yaml",
+        input_dir=f"/scratch/data/marvin/polarizable/transformato_test/data/",
+        output_dir=f"/scratch/data/marvin/polarizable/transformato_test/",
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -39,5 +39,3 @@ def test_create_asfe_system():
         i=i,
         mutation_list=mutation_list,
     )
-    
-    print("Hello")

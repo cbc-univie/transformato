@@ -384,21 +384,21 @@ class IntermediateStateFactory(object):
 
         # copy diverse set of helper files for CHARMM
         for env in self.system.envs:
-            if env != "vacuum" and self.system.ff.lower() != "amber":
-                FILES = [
-                    "crystal_image.str",
-                    "step3_pbcsetup.str",
-                ]
-                for f in FILES:
-                    try:
-                        charmm_source = f"{basedir}/{env}/{f}"
-                        charmm_target = (
-                            f"{intermediate_state_file_path}/charmm_{env}_{f}"
-                        )
-                        shutil.copyfile(charmm_source, charmm_target)
-                    except FileNotFoundError:
-                        logger.critical(f"Could not find file: {f}")
-                        raise
+            # if env != "vacuum" and self.system.ff.lower() != "amber":
+            #     FILES = [
+            #         "crystal_image.str",
+            #         "step3_pbcsetup.str",
+            #     ]
+            #     for f in FILES:
+            #         try:
+            #             charmm_source = f"{basedir}/{env}/{f}"
+            #             charmm_target = (
+            #                 f"{intermediate_state_file_path}/charmm_{env}_{f}"
+            #             )
+            #             shutil.copyfile(charmm_source, charmm_target)
+            #         except FileNotFoundError:
+            #             logger.critical(f"Could not find file: {f}")
+            #             raise
 
             # copy rst files
             rst_file_source = f"{basedir}/{env}/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
@@ -674,13 +674,13 @@ class IntermediateStateFactory(object):
 
         basedir = self.system.charmm_gui_base
 
-        if self.system.ff.lower() == "charmm":
-            try:
-                self._copy_ligand_specific_top_and_par(
-                    basedir, intermediate_state_file_path
-                )
-            except:
-                self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
+        # if self.system.ff.lower() == "charmm":
+        #     try:
+        #         self._copy_ligand_specific_top_and_par(
+        #             basedir, intermediate_state_file_path
+        #         )
+        #     except:
+        #         self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
 
         # copy crd file
         try:
@@ -828,7 +828,7 @@ class IntermediateStateFactory(object):
         view = psf.view[f":{tlc}"]
         # writing atom parameters
         for atom in view.atoms:
-            if hasattr(atom, "initial_type"):
+            if hasattr(atom, "initial_type") and atom.type != "DRUD":
                 if set([atom.type]) in already_seen:
                     continue
                 else:
@@ -855,7 +855,9 @@ class IntermediateStateFactory(object):
         already_seen = []
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
-            if any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
+            if atom1.type == "DRUD" or atom2.type == "DRUD" or atom1.type == "LPD" or atom2.type == "LPD":
+                pass
+            elif any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
                 if set([atom1.type, atom2.type]) in already_seen:
                     continue
                 else:

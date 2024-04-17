@@ -1583,7 +1583,11 @@ class ProposeMutationRoute(object):
                             steric_mutation_to_default=True,
                         )
                         mutations["default-lj"].append(m)
-                    elif atom_idx in hydrogens or psf[atom_idx].type == "LPH":
+                    elif (
+                        atom_idx in hydrogens
+                        or psf[atom_idx].type.startswith("LP")
+                        or psf[atom_idx].type.startswith("DRUD")
+                    ):
                         # already mutated
                         continue
                     else:
