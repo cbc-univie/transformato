@@ -17,7 +17,7 @@ import os
 )
 def test_create_asfe_system():
     configuration = load_config_yaml(
-        config=f"/scratch/data/marvin/polarizable/transformato_test/data/config/ethanol.yaml",
+        config=f"/scratch/data/marvin/polarizable/transformato_test/data/config/acetamide.yaml",
         input_dir=f"/scratch/data/marvin/polarizable/transformato_test/data/",
         output_dir=f"/scratch/data/marvin/polarizable/transformato_test/",
     )

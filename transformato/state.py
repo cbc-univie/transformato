@@ -855,7 +855,7 @@ class IntermediateStateFactory(object):
         already_seen = []
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
-            if atom1.type == "DRUD" or atom2.type == "DRUD" or atom1.type == "LPD" or atom2.type == "LPD":
+            if atom1.type == "DRUD" or atom2.type == "DRUD" or atom1.type.startswith("LP") or atom2.type.startswith("LP"):
                 pass
             elif any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
                 if set([atom1.type, atom2.type]) in already_seen:

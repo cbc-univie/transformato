@@ -198,7 +198,7 @@ def perform_mutations(
             and configuration["simulation"]["free-energy-type"] == "asfe"
         ):
             for lambda_value in np.linspace(
-                0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
+                0.5, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
             ):
                 print("####################")
                 print(
