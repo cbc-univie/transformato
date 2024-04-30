@@ -124,6 +124,19 @@ class FreeEnergyCalculator(object):
         system = XmlSerializer.deserialize(open(file_name).read())
         file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_integrator.xml"
         integrator = XmlSerializer.deserialize(open(file_name).read())
+
+
+        # ##########
+        # integrator = VVIntegrator(
+        #     inputs.temp * kelvin,
+        #     10 / picosecond,
+        #     1 * kelvin,
+        #     200 / picosecond,
+        #     0.0005 * picoseconds,
+        # )
+
+        # integrator.setMaxDrudeDistance(0.2 * angstroms)
+
         if self.forcefield == "charmm":
             psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
             psf = CharmmPsfFile(psf_file_path)
