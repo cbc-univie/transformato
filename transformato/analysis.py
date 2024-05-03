@@ -125,7 +125,6 @@ class FreeEnergyCalculator(object):
         file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_integrator.xml"
         integrator = XmlSerializer.deserialize(open(file_name).read())
 
-
         # ##########
         # integrator = VVIntegrator(
         #     inputs.temp * kelvin,
