@@ -536,7 +536,7 @@ class IntermediateStateFactory(object):
                 logger.critical(f"Could not find file: {f}")
 
         # copy omm simulation script
-        omm_simulation_script_source = f"{self.configuration['bin_dir']}/openmm_run.py"
+        omm_simulation_script_source = f"{self.configuration['bin_dir']}/drude_openmm_run.py" #ATTENTION: NEEDS TO BE MERGED IN THE FUTURE
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
@@ -867,20 +867,21 @@ class IntermediateStateFactory(object):
                 atom1.type.startswith("LP")
                 or atom2.type.startswith("LP")
             ):
-                if set([atom1.type, atom2.type]) in already_seen:
-                    continue
-                else:
-                    already_seen.append(set([atom1.type, atom2.type]))
-                    logger.debug(
-                        "{:7} {:7} {:9.5f} {:9.5f} \n".format(
-                            str(atom1.type), str(atom2.type), 0, 0
+                if any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
+                    if set([atom1.type, atom2.type]) in already_seen:
+                        continue
+                    else:
+                        already_seen.append(set([atom1.type, atom2.type]))
+                        logger.debug(
+                            "{:7} {:7} {:9.5f} {:9.5f} \n".format(
+                                str(atom1.type), str(atom2.type), 0, 0
+                            )
                         )
-                    )
-                    prm_file_handler.write(
-                        "{:7} {:7} {:9.5f} {:9.5f} \n".format(
-                            str(atom1.type), str(atom2.type), 0, 0
+                        prm_file_handler.write(
+                            "{:7} {:7} {:9.5f} {:9.5f} \n".format(
+                                str(atom1.type), str(atom2.type), 0, 0
+                            )
                         )
-                    )
 
             elif any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
                 if set([atom1.type, atom2.type]) in already_seen:
@@ -1150,14 +1151,16 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
-        elif len(self.system.tlc) > 3:
+        elif os.path.isfile(
+            f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
+        ):
             toppar_format += f"""{self.system.tlc.lower()}.str
+{self.system.tlc.lower()}.prm
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
         else:
-            toppar_format += f"""
-dummy_atom_definitions.rtf
+            toppar_format += f"""dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
 
