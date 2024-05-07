@@ -829,7 +829,7 @@ class IntermediateStateFactory(object):
         # writing atom parameters
         for atom in view.atoms:
             if hasattr(atom, "initial_type") and atom.type != "DRUD":
-            #if hasattr(atom, "initial_type") and not atom.type.startswith("D"):
+                # if hasattr(atom, "initial_type") and not atom.type.startswith("D"):
 
                 if set([atom.type]) in already_seen:
                     continue
@@ -857,13 +857,11 @@ class IntermediateStateFactory(object):
         already_seen = []
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
-            if (
-                atom1.type == "DRUD"
-                or atom2.type == "DRUD"):
+            if atom1.type == "DRUD" or atom2.type == "DRUD":
                 pass
             elif (
-                #atom1.type == "DRUD"
-                #or atom2.type == "DRUD" 
+                # atom1.type == "DRUD"
+                # or atom2.type == "DRUD"
                 atom1.type.startswith("LP")
                 or atom2.type.startswith("LP")
             ):
@@ -909,7 +907,6 @@ class IntermediateStateFactory(object):
                             str(atom2.type),
                             bond.mod_type.k,
                             bond.mod_type.req,
-                    
                         )
                     )
                 except AttributeError:
