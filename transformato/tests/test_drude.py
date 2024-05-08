@@ -40,6 +40,7 @@ def test_create_asfe_system():
         mutation_list=mutation_list,
     )
 
+
 @pytest.mark.skipif(
     os.getenv("CI") == "true",
     reason="Skipping tests that cannot pass in github actions",
