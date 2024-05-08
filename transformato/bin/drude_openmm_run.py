@@ -16,7 +16,7 @@ import openmm.unit as unit
 from openmm.unit import *
 from openmm import *
 from openmm.app import *
-from velocityverletplugin import VVIntegrator
+#from velocityverletplugin import VVIntegrator
 
 sys.path.append("/scratch/data/marvin/polarizable/")
 # from reporter import DrudeTemperatureReporter
@@ -66,9 +66,9 @@ if inputs.vdw == "LJPME" and env != "vacuum":
     print(f"Using LJPME for the vdw long range interactions")
     nboptions["nonbondedMethod"] = LJPME
 if fftype == "amber":
-    system = top.createSystem(**nboptions, temperature=inputs.temperature)
+    system = top.createSystem(**nboptions)
 else:
-    system = top.createSystem(params, **nboptions, temperature=inputs.temperature)
+    system = top.createSystem(params, **nboptions)
 
 
 if inputs.vdw == "Force-switch" and fftype != "amber" and env != "vacuum":
@@ -93,7 +93,7 @@ if env != "vacuum":
 #     inputs.temp * kelvin, 1 / unit.picosecond, inputs.dt * unit.picoseconds
 # )
 
-integrator = VVIntegrator(
+integrator = DrudeNoseHooverIntegrator(
     inputs.temp * kelvin,
     10 / picosecond,
     1 * kelvin,
@@ -101,11 +101,11 @@ integrator = VVIntegrator(
     0.0005 * picoseconds,
 )
 
-integrator.setMaxDrudeDistance(0.2 * angstroms)
-if integrator.getMaxDrudeDistance() == 0:
-    print("No Drude Hard Wall Contraint in use")
-else:
-    print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
+# integrator.setMaxDrudeDistance(0.2 * angstroms)
+# if integrator.getMaxDrudeDistance() == 0:
+#     print("No Drude Hard Wall Contraint in use")
+# else:
+#     print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
 
 
 # Set platform
@@ -199,7 +199,7 @@ file_name = f"lig_in_{env}"
 state = simulation.context.getState(getPositions=True, getVelocities=True)
 with open(file_name + ".rst", "w") as f:
     f.write(XmlSerializer.serialize(state))
-# with open(file_name + "_integrator.xml", "w") as outfile:
-#     outfile.write(XmlSerializer.serialize(integrator))
+with open(file_name + "_integrator.xml", "w") as outfile:
+    outfile.write(XmlSerializer.serialize(integrator))
 with open(file_name + "_system.xml", "w") as outfile:
     outfile.write(XmlSerializer.serialize(system))
