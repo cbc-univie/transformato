@@ -17,9 +17,9 @@ import os
 )
 def test_create_asfe_system():
     configuration = load_config_yaml(
-        config=f"/scratch/data/marvin/polarizable/transformato_test/data/config/acetamide.yaml",
+        config=f"/scratch/data/marvin/polarizable/transformato_test/data/config/methanol.yaml",
         input_dir=f"/scratch/data/marvin/polarizable/transformato_test/data/",
-        output_dir=f"/site/raid5/marvin/production_models",
+        output_dir=f"/site/raid5/marvin/production_models/quarantine/",
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -35,7 +35,32 @@ def test_create_asfe_system():
 
     perform_mutations(
         configuration=configuration,
-        nr_of_mutation_steps_charge=2,
+        nr_of_mutation_steps_charge=5,
         i=i,
         mutation_list=mutation_list,
     )
+
+@pytest.mark.skipif(
+    os.getenv("CI") == "true",
+    reason="Skipping tests that cannot pass in github actions",
+)
+def test_analyze_drude():
+
+    configuration = load_config_yaml(
+        config=f"/scratch/data/marvin/polarizable/transformato_test/data/config/methanol.yaml",
+        input_dir=f"/scratch/data/marvin/polarizable/transformato_test/data/",
+        output_dir=f"/site/raid5/marvin/production_models/",
+    )
+
+    ddG_openMM, dddG, _ = postprocessing(
+        configuration,
+        name="methanol",
+        engine="openMM",
+        max_snapshots=50,
+        num_proc=6,
+        analyze_traj_with="mda",
+        show_summary=True,
+        multiple_runs=1,
+    )
+
+    print(f"Free energy is {ddG_openMM} +- {dddG} kT")

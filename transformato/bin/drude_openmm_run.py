@@ -40,7 +40,7 @@ if os.path.isfile(f"lig_in_{env}.parm7"):
 else:
     fftype = "charmm"
     params = read_params("toppar.str")
-    top = CharmmPsfFile(f"lig_in_{env}.psf")
+    top = CharmmPsfFile(f"lig_in_{env}_corr_wrapped.psf") #compatible with charmm calcs by SB
     crd = read_crd(f"lig_in_{env}.crd")
     top = gen_box(top, crd)
 
@@ -66,9 +66,9 @@ if inputs.vdw == "LJPME" and env != "vacuum":
     print(f"Using LJPME for the vdw long range interactions")
     nboptions["nonbondedMethod"] = LJPME
 if fftype == "amber":
-    system = top.createSystem(**nboptions)
+    system = top.createSystem(**nboptions, temperature=inputs.temperature)
 else:
-    system = top.createSystem(params, **nboptions)
+    system = top.createSystem(params, **nboptions, temperature=inputs.temperature)
 
 
 if inputs.vdw == "Force-switch" and fftype != "amber" and env != "vacuum":

@@ -123,25 +123,24 @@ class FreeEnergyCalculator(object):
         file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_system.xml"
         system = XmlSerializer.deserialize(open(file_name).read())
         file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_integrator.xml"
-        integrator = VVIntegrator(
-            inputs.temp * kelvin,
-            10 / picosecond,
-            1 * kelvin,
-            200 / picosecond,
-            0.0005 * picoseconds,
-        )
-        # integrator = XmlSerializer.deserialize(open(file_name).read())
+        try:
+            integrator = XmlSerializer.deserialize(open(file_name).read())
+        except FileNotFoundError:
+            logger.info(
+                "A Drude simulations is assume, will add the VVIntegrator for analysis"
+            )
 
-        # ##########
-        # integrator = VVIntegrator(
-        #     inputs.temp * kelvin,
-        #     10 / picosecond,
-        #     1 * kelvin,
-        #     200 / picosecond,
-        #     0.0005 * picoseconds,
-        # )
+            from velocityverletplugin import VVIntegrator
 
-        # integrator.setMaxDrudeDistance(0.2 * angstroms)
+            integrator = VVIntegrator(
+                303.15 * unit.kelvin,
+                10 / unit.picosecond,
+                1 * unit.kelvin,
+                200 / unit.picosecond,
+                0.0005 * unit.picosecond,
+            )
+
+            integrator.setMaxDrudeDistance(0.2 * unit.angstroms)
 
         if self.forcefield == "charmm":
             psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
