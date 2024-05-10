@@ -308,7 +308,7 @@ class SystemStructure(object):
                     if hasattr(atom, "props"):
                         prop_idx.append(atom.idx)
                         properties.append(atom.props)
-                psf = psf[f":MEOH"]  # the important part
+                psf = psf[f":{self.tlc}"]  # the important part
                 psf.groups = g
                 for atom in psf.atoms:
                     if atom.idx in frame_idx:
