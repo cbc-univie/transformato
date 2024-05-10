@@ -298,15 +298,24 @@ class SystemStructure(object):
                 g = psf.groups
                 frame_idx = []
                 frame_frame = []
+                prop_idx = []
+                properties = []
                 for atom in psf.atoms:
                     if hasattr(atom, "frame_type"):
                         frame_idx.append(atom.idx)
                         frame_frame.append(atom.frame_type)
-                psf = psf[f":{self.tlc}"]  # the important part
+                for atom in psf.atoms:
+                    if hasattr(atom, "props"):
+                        prop_idx.append(atom.idx)
+                        properties.append(atom.props)
+                psf = psf[f":MEOH"]  # the important part
                 psf.groups = g
                 for atom in psf.atoms:
                     if atom.idx in frame_idx:
                         atom.frame_type = frame_frame[frame_idx.index(atom.idx)]
+                for atom in psf.atoms:
+                    if atom.idx in prop_idx:
+                        atom.props = properties[prop_idx.index(atom.idx)]
             else:
                 psf = psf[f":{self.tlc}"]
 
