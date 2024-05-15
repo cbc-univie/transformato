@@ -47,7 +47,7 @@ class IntermediateStateFactory(object):
         self.current_step = 1
         self.multiple_runs = multiple_runs
         try:
-            self.drude: str = str.lower(configuration["simulation"]["drude"])
+            self.drude: bool = configuration["simulation"]["drude"]
         except KeyError:
             self.drude: bool = False
 
