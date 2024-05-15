@@ -40,7 +40,7 @@ if os.path.isfile(f"lig_in_{env}.parm7"):
 else:
     fftype = "charmm"
     params = read_params("toppar.str")
-    top = CharmmPsfFile(f"lig_in_{env}_corr_wrapped.psf") #compatible with charmm calcs by SB
+    top = CharmmPsfFile(f"lig_in_{env}.psf") #compatible with charmm calcs by SB
     crd = read_crd(f"lig_in_{env}.crd")
     top = gen_box(top, crd)
 
