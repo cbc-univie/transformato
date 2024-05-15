@@ -536,8 +536,11 @@ class IntermediateStateFactory(object):
                 logger.critical(f"Could not find file: {f}")
 
         # copy omm simulation script
-        omm_simulation_script_source = f"{self.configuration['bin_dir']}/drude_openmm_run.py"  # ATTENTION: NEEDS TO BE MERGED IN THE FUTURE
-        omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
+        try:
+            drude = str.lower(configuration["simulation"]["drude"])
+            omm_simulation_script_source = f"{self.configuration['bin_dir']}/drude_openmm_run.py"  # ATTENTION: NEEDS TO BE MERGED IN THE FUTURE
+        except KeyError:
+            omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
         self._check_hmr(omm_simulation_script_target)
@@ -1139,8 +1142,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 ../../toppar/toppar_all36_lipid_sphingo.str
 ../../toppar/toppar_all36_na_rna_modified.str
 """
-
-        toppar_dir = f"{charmm_gui_env}/toppar"
+        toppar_dir = f"{self.path}/../../toppar"
 
         if os.path.isdir(toppar_dir):
             pass
@@ -1162,7 +1164,6 @@ dummy_parameters.prm
             f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
         ):
             toppar_format += f"""{self.system.tlc.lower()}.str
-{self.system.tlc.lower()}.prm
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
