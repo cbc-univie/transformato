@@ -46,6 +46,10 @@ class IntermediateStateFactory(object):
         self.output_files = []
         self.current_step = 1
         self.multiple_runs = multiple_runs
+        try:
+            self.drude: str = str.lower(configuration["simulation"]["drude"])
+        except KeyError:
+            self.drude: bool = False
 
     def endstate_correction(self):
         logger.info(f"Will create script for endstate correction")
@@ -651,7 +655,7 @@ class IntermediateStateFactory(object):
         self, basedir: str, intermediate_state_file_path: str
     ):
         # If the tlc is no name, we assume that there is no str/rtf file (as for point mutations in RNAs)
-        if len(self.system.tlc) > 3:
+        if not self.drude:
             # copy ligand rtf file
             ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
             toppar_target = (
@@ -681,13 +685,13 @@ class IntermediateStateFactory(object):
 
         basedir = self.system.charmm_gui_base
 
-        # if self.system.ff.lower() == "charmm":
-        #     try:
-        #         self._copy_ligand_specific_top_and_par(
-        #             basedir, intermediate_state_file_path
-        #         )
-        #     except:
-        #         self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
+        if self.system.ff.lower() == "charmm":
+            try:
+                self._copy_ligand_specific_top_and_par(
+                    basedir, intermediate_state_file_path
+                )
+            except:
+                self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
 
         # copy crd file
         try:
