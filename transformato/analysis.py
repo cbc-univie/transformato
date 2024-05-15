@@ -126,7 +126,7 @@ class FreeEnergyCalculator(object):
         integrator = XmlSerializer.deserialize(open(file_name).read())
 
         if self.forcefield == "charmm":
-            psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_corr_wrapped.psf"
+            psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
             psf = CharmmPsfFile(psf_file_path)
         elif self.forcefield == "amber":
             psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.parm7"
