@@ -1146,7 +1146,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 ../../toppar/toppar_all36_lipid_sphingo.str
 ../../toppar/toppar_all36_na_rna_modified.str
 """
-        toppar_dir = f"{self.path}/../../toppar"
+        toppar_dir = f"{self.path}/../toppar"
 
         if os.path.isdir(toppar_dir):
             pass
