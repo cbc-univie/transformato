@@ -540,10 +540,9 @@ class IntermediateStateFactory(object):
                 logger.critical(f"Could not find file: {f}")
 
         # copy omm simulation script
-        try:
-            drude = str.lower(self.configuration["simulation"]["drude"])
+        if self.drude:
             omm_simulation_script_source = f"{self.configuration['bin_dir']}/drude_openmm_run.py"  # ATTENTION: NEEDS TO BE MERGED IN THE FUTURE
-        except KeyError:
+        else:
             omm_simulation_script_source = (
                 f"{self.configuration['bin_dir']}/openmm_run.py"
             )
