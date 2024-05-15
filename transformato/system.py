@@ -299,6 +299,7 @@ class SystemStructure(object):
             # which is necessary for the check_for_lp function
             if lp:
                 g = psf.groups
+                oldFlags = psf.flags
                 frame_idx = []
                 frame_frame = []
                 prop_idx = []
@@ -313,6 +314,7 @@ class SystemStructure(object):
                         properties.append(atom.props)
                 psf = psf[f":{self.tlc}"]  # the important part
                 psf.groups = g
+                psf.flags = oldFlags
                 for atom in psf.atoms:
                     if atom.idx in frame_idx:
                         atom.frame_type = frame_frame[frame_idx.index(atom.idx)]
