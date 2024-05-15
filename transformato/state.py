@@ -537,7 +537,7 @@ class IntermediateStateFactory(object):
 
         # copy omm simulation script
         try:
-            drude = str.lower(configuration["simulation"]["drude"])
+            drude = str.lower(self.configuration["simulation"]["drude"])
             omm_simulation_script_source = f"{self.configuration['bin_dir']}/drude_openmm_run.py"  # ATTENTION: NEEDS TO BE MERGED IN THE FUTURE
         except KeyError:
             omm_simulation_script_target = (
