@@ -17,9 +17,9 @@ import os
 )
 def test_create_asfe_system():
     configuration = load_config_yaml(
-        config=f"/scratch/data/marvin/polarizable/transformato_test/data/config/methanol.yaml",
-        input_dir=f"/scratch/data/marvin/polarizable/transformato_test/data/",
-        output_dir=f"/site/raid5/marvin/production_models/quarantine/methanol_output",
+        config=f"/site/raid5/marvin/drude_test/data/config/methanol.yaml",
+        input_dir=f"/site/raid5/marvin/drude_test/data/",
+        output_dir=f"/site/raid5/marvin/drude_test",
     )
 
     s1 = SystemStructure(configuration, "structure1")
@@ -48,9 +48,9 @@ def test_create_asfe_system():
 def test_analyze_drude():
 
     configuration = load_config_yaml(
-        config=f"/scratch/data/marvin/polarizable/transformato_test/data/config/methanol.yaml",
-        input_dir=f"/scratch/data/marvin/polarizable/transformato_test/data/",
-        output_dir=f"/site/raid5/marvin/production_models/",
+        config=f"/site/raid5/marvin/drude_test/data/config/methanol.yaml",
+        input_dir=f"/site/raid5/marvin/drude_test/data/",
+        output_dir=f"/site/raid5/marvin/drude_test",
     )
 
     ddG_openMM, dddG, _ = postprocessing(
