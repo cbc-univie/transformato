@@ -539,10 +539,12 @@ class IntermediateStateFactory(object):
         try:
             drude = str.lower(self.configuration["simulation"]["drude"])
             omm_simulation_script_source = f"{self.configuration['bin_dir']}/drude_openmm_run.py"  # ATTENTION: NEEDS TO BE MERGED IN THE FUTURE
-        except:
-            omm_simulation_script_target = (
-                f"{intermediate_state_file_path}/openmm_run.py"
-            )
+        except KeyError:
+            omm_simulation_script_source = f"{self.configuration['bin_dir']}/openmm_run.py" 
+
+        omm_simulation_script_target = (
+            f"{intermediate_state_file_path}/openmm_run.py"
+        )
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
         self._check_hmr(omm_simulation_script_target)
