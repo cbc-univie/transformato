@@ -1138,7 +1138,19 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 ../../toppar/toppar_all36_lipid_prot.str
 ../../toppar/toppar_all36_lipid_sphingo.str
 ../../toppar/toppar_all36_na_rna_modified.str
-../../toppar/toppar_drude_main_protein_2023a_flex.str
+"""
+
+        toppar_dir = f"{charmm_gui_env}/toppar"
+
+        if os.path.isdir(toppar_dir):
+            pass
+        else:
+            toppar_dir = get_toppar_dir()
+
+        if os.path.isfile(
+            f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str"
+        ):
+            toppar_format += f"""../../toppar/toppar_drude_main_protein_2023a_flex.str
 """
         if os.path.isfile(
             f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
