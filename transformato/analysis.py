@@ -133,7 +133,7 @@ class FreeEnergyCalculator(object):
             psf = AmberPrmtopFile(psf_file_path)
         # generate simulations object and set states
         if not isinstance(self.configuration["simulation"]["GPU"], bool):
-            if  self.configuration["simulation"]["GPU"].upper() == "OPENCL":
+            if self.configuration["simulation"]["GPU"].upper() == "OPENCL":
                 logger.info(
                     "We are using the OpenCL platform for the analysis as specified in the yaml file"
                 )
