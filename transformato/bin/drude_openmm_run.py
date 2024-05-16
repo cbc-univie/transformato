@@ -16,10 +16,6 @@ import openmm.unit as unit
 from openmm.unit import *
 from openmm import *
 from openmm.app import *
-#from velocityverletplugin import VVIntegrator
-
-sys.path.append("/scratch/data/marvin/polarizable/")
-# from reporter import DrudeTemperatureReporter
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-odcd", metavar="DCDFILE", dest="odcd")
@@ -187,10 +183,6 @@ simulation.reporters.append(
         separator="\t",
     )
 )
-
-# simulation.reporters.append(
-#     DrudeTemperatureReporter("drude_temp_file.txt", inputs.nstout)
-# )
 
 simulation.step(inputs.nstep)
 
