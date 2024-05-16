@@ -153,7 +153,7 @@ class FreeEnergyCalculator(object):
             logger.info("We are using CUDA")
             platform = Platform.getPlatformByName("CUDA")
             simulation = Simulation(psf.topology, system, integrator, platform)
-#            except AttributeError:
+        #            except AttributeError:
         else:
             logger.info("We are using CPU")
             platform = Platform.getPlatformByName("CPU")
