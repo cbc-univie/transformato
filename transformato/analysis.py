@@ -150,10 +150,10 @@ class FreeEnergyCalculator(object):
             logger.info("We are using CUDA")
             platform = Platform.getPlatformByName("CUDA")
             simulation = Simulation(psf.topology, system, integrator, platform)
-#        elif self.configuration["simulation"]["GPU"].upper() == "CUDA":
-#            logger.info("We are using CUDA")
-#            platform = Platform.getPlatformByName("CUDA")
-#            simulation = Simulation(psf.topology, system, integrator, platform)
+        #        elif self.configuration["simulation"]["GPU"].upper() == "CUDA":
+        #            logger.info("We are using CUDA")
+        #            platform = Platform.getPlatformByName("CUDA")
+        #            simulation = Simulation(psf.topology, system, integrator, platform)
         #            except AttributeError:
         else:
             logger.info("We are using CPU")
