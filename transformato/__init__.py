@@ -25,3 +25,6 @@ import logging
 FORMAT = "[%(filename)s:%(lineno)s - %(funcName)1s()] %(message)s"
 # set logging level
 logging.basicConfig(format=FORMAT, datefmt="%d-%m-%Y:%H:%M", level=logging.INFO)
+
+from . import _version
+__version__ = _version.get_versions()['version']
