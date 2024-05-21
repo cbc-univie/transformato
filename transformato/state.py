@@ -1158,6 +1158,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 
         if os.path.isfile(f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str"):
             toppar_format += f"""../../toppar/toppar_drude_main_protein_2023a_flex.str
+            HELLO!
 """
         if os.path.isfile(
             f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
@@ -1166,6 +1167,7 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 {self.system.tlc.lower()}.prm
 dummy_atom_definitions.rtf
 dummy_parameters.prm
+HELLO!!
 """
         elif not self.drude and (
             os.path.isfile(
@@ -1175,10 +1177,12 @@ dummy_parameters.prm
             toppar_format += f"""{self.system.tlc.lower()}.str
 dummy_atom_definitions.rtf
 dummy_parameters.prm
+HELLO!!!
 """
         else:
             toppar_format += f"""dummy_atom_definitions.rtf
 dummy_parameters.prm
+HELLO!!!!
 """
 
         f = open(f"{output_file_base}/toppar.str", "w+")
