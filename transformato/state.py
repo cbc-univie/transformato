@@ -1169,7 +1169,7 @@ dummy_parameters.prm
 """
         elif os.path.isfile(
             f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
-        ):
+        ) and not self.drude:
             toppar_format += f"""{self.system.tlc.lower()}.str
 dummy_atom_definitions.rtf
 dummy_parameters.prm
