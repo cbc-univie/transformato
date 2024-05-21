@@ -29,3 +29,6 @@ logging.basicConfig(format=FORMAT, datefmt="%d-%m-%Y:%H:%M", level=logging.INFO)
 from . import _version
 
 __version__ = _version.get_versions()["version"]
+
+from . import _version
+__version__ = _version.get_versions()['version']
