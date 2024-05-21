@@ -1167,11 +1167,10 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
-        elif (
+        elif not self.drude and (
             os.path.isfile(
                 f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
             )
-            and not self.drude
         ):
             toppar_format += f"""{self.system.tlc.lower()}.str
 dummy_atom_definitions.rtf
