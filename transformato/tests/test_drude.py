@@ -17,7 +17,7 @@ import os
 )
 def test_create_asfe_system():
     configuration = load_config_yaml(
-        config=f"/site/raid5/marvin/drude_test/data/config/methanol.yaml",
+        config=f"/site/raid5/marvin/drude_test/data/config/acetamide.yaml",
         input_dir=f"/site/raid5/marvin/drude_test/data/",
         output_dir=f"/site/raid5/marvin/drude_test",
     )

@@ -1170,6 +1170,7 @@ dummy_atom_definitions.rtf
 dummy_parameters.prm
 HELLO!!
 """
+            print(self.drude)
         elif not self.drude and (
             os.path.isfile(
                 f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
