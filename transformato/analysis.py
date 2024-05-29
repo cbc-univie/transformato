@@ -728,7 +728,9 @@ class FreeEnergyCalculator(object):
     def free_energy_differences(self, env="vacuum"):
         """matrix of free energy differences"""
         try:
-            r = self.mbar_results[env].getFreeEnergyDifferences(return_dict=True)["Delta_f"]
+            r = self.mbar_results[env].getFreeEnergyDifferences(return_dict=True)[
+                "Delta_f"
+            ]
         except KeyError:
             raise KeyError(f"Free energy difference not obtained for : {env}")
         return r
@@ -745,7 +747,9 @@ class FreeEnergyCalculator(object):
     def free_energy_difference_uncertainties(self, env="vacuum"):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
         try:
-            r = self.mbar_results[env].getFreeEnergyDifferences(return_dict=True)["dDelta_f"]
+            r = self.mbar_results[env].getFreeEnergyDifferences(return_dict=True)[
+                "dDelta_f"
+            ]
         except KeyError:
             raise KeyError(f"Free energy uncertanties not obtained for : {env}")
         return r
