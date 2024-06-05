@@ -36,7 +36,7 @@ if os.path.isfile(f"lig_in_{env}.parm7"):
 else:
     fftype = "charmm"
     params = read_params("toppar.str")
-    top = CharmmPsfFile(f"lig_in_{env}.psf")
+    top = CharmmPsfFile(f"lig_in_{env}.psf") #compatible with charmm calcs by SB
     crd = read_crd(f"lig_in_{env}.crd")
     top = gen_box(top, crd)
 
@@ -85,13 +85,28 @@ if env != "vacuum":
     barostat = MonteCarloBarostat(inputs.p_ref * bar, inputs.temp * kelvin)
     system.addForce(barostat)
 
-integrator = LangevinIntegrator(
-    inputs.temp * kelvin, 1 / unit.picosecond, inputs.dt * unit.picoseconds
+# integrator = LangevinIntegrator(
+#     inputs.temp * kelvin, 1 / unit.picosecond, inputs.dt * unit.picoseconds
+# )
+
+integrator = DrudeNoseHooverIntegrator(
+    inputs.temp * kelvin,
+    10 / picosecond,
+    1 * kelvin,
+    200 / picosecond,
+    0.0005 * picoseconds,
 )
+
+# integrator.setMaxDrudeDistance(0.2 * angstroms)
+# if integrator.getMaxDrudeDistance() == 0:
+#     print("No Drude Hard Wall Contraint in use")
+# else:
+#     print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
+
 
 # Set platform
 platform = Platform.getPlatformByName("CUDA")
-
+prop = dict()
 # Check if restraints.yaml exists - if it does, system uses restraints
 
 # pdbpath = args.inpfile.replace(".inp", ".pdb")

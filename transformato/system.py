@@ -30,26 +30,55 @@ class SystemStructure(object):
         self.name: str = configuration["system"][structure]["name"]
         self.tlc: str = configuration["system"][structure]["tlc"]
         self.charmm_gui_base: str = configuration["system"][structure]["charmm_gui_dir"]
-        self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
         self.offset: defaultdict = defaultdict(int)
-        self.parameter = self._read_parameters("waterbox")
-        self.cgenff_version: float
         self.envs = set()
+
+        try:
+            self.drude: bool = configuration["simulation"]["drude"]
+        except KeyError:
+            self.drude: bool = False
+
+        try:
+            self.ff: str = str.lower(configuration["simulation"]["forcefield"])
+            self.psfs: defaultdict = defaultdict(pm.amber.AmberParm)
+        except KeyError:
+            self.ff: str = "charmm"
+            self.psfs: defaultdict = defaultdict(pm.charmm.CharmmPsfFile)
+            self.parameter = self._read_parameters(
+                "waterbox"
+            )  # not sure if this is really needed
+            self.cgenff_version: float
+
         # running a binding-free energy calculation?
         if configuration["simulation"]["free-energy-type"] == "rbfe":
             self.envs = set(["complex", "waterbox"])
-            for env in self.envs:
-                parameter = self._read_parameters(env)
-                # set up system
-                self.psfs[env] = self._initialize_system(configuration, env)
-                # load parameters
-                self.psfs[env].load_parameters(parameter)
-                # get offset
-                self.offset[
-                    env
-                ] = self._determine_offset_and_set_possible_dummy_properties(
-                    self.psfs[env]
-                )
+
+            if self.ff == "charmm":
+                for env in self.envs:
+                    parameter = self._read_parameters(env)
+                    # set up system
+                    self.psfs[env] = self._initialize_system(configuration, env)
+                    # load parameters
+                    self.psfs[env].load_parameters(parameter)
+                    # get offset
+                    self.offset[env] = (
+                        self._determine_offset_and_set_possible_dummy_properties(
+                            self.psfs[env]
+                        )
+                    )
+            elif self.ff == "amber":
+                for env in self.envs:
+                    self.psfs[env] = pm.load_file(
+                        f"{self.charmm_gui_base}/{env}/openmm/step3_input.parm7"
+                    )
+                    self.psfs[env].load_rst7(
+                        f"{self.charmm_gui_base}/{env}/openmm/step3_input.rst7"
+                    )
+                    self.offset[env] = (
+                        self._determine_offset_and_set_possible_dummy_properties(
+                            self.psfs[env]
+                        )
+                    )
 
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
@@ -63,17 +92,32 @@ class SystemStructure(object):
         ):
             self.envs = set(["waterbox", "vacuum"])
             for env in self.envs:
-                parameter = self._read_parameters(env)
-                # set up system
-                self.psfs[env] = self._initialize_system(configuration, env)
-                # load parameters
-                self.psfs[env].load_parameters(parameter)
-                # get offset
-                self.offset[
-                    env
-                ] = self._determine_offset_and_set_possible_dummy_properties(
-                    self.psfs[env]
-                )
+                if self.ff == "charmm":
+                    parameter = self._read_parameters(env)
+                    # set up system
+                    self.psfs[env] = self._initialize_system(configuration, env)
+                    # load parameters
+                    self.psfs[env].load_parameters(parameter)
+                    self.offset[env] = (
+                        self._determine_offset_and_set_possible_dummy_properties(
+                            self.psfs[env]
+                        )
+                    )
+
+                elif self.ff == "amber":
+                    self.psfs[env] = pm.load_file(
+                        f"{self.charmm_gui_base}/waterbox/openmm/step3_input.parm7"
+                    )
+                    self.psfs[env].load_rst7(
+                        f"{self.charmm_gui_base}/waterbox/openmm/step3_input.rst7"
+                    )
+                    self.offset[env] = (
+                        self._determine_offset_and_set_possible_dummy_properties(
+                            self.psfs[env]
+                        )
+                    )
+                    # if env == "vacuum":
+                    #     self.psfs["vacuum"] = self.psfs["waterbox"][f":{self.tlc}"]
 
             # generate rdkit mol object of small molecule
             self.mol: Chem.Mol = self._generate_rdkit_mol(
@@ -181,7 +225,7 @@ class SystemStructure(object):
                 )
 
         # check cgenff versions
-        if parameter_files:
+        if parameter_files and self.ff == "charmm":
             with open(parameter_files[0]) as f:
                 _ = f.readline()
                 cgenff = f.readline().rstrip()
@@ -201,6 +245,11 @@ class SystemStructure(object):
         parameter_files += (
             f"{toppar_dir}/toppar_all36_prot_na_combined.str",
         )  # if modified aminoacids are needed
+        parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
+        if os.path.isfile(f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str"):
+            parameter_files += (
+                f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str",
+            )
         if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
             parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
         # set up parameter objec
@@ -255,17 +304,28 @@ class SystemStructure(object):
             # which is necessary for the check_for_lp function
             if lp:
                 g = psf.groups
+                oldFlags = psf.flags
                 frame_idx = []
                 frame_frame = []
+                prop_idx = []
+                properties = []
                 for atom in psf.atoms:
                     if hasattr(atom, "frame_type"):
                         frame_idx.append(atom.idx)
                         frame_frame.append(atom.frame_type)
+                for atom in psf.atoms:
+                    if hasattr(atom, "props"):
+                        prop_idx.append(atom.idx)
+                        properties.append(atom.props)
                 psf = psf[f":{self.tlc}"]  # the important part
                 psf.groups = g
+                psf.flags = oldFlags
                 for atom in psf.atoms:
                     if atom.idx in frame_idx:
                         atom.frame_type = frame_frame[frame_idx.index(atom.idx)]
+                for atom in psf.atoms:
+                    if atom.idx in prop_idx:
+                        atom.props = properties[prop_idx.index(atom.idx)]
             else:
                 psf = psf[f":{self.tlc}"]
 
@@ -298,7 +358,11 @@ class SystemStructure(object):
         Returns
         ----------
         """
-        assert type(psf) == pm.charmm.CharmmPsfFile
+        if self.ff == "amber":
+            assert type(psf) == pm.amber._amberparm.AmberParm
+        else:
+            assert type(psf) == pm.charmm.CharmmPsfFile
+
         if len(psf.view[f":{self.tlc}"].atoms) < 1:
             raise RuntimeError(f"No ligand selected for tlc: {self.tlc}")
 
@@ -350,6 +414,40 @@ class SystemStructure(object):
                 "Could not load small molecule sdf file in {charmm_gui_env}. Aborting."
             )
 
+    def _create_sdf_from_pdb(self, psf: pm.topologyobjects):
+        """
+        This function creates a sdf file from the file provided in openmm/step3_input.pdb
+        and reads in this sdf file. This should now have the same order as the psf topology object
+        and is from now on used as the rdkit mol object.
+
+        Parameters
+        ----------
+        psf: pm.topologyobjects
+            a topology provided by parmed (either CHARMM type or AMBER)
+        Returns
+        ----------
+        mol : rdkit.Chem.rdchem.Mol
+            mol object
+        """
+
+        file_path = f"{self.charmm_gui_base}/waterbox/openmm/"
+        psf.save(f"{file_path}/step3_input_reordered.pdb", overwrite=True)
+
+        from openbabel import openbabel
+
+        obConversion = openbabel.OBConversion()
+        obConversion.SetInAndOutFormats("pdb", "sdf")
+        mol = openbabel.OBMol()
+        obConversion.ReadFile(mol, f"{file_path}/step3_input_reordered.pdb")
+        obConversion.WriteFile(mol, f"{file_path}/step3_input_reduced.sdf")
+
+        suppl = Chem.SDMolSupplier(
+            f"{file_path}/step3_input_reduced.sdf", removeHs=False
+        )
+        mol = next(suppl)
+
+        return mol
+
     def _generate_rdkit_mol(
         self, env: str, psf: pm.charmm.CharmmPsfFile
     ) -> Chem.rdchem.Mol:
@@ -365,14 +463,82 @@ class SystemStructure(object):
         mol: rdkit.Chem.rdchem.Mol
         """
 
-        assert type(psf) == pm.charmm.CharmmPsfFile
-        mol = self._return_small_molecule(env)
-        (
-            atom_idx_to_atom_name,
-            _,
-            atom_name_to_atom_type,
-            atom_idx_to_atom_partial_charge,
-        ) = self.generate_atom_tables_from_psf(psf)
+        try:
+            mol = self._return_small_molecule(env)
+
+        except FileNotFoundError:
+
+            mol = self._create_sdf_from_pdb(psf)
+
+        mol = self.generate_atom_tables_from_psf(psf, mol)
+
+        # check if psf and sdf have same indeces
+        if not self.drude:
+            try:
+                for a in mol.GetAtoms():
+                    if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
+                        pass
+                    else:
+                        raise RuntimeError(
+                            "First PSF to mol conversion did not work, trying it with the pdb file"
+                        )
+            except RuntimeError:
+                # It's possible, that there is a sdf file in the TCL folder but the order does not match
+                # in thuis case, we try to create a matching sdf file by using the pdb file in the openmm folder
+                logger.info(
+                    f"It seems like the sdf file provided in the {self.tlc} does not have the correct order, trying it again by using the pdb file"
+                )
+                mol = self._create_sdf_from_pdb(psf)
+                mol = self.generate_atom_tables_from_psf(psf, mol)
+
+            # final check if psf and sdf have same indeces
+            for a in mol.GetAtoms():
+                if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
+                    pass
+                else:
+                    raise RuntimeError(
+                        "PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!"
+                    )
+
+            return mol
+
+    def generate_atom_tables_from_psf(
+        self, psf: pm.charmm.CharmmPsfFile, mol: Chem.rdchem.Mol
+    ) -> Chem.rdchem.Mol:
+        """
+        Generate mapping dictionaries for a molecule in a psf.
+        Parameters
+        ----------
+        psf: pm.charmm.CharmmPsfFile or parmed.amber._amberparm.AmberParm
+        Returns
+        ----------
+        mol: Chem.rdchem.Mol
+            mol object with atom name and type properties
+        """
+
+        atom_idx_to_atom_name = dict()
+        atom_name_to_atom_idx = dict()
+        atom_name_to_atom_type = dict()
+        atom_idx_to_atom_partial_charge = dict()
+
+        ## We need this for point mutations, because if we give a resid, the mol here
+        ## consists only of on residue which resid is always 1
+        try:
+            int(self.tlc)
+            tlc = "1"
+        except ValueError:
+            tlc = self.tlc
+
+        for atom in psf.view[f":{tlc}"].atoms:
+            atom_name = atom.name
+            atom_index = atom.idx
+            atom_type = atom.type
+            atom_charge = atom.charge
+
+            atom_idx_to_atom_name[atom_index] = atom_name
+            atom_name_to_atom_idx[atom_name] = atom_index
+            atom_name_to_atom_type[atom_name] = atom_type
+            atom_idx_to_atom_partial_charge[atom_index] = atom_charge
 
         for atom in mol.GetAtoms():
             atom.SetProp("atom_name", atom_idx_to_atom_name[atom.GetIdx()])
@@ -385,47 +551,4 @@ class SystemStructure(object):
                 "atom_charge", str(atom_idx_to_atom_partial_charge[atom.GetIdx()])
             )
 
-        # check if psf and sdf have same indeces
-        for a in mol.GetAtoms():
-            if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
-                pass
-            else:
-                raise RuntimeError("PSF to mol conversion did not work! Aborting.")
-
         return mol
-
-    def generate_atom_tables_from_psf(
-        self, psf: pm.charmm.CharmmPsfFile
-    ) -> Tuple[dict, dict, dict, dict]:
-        """
-        Generate mapping dictionaries for a molecule in a psf.
-        Parameters
-        ----------
-        psf: pm.charmm.CharmmPsfFile
-        Returns
-        ----------
-        dict's
-        """
-
-        atom_idx_to_atom_name = dict()
-        atom_name_to_atom_idx = dict()
-        atom_name_to_atom_type = dict()
-        atom_idx_to_atom_partial_charge = dict()
-
-        for atom in psf.view[f":{self.tlc}"].atoms:
-            atom_name = atom.name
-            atom_index = atom.idx
-            atom_type = atom.type
-            atom_charge = atom.charge
-
-            atom_idx_to_atom_name[atom_index] = atom_name
-            atom_name_to_atom_idx[atom_name] = atom_index
-            atom_name_to_atom_type[atom_name] = atom_type
-            atom_idx_to_atom_partial_charge[atom_index] = atom_charge
-
-        return (
-            atom_idx_to_atom_name,
-            atom_name_to_atom_idx,
-            atom_name_to_atom_type,
-            atom_idx_to_atom_partial_charge,
-        )

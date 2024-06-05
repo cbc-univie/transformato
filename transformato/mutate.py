@@ -27,6 +27,7 @@ from transformato.helper_functions import (
 
 
 logger = logging.getLogger(__name__)
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 def _flattened(list_of_lists: list) -> list:
@@ -58,7 +59,7 @@ def _performe_linear_cc_scaling(
     for lambda_value in np.linspace(1, 0, nr_of_steps + 1)[1:]:
         print("####################")
         print(
-            f"Perform paramteter scaling on cc in step: {intermediate_factory.current_step} with lamb: {lambda_value}"
+            f"Perform parameter scaling on cc in step: {intermediate_factory.current_step} with lamb: {lambda_value}"
         )
         print("####################")
         intermediate_factory.write_state(
@@ -197,7 +198,7 @@ def perform_mutations(
             and configuration["simulation"]["free-energy-type"] == "asfe"
         ):
             for lambda_value in np.linspace(
-                0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
+                0.5, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
             ):
                 print("####################")
                 print(
@@ -358,7 +359,7 @@ class ProposeMutationRoute(object):
             self.dummy_region_cc2: DummyRegion
 
             self.asfe: bool = False
-            self._check_cgenff_versions()
+            # self._check_cgenff_versions()
 
         except:
             logger.info(
@@ -638,7 +639,6 @@ class ProposeMutationRoute(object):
 
         for atom in psf.view[f":{tlc}"].atoms:
             if atom.name.find("LP") == False:
-                print(f"die Atome {atom}")
                 if atom.frame_type.atom1.idx in flat_ordered_connected_dummy_regions:
                     lp_dict_dummy_region[atom.frame_type.atom1.idx].append(atom.idx)
 
@@ -871,6 +871,13 @@ class ProposeMutationRoute(object):
             [self.get_common_core_idx_mol1(), self.get_common_core_idx_mol2()],
             [self.dummy_region_cc1, self.dummy_region_cc2],
         ):
+            ## We need this for point mutations, because if we give a resid, the mol here
+            ## consists only of on residue which resid is always 1
+            try:
+                int(tlc)
+                tlc = "1"
+            except ValueError:
+                tlc = tlc
             # set `initial_charge` parameter for Mutation
             for atom in psf.view[f":{tlc}"].atoms:
                 # charge, epsilon and rmin are directly modiefied
@@ -1474,8 +1481,13 @@ class ProposeMutationRoute(object):
         """
 
         mutations = defaultdict(list)
-        tlc = self.s1_tlc
-
+        ## We need this for point mutations, because if we give a resid, the mol here
+        ## consists only of on residue which resid is always 1
+        try:
+            int(self.s1_tlc)
+            tlc = "1"
+        except ValueError:
+            tlc = self.s1_tlc
         if self.asfe:
             psf = self.psf1["waterbox"]
             cc_idx = []  # no CC in ASFE
@@ -1496,7 +1508,13 @@ class ProposeMutationRoute(object):
             logger.info(f"Terminal dummy atoms: {list_termin_dummy_atoms}")
 
             if mol_name == "m2":
-                tlc = self.s2_tlc
+                ## We need this for point mutations, because if we give a resid, the mol here
+                ## consists only of on residue which resid is always 1
+                try:
+                    int(self.s2_tlc)
+                    tlc = "1"
+                except ValueError:
+                    tlc = self.s2_tlc
 
         # iterate through atoms and select atoms that need to be mutated
         atoms_to_be_mutated = []
@@ -1565,7 +1583,11 @@ class ProposeMutationRoute(object):
                             steric_mutation_to_default=True,
                         )
                         mutations["default-lj"].append(m)
-                    elif atom_idx in hydrogens or psf[atom_idx].type == "LPH":
+                    elif (
+                        atom_idx in hydrogens
+                        or psf[atom_idx].type.startswith("LP")
+                        or psf[atom_idx].type.startswith("DRUD")
+                    ):
                         # already mutated
                         continue
                     else:
@@ -1654,8 +1676,6 @@ class CommonCoreTransformation(object):
             cc_names_struc1.append(ligand1_atom.name)
             cc_names_struc2.append(ligand2_atom.name)
 
-        print(f"CC Struc1: {cc_names_struc1}")
-        print(f"CC Struc2: {cc_names_struc2}")
         return match_atom_names_cc1_to_cc2
 
     def _mutate_charges(self, psf: pm.charmm.CharmmPsfFile, scale: float):
@@ -1742,6 +1762,20 @@ class CommonCoreTransformation(object):
                             ligand1_atom.mod_type = mod_type(
                                 modified_epsilon, modified_rmin
                             )
+                            # do this only when using GAFF
+                            if type(psf) == pm.amber.AmberParm:
+                                assert (
+                                    psf[f":{self.tlc_cc1}@{ligand1_atom.idx+1}"]
+                                    .atoms[0]
+                                    .name
+                                    == ligand1_atom.name
+                                )
+                                pm.tools.actions.changeLJSingleType(
+                                    psf,
+                                    f":{self.tlc_cc1}@{ligand1_atom.idx+1}",
+                                    modified_rmin,
+                                    modified_epsilon,
+                                ).execute()
 
             if not found:
                 raise RuntimeError("No corresponding atom in cc2 found")
@@ -1809,6 +1843,16 @@ class CommonCoreTransformation(object):
 
                     ligand1_bond.mod_type = mod_type(modified_k, modified_req)
                     logger.debug(ligand1_bond.mod_type)
+
+                    # do this only when using GAFF
+                    if type(psf) == pm.amber.AmberParm:
+                        pm.tools.actions.setBond(
+                            psf,
+                            f":{self.tlc_cc1}@{ligand1_bond.atom1.idx+1}",
+                            f":{self.tlc_cc1}@{ligand1_bond.atom2.idx+1}",
+                            modified_k,
+                            modified_req,
+                        ).execute()
 
             if not found:
                 logger.critical(ligand1_bond)
@@ -1883,6 +1927,17 @@ class CommonCoreTransformation(object):
                     logging.debug(f"New k: {modified_theteq}")
 
                     cc1_angle.mod_type = mod_type(modified_k, modified_theteq)
+
+                    # do this only when using GAFF
+                    if type(psf) == pm.amber.AmberParm:
+                        pm.tools.actions.setAngle(
+                            psf,
+                            f":{self.tlc_cc1}@{cc1_angle.atom1.idx+1}",
+                            f":{self.tlc_cc1}@{cc1_angle.atom2.idx+1}",
+                            f":{self.tlc_cc1}@{cc1_angle.atom3.idx+1}",
+                            modified_k,
+                            modified_theteq,
+                        ).execute()
 
             if not found:
                 logger.critical(cc1_angle)
@@ -1964,7 +2019,16 @@ class CommonCoreTransformation(object):
                     f = max((1 - ((1 - lambda_value) * 2)), 0.0)
 
                     if f > 0.0 or lambda_value == 0.5:
-                        for torsion_t in original_torsion.type:
+                        ## Necessary, because in Amber topologies this is not a list
+                        if (
+                            type(original_torsion.type)
+                            == pm.topologyobjects.DihedralType
+                        ):
+                            orig_torsion_as_list = [original_torsion.type]
+                        else:
+                            orig_torsion_as_list = original_torsion.type
+
+                        for torsion_t in orig_torsion_as_list:
                             modified_phi_k = torsion_t.phi_k * f
                             mod_types.append(
                                 mod_type(
@@ -1979,7 +2043,14 @@ class CommonCoreTransformation(object):
                     # torsion present at cc2 needs to be fully turned on at lambda_value == 0.0
                     f = 1 - min((lambda_value) * 2, 1.0)
                     if f > 0.0:
-                        for torsion_t in new_torsion.type:
+
+                        ## Necessary, because in Amber topologies this is not a list
+                        if type(new_torsion.type) == pm.topologyobjects.DihedralType:
+                            new_torsion_as_list = [new_torsion.type]
+                        else:
+                            new_torsion_as_list = new_torsion.type
+
+                        for torsion_t in new_torsion_as_list:
                             modified_phi_k = torsion_t.phi_k * f
                             if modified_phi_k >= 0.0:
                                 mod_types.append(
@@ -1993,6 +2064,21 @@ class CommonCoreTransformation(object):
                                 )
 
                     original_torsion.mod_type = mod_types
+
+                    # do this only when using GAFF
+                    if type(psf) == pm.amber.AmberParm:
+                        pm.tools.actions.addDihedral(
+                            psf,
+                            f":{self.tlc_cc1}@{original_torsion.atom1.idx+1}",
+                            f":{self.tlc_cc1}@{original_torsion.atom2.idx+1}",
+                            f":{self.tlc_cc1}@{original_torsion.atom3.idx+1}",
+                            f":{self.tlc_cc1}@{original_torsion.atom4.idx+1}",
+                            modified_phi_k,
+                            torsion_t.per,
+                            torsion_t.phase,
+                            torsion_t.scnb,
+                            torsion_t.scee,
+                        ).execute()
 
             if not found:
                 logger.critical(original_torsion)
@@ -2008,8 +2094,11 @@ class CommonCoreTransformation(object):
         lambda_value : float
             lambda_value
         """
+        try:
+            assert type(psf) == pm.charmm.CharmmPsfFile
+        except AssertionError:
+            assert type(psf) == pm.amber.AmberParm
 
-        assert type(psf) == pm.charmm.CharmmPsfFile
         if self.charge_mutation:
             logger.info(f" -- Charge parameters from cc1 are transformed to cc2.")
             logger.info(f"Lambda value:{lambda_value}")
@@ -2051,8 +2140,10 @@ class Mutation(object):
     def _mutate_charge(
         self, psf: pm.charmm.CharmmPsfFile, lambda_value: float, offset: int
     ):
-        total_charge = int(
-            round(sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms]))
+        total_charge = float(
+            round(
+                sum([atom.initial_charge for atom in psf.view[f":{self.tlc}"].atoms]), 4
+            ),
         )
         # scale the charge of all atoms
         print(f"Scaling charge on: {self.atoms_to_be_mutated}")
@@ -2064,6 +2155,16 @@ class Mutation(object):
             logger.debug(f"Old charge: {atom.charge}")
             atom.charge = atom.initial_charge * lambda_value
             logger.debug(f"New charge: {atom.charge}")
+
+            # in the end, we save the topology for amber (lig_in_env.parm7) using parmed
+            # pm.save_parm(), this requires all changes applied via an action tool
+            if type(psf) == pm.amber.AmberParm:
+                pm.tools.actions.change(
+                    psf,
+                    "CHARGE",
+                    f":{self.tlc}@{idx+1}",
+                    atom.initial_charge * lambda_value,
+                ).execute()
 
         # check to avoid compensating charges when doing asfe
         if (
@@ -2081,6 +2182,9 @@ class Mutation(object):
         offset: int,
         to_default: bool,
     ):
+        """
+        This is used to scale the LJ parameters of the DDD and DDX atoms to zero in phase II and III
+        """
         if not set(vdw_atom_idx).issubset(set(self.atoms_to_be_mutated)):
             raise RuntimeError(
                 f"Specified atom {vdw_atom_idx} is not in atom_idx list {self.atoms_to_be_mutated}. Aborting."
@@ -2096,13 +2200,23 @@ class Mutation(object):
                 atom_type_suffix = "DDX"
                 atom.rmin = 1.5
                 atom.epsilon = -0.15
+                # do this only when using GAFF
+                if type(psf) == pm.amber.AmberParm:
+                    assert psf[f":{self.tlc}@{atom.idx+1}"].atoms[0].name == atom.name
+                    pm.tools.actions.changeLJSingleType(
+                        psf,
+                        f":{self.tlc}@{atom.idx+1}",
+                        1.5,
+                        0.15,  ### ATTENTION: This should be -0.15 but somehow GAFF does not like negative values
+                    ).execute()
+
             else:
                 logger.info("Mutate to dummy")
                 atom_type_suffix = f"DDD"
-                self._scale_epsilon(atom, lambda_value)
-                self._scale_rmin(atom, lambda_value)
+                self._scale_epsilon_and_rmin(atom, lambda_value, psf, self.tlc)
+
             # NOTEthere is always a type change
-            self._modify_type(atom, psf, atom_type_suffix)
+            self._modify_type(atom, psf, atom_type_suffix, self.tlc)
 
     def mutate(
         self,
@@ -2123,7 +2237,12 @@ class Mutation(object):
         logger.debug(f"LJ scaling factor: {lambda_value_electrostatic}")
         logger.debug(f"VDW scaling factor: {lambda_value_vdw}")
 
-        offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
+        try:
+            offset = min([a.idx for a in psf.view[f":{self.tlc.upper()}"].atoms])
+        ### This give a ValueErrror for point mutation, where a resid is specified
+        ### but here we have only one ligand or the residue, which should be mutated left
+        except ValueError:
+            offset = min([a.idx for a in psf.view[f":1"].atoms])
 
         if lambda_value_electrostatic < 1.0:
             self._mutate_charge(psf, lambda_value_electrostatic, offset)
@@ -2203,30 +2322,44 @@ class Mutation(object):
                 connecting_real_atom_for_this_dummy_region
             )
 
-        # check if rest charge is missing
+        #### check if rest charge is missing
         new_charge = sum(
             [atom.charge for atom in psf.view[f":{self.tlc.upper()}"].atoms]
         )
 
-        if not (np.isclose(new_charge, total_charge, rtol=1e-4)):
+        if not (np.isclose(round(new_charge, 3), round(total_charge, 3), rtol=1e-4)):
             raise RuntimeError(
                 f"Charge compensation failed. Introducing non integer total charge: {new_charge}. Target total charge: {total_charge}."
             )
 
     @staticmethod
-    def _scale_epsilon(atom, lambda_value: float):
+    def _scale_epsilon_and_rmin(atom, lambda_value, psf, tlc):
+        """
+        This scales the LJ interactions (epsilon and rmin) from non-interacting DDD atom (no charge)
+        to 'real' dummy atom (no LJ!), typically this is performed in one step, but to be sure
+        we offer scalling possibility here as well
+        """
         logger.debug(atom)
         logger.debug(atom.initial_epsilon)
-        atom.epsilon = atom.initial_epsilon * lambda_value
-
-    @staticmethod
-    def _scale_rmin(atom, lambda_value: float):
-        logger.debug(atom)
         logger.debug(atom.initial_rmin)
+
+        atom.epsilon = atom.initial_epsilon * lambda_value
         atom.rmin = atom.initial_rmin * lambda_value
 
+        ### do this only when using GAFF
+        if type(psf) == pm.amber.AmberParm:
+            # Quick check, if selected atom via AMBER mask is the same as the atom
+            # we want to modify
+            assert psf[f":{tlc}@{atom.idx+1}"].atoms[0].type == atom.type
+            pm.tools.actions.addLJType(
+                psf,
+                f":{tlc}@{atom.idx+1}",
+                radius=atom.initial_rmin * lambda_value,
+                epsilon=atom.initial_epsilon * lambda_value,
+            ).execute()
+
     @staticmethod
-    def _modify_type(atom, psf, atom_type_suffix: str):
+    def _modify_type(atom, psf, atom_type_suffix, tlc):
         if hasattr(atom, "initial_type"):
             # only change parameters
             pass
@@ -2240,3 +2373,11 @@ class Mutation(object):
                 new_type = f"{atom_type_suffix}{psf.mutations_to_default}"
 
             atom.type = new_type
+
+            if type(psf) == pm.amber.AmberParm:
+                pm.tools.actions.change(
+                    psf,
+                    "AMBER_ATOM_TYPE",
+                    f":{tlc}@{atom.idx+1}",
+                    new_type,
+                ).execute()

@@ -46,6 +46,10 @@ class IntermediateStateFactory(object):
         self.output_files = []
         self.current_step = 1
         self.multiple_runs = multiple_runs
+        try:
+            self.drude: bool = configuration["simulation"]["drude"]
+        except KeyError:
+            self.drude: bool = False
 
     def endstate_correction(self):
         logger.info(f"Will create script for endstate correction")
@@ -92,6 +96,50 @@ class IntermediateStateFactory(object):
         fin.close()
         fout.close()
 
+    def _write_amber_files(
+        self, psf: pm.amber.AmberParm, output_file_base: str, tlc: str, env: str
+    ):
+        """
+        Write a parm7 and rst7 file for each intermediate step, including information about the dummy atoms
+        """
+        if env == "waterbox":
+            psf.write_parm(f"{output_file_base}/lig_in_{env}.parm7")
+            psf.write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
+        if env == "complex":
+            psf.write_parm(f"{output_file_base}/lig_in_{env}.parm7")
+            psf.write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
+        elif env == "vacuum":
+            psf[f":{tlc}"].write_parm(f"{output_file_base}/lig_in_{env}.parm7")
+            psf[f":{tlc}"].write_rst7(f"{output_file_base}/lig_in_{env}.rst7")
+            ### This is only necessary, because we create the parm7 and rst7 by slicing the corresponding waterbox
+            ### In this case there is one flag left which tells openmm when reading in the parm7 file, that there is
+            ### a box (PBC). For that reason we have to manually set this flag to False (0).
+            lines_left = 0
+            with open(f"{output_file_base}/lig_in_{env}.parm7", "r") as file:
+                with open(
+                    f"{output_file_base}/lig_in_{env}_temp.parm7", "w"
+                ) as tempFile:
+                    for line in file:
+                        if line.startswith("%FLAG POINTERS"):
+                            lines_left = 6
+                        if lines_left > 0:
+                            lines_left -= 1
+                        if lines_left == 1:
+                            newLine = line[:63] + "0" + line[64:]
+                            assert (
+                                line.split()[7] == "1"
+                            )  # in this position it is usually 1 indicating a box, if we change it to 0, openmm thinks there is no box (see: https://ambermd.org/FileFormats.php#topo.cntrl)
+                            tempFile.write(newLine)
+                        else:
+                            tempFile.write(line)
+                    else:
+                        tempFile.write(line)
+
+            shutil.move(tempFile.name, file.name)
+
+        else:
+            logger.critical(f"Environment {env} not supported")
+
     def write_state(
         self,
         mutation_conf: List,
@@ -123,7 +171,8 @@ class IntermediateStateFactory(object):
             for mutation_type in mutation_conf:
                 if (
                     common_core_transformation < 1.0
-                ):  # NOTE: THis is inconsisten -- the mutatino_type is the actual mutation in this case
+                ):  # NOTE: THis is inconsistent -- the mutatino_type is the actual mutation in this case
+                    # This happens only for one ligand and starts the process of changing cc1 into cc2
                     mutation_type.mutate(
                         psf=self.system.psfs[env],
                         lambda_value=common_core_transformation,
@@ -138,7 +187,6 @@ class IntermediateStateFactory(object):
                         atoms_to_be_mutated=mutation_type.atoms_to_be_mutated,
                         dummy_region=mutation_type.dummy_region,
                     )
-
                     mutator.mutate(
                         psf=self.system.psfs[env],
                         lambda_value_electrostatic=lambda_value_electrostatic,
@@ -146,10 +194,24 @@ class IntermediateStateFactory(object):
                         vdw_atom_idx=mutation_type.vdw_atom_idx,
                         steric_mutation_to_default=mutation_type.steric_mutation_to_default,
                     )
-            self._write_psf(self.system.psfs[env], output_file_base, env)
-        self._write_rtf_file(self.system.psfs[env], output_file_base, self.system.tlc)
-        self._write_prm_file(self.system.psfs[env], output_file_base, self.system.tlc)
-        self._write_toppar_str(output_file_base)
+            if self.system.ff == "amber":
+                # needed for each environment
+                self._write_amber_files(
+                    self.system.psfs[env], output_file_base, self.system.tlc, env
+                )
+            elif self.system.ff == "charmm":
+                self._write_psf(self.system.psfs[env], output_file_base, env)
+
+        if self.system.ff == "charmm":
+            # needed only once per intermediate state
+            self._write_rtf_file(
+                self.system.psfs[env], output_file_base, self.system.tlc
+            )
+            self._write_prm_file(
+                self.system.psfs[env], output_file_base, self.system.tlc
+            )
+            self._write_toppar_str(output_file_base)
+
         self._copy_files(output_file_base)
 
         # Create run folder for dcd output for each intst state
@@ -175,21 +237,6 @@ class IntermediateStateFactory(object):
             )
 
         self.current_step += 1
-
-    def _add_serializer(self, file):
-        # adding serializer functions
-        with open(file, "a") as f:
-            f.write(
-                """
-# mw: adding xml serializer to the simulation script
-file_name = str(args.psffile).replace('.psf', '')
-print(file_name)
-with open(file_name + '_integrator.xml','w') as outfile:
-    outfile.write(XmlSerializer.serialize(integrator))
-with open(file_name + '_system.xml','w') as outfile:
-    outfile.write(XmlSerializer.serialize(system))
-"""
-            )
 
     def _get_simulations_parameters(self):
         prms = {}
@@ -341,21 +388,24 @@ with open(file_name + '_system.xml','w') as outfile:
 
         # copy diverse set of helper files for CHARMM
         for env in self.system.envs:
-            if env != "vacuum":
-                FILES = [
-                    "crystal_image.str",
-                    "step3_pbcsetup.str",
-                ]
-                for f in FILES:
-                    try:
-                        charmm_source = f"{basedir}/{env}/{f}"
-                        charmm_target = (
-                            f"{intermediate_state_file_path}/charmm_{env}_{f}"
-                        )
-                        shutil.copyfile(charmm_source, charmm_target)
-                    except FileNotFoundError:
-                        logger.critical(f"Could not find file: {f}")
-                        raise
+            if env != "vacuum" and self.system.ff.lower() != "amber":
+                try:
+                    FILES = [
+                        "crystal_image.str",
+                        "step3_pbcsetup.str",
+                    ]
+                    for f in FILES:
+                        try:
+                            charmm_source = f"{basedir}/{env}/{f}"
+                            charmm_target = (
+                                f"{intermediate_state_file_path}/charmm_{env}_{f}"
+                            )
+                            shutil.copyfile(charmm_source, charmm_target)
+                        except FileNotFoundError:
+                            logger.critical(f"Could not find file: {f}")
+                            raise
+                except:
+                    logger.info("")
 
             # copy rst files
             rst_file_source = f"{basedir}/{env}/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
@@ -363,7 +413,7 @@ with open(file_name + '_system.xml','w') as outfile:
             try:
                 shutil.copyfile(rst_file_source, rst_file_target)
             except FileNotFoundError:
-                logger.warning(
+                logger.info(
                     f"No restart file found for {env} -- starting simulation from crd file."
                 )
 
@@ -375,11 +425,11 @@ with open(file_name + '_system.xml','w') as outfile:
         fout = open(f"{shFile}.tmp", "wt")
         with open(f"{shFile}", "r+") as f:
             for line in f:
-                if line.startswith(f"input=lig_in_"):
+                if line.startswith(f"istep=lig_in_"):
                     fout.write("for i in {1.." + f"{self.multiple_runs}" + "};\n")
                     fout.write("do \n")
                     fout.write(line)
-                elif line.startswith("python -u openmm"):
+                elif line.startswith("python openmm"):
                     line = line.replace("${istep}.dcd", "run_${i}/${istep}.dcd")
                     fout.write(
                         line.replace(
@@ -480,13 +530,9 @@ with open(file_name + '_system.xml','w') as outfile:
 
         # copy diverse set of helper functions for openMM
         FILES = [
-            "omm_barostat.py",
             "omm_readinputs.py",
             "omm_readparams.py",
-            "omm_restraints.py",
-            "omm_rewrap.py",
             "omm_vfswitch.py",
-            "omm_hmr.py",
         ]
         for f in FILES:
             try:
@@ -497,31 +543,19 @@ with open(file_name + '_system.xml','w') as outfile:
                 logger.critical(f"Could not find file: {f}")
 
         # copy omm simulation script
-        # start with waterbox
-        omm_simulation_script_source = f"{self.configuration['bin_dir']}/openmm_run.py"
+        if self.drude:
+            omm_simulation_script_source = f"{self.configuration['bin_dir']}/drude_openmm_run.py"  # ATTENTION: NEEDS TO BE MERGED IN THE FUTURE
+        else:
+            omm_simulation_script_source = (
+                f"{self.configuration['bin_dir']}/openmm_run.py"
+            )
+
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
         self._check_hmr(omm_simulation_script_target)
-        self._add_serializer(omm_simulation_script_target)
         self._change_platform(omm_simulation_script_target)
         check_switching_function(self.vdw_switch)
-
-        if (
-            self.configuration["simulation"]["free-energy-type"] == "rsfe"
-            or self.configuration["simulation"]["free-energy-type"] == "asfe"
-        ):
-            # add vacuum scripts
-            omm_simulation_script_source = (
-                f"{self.configuration['bin_dir']}/openmm_run_vacuum.py"
-            )
-            omm_simulation_script_target = (
-                f"{intermediate_state_file_path}/openmm_run_vacuum.py"
-            )
-            shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
-            self._check_hmr(omm_simulation_script_target)
-            self._add_serializer(omm_simulation_script_target)
-            self._change_platform(omm_simulation_script_target)
 
     def _check_hmr(self, file):
         "add hmr if requested in config file"
@@ -544,34 +578,60 @@ with open(file_name + '_system.xml','w') as outfile:
         f = open(file, "r")
         g = open(f"{file}_tmp", "w+")
         i = 0  # counting lines
-
-        if self.configuration["simulation"]["GPU"]:
-            logger.debug("Preparing for CUDA")
-            for line in f.readlines():
-                if "# Set platform" in line and i == 0:
-                    i += 1
-                    g.write(line)
-                elif i == 1:
-                    i += 1
-                    g.write("platform = Platform.getPlatformByName('CUDA')\n")
-                elif i == 2:
-                    i += 2
-                    g.write("prop = dict(CudaPrecision='mixed')\n")
-                else:
-                    g.write(line)
-        else:
-            for line in f.readlines():
-                if "# Set platform" in line and i == 0:
-                    i += 1
-                    g.write(line)
-                elif i == 1:
-                    i += 1
-                    g.write("platform = Platform.getPlatformByName('CPU')\n")
-                elif i == 2:
-                    i += 2
-                    g.write("prop = dict()\n")
-                else:
-                    g.write(line)
+        try:
+            if self.configuration["simulation"]["GPU"].upper() == "OPENCL":
+                for line in f.readlines():
+                    if "# Set platform" in line and i == 0:
+                        i += 1
+                        g.write(line)
+                    elif i == 1:
+                        i += 1
+                        g.write("platform = Platform.getPlatformByName('OpenCL')\n")
+                    elif i == 2:
+                        i += 2
+                        g.write("prop = dict(UseCpuPme='true')\n")
+                    else:
+                        g.write(line)
+            elif self.configuration["simulation"]["GPU"].upper() == "CUDA":
+                for line in f.readlines():
+                    if "# Set platform" in line and i == 0:
+                        i += 1
+                        g.write(line)
+                    elif i == 1:
+                        i += 1
+                        g.write("platform = Platform.getPlatformByName('CUDA')\n")
+                    elif i == 2:
+                        i += 2
+                        g.write("prop = dict()\n")
+                    else:
+                        g.write(line)
+        except AttributeError:
+            if self.configuration["simulation"]["GPU"] == True:
+                for line in f.readlines():
+                    if "# Set platform" in line and i == 0:
+                        i += 1
+                        g.write(line)
+                    elif i == 1:
+                        i += 1
+                        g.write("platform = Platform.getPlatformByName('CUDA')\n")
+                    elif i == 2:
+                        i += 2
+                        g.write("prop = dict()\n")
+                    else:
+                        g.write(line)
+            else:
+                for line in f.readlines():
+                    if "# Set platform" in line and i == 0:
+                        i += 1
+                        g.write(line)
+                    elif i == 1:
+                        i += 1
+                        g.write("platform = Platform.getPlatformByName('CPU')\n")
+                    elif i == 2:
+                        i += 2
+                        g.write("prop = dict()\n")
+                    else:
+                        g.write(line)
 
         f.close()
         g.close()
@@ -580,6 +640,7 @@ with open(file_name + '_system.xml','w') as outfile:
     def _copy_ligand_specific_top_and_par(
         self, basedir: str, intermediate_state_file_path: str
     ):
+
         # copy ligand rtf file
         ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
         toppar_target = (
@@ -595,10 +656,14 @@ with open(file_name + '_system.xml','w') as outfile:
     def _copy_ligand_specific_str(
         self, basedir: str, intermediate_state_file_path: str
     ):
-        # copy ligand rtf file
-        ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
-        toppar_target = f"{intermediate_state_file_path}/{self.system.tlc.lower()}.str"
-        shutil.copyfile(ligand_rtf, toppar_target)
+        # If the tlc is no name, we assume that there is no str/rtf file (as for point mutations in RNAs)
+        if not self.drude:
+            # copy ligand rtf file
+            ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
+            toppar_target = (
+                f"{intermediate_state_file_path}/{self.system.tlc.lower()}.str"
+            )
+            shutil.copyfile(ligand_rtf, toppar_target)
 
     def _copy_crd_file(self, intermediate_state_file_path: str):
         basedir = self.system.charmm_gui_base
@@ -622,16 +687,19 @@ with open(file_name + '_system.xml','w') as outfile:
 
         basedir = self.system.charmm_gui_base
 
-        try:
-            self._copy_ligand_specific_top_and_par(
-                basedir, intermediate_state_file_path
-            )
-        except:
-            self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
+        if self.system.ff.lower() == "charmm":
+            try:
+                self._copy_ligand_specific_top_and_par(
+                    basedir, intermediate_state_file_path
+                )
+            except:
+                self._copy_ligand_specific_str(basedir, intermediate_state_file_path)
 
         # copy crd file
-        self._copy_crd_file((intermediate_state_file_path))
-
+        try:
+            self._copy_crd_file((intermediate_state_file_path))
+        except:
+            pass
         # copy openMM and charmm specific scripts
         self._copy_omm_files(intermediate_state_file_path)
         self._copy_charmm_files(intermediate_state_file_path)
@@ -698,21 +766,27 @@ with open(file_name + '_system.xml','w') as outfile:
                         )
                         logger.critical(f"###################")
 
-        for l in input_simulation_parameter.readlines():
-            if l.strip():
-                t1, t2_comment = [e.strip() for e in l.split("=")]
-                t2, comment = [e.strip() for e in t2_comment.split("#")]
-                comment = comment.strip()
-                if t1 in overwrite_parameters.keys():
-                    t2 = overwrite_parameters[t1]
-                    del overwrite_parameters[t1]  # remove from dict
-                if t1 == "vdw":
-                    t2 = t2.capitalize()
-                output_simulation_parameter.write(
-                    f"{t1:<25} = {t2:<25} # {comment:<30}\n"
-                )
-            else:
-                output_simulation_parameter.write("\n")
+        try:
+            for l in input_simulation_parameter.readlines():
+                if l.strip():
+                    t1, t2_comment = [e.strip() for e in l.split("=")]
+                    t2, comment = [e.strip() for e in t2_comment.split("#")]
+                    comment = comment.strip()
+                    if t1 in overwrite_parameters.keys():
+                        t2 = overwrite_parameters[t1]
+                        del overwrite_parameters[t1]  # remove from dict
+                    if t1 == "vdw":
+                        t2 = t2.capitalize()
+                    output_simulation_parameter.write(
+                        f"{t1:<25} = {t2:<25} # {comment:<30}\n"
+                    )
+                else:
+                    output_simulation_parameter.write("\n")
+        except ValueError:
+            logger.critical(
+                f"The original inp {input_simulation_parameter.name} file  contains a line without a comment "
+            )
+            raise SystemExit
 
         # set parameters that have no equivalent in the pregenerated parameter file
         for t1 in overwrite_parameters.keys():
@@ -767,7 +841,9 @@ with open(file_name + '_system.xml','w') as outfile:
         view = psf.view[f":{tlc}"]
         # writing atom parameters
         for atom in view.atoms:
-            if hasattr(atom, "initial_type"):
+            if hasattr(atom, "initial_type") and atom.type != "DRUD":
+                # if hasattr(atom, "initial_type") and not atom.type.startswith("D"):
+
                 if set([atom.type]) in already_seen:
                     continue
                 else:
@@ -794,7 +870,31 @@ with open(file_name + '_system.xml','w') as outfile:
         already_seen = []
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
-            if any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
+            if atom1.type == "DRUD" or atom2.type == "DRUD":
+                pass
+            elif (
+                # atom1.type == "DRUD"
+                # or atom2.type == "DRUD"
+                atom1.type.startswith("LP")
+                or atom2.type.startswith("LP")
+            ):
+                if any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
+                    if set([atom1.type, atom2.type]) in already_seen:
+                        continue
+                    else:
+                        already_seen.append(set([atom1.type, atom2.type]))
+                        logger.debug(
+                            "{:7} {:7} {:9.5f} {:9.5f} \n".format(
+                                str(atom1.type), str(atom2.type), 0, 0
+                            )
+                        )
+                        prm_file_handler.write(
+                            "{:7} {:7} {:9.5f} {:9.5f} \n".format(
+                                str(atom1.type), str(atom2.type), 0, 0
+                            )
+                        )
+
+            elif any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
                 if set([atom1.type, atom2.type]) in already_seen:
                     continue
                 else:
@@ -1050,6 +1150,17 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 ../../toppar/toppar_all36_lipid_model.str
 ../../toppar/toppar_all36_lipid_prot.str
 ../../toppar/toppar_all36_lipid_sphingo.str
+../../toppar/toppar_all36_na_rna_modified.str
+"""
+        toppar_dir = f"{self.path}/../toppar"
+
+        if os.path.isdir(toppar_dir):
+            pass
+        else:
+            toppar_dir = get_toppar_dir()
+
+        if os.path.isfile(f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str"):
+            toppar_format += f"""../../toppar/toppar_drude_main_protein_2023a_flex.str
 """
         if os.path.isfile(
             f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
@@ -1059,9 +1170,17 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
-        else:
+        elif not self.drude and (
+            os.path.isfile(
+                f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
+            )
+        ):
             toppar_format += f"""{self.system.tlc.lower()}.str
 dummy_atom_definitions.rtf
+dummy_parameters.prm
+"""
+        else:
+            toppar_format += f"""dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
 

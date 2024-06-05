@@ -18,7 +18,7 @@ import seaborn as sns
 from pymbar import mbar
 from openmm import unit
 from openmm import Platform, XmlSerializer, vec3
-from openmm.app import CharmmPsfFile, Simulation
+from openmm.app import CharmmPsfFile, Simulation, AmberPrmtopFile
 from tqdm import tqdm
 
 from transformato.helper_functions import temperature
@@ -99,6 +99,11 @@ class FreeEnergyCalculator(object):
         self.thinning: int = 0
         self.save_results_to_path: str = f"{self.configuration['system_dir']}/results/"
         self.traj_files = defaultdict(list)
+        ff = self.configuration["simulation"].get("forcefield")
+        if ff is None:
+            self.forcefield = "charmm"
+        else:
+            self.forcefield = ff
 
     def load_trajs(self, nr_of_max_snapshots: int = 300, multiple_runs: int = 0):
         """
@@ -113,30 +118,56 @@ class FreeEnergyCalculator(object):
         )
 
     def _generate_openMM_system(self, env: str, lambda_state: int) -> Simulation:
-        # read in necessary files
+        ### read in necessary xml (_system.xml and _integrator.xml) and topology files (charmm: psf and amber:parm7)
         conf_sub = self.configuration["system"][self.structure][env]
         file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_system.xml"
         system = XmlSerializer.deserialize(open(file_name).read())
         file_name = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}_integrator.xml"
         integrator = XmlSerializer.deserialize(open(file_name).read())
-        psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
-        psf = CharmmPsfFile(psf_file_path)
 
+        if self.forcefield == "charmm":
+            psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf"
+            psf = CharmmPsfFile(psf_file_path)
+        elif self.forcefield == "amber":
+            psf_file_path = f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.parm7"
+            psf = AmberPrmtopFile(psf_file_path)
         # generate simulations object and set states
         if self.configuration["simulation"]["GPU"] == True:
-            platform = Platform.getPlatformByName(
-                "CUDA"
-            )  # NOTE: FIXME: this needs to be set dynamically
-            platformProperties = {"CudaPrecision": "mixed"}
-
-            simulation = Simulation(
-                psf.topology, system, integrator, platform, platformProperties
-            )
-        else:
-            platform = Platform.getPlatformByName(
-                "CPU"
-            )  # NOTE: FIXME: this needs to be set dynamically
+            logger.info("We are using CUDA")
+            platform = Platform.getPlatformByName("CUDA")
             simulation = Simulation(psf.topology, system, integrator, platform)
+        else:
+            try:
+                if self.configuration["simulation"]["GPU"].upper() == "OPENCL":
+                    try:
+                        logger.info(
+                            "We are using the OpenCL platform for the analysis as specified in the yaml file"
+                        )
+                        platform = Platform.getPlatformByName("OpenCL")
+                        platformProperties = {"UseCpuPme": "true"}
+                        simulation = Simulation(
+                            psf.topology,
+                            system,
+                            integrator,
+                            platform,
+                            platformProperties,
+                        )
+                    except:
+                        logger.warning(
+                            "We are falling back to CUDA as OpenCL does not workd"
+                        )
+                        platform = Platform.getPlatformByName("CUDA")
+                        simulation = Simulation(
+                            psf.topology, system, integrator, platform
+                        )
+                elif self.configuration["simulation"]["GPU"].upper() == "CUDA":
+                    logger.info("We are using CUDA")
+                    platform = Platform.getPlatformByName("CUDA")
+                    simulation = Simulation(psf.topology, system, integrator, platform)
+            except AttributeError:
+                logger.info("We are using CPU")
+                platform = Platform.getPlatformByName("CPU")
+                simulation = Simulation(psf.topology, system, integrator, platform)
 
         simulation.context.setState(
             XmlSerializer.deserialize(
@@ -301,12 +332,8 @@ class FreeEnergyCalculator(object):
             nr_of_snapshots = N_k[env][d] + N_k[env][d + 1]
             u_kn_ = u_kn[d : d + 2 :, start : start + nr_of_snapshots]
             m = mbar.MBAR(u_kn_, N_k[env][d : d + 2])
-            logger.debug(
-                m.compute_free_energy_differences(return_dict=True)["Delta_f"][0, 1]
-            )
-            logger.debug(
-                m.compute_free_energy_differences(return_dict=True)["dDelta_f"][0, 1]
-            )
+            logger.debug(m.getFreeEnergyDifferences(return_dict=True)["Delta_f"][0, 1])
+            logger.debug(m.getFreeEnergyDifferences(return_dict=True)["dDelta_f"][0, 1])
 
             start += N_k[env][d]
 
@@ -464,11 +491,18 @@ class FreeEnergyCalculator(object):
             if not os.path.isfile(dcd_path):
                 raise RuntimeError(f"{dcd_path} does not exist.")
 
-            traj = MDAnalysis.Universe(
-                f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
-                f"{dcd_path}",
-                in_memory=in_memory,
-            )
+            if self.forcefield == "charmm":
+                traj = MDAnalysis.Universe(
+                    f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.psf",
+                    f"{dcd_path}",
+                    in_memory=in_memory,
+                )
+            elif self.forcefield == "amber":
+                traj = MDAnalysis.Universe(
+                    f"{self.base_path}/intst{lambda_state}/{conf_sub['intermediate-filename']}.parm7",
+                    f"{dcd_path}",
+                    in_memory=in_memory,
+                )
 
             # simple thinning of the Trajectory
             start = int(0.25 * len(traj.trajectory))
@@ -694,9 +728,9 @@ class FreeEnergyCalculator(object):
     def free_energy_differences(self, env="vacuum"):
         """matrix of free energy differences"""
         try:
-            r = self.mbar_results[env].compute_free_energy_differences(
-                return_dict=True
-            )["Delta_f"]
+            r = self.mbar_results[env].getFreeEnergyDifferences(return_dict=True)[
+                "Delta_f"
+            ]
         except KeyError:
             raise KeyError(f"Free energy difference not obtained for : {env}")
         return r
@@ -704,7 +738,7 @@ class FreeEnergyCalculator(object):
     def free_energy_overlap(self, env="vacuum"):
         """overlap of lambda states"""
         try:
-            r = self.mbar_results[env].compute_overlap()["matrix"]
+            r = self.mbar_results[env].computeOverlap()["matrix"]
         except KeyError:
             raise KeyError(f"Free energy overlap not obtained for : {env}")
 
@@ -713,9 +747,9 @@ class FreeEnergyCalculator(object):
     def free_energy_difference_uncertainties(self, env="vacuum"):
         """matrix of asymptotic uncertainty-estimates accompanying free energy differences"""
         try:
-            r = self.mbar_results[env].compute_free_energy_differences(
-                return_dict=True
-            )["dDelta_f"]
+            r = self.mbar_results[env].getFreeEnergyDifferences(return_dict=True)[
+                "dDelta_f"
+            ]
         except KeyError:
             raise KeyError(f"Free energy uncertanties not obtained for : {env}")
         return r
