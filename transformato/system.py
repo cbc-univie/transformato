@@ -34,6 +34,11 @@ class SystemStructure(object):
         self.envs = set()
 
         try:
+            self.drude: bool = configuration["simulation"]["drude"]
+        except KeyError:
+            self.drude: bool = False
+
+        try:
             self.ff: str = str.lower(configuration["simulation"]["forcefield"])
             self.psfs: defaultdict = defaultdict(pm.amber.AmberParm)
         except KeyError:
@@ -468,33 +473,34 @@ class SystemStructure(object):
         mol = self.generate_atom_tables_from_psf(psf, mol)
 
         # check if psf and sdf have same indeces
-        # try:
-        #     for a in mol.GetAtoms():
-        #         if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
-        #             pass
-        #         else:
-        #             raise RuntimeError(
-        #                 "First PSF to mol conversion did not work, trying it with the pdb file"
-        #             )
-        # except RuntimeError:
-        #     # It's possible, that there is a sdf file in the TCL folder but the order does not match
-        #     # in thuis case, we try to create a matching sdf file by using the pdb file in the openmm folder
-        #     logger.info(
-        #         f"It seems like the sdf file provided in the {self.tlc} does not have the correct order, trying it again by using the pdb file"
-        #     )
-        #     mol = self._create_sdf_from_pdb(psf)
-        #     mol = self.generate_atom_tables_from_psf(psf, mol)
+        if not self.drude:
+            try:
+                for a in mol.GetAtoms():
+                    if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
+                        pass
+                    else:
+                        raise RuntimeError(
+                            "First PSF to mol conversion did not work, trying it with the pdb file"
+                        )
+            except RuntimeError:
+                # It's possible, that there is a sdf file in the TCL folder but the order does not match
+                # in thuis case, we try to create a matching sdf file by using the pdb file in the openmm folder
+                logger.info(
+                    f"It seems like the sdf file provided in the {self.tlc} does not have the correct order, trying it again by using the pdb file"
+                )
+                mol = self._create_sdf_from_pdb(psf)
+                mol = self.generate_atom_tables_from_psf(psf, mol)
 
-        # final check if psf and sdf have same indeces
-        # for a in mol.GetAtoms():
-        #     if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
-        #         pass
-        #     else:
-        #         raise RuntimeError(
-        #             "PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!"
-        #         )
+            # final check if psf and sdf have same indeces
+            for a in mol.GetAtoms():
+                if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
+                    pass
+                else:
+                    raise RuntimeError(
+                        "PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!"
+                    )
 
-        return mol
+            return mol
 
     def generate_atom_tables_from_psf(
         self, psf: pm.charmm.CharmmPsfFile, mol: Chem.rdchem.Mol
