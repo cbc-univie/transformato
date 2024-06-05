@@ -34,6 +34,11 @@ class SystemStructure(object):
         self.envs = set()
 
         try:
+            self.drude: bool = configuration["simulation"]["drude"]
+        except KeyError:
+            self.drude: bool = False
+
+        try:
             self.ff: str = str.lower(configuration["simulation"]["forcefield"])
             self.psfs: defaultdict = defaultdict(pm.amber.AmberParm)
         except KeyError:
@@ -240,7 +245,11 @@ class SystemStructure(object):
         parameter_files += (
             f"{toppar_dir}/toppar_all36_prot_na_combined.str",
         )  # if modified aminoacids are needed
-        parameter_files += (f"{toppar_dir}/toppar_all36_na_rna_modified.str",)
+        parameter_files += (f"{toppar_dir}/toppar_water_ions.str",)
+        if os.path.isfile(f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str"):
+            parameter_files += (
+                f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str",
+            )
         if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
             parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
         # set up parameter objec
@@ -295,17 +304,28 @@ class SystemStructure(object):
             # which is necessary for the check_for_lp function
             if lp:
                 g = psf.groups
+                oldFlags = psf.flags
                 frame_idx = []
                 frame_frame = []
+                prop_idx = []
+                properties = []
                 for atom in psf.atoms:
                     if hasattr(atom, "frame_type"):
                         frame_idx.append(atom.idx)
                         frame_frame.append(atom.frame_type)
+                for atom in psf.atoms:
+                    if hasattr(atom, "props"):
+                        prop_idx.append(atom.idx)
+                        properties.append(atom.props)
                 psf = psf[f":{self.tlc}"]  # the important part
                 psf.groups = g
+                psf.flags = oldFlags
                 for atom in psf.atoms:
                     if atom.idx in frame_idx:
                         atom.frame_type = frame_frame[frame_idx.index(atom.idx)]
+                for atom in psf.atoms:
+                    if atom.idx in prop_idx:
+                        atom.props = properties[prop_idx.index(atom.idx)]
             else:
                 psf = psf[f":{self.tlc}"]
 
@@ -453,33 +473,34 @@ class SystemStructure(object):
         mol = self.generate_atom_tables_from_psf(psf, mol)
 
         # check if psf and sdf have same indeces
-        try:
+        if not self.drude:
+            try:
+                for a in mol.GetAtoms():
+                    if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
+                        pass
+                    else:
+                        raise RuntimeError(
+                            "First PSF to mol conversion did not work, trying it with the pdb file"
+                        )
+            except RuntimeError:
+                # It's possible, that there is a sdf file in the TCL folder but the order does not match
+                # in thuis case, we try to create a matching sdf file by using the pdb file in the openmm folder
+                logger.info(
+                    f"It seems like the sdf file provided in the {self.tlc} does not have the correct order, trying it again by using the pdb file"
+                )
+                mol = self._create_sdf_from_pdb(psf)
+                mol = self.generate_atom_tables_from_psf(psf, mol)
+
+            # final check if psf and sdf have same indeces
             for a in mol.GetAtoms():
                 if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
                     pass
                 else:
                     raise RuntimeError(
-                        "First PSF to mol conversion did not work, trying it with the pdb file"
+                        "PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!"
                     )
-        except RuntimeError:
-            # It's possible, that there is a sdf file in the TCL folder but the order does not match
-            # in thuis case, we try to create a matching sdf file by using the pdb file in the openmm folder
-            logger.info(
-                f"It seems like the sdf file provided in the {self.tlc} does not have the correct order, trying it again by using the pdb file"
-            )
-            mol = self._create_sdf_from_pdb(psf)
-            mol = self.generate_atom_tables_from_psf(psf, mol)
 
-        # final check if psf and sdf have same indeces
-        for a in mol.GetAtoms():
-            if str(psf[a.GetIdx()].element_name) == str(a.GetSymbol()):
-                pass
-            else:
-                raise RuntimeError(
-                    "PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!"
-                )
-
-        return mol
+            return mol
 
     def generate_atom_tables_from_psf(
         self, psf: pm.charmm.CharmmPsfFile, mol: Chem.rdchem.Mol

@@ -46,6 +46,10 @@ class IntermediateStateFactory(object):
         self.output_files = []
         self.current_step = 1
         self.multiple_runs = multiple_runs
+        try:
+            self.drude: bool = configuration["simulation"]["drude"]
+        except KeyError:
+            self.drude: bool = False
 
     def endstate_correction(self):
         logger.info(f"Will create script for endstate correction")
@@ -385,20 +389,23 @@ class IntermediateStateFactory(object):
         # copy diverse set of helper files for CHARMM
         for env in self.system.envs:
             if env != "vacuum" and self.system.ff.lower() != "amber":
-                FILES = [
-                    "crystal_image.str",
-                    "step3_pbcsetup.str",
-                ]
-                for f in FILES:
-                    try:
-                        charmm_source = f"{basedir}/{env}/{f}"
-                        charmm_target = (
-                            f"{intermediate_state_file_path}/charmm_{env}_{f}"
-                        )
-                        shutil.copyfile(charmm_source, charmm_target)
-                    except FileNotFoundError:
-                        logger.critical(f"Could not find file: {f}")
-                        raise
+                try:
+                    FILES = [
+                        "crystal_image.str",
+                        "step3_pbcsetup.str",
+                    ]
+                    for f in FILES:
+                        try:
+                            charmm_source = f"{basedir}/{env}/{f}"
+                            charmm_target = (
+                                f"{intermediate_state_file_path}/charmm_{env}_{f}"
+                            )
+                            shutil.copyfile(charmm_source, charmm_target)
+                        except FileNotFoundError:
+                            logger.critical(f"Could not find file: {f}")
+                            raise
+                except:
+                    logger.info("")
 
             # copy rst files
             rst_file_source = f"{basedir}/{env}/{self.configuration['system'][self.system.structure][env]['rst_file_name']}.rst"
@@ -536,7 +543,13 @@ class IntermediateStateFactory(object):
                 logger.critical(f"Could not find file: {f}")
 
         # copy omm simulation script
-        omm_simulation_script_source = f"{self.configuration['bin_dir']}/openmm_run.py"
+        if self.drude:
+            omm_simulation_script_source = f"{self.configuration['bin_dir']}/drude_openmm_run.py"  # ATTENTION: NEEDS TO BE MERGED IN THE FUTURE
+        else:
+            omm_simulation_script_source = (
+                f"{self.configuration['bin_dir']}/openmm_run.py"
+            )
+
         omm_simulation_script_target = f"{intermediate_state_file_path}/openmm_run.py"
         shutil.copyfile(omm_simulation_script_source, omm_simulation_script_target)
         # add serialization
@@ -644,7 +657,7 @@ class IntermediateStateFactory(object):
         self, basedir: str, intermediate_state_file_path: str
     ):
         # If the tlc is no name, we assume that there is no str/rtf file (as for point mutations in RNAs)
-        if len(self.system.tlc) > 3:
+        if not self.drude:
             # copy ligand rtf file
             ligand_rtf = f"{basedir}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
             toppar_target = (
@@ -828,7 +841,9 @@ class IntermediateStateFactory(object):
         view = psf.view[f":{tlc}"]
         # writing atom parameters
         for atom in view.atoms:
-            if hasattr(atom, "initial_type"):
+            if hasattr(atom, "initial_type") and atom.type != "DRUD":
+                # if hasattr(atom, "initial_type") and not atom.type.startswith("D"):
+
                 if set([atom.type]) in already_seen:
                     continue
                 else:
@@ -855,7 +870,31 @@ class IntermediateStateFactory(object):
         already_seen = []
         for bond in view.bonds:
             atom1, atom2 = bond.atom1, bond.atom2
-            if any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
+            if atom1.type == "DRUD" or atom2.type == "DRUD":
+                pass
+            elif (
+                # atom1.type == "DRUD"
+                # or atom2.type == "DRUD"
+                atom1.type.startswith("LP")
+                or atom2.type.startswith("LP")
+            ):
+                if any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
+                    if set([atom1.type, atom2.type]) in already_seen:
+                        continue
+                    else:
+                        already_seen.append(set([atom1.type, atom2.type]))
+                        logger.debug(
+                            "{:7} {:7} {:9.5f} {:9.5f} \n".format(
+                                str(atom1.type), str(atom2.type), 0, 0
+                            )
+                        )
+                        prm_file_handler.write(
+                            "{:7} {:7} {:9.5f} {:9.5f} \n".format(
+                                str(atom1.type), str(atom2.type), 0, 0
+                            )
+                        )
+
+            elif any(hasattr(atom, "initial_type") for atom in [atom1, atom2]):
                 if set([atom1.type, atom2.type]) in already_seen:
                     continue
                 else:
@@ -1113,6 +1152,16 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 ../../toppar/toppar_all36_lipid_sphingo.str
 ../../toppar/toppar_all36_na_rna_modified.str
 """
+        toppar_dir = f"{self.path}/../toppar"
+
+        if os.path.isdir(toppar_dir):
+            pass
+        else:
+            toppar_dir = get_toppar_dir()
+
+        if os.path.isfile(f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str"):
+            toppar_format += f"""../../toppar/toppar_drude_main_protein_2023a_flex.str
+"""
         if os.path.isfile(
             f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
         ):
@@ -1121,14 +1170,17 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
-        elif len(self.system.tlc) > 3:
+        elif not self.drude and (
+            os.path.isfile(
+                f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}.str"
+            )
+        ):
             toppar_format += f"""{self.system.tlc.lower()}.str
 dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
         else:
-            toppar_format += f"""
-dummy_atom_definitions.rtf
+            toppar_format += f"""dummy_atom_definitions.rtf
 dummy_parameters.prm
 """
 

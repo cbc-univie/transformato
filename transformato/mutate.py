@@ -198,7 +198,7 @@ def perform_mutations(
             and configuration["simulation"]["free-energy-type"] == "asfe"
         ):
             for lambda_value in np.linspace(
-                0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
+                0.5, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
             ):
                 print("####################")
                 print(
@@ -1583,7 +1583,11 @@ class ProposeMutationRoute(object):
                             steric_mutation_to_default=True,
                         )
                         mutations["default-lj"].append(m)
-                    elif atom_idx in hydrogens or psf[atom_idx].type == "LPH":
+                    elif (
+                        atom_idx in hydrogens
+                        or psf[atom_idx].type.startswith("LP")
+                        or psf[atom_idx].type.startswith("DRUD")
+                    ):
                         # already mutated
                         continue
                     else:
