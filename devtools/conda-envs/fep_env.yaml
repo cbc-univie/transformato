@@ -5,6 +5,7 @@ channels:
 dependencies:
   # Base depends
   - openmm
+  - versioneer
   - openmmtools
   - numpy
   - ipython
