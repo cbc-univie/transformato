@@ -89,7 +89,7 @@ if env != "vacuum":
 #     inputs.temp * kelvin, 1 / unit.picosecond, inputs.dt * unit.picoseconds
 # )
 
-integrator = DrudeNoseHooverIntegrator(
+integrator = DrudeLangevinIntegrator(
     inputs.temp * kelvin,
     10 / picosecond,
     1 * kelvin,
