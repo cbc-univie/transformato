@@ -279,7 +279,7 @@
             <span class="ow">and</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;asfe&quot;</span>
         <span class="p">):</span>
             <span class="k">for</span> <span class="n">lambda_value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
-                <span class="mf">0.75</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nr_of_mutation_steps_lj_of_heavy_atoms</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nr_of_mutation_steps_lj_of_heavy_atoms</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="p">):</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;####################&quot;</span><span class="p">)</span>
                 <span class="nb">print</span><span class="p">(</span>
@@ -1740,7 +1740,11 @@
                             <span class="n">steric_mutation_to_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="n">mutations</span><span class="p">[</span><span class="s2">&quot;default-lj&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">atom_idx</span> <span class="ow">in</span> <span class="n">hydrogens</span> <span class="ow">or</span> <span class="n">psf</span><span class="p">[</span><span class="n">atom_idx</span><span class="p">]</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;LPH&quot;</span><span class="p">:</span>
+                    <span class="k">elif</span> <span class="p">(</span>
+                        <span class="n">atom_idx</span> <span class="ow">in</span> <span class="n">hydrogens</span>
+                        <span class="ow">or</span> <span class="n">psf</span><span class="p">[</span><span class="n">atom_idx</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span>
+                        <span class="ow">or</span> <span class="n">psf</span><span class="p">[</span><span class="n">atom_idx</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;DRUD&quot;</span><span class="p">)</span>
+                    <span class="p">):</span>
                         <span class="c1"># already mutated</span>
                         <span class="k">continue</span>
                     <span class="k">else</span><span class="p">:</span>

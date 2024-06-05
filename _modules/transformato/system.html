@@ -119,6 +119,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">envs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;drude&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ff</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">(</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;forcefield&quot;</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">psfs</span><span class="p">:</span> <span class="n">defaultdict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">amber</span><span class="o">.</span><span class="n">AmberParm</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -328,7 +333,11 @@
         <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_prot_na_combined.str&quot;</span><span class="p">,</span>
         <span class="p">)</span>  <span class="c1"># if modified aminoacids are needed</span>
-        <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_na_rna_modified.str&quot;</span><span class="p">,)</span>
+        <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_water_ions.str&quot;</span><span class="p">,)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_drude_main_protein_2023a_flex.str&quot;</span><span class="p">):</span>
+            <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_drude_main_protein_2023a_flex.str&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_moreions.str&quot;</span><span class="p">):</span>
             <span class="n">parameter_files</span> <span class="o">+=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_all36_moreions.str&quot;</span><span class="p">,)</span>
         <span class="c1"># set up parameter objec</span>
@@ -386,17 +395,28 @@
             <span class="c1"># which is necessary for the check_for_lp function</span>
             <span class="k">if</span> <span class="n">lp</span><span class="p">:</span>
                 <span class="n">g</span> <span class="o">=</span> <span class="n">psf</span><span class="o">.</span><span class="n">groups</span>
+                <span class="n">oldFlags</span> <span class="o">=</span> <span class="n">psf</span><span class="o">.</span><span class="n">flags</span>
                 <span class="n">frame_idx</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="n">frame_frame</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">prop_idx</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">properties</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;frame_type&quot;</span><span class="p">):</span>
                         <span class="n">frame_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
                         <span class="n">frame_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;props&quot;</span><span class="p">):</span>
+                        <span class="n">prop_idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
+                        <span class="n">properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">props</span><span class="p">)</span>
                 <span class="n">psf</span> <span class="o">=</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>  <span class="c1"># the important part</span>
                 <span class="n">psf</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="n">g</span>
+                <span class="n">psf</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">oldFlags</span>
                 <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">frame_idx</span><span class="p">:</span>
                         <span class="n">atom</span><span class="o">.</span><span class="n">frame_type</span> <span class="o">=</span> <span class="n">frame_frame</span><span class="p">[</span><span class="n">frame_idx</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">psf</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">prop_idx</span><span class="p">:</span>
+                        <span class="n">atom</span><span class="o">.</span><span class="n">props</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="n">prop_idx</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">psf</span> <span class="o">=</span> <span class="n">psf</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
 
@@ -553,33 +573,34 @@
         <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_atom_tables_from_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">mol</span><span class="p">)</span>
 
         <span class="c1"># check if psf and sdf have same indeces</span>
-        <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                            <span class="s2">&quot;First PSF to mol conversion did not work, trying it with the pdb file&quot;</span>
+                        <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="c1"># It&#39;s possible, that there is a sdf file in the TCL folder but the order does not match</span>
+                <span class="c1"># in thuis case, we try to create a matching sdf file by using the pdb file in the openmm folder</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;It seems like the sdf file provided in the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2"> does not have the correct order, trying it again by using the pdb file&quot;</span>
+                <span class="p">)</span>
+                <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sdf_from_pdb</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span>
+                <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_atom_tables_from_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">mol</span><span class="p">)</span>
+
+            <span class="c1"># final check if psf and sdf have same indeces</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
                 <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
                     <span class="k">pass</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                        <span class="s2">&quot;First PSF to mol conversion did not work, trying it with the pdb file&quot;</span>
+                        <span class="s2">&quot;PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!&quot;</span>
                     <span class="p">)</span>
-        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-            <span class="c1"># It&#39;s possible, that there is a sdf file in the TCL folder but the order does not match</span>
-            <span class="c1"># in thuis case, we try to create a matching sdf file by using the pdb file in the openmm folder</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;It seems like the sdf file provided in the </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2"> does not have the correct order, trying it again by using the pdb file&quot;</span>
-            <span class="p">)</span>
-            <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sdf_from_pdb</span><span class="p">(</span><span class="n">psf</span><span class="p">)</span>
-            <span class="n">mol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_atom_tables_from_psf</span><span class="p">(</span><span class="n">psf</span><span class="p">,</span> <span class="n">mol</span><span class="p">)</span>
 
-        <span class="c1"># final check if psf and sdf have same indeces</span>
-        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">psf</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span><span class="o">.</span><span class="n">element_name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">GetSymbol</span><span class="p">()):</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="s2">&quot;PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!&quot;</span>
-                <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">mol</span></div>
+            <span class="k">return</span> <span class="n">mol</span></div>
 
 
 <div class="viewcode-block" id="SystemStructure.generate_atom_tables_from_psf">

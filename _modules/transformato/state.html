@@ -130,7 +130,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">charmm_factory</span> <span class="o">=</span> <span class="n">CharmmFactory</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_step</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span> <span class="o">=</span> <span class="n">multiple_runs</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span> <span class="o">=</span> <span class="n">multiple_runs</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;drude&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
     <span class="k">def</span> <span class="nf">endstate_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -482,20 +486,23 @@
         <span class="c1"># copy diverse set of helper files for CHARMM</span>
         <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">env</span> <span class="o">!=</span> <span class="s2">&quot;vacuum&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">ff</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;amber&quot;</span><span class="p">:</span>
-                <span class="n">FILES</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="s2">&quot;crystal_image.str&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;step3_pbcsetup.str&quot;</span><span class="p">,</span>
-                <span class="p">]</span>
-                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">FILES</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">charmm_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="n">charmm_target</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/charmm_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
-                        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">charmm_source</span><span class="p">,</span> <span class="n">charmm_target</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find file: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="k">raise</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">FILES</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="s2">&quot;crystal_image.str&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;step3_pbcsetup.str&quot;</span><span class="p">,</span>
+                    <span class="p">]</span>
+                    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">FILES</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">charmm_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="n">charmm_target</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/charmm_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">)</span>
+                            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">charmm_source</span><span class="p">,</span> <span class="n">charmm_target</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                            <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find file: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                            <span class="k">raise</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
             <span class="c1"># copy rst files</span>
             <span class="n">rst_file_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;system&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">structure</span><span class="p">][</span><span class="n">env</span><span class="p">][</span><span class="s1">&#39;rst_file_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.rst&quot;</span>
@@ -636,7 +643,13 @@
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find file: </span><span class="si">{</span><span class="n">f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="c1"># copy omm simulation script</span>
-        <span class="n">omm_simulation_script_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/openmm_run.py&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span>
+            <span class="n">omm_simulation_script_source</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/drude_openmm_run.py&quot;</span>  <span class="c1"># ATTENTION: NEEDS TO BE MERGED IN THE FUTURE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">omm_simulation_script_source</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/openmm_run.py&quot;</span>
+            <span class="p">)</span>
+
         <span class="n">omm_simulation_script_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/openmm_run.py&quot;</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">omm_simulation_script_source</span><span class="p">,</span> <span class="n">omm_simulation_script_target</span><span class="p">)</span>
         <span class="c1"># add serialization</span>
@@ -741,20 +754,19 @@
 
         <span class="c1"># copy ligand prm file</span>
         <span class="n">ligand_prm</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s2">/waterbox/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.prm&quot;</span>
-        <span class="n">toppar_target</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.prm&quot;</span>
-        <span class="p">)</span>
+        <span class="n">toppar_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.prm&quot;</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">ligand_prm</span><span class="p">,</span> <span class="n">toppar_target</span><span class="p">)</span>
-
 
     <span class="k">def</span> <span class="nf">_copy_ligand_specific_str</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">basedir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">):</span>
         <span class="c1"># If the tlc is no name, we assume that there is no str/rtf file (as for point mutations in RNAs)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="c1"># copy ligand rtf file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span>
+            <span class="c1"># copy ligand rtf file</span>
             <span class="n">ligand_rtf</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">basedir</span><span class="si">}</span><span class="s2">/waterbox/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.str&quot;</span>
-            <span class="n">toppar_target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.str&quot;</span>
+            <span class="n">toppar_target</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.str&quot;</span>
+            <span class="p">)</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">ligand_rtf</span><span class="p">,</span> <span class="n">toppar_target</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_copy_crd_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intermediate_state_file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -942,7 +954,9 @@
         <span class="n">view</span> <span class="o">=</span> <span class="n">psf</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
         <span class="c1"># writing atom parameters</span>
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;DRUD&quot;</span><span class="p">:</span>
+                <span class="c1"># if hasattr(atom, &quot;initial_type&quot;) and not atom.type.startswith(&quot;D&quot;):</span>
+
                 <span class="k">if</span> <span class="nb">set</span><span class="p">([</span><span class="n">atom</span><span class="o">.</span><span class="n">type</span><span class="p">])</span> <span class="ow">in</span> <span class="n">already_seen</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -969,7 +983,31 @@
         <span class="n">already_seen</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">view</span><span class="o">.</span><span class="n">bonds</span><span class="p">:</span>
             <span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span> <span class="o">=</span> <span class="n">bond</span><span class="o">.</span><span class="n">atom1</span><span class="p">,</span> <span class="n">bond</span><span class="o">.</span><span class="n">atom2</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="p">[</span><span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">atom1</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;DRUD&quot;</span> <span class="ow">or</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;DRUD&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="p">(</span>
+                <span class="c1"># atom1.type == &quot;DRUD&quot;</span>
+                <span class="c1"># or atom2.type == &quot;DRUD&quot;</span>
+                <span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span>
+                <span class="ow">or</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;LP&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="p">[</span><span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">]):</span>
+                    <span class="k">if</span> <span class="nb">set</span><span class="p">([</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">])</span> <span class="ow">in</span> <span class="n">already_seen</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">already_seen</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">]))</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="si">{:7}</span><span class="s2"> </span><span class="si">{:7}</span><span class="s2"> </span><span class="si">{:9.5f}</span><span class="s2"> </span><span class="si">{:9.5f}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">prm_file_handler</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                            <span class="s2">&quot;</span><span class="si">{:7}</span><span class="s2"> </span><span class="si">{:7}</span><span class="s2"> </span><span class="si">{:9.5f}</span><span class="s2"> </span><span class="si">{:9.5f}</span><span class="s2"> </span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="s2">&quot;initial_type&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="p">[</span><span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">]):</span>
                 <span class="k">if</span> <span class="nb">set</span><span class="p">([</span><span class="n">atom1</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">type</span><span class="p">])</span> <span class="ow">in</span> <span class="n">already_seen</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -1230,6 +1268,16 @@
 <span class="s2">../../toppar/toppar_all36_lipid_sphingo.str</span>
 <span class="s2">../../toppar/toppar_all36_na_rna_modified.str</span>
 <span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">toppar_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">/../toppar&quot;</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">toppar_dir</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">toppar_dir</span> <span class="o">=</span> <span class="n">get_toppar_dir</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">toppar_dir</span><span class="si">}</span><span class="s2">/toppar_drude_main_protein_2023a_flex.str&quot;</span><span class="p">):</span>
+            <span class="n">toppar_format</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;../../toppar/toppar_drude_main_protein_2023a_flex.str</span>
+<span class="s2">&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">_g.rtf&quot;</span>
         <span class="p">):</span>
@@ -1238,14 +1286,17 @@
 <span class="s2">dummy_atom_definitions.rtf</span>
 <span class="s2">dummy_parameters.prm</span>
 <span class="s2">&quot;&quot;&quot;</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">drude</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">charmm_gui_base</span><span class="si">}</span><span class="s2">/waterbox/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.str&quot;</span>
+            <span class="p">)</span>
+        <span class="p">):</span>
             <span class="n">toppar_format</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">tlc</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">.str</span>
 <span class="s2">dummy_atom_definitions.rtf</span>
 <span class="s2">dummy_parameters.prm</span>
 <span class="s2">&quot;&quot;&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">toppar_format</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">dummy_atom_definitions.rtf</span>
+            <span class="n">toppar_format</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;dummy_atom_definitions.rtf</span>
 <span class="s2">dummy_parameters.prm</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
