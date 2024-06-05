@@ -47,7 +47,7 @@ jobs:
           #  miniforge-variant: Mambaforge-pypy3
 
     steps:
-    - uses: actions/checkout@v4.1.1
+    - uses: actions/checkout@v4.1.6
 
     - name: Additional info about the build
       shell: bash
@@ -61,7 +61,7 @@ jobs:
       
     - name: Make Cache (no worflow_dispatch)
       if: ${{ github.event_name != 'workflow_dispatch' }}
-      uses: actions/cache@v3.3.2
+      uses: actions/cache@v4.0.2
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
         # Increase the last number (0) to reset cache manually
@@ -70,7 +70,7 @@ jobs:
       
     - name: Make Cache (worflow_dispatch)
       if: ${{ github.event_name == 'workflow_dispatch' }}
-      uses: actions/cache@v3.3.2
+      uses: actions/cache@v4.0.2
       with:
         path: ~/conda_pkgs_dir # ${{ matrix.prefix }}
         key: ${{ matrix.label }}-conda-${{ hashFiles('devtools/conda-envs/fep_env.yaml') }}-${{ env.DATE }}-${{ inputs.CACHE_NUMBER }}
@@ -78,7 +78,7 @@ jobs:
 
 
     # More info on options: https://github.com/conda-incubator/setup-miniconda
-    - uses: conda-incubator/setup-miniconda@v3.0.1
+    - uses: conda-incubator/setup-miniconda@v3.0.4
       with:
         python-version: ${{ matrix.python-version }}
         condarc-file: ${{ matrix.condarc-file }}
@@ -122,7 +122,7 @@ jobs:
         pytest -v --cov=transformato --cov-report=xml --color=yes transformato/tests/
 
     - name: CodeCov
-      uses: codecov/codecov-action@v3.1.4
+      uses: codecov/codecov-action@v4.4.1
       with:
         file: ./coverage.xml
         flags: unittests
