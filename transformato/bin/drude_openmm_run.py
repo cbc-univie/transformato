@@ -166,28 +166,28 @@ if inputs.gen_vel == "yes":
     else:
         simulation.context.setVelocitiesToTemperature(inputs.gen_temp)
         
-## Do some additional pre-equilibration when using Drude particles
-print("Doing a first equilibration run")
-simulation.step(100_000)
+# ## Do some additional pre-equilibration when using Drude particles
+# print("Doing a first equilibration run")
+# simulation.step(100_000)
 
-print("Doing a second equilibration run")
-simulation.integrator.setStepSize(0.0002 * picoseconds)
-simulation.context.reinitialize(preserveState=True)
-simulation.step(100_000)
+# print("Doing a second equilibration run")
+# simulation.integrator.setStepSize(0.0002 * picoseconds)
+# simulation.context.reinitialize(preserveState=True)
+# simulation.step(100_000)
 
-print("Doing a third equilibration run")
-simulation.integrator.setStepSize(0.0003 * picoseconds)
-simulation.context.reinitialize(preserveState=True)
-simulation.step(100_000)
+# print("Doing a third equilibration run")
+# simulation.integrator.setStepSize(0.0003 * picoseconds)
+# simulation.context.reinitialize(preserveState=True)
+# simulation.step(100_000)
 
-print("Doing a fourth equilibration run")
-simulation.integrator.setStepSize(0.0004 * picoseconds)
-simulation.context.reinitialize(preserveState=True)
-simulation.step(100_000)
+# print("Doing a fourth equilibration run")
+# simulation.integrator.setStepSize(0.0004 * picoseconds)
+# simulation.context.reinitialize(preserveState=True)
+# simulation.step(100_000)
 
-print("Starting the actual simulation")
-simulation.integrator.setStepSize(0.0005 * picoseconds)
-simulation.context.reinitialize(preserveState=True)
+# print("Starting the actual simulation")
+# simulation.integrator.setStepSize(0.0005 * picoseconds)
+# simulation.context.reinitialize(preserveState=True)
 
 # Production
 print("\nMD run: %s steps" % inputs.nstep)
