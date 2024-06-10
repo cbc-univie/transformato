@@ -97,12 +97,13 @@ integrator = DrudeLangevinIntegrator(
     0.0005 * picoseconds,
 )
 
-# integrator.setMaxDrudeDistance(0.2 * angstroms)
-# if integrator.getMaxDrudeDistance() == 0:
-#     print("No Drude Hard Wall Contraint in use")
-# else:
-#     print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
+integrator.setMaxDrudeDistance(0.2 * angstroms)
+if integrator.getMaxDrudeDistance() == 0:
+    print("No Drude Hard Wall Contraint in use")
+else:
+    print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
 
+# TEST: HELLO!
 
 # Set platform
 platform = Platform.getPlatformByName("CUDA")
