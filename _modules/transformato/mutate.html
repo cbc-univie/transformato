@@ -934,13 +934,13 @@
             <span class="c1"># all atoms should become dummy atoms in the end</span>
             <span class="n">central_atoms</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">])</span>
 
-            <span class="c1"># Assure, that the central atom is no hydrogen</span>
-            <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">idx</span> <span class="ow">in</span> <span class="n">central_atoms</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;One of the central atoms seems to be a hydrogen atom&quot;</span>
-                        <span class="p">)</span>
+            <span class="c1"># # Assure, that the central atom is no hydrogen</span>
+            <span class="c1"># for atom in self.psf1[&quot;waterbox&quot;][f&quot;:{self.s1_tlc}&quot;].atoms:</span>
+            <span class="c1">#     if atom.idx in central_atoms:</span>
+            <span class="c1">#         if atom.name.startswith(&quot;H&quot;) == True:</span>
+            <span class="c1">#             raise RuntimeError(</span>
+            <span class="c1">#                 f&quot;One of the central atoms seems to be a hydrogen atom&quot;</span>
+            <span class="c1">#             )</span>
 
             <span class="c1"># calculate the ordering or LJ mutations</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">odered_connected_dummy_regions_cc1</span><span class="p">:</span>
