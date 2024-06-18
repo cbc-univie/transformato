@@ -472,10 +472,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="n">s1</span><span class="o">.</span><span class="n">tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;DR&quot;</span><span class="p">):</span>
-                   <span class="bp">self</span><span class="o">.</span><span class="n">drude</span> <span class="o">=</span> <span class="kc">True</span>
-                   <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Assuming Drude particles are present&quot;</span><span class="p">)</span></div>
-
-
+                    <span class="bp">self</span><span class="o">.</span><span class="n">drude</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Assuming Drude particles are present&quot;</span><span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">_check_cgenff_versions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -940,7 +938,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># all atoms should become dummy atoms in the end</span>
             <span class="n">central_atoms</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graphs</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">])</span>
-            
+
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">drude</span><span class="p">:</span>
 
                 <span class="c1"># Assure, that the central atom is no hydrogen</span>
@@ -962,22 +960,26 @@
 
                 <span class="k">if</span> <span class="n">odered_connected_dummy_regions_cc1</span><span class="p">:</span>
                     <span class="n">odered_connected_dummy_regions_cc1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_lp</span><span class="p">(</span>
-                    <span class="n">odered_connected_dummy_regions_cc1</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">],</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="p">,</span>
-                    <span class="s2">&quot;m1&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
+                        <span class="n">odered_connected_dummy_regions_cc1</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;waterbox&quot;</span><span class="p">],</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="p">,</span>
+                        <span class="s2">&quot;m1&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">odered_connected_dummy_regions_cc1</span> <span class="o">=</span> <span class="p">[]</span>
 
                 <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">psf1</span><span class="p">[</span><span class="s2">&quot;vacuum&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">view</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">s1_tlc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]:</span>
                     <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">&quot;DRUD&quot;</span><span class="p">:</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
-                            <span class="c1">#if not atom.type.startswith(&quot;H&quot;):</span>
+                            <span class="c1"># if not atom.type.startswith(&quot;H&quot;):</span>
                             <span class="n">odered_connected_dummy_regions_cc1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)</span>
-                
-                <span class="n">odered_connected_dummy_regions_cc1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([</span><span class="n">odered_connected_dummy_regions_cc1</span><span class="p">])</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using the order as given in the psf file </span><span class="si">{</span><span class="n">odered_connected_dummy_regions_cc1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">odered_connected_dummy_regions_cc1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">odered_connected_dummy_regions_cc1</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Using the order as given in the psf file </span><span class="si">{</span><span class="n">odered_connected_dummy_regions_cc1</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">dummy_region_cc1</span> <span class="o">=</span> <span class="n">DummyRegion</span><span class="p">(</span>
                 <span class="n">mol_name</span><span class="o">=</span><span class="s2">&quot;m1&quot;</span><span class="p">,</span>
