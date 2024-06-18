@@ -378,6 +378,13 @@ class ProposeMutationRoute(object):
             self.s1_tlc = s1.tlc
             self.asfe: bool = True
             self.dummy_region_cc1: DummyRegion
+            self.drude: bool = False
+            for atom in self.psf1["waterbox"].view[f":{s1.tlc}"].atoms:
+                if atom.type.startswith("DR"):
+                   self.drude = True
+                   logger.info("Assuming Drude particles are present")
+
+
 
     def _check_cgenff_versions(self):
         cgenff_sys1 = self.system["system1"].cgenff_version
@@ -818,31 +825,44 @@ class ProposeMutationRoute(object):
         else:
             # all atoms should become dummy atoms in the end
             central_atoms = nx.center(self.graphs["m1"])
+            
+            if not self.drude:
 
-            # # Assure, that the central atom is no hydrogen
-            # for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
-            #     if atom.idx in central_atoms:
-            #         if atom.name.startswith("H") == True:
-            #             raise RuntimeError(
-            #                 f"One of the central atoms seems to be a hydrogen atom"
-            #             )
+                # Assure, that the central atom is no hydrogen
+                for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
+                    if atom.idx in central_atoms:
+                        if atom.name.startswith("H") == True:
+                            raise RuntimeError(
+                                f"One of the central atoms seems to be a hydrogen atom"
+                            )
 
-            # calculate the ordering or LJ mutations
-            if not odered_connected_dummy_regions_cc1:
-                odered_connected_dummy_regions_cc1 = (
-                    calculate_order_of_LJ_mutations_asfe(
-                        central_atoms,
-                        self.graphs["m1"].copy(),
+                # calculate the ordering or LJ mutations
+                if not odered_connected_dummy_regions_cc1:
+                    odered_connected_dummy_regions_cc1 = (
+                        calculate_order_of_LJ_mutations_asfe(
+                            central_atoms,
+                            self.graphs["m1"].copy(),
+                        )
                     )
-                )
 
-            if odered_connected_dummy_regions_cc1:
-                odered_connected_dummy_regions_cc1 = self._check_for_lp(
+                if odered_connected_dummy_regions_cc1:
+                    odered_connected_dummy_regions_cc1 = self._check_for_lp(
                     odered_connected_dummy_regions_cc1,
                     self.psf1["waterbox"],
                     self.s1_tlc,
                     "m1",
                 )
+            else:
+                odered_connected_dummy_regions_cc1 = []
+
+                for atom in self.psf1["vacuum"].view[f":{self.s1_tlc}"]:
+                    if atom.type != "DRUD":
+                        if not atom.type.startswith("L"):
+                            #if not atom.type.startswith("H"):
+                            odered_connected_dummy_regions_cc1.append(atom.idx)
+                
+                odered_connected_dummy_regions_cc1 = list([odered_connected_dummy_regions_cc1])
+                logger.info(f"Using the order as given in the psf file {odered_connected_dummy_regions_cc1}")
 
             self.dummy_region_cc1 = DummyRegion(
                 mol_name="m1",
