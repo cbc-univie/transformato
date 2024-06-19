@@ -1,7 +1,3 @@
-asfe:
-- transformato/annihilation.py
-restraints:
-- transformato/restraints.py
 charmm:
 - transformato/charmm_factory.py
 analysis:
@@ -9,3 +5,10 @@ analysis:
 endstate_correction:
 - transformato/bin/perform_correction.py
 - transformato/bin/slurm_switching.sh
+openmm files:
+- transformato/bin/*run*.py
+test update:
+- transformato/transformato/test*
+infrastrucutre update:
+- .github/*
+- devtools/*
