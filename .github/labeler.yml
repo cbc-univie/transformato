@@ -9,6 +9,7 @@ openmm files:
 - transformato/bin/*run*.py
 test update:
 - transformato/transformato/test*
-infrastrucutre update:
+infrastructure update:
 - .github/*
+CI update:
 - devtools/*
