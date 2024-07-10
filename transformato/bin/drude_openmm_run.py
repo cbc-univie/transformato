@@ -82,7 +82,7 @@ if hasattr(inputs, "lj_lrc") and inputs.lj_lrc == "yes" and env != "vacuum":
             force.setUseLongRangeCorrection(True)
 
 if env != "vacuum":
-    barostat = MonteCarloBarostat(inputs.p_ref * bar, inputs.temp * kelvin)
+    barostat = MonteCarloBarostat(inputs.p_ref * unit.bar, inputs.temp * unit.kelvin)
     system.addForce(barostat)
 
 # integrator = LangevinIntegrator(
@@ -91,13 +91,13 @@ if env != "vacuum":
 
 integrator = DrudeLangevinIntegrator(
     inputs.temp * kelvin,
-    10 / picosecond,
-    1 * kelvin,
-    200 / picosecond,
-    0.0001 * picoseconds,
+    10 / unit.picosecond,
+    1 * unit.kelvin,
+    200 / unit.picosecond,
+    0.0001 * unit.picoseconds,
 )
 
-integrator.setMaxDrudeDistance(0.2 * angstroms)
+integrator.setMaxDrudeDistance(0.2 * unit.angstroms)
 if integrator.getMaxDrudeDistance() == 0:
     print("No Drude Hard Wall Contraint in use")
 else:
@@ -152,6 +152,9 @@ if os.path.isfile(f"lig_in_{env}.irst"):
 print("\nInitial system energy")
 print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
 
+# Drude VirtualSites
+simulation.context.computeVirtualSites()
+
 # Energy minimization
 if inputs.mini_nstep > 0:
     print("\nEnergy minimization:")
@@ -171,22 +174,22 @@ print("Doing a first equilibration run")
 simulation.step(100_000)
 
 print("Doing a second equilibration run")
-simulation.integrator.setStepSize(0.0002 * picoseconds)
+simulation.integrator.setStepSize(0.0002 * unit.picoseconds)
 simulation.context.reinitialize(preserveState=True)
 simulation.step(100_000)
 
 print("Doing a third equilibration run")
-simulation.integrator.setStepSize(0.0003 * picoseconds)
+simulation.integrator.setStepSize(0.0003 * unit.picoseconds)
 simulation.context.reinitialize(preserveState=True)
 simulation.step(100_000)
 
 print("Doing a fourth equilibration run")
-simulation.integrator.setStepSize(0.0004 * picoseconds)
+simulation.integrator.setStepSize(0.0004 * unit.picoseconds)
 simulation.context.reinitialize(preserveState=True)
 simulation.step(100_000)
 
 print("Starting the actual simulation")
-simulation.integrator.setStepSize(0.0005 * picoseconds)
+simulation.integrator.setStepSize(inputs.dt * unit.picoseconds)
 simulation.context.reinitialize(preserveState=True)
 
 # Production
