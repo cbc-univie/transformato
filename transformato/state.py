@@ -586,9 +586,7 @@ class IntermediateStateFactory(object):
                         g.write(line)
                     elif i == 1:
                         i += 1
-                        g.write(
-                            "platform = Platform.getPlatformByName('OpenCL')\n"
-                        )
+                        g.write("platform = Platform.getPlatformByName('OpenCL')\n")
                     elif i == 2:
                         i += 2
                         g.write("prop = dict(UseCpuPme='true')\n")
