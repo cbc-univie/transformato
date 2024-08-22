@@ -588,6 +588,16 @@
             <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span>
                 <span class="n">omm_simulation_submit_script_source</span><span class="p">,</span> <span class="n">omm_simulation_submit_script_target</span>
             <span class="p">)</span>
+            <span class="n">omm_init_energies_submit_script_source</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;bin_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">/init_energies.sh&quot;</span>
+            <span class="p">)</span>
+            <span class="n">omm_init_energies_submit_script_target</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intermediate_state_file_path</span><span class="si">}</span><span class="s2">/init_energies.sh&quot;</span>  
+            <span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span>
+                <span class="n">omm_init_energies_submit_script_source</span><span class="p">,</span> <span class="n">omm_init_energies_submit_script_target</span>
+            <span class="p">)</span>
+
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rbfe&quot;</span><span class="p">:</span>
             <span class="c1"># parse omm simulation paramter</span>
