@@ -500,7 +500,6 @@ class IntermediateStateFactory(object):
             )
             self._write_workload_preamble(omm_init_energies_submit_script_target)
 
-
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
             for env in self.system.envs:
