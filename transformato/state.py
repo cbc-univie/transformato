@@ -525,6 +525,7 @@ class IntermediateStateFactory(object):
 
         if self.multiple_runs:
             self._modify_submit_script(omm_simulation_submit_script_target)
+            self._modify_submit_script(omm_init_energies_submit_script_target)
 
         # Prepend workload manager instructions
         self._write_workload_preamble(omm_simulation_submit_script_target)
