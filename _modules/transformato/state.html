@@ -600,7 +600,6 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_workload_preamble</span><span class="p">(</span><span class="n">omm_init_energies_submit_script_target</span><span class="p">)</span>
 
-
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s2">&quot;simulation&quot;</span><span class="p">][</span><span class="s2">&quot;free-energy-type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rbfe&quot;</span><span class="p">:</span>
             <span class="c1"># parse omm simulation paramter</span>
             <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">envs</span><span class="p">:</span>
@@ -625,6 +624,7 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiple_runs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_modify_submit_script</span><span class="p">(</span><span class="n">omm_simulation_submit_script_target</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_modify_submit_script</span><span class="p">(</span><span class="n">omm_init_energies_submit_script_target</span><span class="p">)</span>
 
         <span class="c1"># Prepend workload manager instructions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_workload_preamble</span><span class="p">(</span><span class="n">omm_simulation_submit_script_target</span><span class="p">)</span>
