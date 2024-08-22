@@ -20,7 +20,6 @@ from openmm.app import *
 parser = argparse.ArgumentParser()
 parser.add_argument("-odcd", metavar="DCDFILE", dest="odcd")
 parser.add_argument("-env", metavar="ENVIRONMENT", dest="env")
-parser.add_argument("-sim", metavar="SIMULATION", dest="sim", default=True)
 args = parser.parse_args()
 
 # Load parameters
@@ -105,7 +104,6 @@ else:
     print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
 
 # TEST: HELLO 2!
-# another test
 
 # Set platform
 platform = Platform.getPlatformByName("CUDA")
@@ -154,76 +152,73 @@ if os.path.isfile(f"lig_in_{env}.irst"):
 print("\nInitial system energy")
 print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
 
+# Drude VirtualSites
+simulation.context.computeVirtualSites()
 
-if args.sim.lower() == 'true':
+# Energy minimization
+if inputs.mini_nstep > 0:
+    print("\nEnergy minimization:")
+    simulation.minimizeEnergy()
+    print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
 
-    # Drude VirtualSites
-    simulation.context.computeVirtualSites()
+# Generate initial velocities
+if inputs.gen_vel == "yes":
+    print("\nGenerate initial velocities")
+    if inputs.gen_seed:
+        simulation.context.setVelocitiesToTemperature(inputs.gen_temp, inputs.gen_seed)
+    else:
+        simulation.context.setVelocitiesToTemperature(inputs.gen_temp)
+        
+## Do some additional pre-equilibration when using Drude particles
+print("Doing a first equilibration run")
+simulation.step(100_000)
 
-    # Energy minimization
-    if inputs.mini_nstep > 0:
-        print("\nEnergy minimization:")
-        simulation.minimizeEnergy()
-        print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
+print("Doing a second equilibration run")
+simulation.integrator.setStepSize(0.0002 * unit.picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
 
-    # Generate initial velocities
-    if inputs.gen_vel == "yes":
-        print("\nGenerate initial velocities")
-        if inputs.gen_seed:
-            simulation.context.setVelocitiesToTemperature(inputs.gen_temp, inputs.gen_seed)
-        else:
-            simulation.context.setVelocitiesToTemperature(inputs.gen_temp)
-            
-    ## Do some additional pre-equilibration when using Drude particles
-    print("Doing a first equilibration run")
-    simulation.step(100_000)
+print("Doing a third equilibration run")
+simulation.integrator.setStepSize(0.0003 * unit.picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
 
-    print("Doing a second equilibration run")
-    simulation.integrator.setStepSize(0.0002 * unit.picoseconds)
-    simulation.context.reinitialize(preserveState=True)
-    simulation.step(100_000)
+print("Doing a fourth equilibration run")
+simulation.integrator.setStepSize(0.0004 * unit.picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
 
-    print("Doing a third equilibration run")
-    simulation.integrator.setStepSize(0.0003 * unit.picoseconds)
-    simulation.context.reinitialize(preserveState=True)
-    simulation.step(100_000)
+print("Starting the actual simulation")
+simulation.integrator.setStepSize(inputs.dt * unit.picoseconds)
+simulation.context.reinitialize(preserveState=True)
 
-    print("Doing a fourth equilibration run")
-    simulation.integrator.setStepSize(0.0004 * unit.picoseconds)
-    simulation.context.reinitialize(preserveState=True)
-    simulation.step(100_000)
-
-    print("Starting the actual simulation")
-    simulation.integrator.setStepSize(inputs.dt * unit.picoseconds)
-    simulation.context.reinitialize(preserveState=True)
-
-    # Production
-    print("\nMD run: %s steps" % inputs.nstep)
-    simulation.reporters.append(DCDReporter(args.odcd, inputs.nstdcd))
-    simulation.reporters.append(
-        StateDataReporter(
-            sys.stdout,
-            inputs.nstout,
-            step=True,
-            time=True,
-            potentialEnergy=True,
-            temperature=True,
-            progress=True,
-            remainingTime=True,
-            speed=True,
-            totalSteps=inputs.nstep,
-            separator="\t",
-        )
+# Production
+print("\nMD run: %s steps" % inputs.nstep)
+simulation.reporters.append(DCDReporter(args.odcd, inputs.nstdcd))
+simulation.reporters.append(
+    StateDataReporter(
+        sys.stdout,
+        inputs.nstout,
+        step=True,
+        time=True,
+        potentialEnergy=True,
+        temperature=True,
+        progress=True,
+        remainingTime=True,
+        speed=True,
+        totalSteps=inputs.nstep,
+        separator="\t",
     )
+)
 
-    simulation.step(inputs.nstep)
+simulation.step(inputs.nstep)
 
-    # needed for later analysis
-    file_name = f"lig_in_{env}"
-    state = simulation.context.getState(getPositions=True, getVelocities=True)
-    with open(file_name + ".rst", "w") as f:
-        f.write(XmlSerializer.serialize(state))
-    with open(file_name + "_integrator.xml", "w") as outfile:
-        outfile.write(XmlSerializer.serialize(integrator))
-    with open(file_name + "_system.xml", "w") as outfile:
-        outfile.write(XmlSerializer.serialize(system))
+# needed for later analysis
+file_name = f"lig_in_{env}"
+state = simulation.context.getState(getPositions=True, getVelocities=True)
+with open(file_name + ".rst", "w") as f:
+    f.write(XmlSerializer.serialize(state))
+with open(file_name + "_integrator.xml", "w") as outfile:
+    outfile.write(XmlSerializer.serialize(integrator))
+with open(file_name + "_system.xml", "w") as outfile:
+    outfile.write(XmlSerializer.serialize(system))
