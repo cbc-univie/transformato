@@ -155,7 +155,7 @@ print("\nInitial system energy")
 print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
 
 
-if args.sim:
+if args.sim.lower() == 'true':
 
     # Drude VirtualSites
     simulation.context.computeVirtualSites()
