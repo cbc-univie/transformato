@@ -20,7 +20,7 @@ from openmm.app import *
 parser = argparse.ArgumentParser()
 parser.add_argument("-odcd", metavar="DCDFILE", dest="odcd")
 parser.add_argument("-env", metavar="ENVIRONMENT", dest="env")
-parser.add_argument("-sim", metavar="ENVIRONMENT", dest="env", default=True)
+parser.add_argument("-sim", metavar="SIMULATION", dest="sim", default=True)
 args = parser.parse_args()
 
 # Load parameters
