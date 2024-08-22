@@ -492,12 +492,12 @@ class IntermediateStateFactory(object):
                 f"{self.configuration['bin_dir']}/init_energies.sh"
             )
             omm_init_energies_submit_script_target = (
-                f"{intermediate_state_file_path}/init_energies.sh"  
+                f"{intermediate_state_file_path}/init_energies.sh"
             )
             shutil.copyfile(
-                omm_init_energies_submit_script_source, omm_init_energies_submit_script_target
+                omm_init_energies_submit_script_source,
+                omm_init_energies_submit_script_target,
             )
-
 
         elif self.configuration["simulation"]["free-energy-type"] == "rbfe":
             # parse omm simulation paramter
