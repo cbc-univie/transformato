@@ -103,7 +103,7 @@ if integrator.getMaxDrudeDistance() == 0:
 else:
     print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
 
-# TEST: HELLO!
+# TEST: HELLO 2!
 
 # Set platform
 platform = Platform.getPlatformByName("CUDA")
