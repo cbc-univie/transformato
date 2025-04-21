@@ -181,7 +181,7 @@ class SystemStructure(object):
             )
 
             for bond in mol.GetBonds():
-                if self.drude==True:
+                if self.drude:
                     begin = bond.GetBeginAtom().GetIntProp("psf_idx")  # reassign with psf index
                     end = bond.GetEndAtom().GetIntProp("psf_idx")
                     G.add_edge(
@@ -532,7 +532,7 @@ class SystemStructure(object):
         except ValueError:
             tlc = self.tlc
 
-        if self.drude==True:
+        if self.drude:
 
             # filter only real (non-drude, non-LP) atoms
             real_atoms = [
