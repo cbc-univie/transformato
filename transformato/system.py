@@ -155,7 +155,7 @@ class SystemStructure(object):
                     atom2.mass = new_mass2
 
     
-    @staticmethod
+    #@staticmethod  #removed because it relies on self.drude as an instance attribute
     def mol_to_nx(mol: Chem.Mol):
         try:
             from tf_routes import preprocessing
