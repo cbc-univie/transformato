@@ -154,12 +154,11 @@ class SystemStructure(object):
                     atom1.mass = new_mass1
                     atom2.mass = new_mass2
 
-    
-    #@staticmethod  #removed because it relies on self.drude as an instance attribute
+    # @staticmethod  #removed because it relies on self.drude as an instance attribute
     def mol_to_nx(self, mol: Chem.Mol):
         try:
             from tf_routes import preprocessing
-            
+
             return preprocessing._mol_to_nx_full_weight(mol)
         except ModuleNotFoundError:
             G = nx.Graph()
@@ -182,7 +181,9 @@ class SystemStructure(object):
 
             for bond in mol.GetBonds():
                 if self.drude:
-                    begin = bond.GetBeginAtom().GetIntProp("psf_idx")  # reassign with psf index
+                    begin = bond.GetBeginAtom().GetIntProp(
+                        "psf_idx"
+                    )  # reassign with psf index
                     end = bond.GetEndAtom().GetIntProp("psf_idx")
                     G.add_edge(
                         begin,
@@ -191,10 +192,10 @@ class SystemStructure(object):
                     )
                 else:
                     G.add_edge(
-                    bond.GetBeginAtomIdx(),
-                    bond.GetEndAtomIdx(),
-                    bond_type=bond.GetBondType(),
-                )
+                        bond.GetBeginAtomIdx(),
+                        bond.GetEndAtomIdx(),
+                        bond_type=bond.GetBondType(),
+                    )
 
         return G
 
@@ -517,7 +518,6 @@ class SystemStructure(object):
 
         return mol
 
-
     def generate_atom_tables_from_psf(
         self, psf: pm.charmm.CharmmPsfFile, mol: Chem.rdchem.Mol
     ) -> Chem.rdchem.Mol:
@@ -555,7 +555,7 @@ class SystemStructure(object):
                 atom_type = psf_atom.type
                 atom_charge = psf_atom.charge
                 psf_index = psf_atom.idx  # this is the psf-derived index!
-                
+
                 atom.SetProp("atom_name", atom_name)
                 atom.SetProp("atom_type", atom_type)
                 atom.SetProp("atom_index", str(atom_idx))

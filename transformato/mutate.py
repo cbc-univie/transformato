@@ -700,7 +700,6 @@ class ProposeMutationRoute(object):
             mcs = self._find_mcs("m1", "m2")
             return mcs
 
-
     def finish_common_core(
         self,
         connected_dummy_regions_cc1: list = [],
