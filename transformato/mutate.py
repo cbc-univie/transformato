@@ -700,6 +700,7 @@ class ProposeMutationRoute(object):
             mcs = self._find_mcs("m1", "m2")
             return mcs
 
+
     def finish_common_core(
         self,
         connected_dummy_regions_cc1: list = [],
@@ -819,13 +820,13 @@ class ProposeMutationRoute(object):
             # all atoms should become dummy atoms in the end
             central_atoms = nx.center(self.graphs["m1"])
 
-            # # Assure, that the central atom is no hydrogen
-            # for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
-            #     if atom.idx in central_atoms:
-            #         if atom.name.startswith("H") == True:
-            #             raise RuntimeError(
-            #                 f"One of the central atoms seems to be a hydrogen atom"
-            #             )
+            # Assure, that the central atom is no hydrogen
+            for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
+                if atom.idx in central_atoms:
+                    if atom.name.startswith("H") == True:
+                        raise RuntimeError(
+                            f"One of the central atoms seems to be a hydrogen atom"
+                        )
 
             # calculate the ordering or LJ mutations
             if not odered_connected_dummy_regions_cc1:
@@ -851,6 +852,158 @@ class ProposeMutationRoute(object):
                 connected_dummy_regions=odered_connected_dummy_regions_cc1,
                 lj_default=[],
             )
+
+    # def finish_common_core(
+    #     self,
+    #     connected_dummy_regions_cc1: list = [],
+    #     connected_dummy_regions_cc2: list = [],
+    #     odered_connected_dummy_regions_cc1: list = [],
+    #     odered_connected_dummy_regions_cc2: list = [],
+    # ):
+    #     """
+    #     The dummy region is created and the final atoms connected to the CC are collected. It is possible
+    #     to define a dummy region on its own or to change the ordering how the lj parameters of the
+    #     heavy atoms in the dummy region are turned off
+    #     ---------
+    #     connected_dummy_regions_cc1: list = []
+    #     connected_dummy_regions_cc2: list = []
+    #     odered_connected_dummy_regions_cc1: list = []
+    #     odered_connected_dummy_regions_cc2: list = []
+    #     """
+
+    #     if not self.asfe:
+    #         # set the teriminal real/dummy atom indices
+    #         self._set_common_core_parameters()
+    #         # match the real/dummy atoms
+    #         match_terminal_atoms_cc1 = (
+    #             self._match_terminal_real_and_dummy_atoms_for_mol1()
+    #         )
+    #         match_terminal_atoms_cc2 = (
+    #             self._match_terminal_real_and_dummy_atoms_for_mol2()
+    #         )
+    #         logger.info("Find connected dummy regions")
+    #         # define connected dummy regions
+    #         if not connected_dummy_regions_cc1:
+    #             connected_dummy_regions_cc1 = self._find_connected_dummy_regions(
+    #                 mol_name="m1",
+    #             )
+    #         if not connected_dummy_regions_cc2:
+    #             connected_dummy_regions_cc2 = self._find_connected_dummy_regions(
+    #                 mol_name="m2",
+    #             )
+
+    #         logger.debug(
+    #             f"connected dummy regions for mol1: {connected_dummy_regions_cc1}"
+    #         )
+    #         logger.debug(
+    #             f"connected dummy regions for mol2: {connected_dummy_regions_cc2}"
+    #         )
+
+    #         # calculate the ordering or LJ mutations
+    #         if not odered_connected_dummy_regions_cc1:
+    #             odered_connected_dummy_regions_cc1 = (
+    #                 self._calculate_order_of_LJ_mutations(
+    #                     connected_dummy_regions_cc1,
+    #                     match_terminal_atoms_cc1,
+    #                     self.graphs["m1"].copy(),
+    #                 )
+    #             )
+    #         if not odered_connected_dummy_regions_cc2:
+    #             odered_connected_dummy_regions_cc2 = (
+    #                 self._calculate_order_of_LJ_mutations(
+    #                     connected_dummy_regions_cc2,
+    #                     match_terminal_atoms_cc2,
+    #                     self.graphs["m2"].copy(),
+    #                 )
+    #             )
+    #         logger.info(
+    #             f"sorted connected dummy regions for mol1: {odered_connected_dummy_regions_cc1}"
+    #         )
+    #         logger.info(
+    #             f"sorted connected dummy regions for mol2: {odered_connected_dummy_regions_cc2}"
+    #         )
+
+    #         if odered_connected_dummy_regions_cc1:
+    #             odered_connected_dummy_regions_cc1 = self._check_for_lp(
+    #                 odered_connected_dummy_regions_cc1,
+    #                 self.psf1["waterbox"],
+    #                 self.s1_tlc,
+    #                 "m1",
+    #             )
+
+    #         if odered_connected_dummy_regions_cc2:
+    #             odered_connected_dummy_regions_cc2 = self._check_for_lp(
+    #                 odered_connected_dummy_regions_cc2,
+    #                 self.psf2["waterbox"],
+    #                 self.s2_tlc,
+    #                 "m2",
+    #             )
+
+    #         # find the atoms from dummy_region in s1 that needs to become lj default
+    #         (
+    #             lj_default_cc1,
+    #             lj_default_cc2,
+    #         ) = self._match_terminal_dummy_atoms_between_common_cores(
+    #             match_terminal_atoms_cc1, match_terminal_atoms_cc2
+    #         )
+
+    #         self.dummy_region_cc1 = DummyRegion(
+    #             mol_name="m1",
+    #             tlc=self.s1_tlc,
+    #             match_termin_real_and_dummy_atoms=match_terminal_atoms_cc1,
+    #             connected_dummy_regions=odered_connected_dummy_regions_cc1,
+    #             lj_default=lj_default_cc1,
+    #         )
+
+    #         self.dummy_region_cc2 = DummyRegion(
+    #             mol_name="m2",
+    #             tlc=self.s2_tlc,
+    #             match_termin_real_and_dummy_atoms=match_terminal_atoms_cc2,
+    #             connected_dummy_regions=odered_connected_dummy_regions_cc2,
+    #             lj_default=lj_default_cc2,
+    #         )
+
+    #         # generate charge compmensated psfs
+    #         psf1, psf2 = self._prepare_cc_for_charge_transfer()
+    #         self.charge_compensated_ligand1_psf = psf1
+    #         self.charge_compensated_ligand2_psf = psf2
+
+    #     else:
+    #         # all atoms should become dummy atoms in the end
+    #         central_atoms = nx.center(self.graphs["m1"])
+
+    #         # # Assure, that the central atom is no hydrogen
+    #         # for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
+    #         #     if atom.idx in central_atoms:
+    #         #         if atom.name.startswith("H") == True:
+    #         #             raise RuntimeError(
+    #         #                 f"One of the central atoms seems to be a hydrogen atom"
+    #         #             )
+
+    #         # calculate the ordering or LJ mutations
+    #         if not odered_connected_dummy_regions_cc1:
+    #             odered_connected_dummy_regions_cc1 = (
+    #                 calculate_order_of_LJ_mutations_asfe(
+    #                     central_atoms,
+    #                     self.graphs["m1"].copy(),
+    #                 )
+    #             )
+
+    #         if odered_connected_dummy_regions_cc1:
+    #             odered_connected_dummy_regions_cc1 = self._check_for_lp(
+    #                 odered_connected_dummy_regions_cc1,
+    #                 self.psf1["waterbox"],
+    #                 self.s1_tlc,
+    #                 "m1",
+    #             )
+
+    #         self.dummy_region_cc1 = DummyRegion(
+    #             mol_name="m1",
+    #             tlc=self.s1_tlc,
+    #             match_termin_real_and_dummy_atoms=[],
+    #             connected_dummy_regions=odered_connected_dummy_regions_cc1,
+    #             lj_default=[],
+    #         )
 
     def calculate_common_core(self):
         self.propose_common_core()
