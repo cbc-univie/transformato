@@ -156,7 +156,7 @@ class SystemStructure(object):
 
     
     #@staticmethod  #removed because it relies on self.drude as an instance attribute
-    def mol_to_nx(mol: Chem.Mol):
+    def mol_to_nx(self, mol: Chem.Mol):
         try:
             from tf_routes import preprocessing
             
