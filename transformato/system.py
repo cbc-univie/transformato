@@ -265,6 +265,10 @@ class SystemStructure(object):
             parameter_files += (
                 f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str",
             )
+        if os.path.isfile(f"{toppar_dir}/toppar_drude_model_2023a.str"):
+            parameter_files += (
+                f"{toppar_dir}/toppar_drude_model_2023a.str",
+            )
         if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
             parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
         # set up parameter objec

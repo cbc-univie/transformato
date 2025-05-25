@@ -1162,6 +1162,9 @@ cutnb 14.0 ctofnb 12.0 ctonnb 10.0 eps 1.0 e14fac 1.0 wmin 1.5"""
         if os.path.isfile(f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str"):
             toppar_format += f"""../../toppar/toppar_drude_main_protein_2023a_flex.str
 """
+        if os.path.isfile(f"{toppar_dir}/toppar_drude_model_2023a.str"):
+            toppar_format += f"""../../toppar/toppar_drude_model_2023a.str
+"""
         if os.path.isfile(
             f"{self.system.charmm_gui_base}/waterbox/{self.system.tlc.lower()}/{self.system.tlc.lower()}_g.rtf"
         ):
