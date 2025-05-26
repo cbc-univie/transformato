@@ -147,10 +147,15 @@ if os.path.isfile(f"lig_in_{env}.irst"):
     with open(f"lig_in_{env}.irst", "r") as f:
         simulation.context.setState(XmlSerializer.deserialize(f.read()))
 
+for f in system.getForces():
+    i = f.getForceGroup()
+    state = simulation.context.getState(getEnergy=True, groups={i})
+    energy = state.getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+    print(f.getName(), energy, "kcal/mol")
 
 # Calculate initial system energy
 print("\nInitial system energy")
-print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
+print(simulation.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole))
 
 # Energy minimization
 if inputs.mini_nstep > 0:
@@ -166,28 +171,28 @@ if inputs.gen_vel == "yes":
     else:
         simulation.context.setVelocitiesToTemperature(inputs.gen_temp)
         
-# ## Do some additional pre-equilibration when using Drude particles
-# print("Doing a first equilibration run")
-# simulation.step(100_000)
+## Do some additional pre-equilibration when using Drude particles
+print("Doing a first equilibration run")
+simulation.step(100_000)
 
-# print("Doing a second equilibration run")
-# simulation.integrator.setStepSize(0.0002 * picoseconds)
-# simulation.context.reinitialize(preserveState=True)
-# simulation.step(100_000)
+print("Doing a second equilibration run")
+simulation.integrator.setStepSize(0.0002 * picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
 
-# print("Doing a third equilibration run")
-# simulation.integrator.setStepSize(0.0003 * picoseconds)
-# simulation.context.reinitialize(preserveState=True)
-# simulation.step(100_000)
+print("Doing a third equilibration run")
+simulation.integrator.setStepSize(0.0003 * picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
 
-# print("Doing a fourth equilibration run")
-# simulation.integrator.setStepSize(0.0004 * picoseconds)
-# simulation.context.reinitialize(preserveState=True)
-# simulation.step(100_000)
+print("Doing a fourth equilibration run")
+simulation.integrator.setStepSize(0.0004 * picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
 
-# print("Starting the actual simulation")
-# simulation.integrator.setStepSize(0.0005 * picoseconds)
-# simulation.context.reinitialize(preserveState=True)
+print("Starting the actual simulation")
+simulation.integrator.setStepSize(inputs.dt * picoseconds)
+simulation.context.reinitialize(preserveState=True)
 
 # Production
 print("\nMD run: %s steps" % inputs.nstep)
