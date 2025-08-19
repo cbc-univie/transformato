@@ -281,7 +281,7 @@ class FreeEnergyCalculator(object):
                 vec3.Vec3(bxl_x, 0, 0),
                 vec3.Vec3(0, bxl_y, 0),
                 vec3.Vec3(0, 0, bxl_z),
-                #vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
+                # vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
             )
         simulation.context.setPositions(configuration)
         state = simulation.context.getState(getEnergy=True)
@@ -522,7 +522,7 @@ class FreeEnergyCalculator(object):
                         vec3.Vec3(bxl_x, 0, 0),
                         vec3.Vec3(0, bxl_y, 0),
                         vec3.Vec3(0, 0, bxl_z),
-                        #vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
+                        # vec3.Vec3(0, 0, bxl_z) * unit.nanometer,
                     )
 
                 else:
