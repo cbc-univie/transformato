@@ -500,7 +500,7 @@ class SystemStructure(object):
                         "PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!"
                     )
 
-            return mol
+        return mol
 
     def generate_atom_tables_from_psf(
         self, psf: pm.charmm.CharmmPsfFile, mol: Chem.rdchem.Mol
