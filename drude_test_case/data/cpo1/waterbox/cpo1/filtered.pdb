@@ -1,0 +1,21 @@
+REMARK  SETUP RESI CPO1 FROM SCRATCH                                                  
+REMARK  USE IC TO GENERATE COORS                                                      
+REMARK   DATE:     3/26/25     13:32: 6      CREATED BY USER: stefan                  
+ATOM      1  C1  CPO1    1       0.000   0.000  -0.000  1.00  0.00      SOLU
+ATOM      3  H1A CPO1    1      -0.350   0.238  -1.025  1.00  0.00      SOLU
+ATOM      4  O1  CPO1    1      -0.589  -1.239   0.450  1.00  0.00      SOLU
+ATOM      6  HO1 CPO1    1      -0.257  -1.407   1.346  1.00  0.00      SOLU
+ATOM      9  C2  CPO1    1       1.547  -0.000   0.000  1.00  0.00      SOLU
+ATOM     11  H2A CPO1    1       1.971  -0.562  -0.861  1.00  0.00      SOLU
+ATOM     12  H2B CPO1    1       1.926  -0.495   0.926  1.00  0.00      SOLU
+ATOM     13  C3  CPO1    1       1.979   1.487  -0.000  1.00  0.00      SOLU
+ATOM     15  H3A CPO1    1       2.185   1.833  -1.039  1.00  0.00      SOLU
+ATOM     16  H3B CPO1    1       2.911   1.643   0.587  1.00  0.00      SOLU
+ATOM     17  C4  CPO1    1       0.777   2.275   0.593  1.00  0.00      SOLU
+ATOM     19  H4A CPO1    1       0.395   3.006  -0.156  1.00  0.00      SOLU
+ATOM     20  H4B CPO1    1       1.062   2.854   1.498  1.00  0.00      SOLU
+ATOM     21  C5  CPO1    1      -0.303   1.212   0.913  1.00  0.00      SOLU
+ATOM     23  H5A CPO1    1      -1.334   1.602   0.769  1.00  0.00      SOLU
+ATOM     24  H5B CPO1    1      -0.219   0.910   1.984  1.00  0.00      SOLU
+TER      25      CPO1     1
+END
