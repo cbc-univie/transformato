@@ -36,3 +36,14 @@ Found in the folder ./data/{mol}/waterbox/openmm/, different python modules for 
 #### On the SDF file
 
 As it stands, transformato requires an SDF (./data/{mol}/{mol}/solu.sdf) for the generation of an RDKit molecule object. Importantly, the atoms in the SDF must be in the same order as the input PSF located at ./data/{mol}/waterbox/openmm/step3_input.psf for correct assignment (molecular graph nodes <> PSF entries) in the Drude case. The python script sdf_maker.py generates the required SDF from a PDB file of the solute (./data/{mol}/{mol}/solu.pdb).
+
+### Simulation
+
+Each intermediate state contains a shell script to submit a simulation (./{mol}-asfe/{mol}/intst\d+/simulation.sh). The number of independent runs can be specified with the `multiple_runs` variable in submit.py
+
+
+### Analysis
+
+After running the simulations you may carry out the free energy calculation with analysis.py. Submitting as slurm script:
+
+`sbatch analysis.sh . cpo1`
