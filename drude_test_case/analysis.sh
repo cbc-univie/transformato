@@ -16,4 +16,4 @@ echo $molecule
 source ~/miniconda3/etc/profile.d/conda.sh 
 conda activate fep 
  
-time python analysis.py . ./data .data/config/${mol}.yaml > ${mol}-asfe/analysis.out 
+time python analysis.py . ./data ./data/config/${mol}.yaml > ${mol}-asfe/analysis.out 

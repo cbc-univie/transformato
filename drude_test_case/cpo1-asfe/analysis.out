@@ -1,0 +1,566 @@
+Workload-Manager for output files set to slurm
+#############################
+##### Structure 1 ###########
+#############################
+Both states are considered
+K (total states) = 13, total samples = 48750
+
+Warning: states 9 and 10 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 11 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          0.24399089  0.26647519  0.02870577 -3.07109618 -6.18152491
+ -6.91537974 -7.05209653 -7.28269475 -7.76613663 -7.76613663 -7.76613663
+ -7.76613663]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is 3.5489e+05, Newton-Raphson gradient norm is      15675
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is 2.7567e+05, Newton-Raphson gradient norm is     9067.6
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is 2.2088e+05, Newton-Raphson gradient norm is     6215.7
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is     3810.7, Newton-Raphson gradient norm is     3.7729
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is    0.64486, Newton-Raphson gradient norm is 2.4751e-07
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is 3.4204e-08, Newton-Raphson gradient norm is 8.5852e-22
+Newton-Raphson used on iteration 5
+self consistent iteration gradient norm is 1.3312e-22, Newton-Raphson gradient norm is 7.7827e-23
+Newton-Raphson used on iteration 6
+Converged to tolerance of 3.109585e-14 in 7 iterations.
+Of 7 iterations, 5 were Newton-Raphson iterations and 2 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          0.11945878 -0.01210563 -0.33775083 -4.3350925  -7.5172959
+ -8.25791746 -8.39246887 -8.62382633 -9.1043866  -9.1043866  -9.1043866
+ -9.1043866 ]
+MBAR initialization complete.
+K (total states) = 13, total samples = 48750
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          6.55373439 10.02155116 11.0182744   8.62326906  9.80941006
+ 10.03471621  9.41927584  9.94837153  8.46840586  7.36113139  2.72362802
+  0.53327052]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is     2833.2, Newton-Raphson gradient norm is    0.18887
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is     2105.8, Newton-Raphson gradient norm is    0.13531
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is     1645.7, Newton-Raphson gradient norm is    0.11753
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is   0.076323, Newton-Raphson gradient norm is 2.3944e-10
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is 1.4743e-10, Newton-Raphson gradient norm is 8.0427e-23
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is          0, Newton-Raphson gradient norm is 3.6227e-23
+Choosing self-consistent iteration for lower gradient on iteration 5
+Converged to tolerance of 5.443731e-16 in 6 iterations.
+Of 6 iterations, 3 were Newton-Raphson iterations and 3 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          6.50627232  9.89504456 10.85769478  8.364894    9.53721372
+  9.74894426  9.14308511  9.6785014   8.20238989  7.10207117  2.44734279
+  0.25693868]
+MBAR initialization complete.
+######################################
+Free energy to common core for cpo1 in kT
+######################################
+Free energy difference from cpo1 to CC: 9.361325280425705 [kT]
+Uncertanty: 0.21042320172091755 [kT]
+######################################
+######################################
+Free energy to common core: 9.361325280425705 [kT] with uncertainty: 0.21042320172091755 [kT].
+Free energy difference: 9.361325280425705 +- 0.21042320172091755 [kT]
+Both states are considered
+K (total states) = 13, total samples = 48750
+
+Warning: states 9 and 10 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 11 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          0.23735145  0.2594643   0.0214335  -3.05117938 -6.17243366
+ -6.90987762 -7.04931207 -7.27762388 -7.75179654 -7.75179654 -7.75179654
+ -7.75179654]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is 3.6292e+05, Newton-Raphson gradient norm is      16695
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is 2.8177e+05, Newton-Raphson gradient norm is     9616.2
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is 2.2554e+05, Newton-Raphson gradient norm is     6577.2
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is     4106.6, Newton-Raphson gradient norm is     4.4217
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is    0.77313, Newton-Raphson gradient norm is 3.5334e-07
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is   4.98e-08, Newton-Raphson gradient norm is 2.5128e-21
+Newton-Raphson used on iteration 5
+self consistent iteration gradient norm is  6.656e-22, Newton-Raphson gradient norm is 4.4581e-22
+Newton-Raphson used on iteration 6
+Converged to tolerance of 9.452140e-14 in 7 iterations.
+Of 7 iterations, 5 were Newton-Raphson iterations and 2 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          0.11174255 -0.02132584 -0.34693003 -4.34002456 -7.52504714
+ -8.26158878 -8.39795159 -8.62819949 -9.10581998 -9.10581998 -9.10581998
+ -9.10581998]
+MBAR initialization complete.
+K (total states) = 13, total samples = 48750
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          6.57424647 10.02327854 10.99283683  8.59941764  9.78530159
+  9.99705566  9.55218354 10.16074232  8.72574581  7.59874097  3.04316343
+  0.7139201 ]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is     2534.4, Newton-Raphson gradient norm is    0.19595
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is     1849.1, Newton-Raphson gradient norm is    0.14249
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is     1438.1, Newton-Raphson gradient norm is    0.12891
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is   0.088965, Newton-Raphson gradient norm is 9.2813e-10
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is 5.7155e-10, Newton-Raphson gradient norm is 1.6432e-22
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is          0, Newton-Raphson gradient norm is 1.0261e-22
+Choosing self-consistent iteration for lower gradient on iteration 5
+Converged to tolerance of 1.620998e-15 in 6 iterations.
+Of 6 iterations, 3 were Newton-Raphson iterations and 3 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          6.52745003  9.89365442 10.83652994  8.34328758  9.49034084
+  9.68902689  9.23288451  9.83379452  8.39455704  7.26682211  2.7059341
+  0.37669554]
+MBAR initialization complete.
+######################################
+Free energy to common core for cpo1 in kT
+######################################
+Free energy difference from cpo1 to CC: 9.482515523181089 [kT]
+Uncertanty: 0.2106702050127643 [kT]
+######################################
+######################################
+Free energy to common core: 9.482515523181089 [kT] with uncertainty: 0.2106702050127643 [kT].
+Free energy difference: 9.482515523181089 +- 0.2106702050127643 [kT]
+Both states are considered
+K (total states) = 13, total samples = 48750
+
+Warning: states 9 and 10 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 11 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          0.22863659  0.24616837  0.00992629 -3.08573291 -6.19905947
+ -6.93889915 -7.07028068 -7.29969091 -7.78187802 -7.78187802 -7.78187802
+ -7.78187802]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is 3.3957e+05, Newton-Raphson gradient norm is      14737
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is 2.6467e+05, Newton-Raphson gradient norm is     8518.8
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is 2.1271e+05, Newton-Raphson gradient norm is       5879
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is     3505.2, Newton-Raphson gradient norm is     3.2941
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is    0.53272, Newton-Raphson gradient norm is 1.8131e-07
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is  2.365e-08, Newton-Raphson gradient norm is 3.8688e-22
+Newton-Raphson used on iteration 5
+self consistent iteration gradient norm is 1.3312e-22, Newton-Raphson gradient norm is 1.3867e-23
+Newton-Raphson used on iteration 6
+Converged to tolerance of 5.374704e-14 in 7 iterations.
+Of 7 iterations, 5 were Newton-Raphson iterations and 2 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          0.1059613  -0.02827352 -0.3536118  -4.34249647 -7.51619729
+ -8.25889182 -8.39383476 -8.62394375 -9.10142797 -9.10142797 -9.10142797
+ -9.10142797]
+MBAR initialization complete.
+K (total states) = 13, total samples = 48750
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          6.53741367  9.95596506 10.89927754  8.49605128  9.70592786
+  9.87016571  9.46052801  9.91390483  8.49384201  7.27260316  2.56864976
+  0.37051299]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is       2827, Newton-Raphson gradient norm is     0.1884
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is       2108, Newton-Raphson gradient norm is    0.13751
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is     1632.3, Newton-Raphson gradient norm is    0.11799
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is   0.076935, Newton-Raphson gradient norm is 2.7347e-10
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is 1.6754e-10, Newton-Raphson gradient norm is 1.0261e-22
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is 4.4373e-23, Newton-Raphson gradient norm is 1.4023e-22
+Choosing self-consistent iteration for lower gradient on iteration 5
+Converged to tolerance of 3.509039e-15 in 6 iterations.
+Of 6 iterations, 3 were Newton-Raphson iterations and 3 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          6.49083417  9.83013749 10.73846211  8.23956976  9.4368214
+  9.59745035  9.18860336  9.64731028  8.2168358   7.00821371  2.30886832
+  0.11073632]
+MBAR initialization complete.
+######################################
+Free energy to common core for cpo1 in kT
+######################################
+Free energy difference from cpo1 to CC: 9.212164287328019 [kT]
+Uncertanty: 0.2134506583904963 [kT]
+######################################
+######################################
+Free energy to common core: 9.212164287328019 [kT] with uncertainty: 0.2134506583904963 [kT].
+Free energy difference: 9.212164287328019 +- 0.2134506583904963 [kT]
+Both states are considered
+K (total states) = 13, total samples = 48750
+
+Warning: states 9 and 10 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 11 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          0.23964271  0.26518464  0.02908904 -3.06609271 -6.18174691
+ -6.92652517 -7.07002445 -7.29610917 -7.77075011 -7.77075011 -7.77075011
+ -7.77075011]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is 3.4166e+05, Newton-Raphson gradient norm is      15109
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is 2.6606e+05, Newton-Raphson gradient norm is       8703
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is 2.1384e+05, Newton-Raphson gradient norm is     5997.1
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is     3655.8, Newton-Raphson gradient norm is     3.5793
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is    0.59743, Newton-Raphson gradient norm is 2.2179e-07
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is 2.9862e-08, Newton-Raphson gradient norm is 1.0568e-21
+Newton-Raphson used on iteration 5
+self consistent iteration gradient norm is 3.5499e-22, Newton-Raphson gradient norm is 1.4213e-22
+Newton-Raphson used on iteration 6
+Converged to tolerance of 1.238582e-13 in 7 iterations.
+Of 7 iterations, 5 were Newton-Raphson iterations and 2 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          0.11586329 -0.01434186 -0.33824992 -4.33684743 -7.51060495
+ -8.25782777 -8.39308374 -8.62344589 -9.10080422 -9.10080422 -9.10080422
+ -9.10080422]
+MBAR initialization complete.
+K (total states) = 13, total samples = 48750
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          6.57877228 10.04304427 11.02080864  8.64353093  9.77285633
+  9.99025796  9.46210731  9.95246862  8.56367028  7.40235675  2.6600223
+  0.33787242]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is     3135.5, Newton-Raphson gradient norm is    0.27735
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is     2337.3, Newton-Raphson gradient norm is    0.21328
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is     1830.9, Newton-Raphson gradient norm is    0.19448
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is    0.12585, Newton-Raphson gradient norm is 1.4195e-09
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is 9.3607e-10, Newton-Raphson gradient norm is 1.5808e-22
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is          0, Newton-Raphson gradient norm is 1.8859e-22
+Choosing self-consistent iteration for lower gradient on iteration 5
+Converged to tolerance of 1.253130e-14 in 6 iterations.
+Of 6 iterations, 3 were Newton-Raphson iterations and 3 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          6.53309753  9.91939773 10.85789793  8.3820639   9.46349609
+  9.67642183  9.18355097  9.67385832  8.29705423  7.13766393  2.39870854
+  0.07641404]
+MBAR initialization complete.
+######################################
+Free energy to common core for cpo1 in kT
+######################################
+Free energy difference from cpo1 to CC: 9.177218260834945 [kT]
+Uncertanty: 0.2141494082643117 [kT]
+######################################
+######################################
+Free energy to common core: 9.177218260834945 [kT] with uncertainty: 0.2141494082643117 [kT].
+Free energy difference: 9.177218260834945 +- 0.2141494082643117 [kT]
+Both states are considered
+K (total states) = 13, total samples = 48750
+
+Warning: states 9 and 10 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 11 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 9 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 10 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+
+Warning: states 11 and 12 have the same energies on the dataset.
+They are therefore likely to to be the same thermodynamic state.  This can occasionally cause
+numerical problems with computing the covariance of their energy difference, which must be
+identically zero in any case. Consider combining them into a single state.
+
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          0.23686145  0.25359069  0.01570359 -3.08063623 -6.17714034
+ -6.91857588 -7.05757431 -7.29056148 -7.7659125  -7.7659125  -7.7659125
+ -7.7659125 ]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is 3.5811e+05, Newton-Raphson gradient norm is      15915
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is 2.7826e+05, Newton-Raphson gradient norm is     9281.6
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is 2.2306e+05, Newton-Raphson gradient norm is     6378.1
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is     3902.1, Newton-Raphson gradient norm is     3.9994
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is    0.67155, Newton-Raphson gradient norm is 2.7604e-07
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is 3.7262e-08, Newton-Raphson gradient norm is 1.2348e-21
+Newton-Raphson used on iteration 5
+self consistent iteration gradient norm is 3.9936e-22, Newton-Raphson gradient norm is 3.4181e-22
+Newton-Raphson used on iteration 6
+Converged to tolerance of 1.863058e-13 in 7 iterations.
+Of 7 iterations, 5 were Newton-Raphson iterations and 2 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          0.11243336 -0.02145292 -0.34789088 -4.33695089 -7.52214397
+ -8.2660743  -8.40396794 -8.63587269 -9.11472534 -9.11472534 -9.11472534
+ -9.11472534]
+MBAR initialization complete.
+K (total states) = 13, total samples = 48750
+N_k = 
+[3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750 3750]
+There are 13 states with samples.
+Initial dimensionless free energies with method BAR
+f_k = 
+[ 0.          6.51588639  9.96355126 10.96008516  8.60745502  9.81114729
+ 10.01708809  9.33829466  9.80606374  8.37726933  7.30362116  2.82924457
+  0.63254343]
+Determining dimensionless free energies by Newton-Raphson / self-consistent iteration.
+maximum iterations: 10000
+minimum self consistent iterations: 2
+self consistent iteration gradient norm is     3241.2, Newton-Raphson gradient norm is    0.34853
+Choosing self-consistent iteration on iteration 0 because min_sc_iter=2
+self consistent iteration gradient norm is     2504.6, Newton-Raphson gradient norm is    0.28314
+Choosing self-consistent iteration for lower gradient on iteration 1
+self consistent iteration gradient norm is     2023.7, Newton-Raphson gradient norm is    0.25397
+Newton-Raphson used on iteration 2
+self consistent iteration gradient norm is    0.16681, Newton-Raphson gradient norm is 2.2726e-09
+Newton-Raphson used on iteration 3
+self consistent iteration gradient norm is 1.4086e-09, Newton-Raphson gradient norm is 2.3088e-22
+Newton-Raphson used on iteration 4
+self consistent iteration gradient norm is 4.4373e-23, Newton-Raphson gradient norm is 1.4716e-22
+Choosing self-consistent iteration for lower gradient on iteration 5
+Converged to tolerance of 8.168924e-15 in 6 iterations.
+Of 6 iterations, 3 were Newton-Raphson iterations and 3 were self-consistent iterations
+Final dimensionless free energies
+f_k = 
+[ 0.          6.46705185  9.83671294 10.80198793  8.32010615  9.48112536
+  9.68421991  9.04705782  9.52676731  8.09348226  7.03065069  2.54994989
+  0.35336109]
+MBAR initialization complete.
+######################################
+Free energy to common core for cpo1 in kT
+######################################
+Free energy difference from cpo1 to CC: 9.468086427410901 [kT]
+Uncertanty: 0.20927252344458303 [kT]
+######################################
+######################################
+Free energy to common core: 9.468086427410901 [kT] with uncertainty: 0.20927252344458303 [kT].
+Free energy difference: 9.468086427410901 +- 0.20927252344458303 [kT]
+Final free energy for cpo1 is 9.34 +- 0.13 of the 5 individual runs [9.361325280425705, 9.482515523181089, 9.212164287328019, 9.177218260834945, 9.468086427410901]
+f is <transformato.analysis.FreeEnergyCalculator object at 0x7f4dcf2e6000>
