@@ -224,7 +224,7 @@ def perform_mutations(
 
         else:
             for lambda_value in np.linspace(
-                0.75, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
+                0.95, 0, nr_of_mutation_steps_lj_of_heavy_atoms + 1
             ):
                 print("####################")
                 print(
@@ -820,12 +820,13 @@ class ProposeMutationRoute(object):
             central_atoms = nx.center(self.graphs["m1"])
 
             # Assure, that the central atom is no hydrogen
-            for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
-                if atom.idx in central_atoms:
-                    if atom.name.startswith("H") == True:
-                        raise RuntimeError(
-                            f"One of the central atoms seems to be a hydrogen atom"
-                        )
+            #for atom in self.psf1["waterbox"][f":{self.s1_tlc}"].atoms:
+            #    if atom.idx in central_atoms:
+            #        if atom.name.startswith("H") == True:
+            #            print(f"Offending atom - ID: {atom.idx}, Name: {atom.name}")
+            #            raise RuntimeError(
+            #                f"One of the central atoms seems to be a hydrogen atom"
+            #            )
 
             # calculate the ordering or LJ mutations
             if not odered_connected_dummy_regions_cc1:

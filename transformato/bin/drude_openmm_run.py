@@ -89,20 +89,21 @@ if env != "vacuum":
 #     inputs.temp * kelvin, 1 / unit.picosecond, inputs.dt * unit.picoseconds
 # )
 
-integrator = DrudeNoseHooverIntegrator(
+integrator = DrudeLangevinIntegrator(
     inputs.temp * kelvin,
     10 / picosecond,
     1 * kelvin,
     200 / picosecond,
-    0.0005 * picoseconds,
+    0.0001 * picoseconds,
 )
 
-# integrator.setMaxDrudeDistance(0.2 * angstroms)
-# if integrator.getMaxDrudeDistance() == 0:
-#     print("No Drude Hard Wall Contraint in use")
-# else:
-#     print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
+integrator.setMaxDrudeDistance(0.2 * angstroms)
+if integrator.getMaxDrudeDistance() == 0:
+    print("No Drude Hard Wall Contraint in use")
+else:
+    print("Drude Hard Wall set to {}".format(integrator.getMaxDrudeDistance()))
 
+# TEST: HELLO!
 
 # Set platform
 platform = Platform.getPlatformByName("CUDA")
@@ -146,15 +147,20 @@ if os.path.isfile(f"lig_in_{env}.irst"):
     with open(f"lig_in_{env}.irst", "r") as f:
         simulation.context.setState(XmlSerializer.deserialize(f.read()))
 
+for f in system.getForces():
+    i = f.getForceGroup()
+    state = simulation.context.getState(getEnergy=True, groups={i})
+    energy = state.getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole)
+    print(f.getName(), energy, "kcal/mol")
 
 # Calculate initial system energy
 print("\nInitial system energy")
-print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
+print(simulation.context.getState(getEnergy=True).getPotentialEnergy().value_in_unit(unit.kilocalorie_per_mole))
 
 # Energy minimization
 if inputs.mini_nstep > 0:
-    print("\nEnergy minimization: %s steps" % inputs.mini_nstep)
-    simulation.minimizeEnergy(maxIterations=inputs.mini_nstep)
+    print("\nEnergy minimization:")
+    simulation.minimizeEnergy()
     print(simulation.context.getState(getEnergy=True).getPotentialEnergy())
 
 # Generate initial velocities
@@ -164,6 +170,29 @@ if inputs.gen_vel == "yes":
         simulation.context.setVelocitiesToTemperature(inputs.gen_temp, inputs.gen_seed)
     else:
         simulation.context.setVelocitiesToTemperature(inputs.gen_temp)
+        
+## Do some additional pre-equilibration when using Drude particles
+print("Doing a first equilibration run")
+simulation.step(100_000)
+
+print("Doing a second equilibration run")
+simulation.integrator.setStepSize(0.0002 * picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
+
+print("Doing a third equilibration run")
+simulation.integrator.setStepSize(0.0003 * picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
+
+print("Doing a fourth equilibration run")
+simulation.integrator.setStepSize(0.0004 * picoseconds)
+simulation.context.reinitialize(preserveState=True)
+simulation.step(100_000)
+
+print("Starting the actual simulation")
+simulation.integrator.setStepSize(inputs.dt * picoseconds)
+simulation.context.reinitialize(preserveState=True)
 
 # Production
 print("\nMD run: %s steps" % inputs.nstep)

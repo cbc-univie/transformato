@@ -1,0 +1,2 @@
+<?xml version="1.0" ?>
+<Integrator constraintTolerance="1e-05" drudeFriction="200" drudeTemperature="1" friction="10" randomSeed="0" stepSize=".0005" temperature="303.15" type="DrudeLangevinIntegrator" version="1"/>

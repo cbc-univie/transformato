@@ -1,0 +1,47 @@
+{
+    "system": {
+        "structure1": {
+            "name": "cpo1",
+            "tlc": "CPO1",
+            "vacuum": {
+                "dirname": "vacuum",
+                "psf_file_name": "step3_input",
+                "crd_file_name": "step3_input",
+                "rst_file_name": "step4_equilibration",
+                "simulation_parameter": "step5_production.inp",
+                "intermediate-filename": "lig_in_vacuum"
+            },
+            "waterbox": {
+                "dirname": "waterbox",
+                "psf_file_name": "step3_input",
+                "crd_file_name": "step3_input",
+                "rst_file_name": "step4_equilibration",
+                "simulation_parameter": "step5_production.inp",
+                "intermediate-filename": "lig_in_waterbox"
+            },
+            "charmm_gui_dir": "/site/raid5/marvin/more_compounds_25/transformato/drude_test_case/data/cpo1/"
+        },
+        "name": "cpo1-asfe"
+    },
+    "simulation": {
+        "parameters": {
+            "nstep": 10000000,
+            "nstdcd": 2000,
+            "nstout": 2000,
+            "dt": 0.0005,
+            "mini_nstep": 5000
+        },
+        "workload-manager": "slurm",
+        "GPU": "OpenCL",
+        "drude": true,
+        "free-energy-type": "asfe"
+    },
+    "solvation": {
+        "steps_for_equilibration": 100000
+    },
+    "bin_dir": "/home/marvin/miniconda3/envs/fep/lib/python3.12/site-packages/transformato/bin",
+    "analysis_dir_base": "/site/raid5/marvin/more_compounds_25/transformato/drude_test_case",
+    "data_dir_base": "/site/raid5/marvin/more_compounds_25/transformato/drude_test_case/data",
+    "system_dir": "/site/raid5/marvin/more_compounds_25/transformato/drude_test_case/cpo1-asfe",
+    "cluster_dir": "/data/local/cpo1-asfe"
+}

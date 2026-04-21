@@ -154,8 +154,8 @@ class SystemStructure(object):
                     atom1.mass = new_mass1
                     atom2.mass = new_mass2
 
-    @staticmethod
-    def mol_to_nx(mol: Chem.Mol):
+    # @staticmethod  #removed because it relies on self.drude as an instance attribute
+    def mol_to_nx(self, mol: Chem.Mol):
         try:
             from tf_routes import preprocessing
 
@@ -163,25 +163,41 @@ class SystemStructure(object):
         except ModuleNotFoundError:
             G = nx.Graph()
 
-            for atom in mol.GetAtoms():
-                G.add_node(
-                    atom.GetIdx(),
-                    atomic_num=atom.GetAtomicNum(),
-                    formal_charge=atom.GetFormalCharge(),
-                    chiral_tag=atom.GetChiralTag(),
-                    hybridization=atom.GetHybridization(),
-                    num_explicit_hs=atom.GetNumExplicitHs(),
-                    is_aromatic=atom.GetIsAromatic(),
-                )
+        for atom in mol.GetAtoms():
+            if self.drude:
+                node_id = atom.GetIntProp("psf_idx")
+            else:
+                node_id = atom.GetIdx()
+
+            G.add_node(
+                node_id,
+                atomic_num=atom.GetAtomicNum(),
+                formal_charge=atom.GetFormalCharge(),
+                chiral_tag=atom.GetChiralTag(),
+                hybridization=atom.GetHybridization(),
+                num_explicit_hs=atom.GetNumExplicitHs(),
+                is_aromatic=atom.GetIsAromatic(),
+            )
 
             for bond in mol.GetBonds():
-                G.add_edge(
-                    bond.GetBeginAtomIdx(),
-                    bond.GetEndAtomIdx(),
-                    bond_type=bond.GetBondType(),
-                )
+                if self.drude:
+                    begin = bond.GetBeginAtom().GetIntProp(
+                        "psf_idx"
+                    )  # reassign with psf index
+                    end = bond.GetEndAtom().GetIntProp("psf_idx")
+                    G.add_edge(
+                        begin,
+                        end,
+                        bond_type=bond.GetBondType(),
+                    )
+                else:
+                    G.add_edge(
+                        bond.GetBeginAtomIdx(),
+                        bond.GetEndAtomIdx(),
+                        bond_type=bond.GetBondType(),
+                    )
 
-            return G
+        return G
 
     def _read_parameters(self, env: str) -> pm.charmm.CharmmParameterSet:
         """
@@ -249,6 +265,10 @@ class SystemStructure(object):
         if os.path.isfile(f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str"):
             parameter_files += (
                 f"{toppar_dir}/toppar_drude_main_protein_2023a_flex.str",
+            )
+        if os.path.isfile(f"{toppar_dir}/toppar_drude_model_2023a.str"):
+            parameter_files += (
+                f"{toppar_dir}/toppar_drude_model_2023a.str",
             )
         if os.path.isfile(f"{toppar_dir}/toppar_all36_moreions.str"):
             parameter_files += (f"{toppar_dir}/toppar_all36_moreions.str",)
@@ -500,55 +520,75 @@ class SystemStructure(object):
                         "PSF to mol conversion did not work! Remove the TLC.sdf file in the tlc folder and try again!"
                     )
 
-            return mol
+        return mol
 
     def generate_atom_tables_from_psf(
         self, psf: pm.charmm.CharmmPsfFile, mol: Chem.rdchem.Mol
     ) -> Chem.rdchem.Mol:
-        """
-        Generate mapping dictionaries for a molecule in a psf.
-        Parameters
-        ----------
-        psf: pm.charmm.CharmmPsfFile or parmed.amber._amberparm.AmberParm
-        Returns
-        ----------
-        mol: Chem.rdchem.Mol
-            mol object with atom name and type properties
-        """
-
         atom_idx_to_atom_name = dict()
         atom_name_to_atom_idx = dict()
         atom_name_to_atom_type = dict()
         atom_idx_to_atom_partial_charge = dict()
 
-        ## We need this for point mutations, because if we give a resid, the mol here
-        ## consists only of on residue which resid is always 1
         try:
             int(self.tlc)
             tlc = "1"
         except ValueError:
             tlc = self.tlc
 
-        for atom in psf.view[f":{tlc}"].atoms:
-            atom_name = atom.name
-            atom_index = atom.idx
-            atom_type = atom.type
-            atom_charge = atom.charge
+        if self.drude:
 
-            atom_idx_to_atom_name[atom_index] = atom_name
-            atom_name_to_atom_idx[atom_name] = atom_index
-            atom_name_to_atom_type[atom_name] = atom_type
-            atom_idx_to_atom_partial_charge[atom_index] = atom_charge
+            # filter only real (non-drude, non-LP) atoms
+            real_atoms = [
+                atom
+                for atom in psf.view[f":{tlc}"].atoms
+                if not atom.type.startswith("LP") and atom.type != "DRUD"
+            ]
 
-        for atom in mol.GetAtoms():
-            atom.SetProp("atom_name", atom_idx_to_atom_name[atom.GetIdx()])
-            atom.SetProp(
-                "atom_type",
-                atom_name_to_atom_type[atom_idx_to_atom_name[atom.GetIdx()]],
-            )
-            atom.SetProp("atom_index", str(atom.GetIdx()))
-            atom.SetProp(
-                "atom_charge", str(atom_idx_to_atom_partial_charge[atom.GetIdx()])
-            )
+            # atom number check between RDKIT mol and real atoms
+            if len(real_atoms) != mol.GetNumAtoms():
+                raise RuntimeError(
+                    f"Mismatch between real PSF atoms ({len(real_atoms)}) and RDKit mol atoms ({mol.GetNumAtoms()})!"
+                )
+
+            # setting RDKit atom properties based on matching to psf real atoms
+            for atom_idx, atom in enumerate(mol.GetAtoms()):
+                psf_atom = real_atoms[atom_idx]
+
+                atom_name = psf_atom.name
+                atom_type = psf_atom.type
+                atom_charge = psf_atom.charge
+                psf_index = psf_atom.idx  # this is the psf-derived index!
+
+                atom.SetProp("atom_name", atom_name)
+                atom.SetProp("atom_type", atom_type)
+                atom.SetProp("atom_index", str(atom_idx))
+                atom.SetProp("atom_charge", str(atom_charge))
+
+                # these indices will be used for the mol_to_nx method to create the graph
+                atom.SetIntProp("psf_idx", psf_index)
+        else:
+
+            for atom in psf.view[f":{tlc}"].atoms:
+                atom_name = atom.name
+                atom_index = atom.idx
+                atom_type = atom.type
+                atom_charge = atom.charge
+
+                atom_idx_to_atom_name[atom_index] = atom_name
+                atom_name_to_atom_idx[atom_name] = atom_index
+                atom_name_to_atom_type[atom_name] = atom_type
+                atom_idx_to_atom_partial_charge[atom_index] = atom_charge
+
+            for atom in mol.GetAtoms():
+                atom.SetProp("atom_name", atom_idx_to_atom_name[atom.GetIdx()])
+                atom.SetProp(
+                    "atom_type",
+                    atom_name_to_atom_type[atom_idx_to_atom_name[atom.GetIdx()]],
+                )
+                atom.SetProp("atom_index", str(atom.GetIdx()))
+                atom.SetProp(
+                    "atom_charge", str(atom_idx_to_atom_partial_charge[atom.GetIdx()])
+                )
 
         return mol

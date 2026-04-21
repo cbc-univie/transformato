@@ -1,0 +1,41 @@
+---
+################
+system:
+  ################
+  structure1:
+    name: "cpo1"
+    tlc: "cpo1"
+    vacuum:
+      dirname: "vacuum"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_vacuum"
+    waterbox:
+      dirname: "waterbox"
+      psf_file_name: "step3_input"
+      crd_file_name: "step3_input"
+      rst_file_name: "step4_equilibration"
+      simulation_parameter: "step5_production.inp"
+      intermediate-filename: "lig_in_waterbox"
+
+################
+simulation:
+  ################
+  parameters:
+    nstep: 10000000 
+    nstdcd: 2000
+    nstout: 2000
+    dt: 0.0005
+    mini_nstep: 5000
+
+  workload-manager : "slurm"
+  GPU: "OpenCL"
+  drude: True
+  
+  free-energy-type: "asfe"
+################
+solvation:
+  ################
+  steps_for_equilibration: 100000
